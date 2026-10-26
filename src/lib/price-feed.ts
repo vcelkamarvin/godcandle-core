@@ -53,7 +53,7 @@ export function startFeed() {
     p = nextPrice(p);
   }
   ticks.push(...back);
-  snap = { ...snap, price: ticks[ticks.length - 1].p, prev: ticks[ticks.length - 2].p, lastTick: now };
+  snap = { ...snap, price: ticks[ticks.length - 1]!.p, prev: ticks[ticks.length - 2]!.p, lastTick: now };
   step();
 }
 

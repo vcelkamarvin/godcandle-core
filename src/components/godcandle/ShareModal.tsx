@@ -59,10 +59,10 @@ export function ShareModal({ trade, onOpenChange }: { trade: ClosedTrade | null;
     rows.forEach(([k, val], i) => {
       const cx = 100 + i * 300;
       x.fillStyle = v("--muted-foreground");
-      x.fillText(k, cx, 850);
+      x.fillText(k!, cx, 850);
       x.fillStyle = v("--foreground");
       x.font = `500 38px ${F}`;
-      x.fillText(val, cx, 900);
+      x.fillText(val!, cx, 900);
       x.font = `400 30px ${F}`;
     });
     const a = document.createElement("a");
