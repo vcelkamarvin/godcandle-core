@@ -175,16 +175,16 @@ export function PriceChart({ position, pnlLabel, pnlPositive, onClose }: Props) 
         ctx.rect(0, 0, plotW, plotH);
         ctx.clip();
         const path = new Path2D();
-        path.moveTo(xOf(vis[0].t), yOf(vis[0].p));
+        path.moveTo(xOf(vis[0]!.t), yOf(vis[0]!.p));
         for (let i = 1; i < vis.length; i++) {
-          const x = xOf(vis[i].t);
-          path.lineTo(x, yOf(vis[i - 1].p));
-          path.lineTo(x, yOf(vis[i].p));
+          const x = xOf(vis[i]!.t);
+          path.lineTo(x, yOf(vis[i - 1]!.p));
+          path.lineTo(x, yOf(vis[i]!.p));
         }
         path.lineTo(headX, yP);
         const fill = new Path2D(path);
         fill.lineTo(headX, plotH);
-        fill.lineTo(xOf(vis[0].t), plotH);
+        fill.lineTo(xOf(vis[0]!.t), plotH);
         fill.closePath();
         ctx.globalAlpha = 0.045;
         ctx.fillStyle = C.ink;
@@ -275,9 +275,9 @@ export function PriceChart({ position, pnlLabel, pnlPositive, onClose }: Props) 
         <button
           ref={pillRef}
           onClick={onClose}
-          className={`pill pill-ink tabular absolute left-0 top-0 h-7 px-3 text-xs ${pnlPositive ? "text-gain" : "text-loss"}`}
+          className={`pill pill-ink tabular absolute left-0 top-0 h-7 px-3 text-xs`}
         >
-          {pnlLabel}
+          <span className={pnlPositive ? "text-gain" : "text-loss"}>{pnlLabel}</span>
           <span className="text-primary-foreground">· Close</span>
         </button>
       )}

@@ -86,7 +86,10 @@ function Terminal() {
 
   const open = (side: Side) => {
     if (posRef.current) return;
-    if (stake > balance) return toast("Not enough balance");
+    if (stake > balance) {
+      toast("Not enough balance");
+      return;
+    }
     const p: Position = { id: Math.random().toString(36).slice(2, 8), side, stake, leverage, entry: price, openedAt: Date.now() };
     posRef.current = p;
     setPosition(p);
