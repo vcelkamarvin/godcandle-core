@@ -1,169 +1,28 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { Toaster, toast } from "sonner";
+import { useCallback,useEffect,useRef,useState } from "react";
+import { Toaster,toast } from "sonner";
+import { Button } from "@/components/ui/button";
 import { Dock } from "@/components/godcandle/Dock";
 import { Header } from "@/components/godcandle/Header";
 import { PriceChart } from "@/components/godcandle/PriceChart";
 import { ShareModal } from "@/components/godcandle/ShareModal";
 import { TradePanel } from "@/components/godcandle/TradePanel";
-import { startFeed, toggleHighVol, useFeed } from "@/lib/price-feed";
-import {
-  fmtSigned,
-  fmtUsd,
-  isLiquidated,
-  liqPrice,
-  pnlOf,
-  type ClosedTrade,
-  type Position,
-  type Side,
-} from "@/lib/trade";
-
-export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "godcandle — BTC 1000x trading terminal" },
-      { name: "description", content: "A minimal BTC-only high-leverage practice terminal with a live tick-stream chart." },
-      { property: "og:title", content: "godcandle — BTC 1000x trading terminal" },
-      { property: "og:description", content: "One tap to open, one tap to close. Practice BTC trades up to 1000x." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
-  component: Terminal,
-});
-
-const SEED: ClosedTrade[] = [
-  { id: "s2", side: "long", stake: 100, leverage: 500, entry: 64211.4, exit: 64335.8, pnl: 76.86, durationMs: 41000, liquidated: false, closedAt: 2 },
-  { id: "s1", side: "short", stake: 50, leverage: 1000, entry: 64102.1, exit: 64166.2, pnl: -50, durationMs: 18000, liquidated: true, closedAt: 1 },
-];
-
-function Terminal() {
-  const feed = useFeed();
-  const price = feed.price;
-  const [stake, setStake] = useState(100);
-  const [leverage, setLeverage] = useState(500);
-  const [position, setPosition] = useState<Position | null>(null);
-  const [history, setHistory] = useState<ClosedTrade[]>(SEED);
-  const [balance, setBalance] = useState(4823);
-  const [share, setShare] = useState<ClosedTrade | null>(null);
-  const [flash, setFlash] = useState(0);
-  const posRef = useRef(position);
-  posRef.current = position;
-
-  useEffect(() => startFeed(), []);
-
-  const settle = useCallback((exit: number, liquidated: boolean) => {
-    const pos = posRef.current;
-    if (!pos) return;
-    const pnl = liquidated ? -pos.stake : pnlOf(pos, exit);
-    const trade: ClosedTrade = {
-      id: pos.id,
-      side: pos.side,
-      stake: pos.stake,
-      leverage: pos.leverage,
-      entry: pos.entry,
-      exit,
-      pnl,
-      durationMs: Date.now() - pos.openedAt,
-      liquidated,
-      closedAt: Date.now(),
-    };
-    posRef.current = null;
-    setPosition(null);
-    setHistory((h) => [trade, ...h]);
-    setBalance((b) => b + pnl);
-    if (liquidated) {
-      setFlash((f) => f + 1);
-      toast.error("Liquidated", { description: `Margin $${fmtUsd(pos.stake)} → $0.00` });
-    } else {
-      toast(`Closed ${fmtSigned(pnl)}`, {
-        description: `${pos.side.toUpperCase()} ${pos.leverage}x · exit $${fmtUsd(exit)}`,
-        action: { label: "Share", onClick: () => setShare(trade) },
-        cancel: { label: "Trade again", onClick: () => {} },
-      });
-    }
-  }, []);
-
-  const open = (side: Side) => {
-    if (posRef.current) return;
-    if (stake > balance) {
-      toast("Not enough balance");
-      return;
-    }
-    const p: Position = { id: Math.random().toString(36).slice(2, 8), side, stake, leverage, entry: price, openedAt: Date.now() };
-    posRef.current = p;
-    setPosition(p);
-  };
-  const close = useCallback(() => settle(feed.price, false), [settle, feed.price]);
-
-  useEffect(() => {
-    if (position && isLiquidated(position, price)) settle(liqPrice(position.entry, position.leverage, position.side), true);
-  }, [price, position, settle]);
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if ((e.target as HTMLElement)?.tagName === "INPUT") return;
-      if (e.key === "v" || e.key === "V") toast(toggleHighVol() ? "High volatility demo on" : "Volatility back to normal");
-      if ((e.key === " " || e.key === "c" || e.key === "C") && posRef.current) {
-        e.preventDefault();
-        close();
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [close]);
-
-  const change = ((price - feed.open24) / feed.open24) * 100;
-  const pnl = position ? pnlOf(position, price) : 0;
-
-  return (
-    <div className="mx-auto min-h-screen max-w-[1440px] px-4 pb-72 md:px-8 lg:pb-8">
-      <Toaster position="top-center" toastOptions={{ style: { borderRadius: 24, border: "1px solid var(--foreground)", boxShadow: "none", fontFamily: "inherit" } }} />
-      <Header balance={balance} />
-
-      <section className="flex flex-wrap items-end gap-x-4 gap-y-2 border-t border-hairline pb-6 pt-6">
-        <div>
-          <p className="text-xs text-muted-foreground">BTC/USD</p>
-          <p className="tabular tight text-[44px] font-medium leading-none md:text-[56px]">${fmtUsd(price)}</p>
-        </div>
-        <span
-          className={`pill tabular mb-2 h-7 border px-3 text-sm ${change >= 0 ? "border-gain text-gain" : "border-loss text-loss"}`}
-        >
-          {change >= 0 ? "+" : ""}
-          {change.toFixed(2)}%
-        </span>
-        {feed.highVol && <span className="mb-2 ml-auto text-xs text-muted-foreground">High volatility · V</span>}
-      </section>
-
-      <div className="grid grid-cols-12 gap-6">
-        <div
-          key={flash}
-          className={`gc-card col-span-12 h-[360px] overflow-hidden md:h-[520px] lg:col-span-8 xl:col-span-9 ${flash ? "animate-liq-flash" : ""}`}
-        >
-          <PriceChart position={position} pnlLabel={fmtSigned(pnl, 0)} pnlPositive={pnl >= 0} onClose={close} />
-        </div>
-
-        <aside className="col-span-12 lg:col-span-4 xl:col-span-3">
-          <div className="gc-card fixed inset-x-0 bottom-0 z-30 max-h-[80vh] overflow-y-auto rounded-b-none lg:static lg:max-h-none lg:rounded-b-3xl">
-            <TradePanel
-              price={price}
-              stake={stake}
-              setStake={setStake}
-              leverage={leverage}
-              setLeverage={setLeverage}
-              position={position}
-              onOpen={open}
-              onClose={close}
-            />
-          </div>
-        </aside>
-
-        <div className="gc-card col-span-12">
-          <Dock price={price} open={position ? [position] : []} history={history} onClose={close} onShare={setShare} />
-        </div>
-      </div>
-
-      <ShareModal trade={share} onOpenChange={(o) => !o && setShare(null)} />
-    </div>
-  );
+import { MarketLogo } from "@/components/godcandle/MarketLogo";
+import { DevPanel } from "@/components/godcandle/DevPanel";
+import { INTERNAL_TESTER } from "@/config/app";
+import { MARKETS,getMarket,type MarketSymbol } from "@/config/markets";
+import { startFeed,useFeeds,getSnap } from "@/lib/price-feed";
+import { INITIAL_BALANCE,seedHistory } from "@/lib/mock-data";
+import { fmtSigned,fmtUsd,isLiquidated,liquidation,pnlOf,openingError,type Position,type ClosedTrade,type Side } from "@/lib/engine";
+export const Route=createFileRoute("/")({head:()=>({meta:[{title:"godcandle — multi-market trading terminal"},{name:"description",content:"Internal trading tester for BTC, ETH, SPX, SOL, HYPE and DOGE with simulated streaming prices."},{property:"og:title",content:"godcandle — multi-market trading terminal"},{property:"og:description",content:"Six markets. One trading terminal. Internal simulated trading."},{property:"og:type",content:"website"},{name:"twitter:card",content:"summary_large_image"}]}),component:Terminal});
+function Terminal(){
+ const feeds=useFeeds();const [market,setMarket]=useState<MarketSymbol>("BTC");const [stake,setStake]=useState(100);const [leverage,setLeverage]=useState(500);const [positions,setPositions]=useState<Position[]>([]);const [history,setHistory]=useState<ClosedTrade[]>(seedHistory);const [balance,setBalance]=useState(INITIAL_BALANCE);const [share,setShare]=useState<ClosedTrade|null>(null);const [internal,setInternal]=useState(INTERNAL_TESTER);const [dev,setDev]=useState(false);const [flash,setFlash]=useState(0);const posRef=useRef(positions);posRef.current=positions;
+ useEffect(()=>startFeed(),[]);
+ const select=useCallback((symbol:MarketSymbol)=>{setMarket(symbol);setLeverage(l=>Math.min(l,getMarket(symbol).maxLeverage));},[]);
+ const settle=useCallback((symbol:MarketSymbol,liquidated=false)=>{const pos=posRef.current.find(p=>p.market===symbol);if(!pos)return;const exit=liquidated?liquidation(pos):getSnap(symbol).price;const pnl=liquidated?-pos.stake:pnlOf(pos,exit);const trade:ClosedTrade={...pos,exit,pnl,durationMs:Date.now()-pos.openedAt,closedAt:Date.now(),liquidated};posRef.current=posRef.current.filter(p=>p.id!==pos.id);setPositions(posRef.current);setHistory(h=>[trade,...h]);setBalance(b=>b+pnl);if(liquidated){setFlash(f=>f+1);toast.error(`${symbol} liquidated`,{description:`Margin $${fmtUsd(pos.stake)} → $0.00`});}else toast(`Closed ${symbol} ${fmtSigned(pnl)}`,{action:{label:"Share",onClick:()=>setShare(trade)}});},[]);
+ const open=useCallback((side:Side)=>{const error=openingError(market,stake,leverage,balance,posRef.current,getSnap(market).status);if(error){toast(error);return;}const p:Position={id:crypto.randomUUID(),market,side,stake,leverage,entry:getSnap(market).price,openedAt:Date.now()};posRef.current=[...posRef.current,p];setPositions(posRef.current);},[market,stake,leverage,balance]);
+ useEffect(()=>{for(const p of posRef.current)if(isLiquidated(p,feeds[p.market].price))settle(p.market,true);},[feeds,settle]);
+ useEffect(()=>{const key=(e:KeyboardEvent)=>{if((e.target as HTMLElement)?.closest("input,textarea,select,[role=switch]")||e.ctrlKey||e.metaKey||e.altKey)return;if(e.key==="`"){e.preventDefault();setDev(d=>!d);return;}if(dev||share||document.querySelector('[role="dialog"]'))return;const index=MARKETS.findIndex(m=>m.symbol===market);if(e.key==="ArrowLeft"||e.key==="ArrowRight"){e.preventDefault();select(MARKETS[(index+(e.key==="ArrowLeft"?5:1))%6].symbol);}if(/^[1-6]$/.test(e.key))select(MARKETS[Number(e.key)-1].symbol);if(e.key.toLowerCase()==="l")open("long");if(e.key.toLowerCase()==="s")open("short");if(e.key.toLowerCase()==="c"||e.key===" "){e.preventDefault();settle(market);}};window.addEventListener("keydown",key);return()=>window.removeEventListener("keydown",key);},[dev,share,market,select,open,settle]);
+ const m=getMarket(market);const feed=feeds[market];const pos=positions.find(p=>p.market===market)??null;const pnl=pos?pnlOf(pos,feed.price):0;const change=(feed.price-feed.open24)/feed.open24*100;
+ return <div id="terminal" className="mx-auto min-h-screen max-w-[1440px] px-4 pb-80 md:px-8 lg:pb-8"><Toaster position="top-center"/><Header balance={balance} internal={internal}/><nav aria-label="Markets" className="flex gap-2 overflow-x-auto border-t border-hairline py-4">{MARKETS.map(item=><Button variant="ghost" key={item.symbol} aria-pressed={market===item.symbol} onClick={()=>select(item.symbol)} className={`pill h-10 shrink-0 px-4 ${market===item.symbol?"pill-ink":"pill-ghost"}`}><MarketLogo symbol={item.symbol}/>{item.symbol}<span className={`text-[10px] ${market===item.symbol?"text-primary-foreground/60":"text-muted-foreground"}`}>up to {item.maxLeverage}x</span>{positions.some(p=>p.market===item.symbol)&&<span aria-label="Open position" className="h-1.5 w-1.5 rounded-full bg-foreground ring-1 ring-background"/>}</Button>)}</nav><section className="flex flex-wrap items-end gap-x-4 gap-y-2 pb-6 pt-3"><div><p className="mb-2 flex items-center gap-2 text-xs text-muted-foreground"><MarketLogo symbol={market}/>{m.name} · {market}/USD{feed.status!=="open"&&<span className="text-loss">· Market {feed.status}</span>}</p><p className="tabular whitespace-nowrap text-[44px] font-medium leading-none md:text-[56px]">${fmtUsd(feed.price,m.decimals)}</p></div><span className={`pill tabular mb-1 h-7 border px-3 text-sm ${change>=0?"border-gain text-gain":"border-loss text-loss"}`}>{change>=0?"+":""}{change.toFixed(2)}%</span><span className="ml-auto text-xs text-muted-foreground sm:hidden">${fmtUsd(balance)} USDC</span></section><div className="grid grid-cols-12 gap-6"><div className={`gc-card col-span-12 h-[360px] overflow-hidden md:h-[520px] lg:col-span-8 xl:col-span-9 ${flash?"animate-liq-flash":""}`}><PriceChart market={market} position={pos} pnlLabel={fmtSigned(pnl,0)} pnlPositive={pnl>=0} onClose={()=>settle(market)}/></div><aside className="col-span-12 lg:col-span-4 xl:col-span-3"><div className="gc-card fixed inset-x-0 bottom-0 z-30 max-h-[75dvh] overflow-y-auto rounded-b-none lg:static lg:max-h-none lg:rounded-b-3xl"><TradePanel key={market} market={market} status={feed.status} price={feed.price} stake={stake} setStake={setStake} leverage={leverage} setLeverage={setLeverage} position={pos} onOpen={open} onClose={()=>settle(market)} limitReached={positions.length>=3}/></div></aside><div id="dock" className="col-span-12 border-t border-hairline"><Dock feeds={feeds} open={positions} history={history} onSelect={select} onClose={settle} onShare={setShare}/></div></div><ShareModal trade={share} onOpenChange={o=>!o&&setShare(null)}/><DevPanel open={dev} onOpenChange={setDev} market={market} feeds={feeds} internal={internal} onInternal={setInternal} onReset={()=>{setBalance(INITIAL_BALANCE);toast("Balance reset");}} onSeed={()=>{setHistory(seedHistory());toast("Sample history restored");}}/></div>;
 }

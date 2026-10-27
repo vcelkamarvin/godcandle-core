@@ -1,19 +1,23 @@
 import { useEffect, useRef } from "react";
-import { getSnap, ticks } from "@/lib/price-feed";
-import { fmtUsd, liqDistancePct, liqPrice, type Position } from "@/lib/trade";
+import { getSnap, getTicks } from "@/lib/price-feed";
+import { fmtUsd, distanceToLiquidation, liquidation, type Position } from "@/lib/trade";
+
+import { Button } from "@/components/ui/button";
+import { getMarket, type MarketSymbol } from "@/config/markets";
 
 const WINDOW_MS = 30000;
 const AXIS_W = 84;
 const TIME_H = 28;
 
 interface Props {
+  market: MarketSymbol;
   position: Position | null;
   pnlLabel: string;
   pnlPositive: boolean;
   onClose: () => void;
 }
 
-export function PriceChart({ position, pnlLabel, pnlPositive, onClose }: Props) {
+export function PriceChart({ market, position, pnlLabel, pnlPositive, onClose }: Props) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const pillRef = useRef<HTMLButtonElement>(null);
@@ -21,9 +25,12 @@ export function PriceChart({ position, pnlLabel, pnlPositive, onClose }: Props) 
   posRef.current = position;
 
   useEffect(() => {
-    const canvas = canvasRef.current!;
-    const wrap = wrapRef.current!;
-    const ctx = canvas.getContext("2d")!;
+    const canvas = canvasRef.current;
+    const wrap = wrapRef.current;
+    if (!canvas || !wrap) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    const decimals = getMarket(market).decimals;
     const css = getComputedStyle(document.documentElement);
     const C = {
       ink: css.getPropertyValue("--foreground").trim(),
@@ -80,7 +87,8 @@ export function PriceChart({ position, pnlLabel, pnlPositive, onClose }: Props) 
     const draw = (nowPerf: number) => {
       const dt = nowPerf - last;
       last = nowPerf;
-      const snap = getSnap();
+      const snap = getSnap(market);
+      const ticks = getTicks(market);
       const now = Date.now();
       const pos = posRef.current;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -99,10 +107,11 @@ export function PriceChart({ position, pnlLabel, pnlPositive, onClose }: Props) 
       }
       let liq = 0;
       if (pos) {
-        liq = liqPrice(pos.entry, pos.leverage, pos.side);
+        liq = liquidation(pos);
         mn = Math.min(mn, pos.entry, liq);
         mx = Math.max(mx, pos.entry, liq);
       }
+      if (!Number.isFinite(mn)) { mn = snap.price; mx = snap.price; }
       const minSpan = snap.price * 0.0004;
       if (mx - mn < minSpan) {
         const c = (mx + mn) / 2;
@@ -135,7 +144,7 @@ export function PriceChart({ position, pnlLabel, pnlPositive, onClose }: Props) 
         ctx.moveTo(0, y);
         ctx.lineTo(plotW, y);
         ctx.stroke();
-        if (y > 10 && y < plotH - 6) ctx.fillText("$" + fmtUsd(p, 0), plotW + 12, y);
+        if (y > 10 && y < plotH - 6) ctx.fillText("$" + fmtUsd(p, decimals), plotW + 12, y);
       }
       // time grid every 5s
       const first = Math.ceil((now - WINDOW_MS * 1.3) / 5000) * 5000;
@@ -157,7 +166,7 @@ export function PriceChart({ position, pnlLabel, pnlPositive, onClose }: Props) 
       ctx.strokeStyle = C.ink;
       ctx.stroke();
 
-      const yP = yOf(snap.price);
+      const yP = Math.max(12, Math.min(plotH - 12, yOf(snap.price)));
 
       // liquidation zone
       if (pos) {
@@ -175,16 +184,16 @@ export function PriceChart({ position, pnlLabel, pnlPositive, onClose }: Props) 
         ctx.rect(0, 0, plotW, plotH);
         ctx.clip();
         const path = new Path2D();
-        path.moveTo(xOf(vis[0]!.t), yOf(vis[0]!.p));
+        path.moveTo(xOf(vis[0].t), yOf(vis[0].p));
         for (let i = 1; i < vis.length; i++) {
-          const x = xOf(vis[i]!.t);
-          path.lineTo(x, yOf(vis[i - 1]!.p));
-          path.lineTo(x, yOf(vis[i]!.p));
+          const x = xOf(vis[i].t);
+          path.lineTo(x, yOf(vis[i - 1].p));
+          path.lineTo(x, yOf(vis[i].p));
         }
         path.lineTo(headX, yP);
         const fill = new Path2D(path);
         fill.lineTo(headX, plotH);
-        fill.lineTo(xOf(vis[0]!.t), plotH);
+        fill.lineTo(xOf(vis[0].t), plotH);
         fill.closePath();
         ctx.globalAlpha = 0.045;
         ctx.fillStyle = C.ink;
@@ -215,8 +224,8 @@ export function PriceChart({ position, pnlLabel, pnlPositive, onClose }: Props) 
         ctx.stroke();
         ctx.setLineDash([]);
         const sep = Math.abs(yE - yL) < 24 ? (yL > yE ? 12 : -12) : 0;
-        pillTag(12, yE - sep, `ENTRY $${fmtUsd(pos.entry)}`, C.bg, C.ink, C.muted);
-        pillTag(12, yL + sep, `LIQ $${fmtUsd(liq)} (${liqDistancePct(pos.leverage).toFixed(2)}%)`, C.bg, C.loss, C.loss);
+        pillTag(12, yE - sep, `ENTRY $${fmtUsd(pos.entry, decimals)}`, C.bg, C.ink, C.muted);
+        pillTag(12, yL + sep, `LIQ $${fmtUsd(liq, decimals)} (${distanceToLiquidation(pos, snap.price).toFixed(2)}%)`, C.bg, C.loss, C.loss);
       }
 
       // current price dashed line
@@ -254,10 +263,12 @@ export function PriceChart({ position, pnlLabel, pnlPositive, onClose }: Props) 
       // axis price tag
       const flashing = now < flashUntil && flashDir !== 0;
       const tagColor = flashing ? (flashDir > 0 ? C.gain : C.loss) : C.bg;
-      pillTag(plotW + 4, yP, "$" + fmtUsd(snap.price), C.ink, tagColor);
+      pillTag(plotW + 4, yP, "$" + fmtUsd(snap.price, decimals), C.ink, tagColor);
 
       if (pillRef.current) {
-        pillRef.current.style.transform = `translate(${headX + 14}px, ${yP - 34}px)`;
+        const pillWidth = pillRef.current.offsetWidth;
+        const pillX = Math.max(4, Math.min(headX + 14, plotW - pillWidth - 4));
+        pillRef.current.style.transform = `translate(${pillX}px, ${Math.max(4, yP - 34)}px)`;
       }
       raf = requestAnimationFrame(draw);
     };
@@ -266,20 +277,20 @@ export function PriceChart({ position, pnlLabel, pnlPositive, onClose }: Props) 
       cancelAnimationFrame(raf);
       ro.disconnect();
     };
-  }, []);
+  }, [market]);
 
   return (
-    <div ref={wrapRef} className="relative h-full w-full">
+    <div ref={wrapRef} key={market} className="chart-enter relative h-full w-full">
       <canvas ref={canvasRef} className="absolute inset-0" />
       {position && (
-        <button
+        <Button variant="ghost"
           ref={pillRef}
           onClick={onClose}
           className={`pill pill-ink tabular absolute left-0 top-0 h-7 px-3 text-xs`}
         >
           <span className={pnlPositive ? "text-gain" : "text-loss"}>{pnlLabel}</span>
           <span className="text-primary-foreground">· Close</span>
-        </button>
+        </Button>
       )}
     </div>
   );
