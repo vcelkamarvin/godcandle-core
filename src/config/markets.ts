@@ -13,4 +13,4 @@ const paths: Record<MarketSymbol, string> = {
 export const marketLogo = (symbol: MarketSymbol) => createElement("svg", { viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.4, "aria-hidden": true }, createElement("path", { d: paths[symbol] }));
 const make = (symbol: MarketSymbol, name: string, basePrice: number, decimals: number, maxLeverage: number, volatility: number): Market => ({symbol, name, basePrice, decimals, maxLeverage, volatility, logo: marketLogo(symbol), minStake: 10, maxStake: 5000, feeRate: 0.0004, status: "open"});
 export const MARKETS: Market[] = [make("BTC", "Bitcoin",64300,2,1000,.000028),make("ETH","Ethereum",3450,2,1000,.00004),make("SPX","S&P 500",6120,2,500,.00002),make("SOL","Solana",142,2,100,.0001),make("HYPE","Hyperliquid",18.45,3,100,.00012),make("DOGE","Dogecoin",.143,5,50,.00015)];
-export const getMarket = (symbol: MarketSymbol) => MARKETS.find(m => m.symbol === symbol) ?? MARKETS[0];
+export const getMarket = (symbol: MarketSymbol): Market => { const market = MARKETS.find(m => m.symbol === symbol); if (!market) throw new Error(`Unknown market: ${symbol}`); return market; };

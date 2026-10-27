@@ -63,7 +63,7 @@ export function ShareModal({ trade, onOpenChange }: { trade: ClosedTrade | null;
     }
     x.fillStyle = v("--muted-foreground");
     x.font = `400 30px ${F}`;
-    const rows = [
+    const rows: [string, string][] = [
       ["Entry", `$${fmtUsd(trade.entry, market.decimals)}`],
       ["Exit", `$${fmtUsd(trade.exit, market.decimals)}`],
       ["Duration", fmtDuration(trade.durationMs)],

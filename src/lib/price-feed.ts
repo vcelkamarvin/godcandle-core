@@ -18,6 +18,6 @@ export function setSimulation(next: Partial<Simulation>) { simulation = {...simu
 export function setMarketStatus(symbol: MarketSymbol, status: MarketStatus) { snapshots = {...snapshots,[symbol]:{...snapshots[symbol],status}}; emit(); }
 export function startFeed() {
  if (started) return; started=true; buffers=createBuffers(Date.now());
- const step = () => { const now=Date.now(); const next={...snapshots}; for(const m of MARKETS){ const s=snapshots[m.symbol]; const move=s.status === "open" ? (Math.random()-.5)*m.volatility*simulation.volatility*4 : 0; const price=Math.max(m.basePrice*.01,s.price*(1+move)); const tick={t:now,p:price}; const list=buffers?.[m.symbol]; if(list){list.push(tick);while(list.length && list[0].t<now-60000)list.shift();} next[m.symbol]={...s,prev:s.price,price,lastTick:now}; } snapshots=next;emit();setTimeout(step,simulation.tickSpeed); }; step();
+ const step = () => { const now=Date.now(); const next={...snapshots}; for(const m of MARKETS){ const s=snapshots[m.symbol]; const move=s.status === "open" ? (Math.random()-.5)*m.volatility*simulation.volatility*4 : 0; const price=Math.max(m.basePrice*.01,s.price*(1+move)); const tick={t:now,p:price}; const list=buffers?.[m.symbol]; if(list){list.push(tick);while(list[0] && list[0].t<now-60000)list.shift();} next[m.symbol]={...s,prev:s.price,price,lastTick:now}; } snapshots=next;emit();setTimeout(step,simulation.tickSpeed); }; step();
 }
 export function useFeeds() { return useSyncExternalStore(l=>{listeners.add(l);return()=>listeners.delete(l);},()=>snapshots,()=>initial); }

@@ -178,22 +178,25 @@ export function PriceChart({ market, position, pnlLabel, pnlPositive, onClose }:
       }
 
       // stepped line path
-      if (vis.length > 1) {
+      const firstTick = vis[0];
+      if (vis.length > 1 && firstTick) {
         ctx.save();
         ctx.beginPath();
         ctx.rect(0, 0, plotW, plotH);
         ctx.clip();
         const path = new Path2D();
-        path.moveTo(xOf(vis[0].t), yOf(vis[0].p));
+        path.moveTo(xOf(firstTick.t), yOf(firstTick.p));
         for (let i = 1; i < vis.length; i++) {
-          const x = xOf(vis[i].t);
-          path.lineTo(x, yOf(vis[i - 1].p));
-          path.lineTo(x, yOf(vis[i].p));
+          const tick = vis[i]; const prev = vis[i - 1];
+          if (!tick || !prev) continue;
+          const x = xOf(tick.t);
+          path.lineTo(x, yOf(prev.p));
+          path.lineTo(x, yOf(tick.p));
         }
         path.lineTo(headX, yP);
         const fill = new Path2D(path);
         fill.lineTo(headX, plotH);
-        fill.lineTo(xOf(vis[0].t), plotH);
+        fill.lineTo(xOf(firstTick.t), plotH);
         fill.closePath();
         ctx.globalAlpha = 0.045;
         ctx.fillStyle = C.ink;
