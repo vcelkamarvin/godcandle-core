@@ -187,3 +187,5 @@
 @keyframes pnl-flash { from { opacity: .65; } to { opacity: 1; } }
 .animate-pnl-flash { animation: pnl-flash 150ms ease-out; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+.pnl-compact { font-size: 26px; }

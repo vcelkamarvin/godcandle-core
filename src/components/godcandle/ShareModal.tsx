@@ -114,7 +114,7 @@ export function ShareModal({ trade, onOpenChange }: { trade: ClosedTrade | null;
           <label className="flex items-center gap-3 text-sm">
             <Switch checked={hide} onCheckedChange={setHide} /> Hide amounts
           </label>
-          <Button variant="ghost" onClick={download} className="pill pill-ink h-10 px-5 text-sm">
+          <Button variant="terminal" onClick={download} className="pill pill-ink h-10 px-5 text-sm">
             <Download className="h-4 w-4" /> Download PNG
           </Button>
         </div>

@@ -52,7 +52,7 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex h-10 items-center rounded-full border border-hairline p-1">
           {tabs.map(([id, label]) => (
-            <Button variant="ghost"
+            <Button variant="terminal"
               key={id}
               onClick={() => setTab(id)}
               className={`pill tabular h-8 px-4 text-sm ${tab === id ? "pill-ink" : "text-muted-foreground hover:text-foreground"}`}
@@ -79,7 +79,7 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
                 const pnl = pnlOf(pos, price);
                 return (
                   <div key={pos.id} className="rounded-3xl border border-hairline p-5">
-                    <Button variant="ghost" onClick={() => onSelect(pos.market)} className="flex h-auto w-full flex-wrap justify-start gap-2 border-b border-hairline px-0 pb-3">
+                    <Button variant="terminal" onClick={() => onSelect(pos.market)} className="flex h-auto w-full flex-wrap justify-start gap-2 border-b border-hairline px-0 pb-3">
                       <MarketLogo symbol={pos.market}/>
                       <span className="font-medium">{pos.market}</span>
                       <SideBadge side={pos.side} />
@@ -105,7 +105,7 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
                     <div className="mt-4">
                       <LiqBar health={liqHealth(pos, price)} />
                     </div>
-                    <Button variant="ghost" onClick={() => onClose(pos.market)} className="pill pill-outline mt-4 h-9 w-full text-sm">
+                    <Button variant="terminal" onClick={() => onClose(pos.market)} className="pill pill-outline mt-4 h-9 w-full text-sm">
                       Close
                     </Button>
                   </div>
@@ -145,7 +145,7 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
                       </td>
                       <td className="text-muted-foreground">{fmtDuration(h.durationMs)}</td>
                       <td className="text-right">
-                        <Button variant="ghost" aria-label="Share trade" onClick={() => onShare(h)} className="pill pill-ghost h-8 w-8">
+                        <Button variant="terminal" aria-label="Share trade" onClick={() => onShare(h)} className="pill pill-ghost h-8 w-8">
                           <Share2 className="h-3.5 w-3.5" />
                         </Button>
                       </td>

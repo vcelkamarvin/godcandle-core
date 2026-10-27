@@ -286,7 +286,7 @@ export function PriceChart({ market, position, pnlLabel, pnlPositive, onClose }:
     <div ref={wrapRef} key={market} className="chart-enter relative h-full w-full">
       <canvas ref={canvasRef} className="absolute inset-0" />
       {position && (
-        <Button variant="ghost"
+        <Button variant="terminal"
           ref={pillRef}
           onClick={onClose}
           className={`pill pill-ink tabular absolute left-0 top-0 h-7 px-3 text-xs`}
