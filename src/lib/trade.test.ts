@@ -1,21 +1,25 @@
-import { describe, expect, it } from "vitest";
-import { isLiquidated, liqDistancePct, liqPrice, notional, pnlOf } from "./trade";
-
-describe("trade formulas", () => {
-  it("notional is stake x leverage", () => {
-    expect(notional(100, 500)).toBe(50000);
-  });
-  it("liquidation distance is 100 / leverage", () => {
-    expect(liqDistancePct(500)).toBeCloseTo(0.2);
-    expect(liqDistancePct(1000)).toBeCloseTo(0.1);
-  });
-  it("liquidation price sits that distance from entry", () => {
-    expect(liqPrice(64000, 1000, "long")).toBeCloseTo(63936);
-    expect(liqPrice(64000, 500, "short")).toBeCloseTo(64128);
-  });
-  it("max loss equals the stake", () => {
-    const p = { id: "a", side: "long" as const, stake: 50, leverage: 1000, entry: 64000, openedAt: 0 };
-    expect(pnlOf(p, 60000)).toBe(-50);
-    expect(isLiquidated(p, 63936)).toBe(true);
-  });
+import {describe,it,expect} from "vitest";
+import {liqPrice,notional,pnlOf,isLiquidated,rawPnl,liquidation,priceMovePnl,positionFee,distanceToLiquidation,openingError,type Position} from "./engine";
+import {MARKETS} from "@/config/markets";
+const p:Position={id:"a",market:"BTC",side:"long",stake:100,leverage:1000,entry:64000,openedAt:0};
+describe("shared trading engine",()=>{
+ it("notional is stake times leverage",()=>expect(notional(100,500)).toBe(50000));
+ it("price move follows direction",()=>{expect(priceMovePnl(p,64064)).toBeCloseTo(100);expect(priceMovePnl({...p,side:"short"},64064)).toBeCloseTo(-100);});
+ it("charges 0.04% of notional",()=>expect(positionFee(p)).toBe(40));
+ it("net pnl subtracts the fee",()=>expect(pnlOf(p,64064)).toBeCloseTo(60));
+ it("long liquidation includes fees",()=>{expect(liqPrice(64000,1000,"long")).toBeCloseTo(63961.6);expect(rawPnl(p,liquidation(p))).toBeCloseTo(-100);});
+ it("short liquidation includes fees",()=>{const short={...p,side:"short" as const};expect(liquidation(short)).toBeCloseTo(64038.4);expect(rawPnl(short,liquidation(short))).toBeCloseTo(-100);});
+ it("distance uses mark, not entry",()=>expect(distanceToLiquidation(p,64064)).toBeCloseTo((64064-63961.6)/64064*100));
+ it("loss is capped at the stake",()=>expect(pnlOf(p,60000)).toBe(-100));
+ it("liquidates at the fee-inclusive boundary",()=>{expect(isLiquidated(p,liquidation(p))).toBe(true);expect(isLiquidated(p,liquidation(p)+.01)).toBe(false);});
+ it("allows only one position per market",()=>expect(openingError("BTC",100,500,4823,[p],"open")).toBe("Position already open"));
+ it("allows at most three positions",()=>expect(openingError("DOGE",100,50,4823,[p,{...p,market:"ETH"},{...p,market:"SOL"}],"open")).toBe("Maximum 3 open positions"));
+ it("blocks closed market opens",()=>expect(openingError("SPX",100,500,4823,[],"closed")).toBe("Market closed"));
+ it("blocks paused market opens",()=>expect(openingError("SPX",100,500,4823,[],"paused")).toBe("Market paused"));
+ it("reserves stakes of existing positions",()=>expect(openingError("ETH",100,500,150,[p],"open")).toBe("Not enough available balance"));
+ it("uses the specified market base prices",()=>expect(MARKETS.map(m=>m.basePrice)).toEqual([64300,3450,6120,142,18.45,.143]));
+ it("uses the specified decimal precision",()=>expect(MARKETS.map(m=>m.decimals)).toEqual([2,2,2,2,3,5]));
+ it("uses the specified market leverage caps",()=>expect(MARKETS.map(m=>m.maxLeverage)).toEqual([1000,1000,500,100,100,50]));
+ it("rejects leverage above market cap",()=>expect(openingError("SOL",100,500,4823,[],"open")).toBe("Invalid leverage"));
+ it("rejects out-of-range custom stakes",()=>{expect(openingError("BTC",9,500,4823,[],"open")).toBe("Stake must be $10–$5000");expect(openingError("BTC",5001,500,6000,[],"open")).toBe("Stake must be $10–$5000");});
 });
