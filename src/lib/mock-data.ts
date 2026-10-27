@@ -1,0 +1,8 @@
+import { MARKETS, type MarketSymbol } from "@/config/markets";
+import { pnlOf, liquidation, type ClosedTrade, type Position } from "./engine";
+export const INITIAL_BALANCE = 4823;
+export interface Tick { t: number; p: number }
+export const createBuffers = (now: number) => Object.fromEntries(MARKETS.map(m => { let p = m.basePrice; const ticks: Tick[] = []; for(let t=now-45000;t<=now;t+=200){ p *= 1 + Math.sin(t/1700)*m.volatility; ticks.push({t,p}); } ticks[ticks.length-1] = {t:now,p:m.basePrice}; return [m.symbol,ticks]; })) as Record<MarketSymbol,Tick[]>;
+export function seedHistory(): ClosedTrade[] {
+ return ([{market:"BTC",side:"long",stake:100,leverage:500,entry:64211.4,exit:64335.8,durationMs:41000}, {market:"ETH",side:"short",stake:50,leverage:1000,entry:3450,exit:3455,durationMs:18000}, {market:"SOL",side:"long",stake:25,leverage:100,entry:140,exit:142,durationMs:32000}] as const).map((s,i)=>{ const p: Position = {...s,id:`seed-${i}`,openedAt:0}; const liquidated = i===1; const exit = liquidated?liquidation(p):s.exit; return {...p,exit,pnl:pnlOf(p,exit),durationMs:s.durationMs,liquidated,closedAt:i+1}; });
+}
