@@ -16,39 +16,6 @@ export function Wordmark() {
   );
 }
 
-const DIGITS = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
-
-export function RollingNumber({ value, className = "" }: { value: string; className?: string }) {
-  const chars = value.split("");
-  return (
-    <span className={`tabular inline-flex overflow-hidden leading-none ${className}`} aria-label={value}>
-      {chars.map((c, i) => {
-        const key = chars.length - i;
-        if (!/\d/.test(c))
-          return (
-            <span key={key} className="inline-block h-[1em] leading-none">
-              {c}
-            </span>
-          );
-        return (
-          <span key={key} className="relative inline-block h-[1em] overflow-hidden leading-none">
-            <span
-              className="flex flex-col transition-transform duration-300 ease-out"
-              style={{ transform: `translateY(-${Number(c) * 10}%)` }}
-            >
-              {DIGITS.map((d) => (
-                <span key={d} className="block h-[1em] leading-none">
-                  {d}
-                </span>
-              ))}
-            </span>
-          </span>
-        );
-      })}
-    </span>
-  );
-}
-
 export function LiqBar({ health }: { health: number }) {
   const danger = health < 0.25;
   return (
