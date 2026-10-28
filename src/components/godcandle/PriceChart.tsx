@@ -5,19 +5,19 @@ import { fmtUsd, distanceToLiquidation, liquidation, type Position } from "@/lib
 import { Button } from "@/components/ui/button";
 import { getMarket, type MarketSymbol } from "@/config/markets";
 
-const WINDOW_MS = 30000;
 const AXIS_W = 84;
 const TIME_H = 28;
 
 interface Props {
   market: MarketSymbol;
+  windowMs: number;
   position: Position | null;
   pnlLabel: string;
   pnlPositive: boolean;
   onClose: () => void;
 }
 
-export function PriceChart({ market, position, pnlLabel, pnlPositive, onClose }: Props) {
+export function PriceChart({ market, windowMs, position, pnlLabel, pnlPositive, onClose }: Props) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const pillRef = useRef<HTMLButtonElement>(null);
@@ -96,9 +96,9 @@ export function PriceChart({ market, position, pnlLabel, pnlPositive, onClose }:
       const plotW = W - AXIS_W;
       const plotH = H - TIME_H;
       const headX = plotW * 0.78;
-      const xOf = (t: number) => headX - ((now - t) / WINDOW_MS) * headX;
+      const xOf = (t: number) => headX - ((now - t) / windowMs) * headX;
 
-      const vis = ticks.filter((k) => k.t > now - WINDOW_MS - 1000);
+      const vis = ticks.filter((k) => k.t > now - windowMs - 1000);
       let mn = Infinity,
         mx = -Infinity;
       for (const k of vis) {
@@ -146,10 +146,11 @@ export function PriceChart({ market, position, pnlLabel, pnlPositive, onClose }:
         ctx.stroke();
         if (y > 10 && y < plotH - 6) ctx.fillText("$" + fmtUsd(p, decimals), plotW + 12, y);
       }
-      // time grid every 5s
-      const first = Math.ceil((now - WINDOW_MS * 1.3) / 5000) * 5000;
+      // time grid: 5s steps on short windows, ~6 labels on longer ones
+      const labelStep = windowMs <= 60000 ? 5000 : windowMs / 6;
+      const first = Math.ceil((now - windowMs * 1.3) / labelStep) * labelStep;
       ctx.textBaseline = "alphabetic";
-      for (let t = first; t <= now + WINDOW_MS; t += 5000) {
+      for (let t = first; t <= now + windowMs; t += labelStep) {
         const x = Math.round(xOf(t)) + 0.5;
         if (x < 0 || x > plotW) continue;
         ctx.beginPath();
@@ -157,7 +158,7 @@ export function PriceChart({ market, position, pnlLabel, pnlPositive, onClose }:
         ctx.lineTo(x, plotH);
         ctx.stroke();
         const d = new Date(t);
-        const lbl = d.toTimeString().slice(0, 8);
+        const lbl = windowMs <= 300000 ? d.toTimeString().slice(0, 8) : `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
         ctx.fillText(lbl, x - ctx.measureText(lbl).width / 2, H - 9);
       }
       ctx.beginPath();
@@ -280,7 +281,7 @@ export function PriceChart({ market, position, pnlLabel, pnlPositive, onClose }:
       cancelAnimationFrame(raf);
       ro.disconnect();
     };
-  }, [market]);
+  }, [market, windowMs]);
 
   return (
     <div ref={wrapRef} key={market} className="chart-enter relative h-full w-full">

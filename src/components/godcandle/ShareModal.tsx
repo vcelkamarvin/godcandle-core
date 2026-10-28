@@ -93,7 +93,10 @@ export function ShareModal({ trade, onOpenChange }: { trade: ClosedTrade | null;
           <p className={`text-sm font-medium ${trade.side === "long" ? "text-gain" : "text-loss"}`}>
             {trade.side.toUpperCase()} {trade.leverage}x
           </p>
-          <p className={`tabular tight mt-2 text-5xl font-medium ${up ? "text-gain" : "text-loss"}`}>{pctStr}</p>
+          <p className="mt-2 flex items-center gap-3">
+            <MarketLogo symbol={trade.market} />
+            <span className={`tabular tight text-5xl font-medium ${up ? "text-gain" : "text-loss"}`}>{pctStr}</span>
+          </p>
           {!hide && (
             <p className={`tabular mt-1 text-lg font-medium ${up ? "text-gain" : "text-loss"}`}>{fmtSigned(trade.pnl)}</p>
           )}

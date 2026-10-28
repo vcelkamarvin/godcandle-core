@@ -1,19 +1,13 @@
-export function CandleGlyph({ className = "" }: { className?: string }) {
+export function Wordmark({ className = "" }: { className?: string }) {
   return (
-    <svg viewBox="0 0 12 20" className={className} aria-hidden>
-      <rect x="5.25" y="0" width="1.5" height="20" rx="0.75" fill="currentColor" />
-      <rect x="1.5" y="4.5" width="9" height="11" rx="2" fill="currentColor" />
-    </svg>
+    <span className={`inline-flex items-center text-foreground ${className}`}>
+      <span className="tight text-[22px] font-semibold leading-none tracking-tight">godcandle</span>
+    </span>
   );
 }
 
-export function Wordmark() {
-  return (
-    <span className="inline-flex items-center gap-2 text-foreground">
-      <CandleGlyph className="h-5 w-3" />
-      <span className="tight text-[22px] font-medium leading-none">godcandle</span>
-    </span>
-  );
+export function GradientPanel({ className = "" }: { className?: string }) {
+  return <div className={`art-gradient grain relative overflow-hidden ${className}`} />;
 }
 
 export function LiqBar({ health }: { health: number }) {
