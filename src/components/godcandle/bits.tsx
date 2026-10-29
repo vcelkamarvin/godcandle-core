@@ -6,8 +6,8 @@ export function Wordmark({ className = "" }: { className?: string }) {
   );
 }
 
-export function GradientPanel({ className = "" }: { className?: string }) {
-  return <div className={`art-gradient grain relative overflow-hidden ${className}`} />;
+export function GradientPanel({ className = "", children }: { className?: string; children?: import("react").ReactNode }) {
+  return <div className={`art-gradient grain relative overflow-hidden ${className}`}>{children}</div>;
 }
 
 export function LiqBar({ health }: { health: number }) {
