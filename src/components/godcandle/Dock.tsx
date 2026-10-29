@@ -84,10 +84,10 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
                       <span className="font-medium">{pos.market}</span>
                       <SideBadge side={pos.side} />
                       <span className="pill tabular h-6 border border-foreground px-2.5 text-[11px]">{pos.leverage}x</span>
-                      <span className={`tabular ml-auto font-medium ${pnl >= 0 ? "text-gain" : "text-loss"}`}>
-                        {fmtSigned(pnl)}
-                      </span>
                     </Button>
+                    <p className="mt-5 text-xs text-muted-foreground">Current profit / loss</p>
+                    <p className={`tabular mt-2 text-4xl font-semibold ${pnl >= 0 ? "text-gain" : "text-loss"}`}>{fmtSigned(pnl)}</p>
+                    <p className={`tabular mt-1 text-sm ${pnl >= 0 ? "text-gain" : "text-loss"}`}>{(pnl / pos.stake * 100).toFixed(2)}% <span className="text-muted-foreground">· ${fmtUsd(pos.stake)} margin</span></p>
                     <div className="tabular mt-4 grid grid-cols-3 gap-2 text-xs">
                       <div>
                         <p className="text-muted-foreground">Entry</p>
