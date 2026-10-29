@@ -42,13 +42,13 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
   const worst = history.length ? Math.min(...history.map((h) => h.pnl)) : 0;
 
   const tabs = [
-    ["open", `Open (${open.length})`],
+    ["open", `Positions (${open.length})`],
     ["history", `History (${history.length})`],
     ["stats", "Stats"],
   ] as const;
 
   return (
-    <div className="p-6">
+    <div className="py-5">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex h-10 items-center rounded-full border border-hairline p-1">
           {tabs.map(([id, label]) => (

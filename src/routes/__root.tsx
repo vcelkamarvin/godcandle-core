@@ -12,6 +12,9 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { TradingProvider, useTrading } from "@/components/godcandle/TradingProvider";
+import { Header } from "@/components/godcandle/Header";
+import { Toaster } from "sonner";
 
 function NotFoundComponent() {
   return (
@@ -126,8 +129,12 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <TradingProvider><TradingShell /></TradingProvider>
     </QueryClientProvider>
   );
+}
+
+function TradingShell() {
+  const { balance } = useTrading();
+  return <div className="mx-auto min-h-screen max-w-[1800px] bg-background"><Header balance={balance}/><Outlet/><Toaster position="top-center"/></div>;
 }
