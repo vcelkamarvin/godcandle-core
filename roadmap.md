@@ -4,3 +4,9 @@
 - [x] Chart, position panel, dock and share market consistency
 - [x] Hidden dev drawer and mobile polish
 - [x] Verify trade flow and responsive display
+
+# New trading design
+- [ ] Match supplied white trading design and remove demo labels and TP/SL
+- [ ] Add custom margin window and larger position/P&L cards
+- [ ] Add Portfolio and Analytics with shared session trades
+- [ ] Verify navigation, custom margin and open/close flow

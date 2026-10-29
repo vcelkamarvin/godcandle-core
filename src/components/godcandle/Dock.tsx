@@ -42,13 +42,13 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
   const worst = history.length ? Math.min(...history.map((h) => h.pnl)) : 0;
 
   const tabs = [
-    ["open", `Open (${open.length})`],
+    ["open", `Positions (${open.length})`],
     ["history", `History (${history.length})`],
     ["stats", "Stats"],
   ] as const;
 
   return (
-    <div className="p-6">
+    <div className="py-5">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex h-10 items-center rounded-full border border-hairline p-1">
           {tabs.map(([id, label]) => (
@@ -84,10 +84,10 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
                       <span className="font-medium">{pos.market}</span>
                       <SideBadge side={pos.side} />
                       <span className="pill tabular h-6 border border-foreground px-2.5 text-[11px]">{pos.leverage}x</span>
-                      <span className={`tabular ml-auto font-medium ${pnl >= 0 ? "text-gain" : "text-loss"}`}>
-                        {fmtSigned(pnl)}
-                      </span>
                     </Button>
+                    <p className="mt-5 text-xs text-muted-foreground">Current profit / loss</p>
+                    <p className={`tabular mt-2 text-4xl font-semibold ${pnl >= 0 ? "text-gain" : "text-loss"}`}>{fmtSigned(pnl)}</p>
+                    <p className={`tabular mt-1 text-sm ${pnl >= 0 ? "text-gain" : "text-loss"}`}>{(pnl / pos.stake * 100).toFixed(2)}% <span className="text-muted-foreground">· ${fmtUsd(pos.stake)} margin</span></p>
                     <div className="tabular mt-4 grid grid-cols-3 gap-2 text-xs">
                       <div>
                         <p className="text-muted-foreground">Entry</p>
