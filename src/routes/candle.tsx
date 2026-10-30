@@ -1,0 +1,4 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { StakingView } from "@/components/godcandle/StakingView";
+export const Route=createFileRoute("/candle")({head:()=>({meta:[{title:"godcandle — CANDLE"},{name:"description",content:"CANDLE rewards, token supply, staking revenue and distributions."},{property:"og:title",content:"godcandle — CANDLE"},{property:"og:description",content:"Explore CANDLE token rewards and staking activity."},{property:"og:type",content:"website"},{name:"twitter:card",content:"summary_large_image"}]}),component:Candle});
+function Candle(){return <StakingView full/>;}
