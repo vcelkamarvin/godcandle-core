@@ -10,3 +10,9 @@
 - [ ] Add custom margin window and larger position/P&L cards
 - [ ] Add Portfolio and Analytics with shared session trades
 - [ ] Verify navigation, custom margin and open/close flow
+
+# October 30 reference designs
+- [ ] Match typography, shell and Trade with market picker
+- [ ] Match Analytics and Portfolio, deposit and withdrawal windows
+- [ ] Add Leaderboard, Staking and CANDLE views
+- [ ] Verify all pages and trading flow

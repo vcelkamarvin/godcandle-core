@@ -11,7 +11,10 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AnalyticsRouteImport } from './routes/analytics'
+import { Route as CandleRouteImport } from './routes/candle'
+import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
+import { Route as StakingRouteImport } from './routes/staking'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -23,40 +26,76 @@ const AnalyticsRoute = AnalyticsRouteImport.update({
   path: '/analytics',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CandleRoute = CandleRouteImport.update({
+  id: '/candle',
+  path: '/candle',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LeaderboardRoute = LeaderboardRouteImport.update({
+  id: '/leaderboard',
+  path: '/leaderboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PortfolioRoute = PortfolioRouteImport.update({
   id: '/portfolio',
   path: '/portfolio',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StakingRoute = StakingRouteImport.update({
+  id: '/staking',
+  path: '/staking',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/analytics': typeof AnalyticsRoute
+  '/candle': typeof CandleRoute
+  '/leaderboard': typeof LeaderboardRoute
   '/portfolio': typeof PortfolioRoute
+  '/staking': typeof StakingRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/analytics': typeof AnalyticsRoute
+  '/candle': typeof CandleRoute
+  '/leaderboard': typeof LeaderboardRoute
   '/portfolio': typeof PortfolioRoute
+  '/staking': typeof StakingRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/analytics': typeof AnalyticsRoute
+  '/candle': typeof CandleRoute
+  '/leaderboard': typeof LeaderboardRoute
   '/portfolio': typeof PortfolioRoute
+  '/staking': typeof StakingRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/analytics' | '/portfolio'
+  fullPaths:
+    '/' | '/analytics' | '/candle' | '/leaderboard' | '/portfolio' | '/staking'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/analytics' | '/portfolio'
-  id: '__root__' | '/' | '/analytics' | '/portfolio'
+  to:
+    '/' | '/analytics' | '/candle' | '/leaderboard' | '/portfolio' | '/staking'
+  id:
+    | '__root__'
+    | '/'
+    | '/analytics'
+    | '/candle'
+    | '/leaderboard'
+    | '/portfolio'
+    | '/staking'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AnalyticsRoute: typeof AnalyticsRoute
+  CandleRoute: typeof CandleRoute
+  LeaderboardRoute: typeof LeaderboardRoute
   PortfolioRoute: typeof PortfolioRoute
+  StakingRoute: typeof StakingRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -75,11 +114,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AnalyticsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/candle': {
+      id: '/candle'
+      path: '/candle'
+      fullPath: '/candle'
+      preLoaderRoute: typeof CandleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/leaderboard': {
+      id: '/leaderboard'
+      path: '/leaderboard'
+      fullPath: '/leaderboard'
+      preLoaderRoute: typeof LeaderboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/portfolio': {
       id: '/portfolio'
       path: '/portfolio'
       fullPath: '/portfolio'
       preLoaderRoute: typeof PortfolioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/staking': {
+      id: '/staking'
+      path: '/staking'
+      fullPath: '/staking'
+      preLoaderRoute: typeof StakingRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -88,7 +148,10 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AnalyticsRoute: AnalyticsRoute,
+  CandleRoute: CandleRoute,
+  LeaderboardRoute: LeaderboardRoute,
   PortfolioRoute: PortfolioRoute,
+  StakingRoute: StakingRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

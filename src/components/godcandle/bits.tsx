@@ -1,7 +1,7 @@
 export function Wordmark({ className = "" }: { className?: string }) {
   return (
     <span className={`inline-flex items-center text-foreground ${className}`}>
-      <span className="tight text-[22px] font-semibold leading-none tracking-tight">godcandle</span>
+      <span className="tight text-[26px] font-normal leading-none">godcandle</span>
     </span>
   );
 }
