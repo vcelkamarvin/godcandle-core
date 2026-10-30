@@ -27,30 +27,33 @@ export function LivePriceHeader({
   const isPositive = change24h >= 0;
 
   return (
-    <div className="bg-surface border border-border p-4 font-mono text-xs">
+    <div className="relative overflow-hidden rounded-2xl border border-border bg-white p-5 font-mono text-xs shadow-sm">
+      {/* Subtle iridescent top highlight */}
+      <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-[#CDC3F0] via-[#FFDAC8] to-[#A0D4CA] opacity-80" />
+
       <div className="flex flex-wrap items-center justify-between gap-4">
         {/* Market & Price Display */}
         <div className="flex items-center gap-4">
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-bold text-base text-accent">{symbol}</span>
-              <span className="px-1.5 py-0.5 text-[10px] bg-surface-elevated border border-border text-subtle rounded">
+              <span className="text-lg font-bold text-foreground">{symbol}</span>
+              <span className="rounded-full border border-border bg-[#F6F6F4] px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
                 PERP
               </span>
-              <span className="px-1.5 py-0.5 text-[10px] bg-surface-elevated border border-border text-accent font-semibold rounded">
+              <span className="rounded-full border border-border bg-gradient-to-r from-[#CDC3F0]/30 to-[#FFDAC8]/30 px-2 py-0.5 text-[10px] font-semibold text-foreground">
                 1000× MAX
               </span>
             </div>
-            <div className="flex items-baseline gap-2.5 mt-1">
-              <span className="text-2xl font-bold tabular text-accent">
+            <div className="mt-1 flex items-baseline gap-2.5">
+              <span className="tabular text-3xl font-bold tracking-tight text-foreground">
                 ${price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>
               <span
-                className={`text-xs font-semibold flex items-center gap-0.5 ${
-                  isPositive ? 'text-bull' : 'text-bear'
+                className={`flex items-center gap-0.5 rounded-full px-2 py-0.5 text-xs font-semibold ${
+                  isPositive ? 'bg-[#E3F8EC] text-[#06964A]' : 'bg-[#FFECEA] text-[#FF3B30]'
                 }`}
               >
-                {isPositive ? <ArrowUpRight className="w-3.5 h-3.5" /> : <ArrowDownRight className="w-3.5 h-3.5" />}
+                {isPositive ? <ArrowUpRight className="h-3.5 w-3.5" /> : <ArrowDownRight className="h-3.5 w-3.5" />}
                 {isPositive ? '+' : ''}
                 {change24h.toFixed(2)}%
               </span>
@@ -59,46 +62,46 @@ export function LivePriceHeader({
         </div>
 
         {/* Hyperliquid L1 Precompile Indicators */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-[11px]">
-          <div className="px-3 py-1.5 bg-background border border-border rounded">
-            <span className="text-subtle text-[9px] block">BBO MID (0x080e)</span>
-            <span className="text-accent font-semibold tabular">
+        <div className="grid grid-cols-2 gap-2 text-[11px] sm:grid-cols-4 sm:gap-3">
+          <div className="rounded-xl border border-border bg-[#F6F6F4] px-3 py-2">
+            <span className="block text-[9px] font-medium text-muted-foreground">BBO MID (0x080e)</span>
+            <span className="tabular font-semibold text-foreground">
               ${mid.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </span>
           </div>
 
-          <div className="px-3 py-1.5 bg-background border border-border rounded">
-            <span className="text-subtle text-[9px] block">MARK PX (0x0806)</span>
-            <span className="text-accent font-semibold tabular">
+          <div className="rounded-xl border border-border bg-[#F6F6F4] px-3 py-2">
+            <span className="block text-[9px] font-medium text-muted-foreground">MARK PX (0x0806)</span>
+            <span className="tabular font-semibold text-foreground">
               ${markPx.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </span>
           </div>
 
-          <div className="px-3 py-1.5 bg-background border border-border rounded">
-            <span className="text-subtle text-[9px] block">EXECUTION PRICE</span>
-            <span className="text-bull font-semibold tabular">
+          <div className="rounded-xl border border-border bg-[#F6F6F4] px-3 py-2">
+            <span className="block text-[9px] font-medium text-muted-foreground">EXECUTION PRICE</span>
+            <span className="tabular font-semibold text-[#06964A]">
               ${execPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </span>
           </div>
 
           <div
-            className={`px-3 py-1.5 border rounded flex flex-col justify-center ${
+            className={`flex flex-col justify-center rounded-xl border px-3 py-2 ${
               isClamped
-                ? 'bg-bear/10 border-bear text-bear'
-                : 'bg-bull/10 border-bull text-bull'
+                ? 'border-[#FF3B30]/30 bg-[#FFECEA] text-[#FF3B30]'
+                : 'border-[#06964A]/30 bg-[#E3F8EC] text-[#06964A]'
             }`}
           >
             <div className="flex items-center gap-1">
               {isClamped ? (
-                <AlertCircle className="w-3 h-3 text-bear" />
+                <AlertCircle className="h-3 w-3 text-[#FF3B30]" />
               ) : (
-                <ShieldCheck className="w-3 h-3 text-bull" />
+                <ShieldCheck className="h-3 w-3 text-[#06964A]" />
               )}
               <span className="text-[9px] font-bold">
                 {isClamped ? 'CLAMPED' : 'UNCLAMPED'}
               </span>
             </div>
-            <span className="text-[9px] opacity-80 tabular">
+            <span className="tabular text-[9px] opacity-80">
               ±{corridorBps} bps corridor ({deviationBps.toFixed(2)} bps)
             </span>
           </div>

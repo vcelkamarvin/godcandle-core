@@ -57,47 +57,49 @@
 
 :root {
   --radius: 20px;
-  --background: #080808;
-  --foreground: #f5f5f5;
-  --surface: #111111;
-  --surface-elevated: #181818;
-  --card: #111111;
-  --card-foreground: #f5f5f5;
-  --popover: #111111;
-  --popover-foreground: #f5f5f5;
-  --primary: #f5f5f5;
-  --primary-foreground: #080808;
-  --secondary: #181818;
-  --secondary-foreground: #f5f5f5;
-  --muted: #181818;
-  --muted-foreground: #888888;
-  --accent: #f5f5f5;
-  --accent-foreground: #080808;
-  --destructive: #ff1744;
-  --destructive-foreground: #f5f5f5;
-  --border: #222222;
-  --border-active: #333333;
-  --input: #222222;
-  --ring: #f5f5f5;
-  --bull: #00e676;
-  --bear: #ff1744;
-  --subtle: #888888;
-  --gain: #00e676;
-  --loss: #ff1744;
-  --trade-gain: #00e676;
-  --chart-lavender: #cecae9;
-  --chart-peach: #efd0c5;
-  --chart-sage: #8fb0ab;
-  --chart-yellow: #ffd60a;
-  --overlay: oklch(0.15 0 0 / 0.4);
-  --reward-gradient: linear-gradient(175deg, #181818, #111111 50%, #080808);
-  --gain-soft: rgba(0, 230, 118, 0.15);
-  --loss-soft: rgba(255, 23, 68, 0.15);
-  --chart-1: #00e676;
-  --chart-2: #888888;
-  --chart-3: #00e676;
-  --chart-4: #ff1744;
-  --chart-5: #f5f5f5;
+  --background: #F6F6F4;
+  --foreground: #0A0A0A;
+  --surface: #FFFFFF;
+  --surface-elevated: #F0F0EE;
+  --card: #FFFFFF;
+  --card-foreground: #0A0A0A;
+  --popover: #FFFFFF;
+  --popover-foreground: #0A0A0A;
+  --primary: #0A0A0A;
+  --primary-foreground: #FFFFFF;
+  --secondary: #F0F0EE;
+  --secondary-foreground: #0A0A0A;
+  --muted: #F0F0EE;
+  --muted-foreground: #8A8A86;
+  --accent: #0A0A0A;
+  --accent-foreground: #FFFFFF;
+  --destructive: #FF3B30;
+  --destructive-foreground: #FFFFFF;
+  --border: #E6E6E3;
+  --border-active: #D2D2CE;
+  --input: #E6E6E3;
+  --ring: #0A0A0A;
+  --bull: #00D964;
+  --bear: #FF3B30;
+  --subtle: #8A8A86;
+  --gain: #06964A;
+  --loss: #FF3B30;
+  --trade-gain: #00D964;
+  --chart-lavender: #CBCBE8;
+  --chart-peach: #EBD0C6;
+  --chart-sage: #8FB0AB;
+  --chart-yellow: #FFD60A;
+  --overlay: rgba(10, 10, 10, 0.4);
+  --reward-gradient: linear-gradient(135deg, #CBCBE8 0%, #EBD0C6 50%, #8FB0AB 100%);
+  --rainbow-gradient: linear-gradient(135deg, #CDC3F0 0%, #FFDAC8 55%, #A0D4CA 100%);
+  --rainbow-glow: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(205, 195, 240, 0.45) 0%, rgba(255, 218, 200, 0.3) 45%, rgba(160, 212, 202, 0.25) 75%, transparent 100%);
+  --gain-soft: #E3F8EC;
+  --loss-soft: #FFECEA;
+  --chart-1: #0A0A0A;
+  --chart-2: #8A8A86;
+  --chart-3: #00D964;
+  --chart-4: #FF3B30;
+  --chart-5: #CBCBE8;
 }
 
 @layer base {
@@ -195,10 +197,19 @@
 }
 @utility art-gradient {
   background:
-    radial-gradient(90% 70% at 18% 10%, oklch(0.92 0.07 155) 0%, transparent 58%),
-    radial-gradient(80% 60% at 84% 16%, oklch(0.95 0.1 105) 0%, transparent 60%),
-    radial-gradient(110% 85% at 55% 105%, oklch(0.87 0.08 130) 0%, transparent 68%),
-    linear-gradient(165deg, oklch(0.965 0.03 115) 0%, oklch(0.93 0.05 145) 100%);
+    radial-gradient(90% 70% at 18% 10%, rgba(205, 195, 240, 0.75) 0%, transparent 60%),
+    radial-gradient(80% 60% at 84% 16%, rgba(255, 218, 200, 0.8) 0%, transparent 62%),
+    radial-gradient(110% 85% at 55% 105%, rgba(160, 212, 202, 0.7) 0%, transparent 70%),
+    linear-gradient(165deg, #CBCBE8 0%, #EBD0C6 50%, #8FB0AB 100%);
+}
+@utility rainbow-aura {
+  background: radial-gradient(ellipse 85% 50% at 50% -10%, rgba(205, 195, 240, 0.45) 0%, rgba(255, 218, 200, 0.3) 45%, rgba(160, 212, 202, 0.22) 75%, transparent 100%);
+}
+@utility rainbow-bar {
+  background: linear-gradient(90deg, #CDC3F0 0%, #FFDAC8 50%, #A0D4CA 100%);
+}
+@utility rainbow-card-sheen {
+  background: linear-gradient(180deg, rgba(203, 203, 232, 0.35) 0%, rgba(235, 208, 198, 0.15) 60%, transparent 100%);
 }
 @utility grain {
   &::after {

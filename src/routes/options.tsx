@@ -32,15 +32,15 @@ function OptionsPage() {
       />
 
       {/* Market Selector */}
-      <div className="flex space-x-2 bg-surface p-2 border border-border">
+      <div className="flex space-x-2 bg-white p-2.5 rounded-2xl border border-border shadow-sm overflow-x-auto">
         {MARKETS.map((m) => (
           <button
             key={m.symbol}
             onClick={() => setSelectedMarket(m)}
-            className={`px-3 py-1.5 border transition-all ${
+            className={`pill h-8 px-4 text-xs transition-all ${
               selectedMarket.symbol === m.symbol
-                ? 'border-accent bg-surface-elevated text-accent font-bold'
-                : 'border-border text-subtle hover:text-accent'
+                ? 'pill-ink font-bold shadow-sm'
+                : 'border border-border bg-[#F6F6F4] text-muted-foreground hover:text-foreground hover:bg-[#F0F0EE]'
             }`}
           >
             {m.symbol}

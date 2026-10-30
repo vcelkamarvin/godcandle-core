@@ -17,11 +17,11 @@ export function LeverageSlider({
 
   return (
     <div className="space-y-3 font-mono text-xs">
-      <div className="flex items-center justify-between text-subtle">
-        <span className="tracking-wider">DISCRETE LEVERAGE</span>
+      <div className="flex items-center justify-between text-muted-foreground">
+        <span className="tracking-wider text-[11px]">DISCRETE LEVERAGE</span>
         <div className="flex items-baseline gap-1">
-          <span className="text-lg font-bold text-accent tabular">{value}×</span>
-          <span className="text-[10px] text-subtle">/ {maxLeverage}×</span>
+          <span className="text-xl font-bold text-foreground tabular">{value}×</span>
+          <span className="text-[10px] text-muted-foreground">/ {maxLeverage}×</span>
         </div>
       </div>
 
@@ -32,10 +32,10 @@ export function LeverageSlider({
             key={preset}
             type="button"
             onClick={() => onChange(preset)}
-            className={`py-1 text-center text-[11px] border transition-all ${
+            className={`pill h-7 text-center text-[11px] transition-all ${
               value === preset
-                ? 'border-accent bg-surface-elevated text-accent font-bold shadow-sm'
-                : 'border-border text-subtle hover:text-accent hover:border-border-active'
+                ? 'pill-ink font-bold shadow-sm'
+                : 'border border-border bg-[#F6F6F4] text-muted-foreground hover:text-foreground hover:bg-[#F0F0EE]'
             }`}
           >
             {preset}×
@@ -52,9 +52,9 @@ export function LeverageSlider({
           step="1"
           value={value}
           onChange={(e) => onChange(Number(e.target.value))}
-          className="w-full accent-accent bg-border h-1.5 appearance-none cursor-pointer rounded-none"
+          className="w-full accent-foreground bg-[#E6E6E3] h-1.5 appearance-none cursor-pointer rounded-full"
         />
-        <div className="flex justify-between text-[10px] text-subtle pt-1 font-mono">
+        <div className="flex justify-between text-[10px] text-muted-foreground pt-1 font-mono">
           <span>1×</span>
           <span>100×</span>
           <span>250×</span>

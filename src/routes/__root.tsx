@@ -114,11 +114,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en">
       <head>
         <HeadContent />
       </head>
-      <body className="bg-background text-accent min-h-screen">
+      <body className="bg-background text-foreground min-h-screen antialiased">
         {children}
         <Scripts />
       </body>
@@ -142,7 +142,9 @@ function RootComponent() {
 
 function TradingShell() {
   return (
-    <div className="mx-auto min-h-screen max-w-[1800px] bg-background flex flex-col justify-between">
+    <div className="relative mx-auto min-h-screen max-w-[1800px] bg-background text-foreground flex flex-col justify-between overflow-x-hidden">
+      {/* Subtle holographic rainbow atmospheric aura across all pages */}
+      <div className="pointer-events-none fixed inset-x-0 top-0 h-[480px] rainbow-aura -z-10 opacity-90" />
       <div>
         <Header />
         <Outlet />

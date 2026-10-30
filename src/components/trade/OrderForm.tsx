@@ -41,7 +41,7 @@ export function OrderForm({ currentPrice, leverage, onTrade }: OrderFormProps) {
     <div className="space-y-4 font-mono text-xs">
       {/* Margin Chip Picker */}
       <div>
-        <div className="flex justify-between text-subtle mb-1.5">
+        <div className="flex justify-between text-muted-foreground mb-1.5 text-[11px]">
           <span>ISOLATED MARGIN (USDC)</span>
           <span>AVAILABLE: $1,000.00</span>
         </div>
@@ -51,10 +51,10 @@ export function OrderForm({ currentPrice, leverage, onTrade }: OrderFormProps) {
               key={chip}
               type="button"
               onClick={() => setMargin(chip)}
-              className={`py-1.5 border text-center transition-all ${
+              className={`pill h-8 text-xs transition-all ${
                 margin === chip
-                  ? 'border-accent bg-surface-elevated text-accent font-bold'
-                  : 'border-border text-subtle hover:text-accent hover:border-border-active'
+                  ? 'pill-ink font-bold shadow-sm'
+                  : 'border border-border bg-[#F6F6F4] text-muted-foreground hover:text-foreground hover:bg-[#F0F0EE]'
               }`}
             >
               ${chip}
@@ -64,41 +64,41 @@ export function OrderForm({ currentPrice, leverage, onTrade }: OrderFormProps) {
       </div>
 
       {/* Position Metrics Box */}
-      <div className="bg-background border border-border p-3 space-y-2 text-[11px]">
-        <div className="flex justify-between items-center text-subtle">
+      <div className="bg-[#F6F6F4] border border-border rounded-xl p-3.5 space-y-2 text-[11px]">
+        <div className="flex justify-between items-center text-muted-foreground">
           <span>POSITION NOTIONAL</span>
-          <span className="text-accent font-bold tabular">${notional.toLocaleString()}</span>
+          <span className="text-foreground font-bold tabular">${notional.toLocaleString()}</span>
         </div>
 
-        <div className="flex justify-between items-center text-subtle">
+        <div className="flex justify-between items-center text-muted-foreground">
           <span>EST. BUST DISTANCE</span>
-          <span className="text-bear font-semibold tabular">
+          <span className="text-[#FF3B30] font-semibold tabular">
             -{bustDistancePct.toFixed(3)}% ({bustDistanceBps.toFixed(1)} bps)
           </span>
         </div>
 
-        <div className="flex justify-between items-center text-subtle">
+        <div className="flex justify-between items-center text-muted-foreground">
           <span>LONG BUST PRICE</span>
-          <span className="text-bear tabular">
+          <span className="text-[#FF3B30] tabular">
             ${longBustPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </span>
         </div>
 
-        <div className="flex justify-between items-center text-subtle">
+        <div className="flex justify-between items-center text-muted-foreground">
           <span>SHORT BUST PRICE</span>
-          <span className="text-bear tabular">
+          <span className="text-[#FF3B30] tabular">
             ${shortBustPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </span>
         </div>
 
-        <div className="border-t border-border pt-2 flex justify-between items-center text-subtle text-[10px]">
+        <div className="border-t border-border pt-2 flex justify-between items-center text-muted-foreground text-[10px]">
           <span>PROTOCOL FEES</span>
-          <span className="text-bull">0% Entry · 2% Net Win Fee</span>
+          <span className="text-[#06964A] font-semibold">0% Entry · 2% Net Win Fee</span>
         </div>
 
-        <div className="flex justify-between items-center text-subtle text-[10px]">
+        <div className="flex justify-between items-center text-muted-foreground text-[10px]">
           <span>SETTLEMENT MODEL</span>
-          <span className="text-accent">Atomic Cash FIFO</span>
+          <span className="text-foreground font-medium">Atomic Cash FIFO</span>
         </div>
       </div>
 
@@ -108,7 +108,7 @@ export function OrderForm({ currentPrice, leverage, onTrade }: OrderFormProps) {
           type="button"
           onClick={() => handleOrder('LONG')}
           disabled={isSubmitting || numMargin <= 0}
-          className="bg-bull/10 border border-bull text-bull py-3 text-center font-bold tracking-wider hover:bg-bull hover:text-background transition-all flex items-center justify-center gap-1.5 disabled:opacity-50"
+          className="rounded-xl bg-[#00D964] text-white py-3.5 text-center font-bold tracking-wider hover:bg-[#06964A] transition-all flex items-center justify-center gap-1.5 disabled:opacity-50 shadow-sm"
         >
           <ArrowUp className="w-4 h-4" />
           <span>LONG {leverage}×</span>
@@ -118,7 +118,7 @@ export function OrderForm({ currentPrice, leverage, onTrade }: OrderFormProps) {
           type="button"
           onClick={() => handleOrder('SHORT')}
           disabled={isSubmitting || numMargin <= 0}
-          className="bg-bear/10 border border-bear text-bear py-3 text-center font-bold tracking-wider hover:bg-bear hover:text-background transition-all flex items-center justify-center gap-1.5 disabled:opacity-50"
+          className="rounded-xl bg-[#FF3B30] text-white py-3.5 text-center font-bold tracking-wider hover:bg-[#d62e24] transition-all flex items-center justify-center gap-1.5 disabled:opacity-50 shadow-sm"
         >
           <ArrowDown className="w-4 h-4" />
           <span>SHORT {leverage}×</span>

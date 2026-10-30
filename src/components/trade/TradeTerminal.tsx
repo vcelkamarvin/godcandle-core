@@ -38,7 +38,7 @@ export function TradeTerminal() {
   };
 
   return (
-    <div className="space-y-4 max-w-5xl mx-auto font-mono text-xs text-accent">
+    <div className="space-y-4 max-w-5xl mx-auto font-mono text-xs text-foreground">
       {/* Dynamic L1 Price Header */}
       <LivePriceHeader
         symbol={selectedMarket.symbol}
@@ -50,7 +50,9 @@ export function TradeTerminal() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
         {/* Left Column: Trade Config & Execution */}
         <div className="lg:col-span-7 space-y-4">
-          <div className="bg-surface border border-border p-6 rounded-none space-y-5">
+          <div className="relative overflow-hidden rounded-2xl border border-border bg-white p-6 shadow-sm space-y-5">
+            <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-[#CDC3F0] via-[#FFDAC8] to-[#A0D4CA] opacity-80" />
+
             {/* Market Switcher */}
             <div className="flex justify-between items-center pb-4 border-b border-border">
               <div className="flex space-x-1.5 overflow-x-auto">
@@ -62,17 +64,17 @@ export function TradeTerminal() {
                       setSelectedMarket(m);
                       if (leverage > m.maxLev) setLeverage(m.maxLev);
                     }}
-                    className={`px-3 py-1.5 border text-xs transition-all ${
+                    className={`pill h-8 px-3 text-xs transition-all ${
                       selectedMarket.symbol === m.symbol
-                        ? 'border-accent bg-surface-elevated text-accent font-semibold'
-                        : 'border-border text-subtle hover:text-accent'
+                        ? 'pill-ink font-semibold'
+                        : 'border border-border bg-[#F6F6F4] text-muted-foreground hover:text-foreground hover:bg-[#F0F0EE]'
                     }`}
                   >
                     {m.symbol}
                   </button>
                 ))}
               </div>
-              <div className="text-[10px] text-subtle uppercase tracking-wider">
+              <div className="text-[10px] text-muted-foreground uppercase tracking-wider">
                 Corridor: {selectedMarket.corridorBps} bps
               </div>
             </div>
@@ -98,72 +100,74 @@ export function TradeTerminal() {
 
         {/* Right Column: House Pool Solvency & Settlement State */}
         <div className="lg:col-span-5 space-y-4">
-          <div className="bg-surface border border-border p-5 space-y-4">
+          <div className="relative overflow-hidden rounded-2xl border border-border bg-white p-5 shadow-sm space-y-4">
+            <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-[#CBCBE8] to-[#EBD0C6] opacity-70" />
+
             <div className="flex items-center justify-between pb-3 border-b border-border">
-              <span className="font-bold tracking-wider flex items-center gap-1.5">
-                <Database className="w-3.5 h-3.5 text-bull" />
+              <span className="font-bold tracking-wider flex items-center gap-1.5 text-foreground">
+                <Database className="w-3.5 h-3.5 text-[#06964A]" />
                 HOUSE POOL SOLVENCY
               </span>
-              <span className="px-1.5 py-0.5 text-[9px] bg-bull/10 border border-bull text-bull rounded font-bold">
+              <span className="px-2 py-0.5 text-[9px] bg-[#E3F8EC] border border-[#06964A]/30 text-[#06964A] rounded-full font-bold">
                 100% SOLVENT
               </span>
             </div>
 
             <div className="space-y-3 text-[11px]">
-              <div className="flex justify-between text-subtle">
+              <div className="flex justify-between text-muted-foreground">
                 <span>TOTAL LIQUID RESERVES</span>
-                <span className="text-accent font-bold tabular">$14,850,240 USDC</span>
+                <span className="text-foreground font-bold tabular">$14,850,240 USDC</span>
               </div>
-              <div className="flex justify-between text-subtle">
+              <div className="flex justify-between text-muted-foreground">
                 <span>FIFO PAYOUT QUEUE DEPTH</span>
-                <span className="text-bull font-bold tabular">$0.00 (Zero Backlog)</span>
+                <span className="text-[#06964A] font-bold tabular">$0.00 (Zero Backlog)</span>
               </div>
-              <div className="flex justify-between text-subtle">
+              <div className="flex justify-between text-muted-foreground">
                 <span>NET OPEN INTEREST</span>
-                <span className="text-accent tabular">$3,240,100 (Bound: $44.5M)</span>
+                <span className="text-foreground tabular">$3,240,100 (Bound: $44.5M)</span>
               </div>
-              <div className="flex justify-between text-subtle">
+              <div className="flex justify-between text-muted-foreground">
                 <span>MAX NOTIONAL PER POSITION</span>
-                <span className="text-accent tabular">$10,000,000</span>
+                <span className="text-foreground tabular">$10,000,000</span>
               </div>
             </div>
 
-            <div className="p-3 bg-background border border-border text-[10px] text-subtle space-y-1.5">
-              <div className="flex items-center gap-1.5 text-accent font-semibold">
-                <Shield className="w-3.5 h-3.5 text-bull" />
+            <div className="p-3 bg-[#F6F6F4] border border-border rounded-xl text-[10px] text-muted-foreground space-y-1.5">
+              <div className="flex items-center gap-1.5 text-foreground font-semibold">
+                <Shield className="w-3.5 h-3.5 text-[#06964A]" />
                 Pure FIFO Guarantee
               </div>
-              <p>
+              <p className="leading-relaxed">
                 100% of collateral is returned immediately in the execution block. Winning profits are paid atomically from liquid reserves. Outlier profits are prioritized ahead of all protocol fees.
               </p>
             </div>
           </div>
 
-          <div className="bg-surface border border-border p-5 space-y-3">
+          <div className="relative overflow-hidden rounded-2xl border border-border bg-white p-5 shadow-sm space-y-3">
             <div className="flex items-center justify-between pb-2 border-b border-border">
-              <span className="font-bold tracking-wider flex items-center gap-1.5">
-                <Layers className="w-3.5 h-3.5 text-bull" />
+              <span className="font-bold tracking-wider flex items-center gap-1.5 text-foreground">
+                <Layers className="w-3.5 h-3.5 text-[#06964A]" />
                 CASHFLOW WATERFALL
               </span>
-              <span className="text-[10px] text-subtle">DETERMINISTIC</span>
+              <span className="text-[10px] text-muted-foreground">DETERMINISTIC</span>
             </div>
 
             <div className="space-y-2 text-[11px]">
               <div className="flex justify-between">
-                <span className="text-subtle">Staking USDC Yield (Real-Time)</span>
-                <span className="text-accent font-semibold">30%</span>
+                <span className="text-muted-foreground">Staking USDC Yield (Real-Time)</span>
+                <span className="text-foreground font-semibold">30%</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-subtle">TWAP Buyback & Burn (Hourly)</span>
-                <span className="text-accent font-semibold">30%</span>
+                <span className="text-muted-foreground">TWAP Buyback & Burn (Hourly)</span>
+                <span className="text-foreground font-semibold">30%</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-subtle">Hyperliquid Builder Codes</span>
-                <span className="text-accent font-semibold">20%</span>
+                <span className="text-muted-foreground">Hyperliquid Builder Codes</span>
+                <span className="text-foreground font-semibold">20%</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-subtle">Core Engineering Team</span>
-                <span className="text-accent font-semibold">20%</span>
+                <span className="text-muted-foreground">Core Engineering Team</span>
+                <span className="text-foreground font-semibold">20%</span>
               </div>
             </div>
           </div>

@@ -38,20 +38,22 @@ export function OutcomeMap({ currentPrice, symbol }: OutcomeMapProps) {
   };
 
   return (
-    <div className="bg-surface border border-border p-6 font-mono text-xs text-accent space-y-5">
+    <div className="relative overflow-hidden rounded-2xl border border-border bg-white p-6 font-mono text-xs text-foreground space-y-5 shadow-sm">
+      <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-[#CDC3F0] via-[#FFDAC8] to-[#A0D4CA] opacity-80" />
+
       <div className="flex items-center justify-between pb-3 border-b border-border">
         <div className="flex items-center gap-2">
-          <Target className="w-4 h-4 text-bull" />
-          <span className="font-bold text-sm tracking-wider">0DTE FAST OPTIONS (OUTCOME BARRIERS)</span>
+          <Target className="w-4 h-4 text-[#06964A]" />
+          <span className="font-bold text-sm tracking-wider text-foreground">0DTE FAST OPTIONS (OUTCOME BARRIERS)</span>
         </div>
-        <span className="text-[10px] text-subtle">
+        <span className="text-[10px] text-muted-foreground">
           EVALUATED BY MARKPX (0x0806) · NO GREEKS
         </span>
       </div>
 
       {/* Expiry Selector */}
       <div>
-        <div className="flex justify-between text-subtle mb-1.5">
+        <div className="flex justify-between text-muted-foreground mb-1.5 text-[11px]">
           <span>TIME BARRIER EXPIRY</span>
           <span>MULTI: {selectedExpiry.multiplier}×</span>
         </div>
@@ -61,14 +63,16 @@ export function OutcomeMap({ currentPrice, symbol }: OutcomeMapProps) {
               key={exp.label}
               type="button"
               onClick={() => setSelectedExpiry(exp)}
-              className={`py-2 border text-center transition-all ${
+              className={`py-2 px-3 rounded-xl border text-center transition-all ${
                 selectedExpiry.label === exp.label
-                  ? 'border-accent bg-surface-elevated text-accent font-bold'
-                  : 'border-border text-subtle hover:text-accent hover:border-border-active'
+                  ? 'border-foreground bg-[#0A0A0A] text-white font-bold shadow-sm'
+                  : 'border-border bg-[#F6F6F4] text-muted-foreground hover:text-foreground hover:bg-[#F0F0EE]'
               }`}
             >
               <div className="text-xs">{exp.label}</div>
-              <div className="text-[10px] text-bull mt-0.5">{exp.multiplier}×</div>
+              <div className={`text-[10px] mt-0.5 ${selectedExpiry.label === exp.label ? 'text-[#00D964]' : 'text-[#06964A]'}`}>
+                {exp.multiplier}×
+              </div>
             </button>
           ))}
         </div>
@@ -76,7 +80,7 @@ export function OutcomeMap({ currentPrice, symbol }: OutcomeMapProps) {
 
       {/* Barrier Targets */}
       <div>
-        <div className="flex justify-between text-subtle mb-1.5">
+        <div className="flex justify-between text-muted-foreground mb-1.5 text-[11px]">
           <span>OUTCOME BARRIERS</span>
           <span>SPOT: ${currentPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
         </div>
@@ -91,19 +95,19 @@ export function OutcomeMap({ currentPrice, symbol }: OutcomeMapProps) {
                 key={bar.label}
                 type="button"
                 onClick={() => setSelectedBarrier(bar)}
-                className={`p-2.5 border text-left transition-all ${
+                className={`p-3 rounded-xl border text-left transition-all ${
                   isSelected
                     ? isUp
-                      ? 'border-bull bg-bull/10 text-bull'
-                      : 'border-bear bg-bear/10 text-bear'
-                    : 'border-border text-subtle hover:border-border-active'
+                      ? 'border-[#06964A] bg-[#E3F8EC] text-[#06964A] font-semibold'
+                      : 'border-[#FF3B30] bg-[#FFECEA] text-[#FF3B30] font-semibold'
+                    : 'border-border bg-[#F6F6F4] text-muted-foreground hover:border-[#D2D2CE] hover:text-foreground'
                 }`}
               >
                 <div className="flex items-center justify-between text-xs font-semibold">
                   <span>{bar.label}</span>
-                  {isUp ? <TrendingUp className="w-3.5 h-3.5" /> : <TrendingDown className="w-3.5 h-3.5" />}
+                  {isUp ? <TrendingUp className="w-3.5 h-3.5 text-[#06964A]" /> : <TrendingDown className="w-3.5 h-3.5 text-[#FF3B30]" />}
                 </div>
-                <div className="mt-1 text-[11px] tabular text-accent font-mono">
+                <div className="mt-1 text-[11px] tabular text-foreground font-mono">
                   Target: ${barPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </div>
               </button>
@@ -113,8 +117,8 @@ export function OutcomeMap({ currentPrice, symbol }: OutcomeMapProps) {
       </div>
 
       {/* Stake & Payout Preview */}
-      <div className="bg-background border border-border p-3 space-y-2 text-[11px]">
-        <div className="flex justify-between items-center text-subtle">
+      <div className="bg-[#F6F6F4] border border-border rounded-xl p-3.5 space-y-2 text-[11px]">
+        <div className="flex justify-between items-center text-muted-foreground">
           <span>STAKE AMOUNT (USDC)</span>
           <div className="flex gap-1.5">
             {['10', '25', '50', '100'].map((val) => (
@@ -122,8 +126,8 @@ export function OutcomeMap({ currentPrice, symbol }: OutcomeMapProps) {
                 key={val}
                 type="button"
                 onClick={() => setStake(val)}
-                className={`px-2 py-0.5 border text-[10px] ${
-                  stake === val ? 'border-accent text-accent bg-surface-elevated' : 'border-border text-subtle'
+                className={`pill h-6 px-2.5 text-[10px] font-semibold transition-all ${
+                  stake === val ? 'pill-ink shadow-sm' : 'border border-border bg-white text-muted-foreground hover:text-foreground'
                 }`}
               >
                 ${val}
@@ -132,16 +136,16 @@ export function OutcomeMap({ currentPrice, symbol }: OutcomeMapProps) {
           </div>
         </div>
 
-        <div className="flex justify-between items-center text-subtle">
+        <div className="flex justify-between items-center text-muted-foreground">
           <span>TARGET PRICE</span>
-          <span className="text-accent font-bold tabular">
+          <span className="text-foreground font-bold tabular">
             ${targetPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </span>
         </div>
 
-        <div className="flex justify-between items-center text-subtle">
+        <div className="flex justify-between items-center text-muted-foreground">
           <span>POTENTIAL RETURN</span>
-          <span className="text-bull font-bold tabular text-sm">
+          <span className="text-[#06964A] font-bold tabular text-sm">
             ${potentialPayout.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (+{((selectedExpiry.multiplier - 1) * 100).toFixed(0)}%)
           </span>
         </div>
@@ -150,7 +154,7 @@ export function OutcomeMap({ currentPrice, symbol }: OutcomeMapProps) {
       <Button
         type="button"
         onClick={handlePlaceOption}
-        className="w-full bg-accent text-background hover:bg-white font-mono font-bold tracking-wider py-3 h-auto"
+        className="w-full rounded-full bg-[#0A0A0A] text-white hover:bg-[#222222] font-mono font-bold tracking-wider py-3.5 h-auto shadow-sm"
       >
         LOCK 0DTE OUTCOME (${numStake} STAKE)
       </Button>
