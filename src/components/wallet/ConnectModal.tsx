@@ -10,6 +10,11 @@ export function ConnectModal() {
   const { disconnect } = useDisconnect();
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const copyAddress = () => {
     if (address) {
@@ -18,6 +23,20 @@ export function ConnectModal() {
       setTimeout(() => setCopied(false), 2000);
     }
   };
+
+  if (!mounted) {
+    return (
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          className="px-3.5 py-1.5 text-xs font-mono font-medium rounded-full bg-foreground text-background hover:opacity-90 transition-all flex items-center gap-2 shadow-sm"
+        >
+          <Zap className="w-3.5 h-3.5 text-bull" />
+          <span>Connect Wallet</span>
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="flex items-center gap-2">

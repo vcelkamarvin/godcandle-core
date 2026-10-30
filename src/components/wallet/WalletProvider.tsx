@@ -13,28 +13,18 @@ export const wagmiConfig = getDefaultConfig({
 });
 
 export function WalletProvider({ children }: { children: React.ReactNode }) {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
   return (
     <WagmiProvider config={wagmiConfig}>
-      {mounted ? (
-        <RainbowKitProvider
-          theme={darkTheme({
-            accentColor: '#FFFFFF',
-            accentColorForeground: '#000000',
-            borderRadius: 'small',
-            fontStack: 'system',
-          })}
-        >
-          {children}
-        </RainbowKitProvider>
-      ) : (
-        <>{children}</>
-      )}
+      <RainbowKitProvider
+        theme={darkTheme({
+          accentColor: '#FFFFFF',
+          accentColorForeground: '#000000',
+          borderRadius: 'small',
+          fontStack: 'system',
+        })}
+      >
+        {children}
+      </RainbowKitProvider>
     </WagmiProvider>
   );
 }
