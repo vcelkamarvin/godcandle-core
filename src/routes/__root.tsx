@@ -13,7 +13,9 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { TradingProvider, useTrading } from "@/components/godcandle/TradingProvider";
-import { Header } from "@/components/godcandle/Header";
+import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
+import { WalletProvider } from "@/components/wallet/WalletProvider";
 import { Toaster } from "sonner";
 
 function NotFoundComponent() {
@@ -112,11 +114,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <head>
         <HeadContent />
       </head>
-      <body>
+      <body className="bg-background text-accent min-h-screen">
         {children}
         <Scripts />
       </body>
@@ -129,12 +131,24 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <TradingProvider><TradingShell /></TradingProvider>
+      <WalletProvider>
+        <TradingProvider>
+          <TradingShell />
+        </TradingProvider>
+      </WalletProvider>
     </QueryClientProvider>
   );
 }
 
 function TradingShell() {
-  const { balance } = useTrading();
-  return <div className="mx-auto min-h-screen max-w-[1800px] bg-background"><Header balance={balance}/><Outlet/><Toaster position="top-center"/></div>;
+  return (
+    <div className="mx-auto min-h-screen max-w-[1800px] bg-background flex flex-col justify-between">
+      <div>
+        <Header />
+        <Outlet />
+      </div>
+      <Footer />
+      <Toaster position="top-center" />
+    </div>
+  );
 }

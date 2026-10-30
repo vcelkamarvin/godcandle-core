@@ -12,9 +12,18 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AnalyticsRouteImport } from './routes/analytics'
 import { Route as CandleRouteImport } from './routes/candle'
+import { Route as CupRouteImport } from './routes/cup'
+import { Route as DocsRouteImport } from './routes/docs'
+import { Route as HardwareRouteImport } from './routes/hardware'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
+import { Route as OptionsRouteImport } from './routes/options'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
 import { Route as StakingRouteImport } from './routes/staking'
+import { Route as TradeRouteImport } from './routes/trade'
+import { Route as DocsIndexRouteImport } from './routes/docs/index'
+import { Route as DocsPoolRouteImport } from './routes/docs/pool'
+import { Route as DocsRulesRouteImport } from './routes/docs/rules'
+import { Route as DocsTokenRouteImport } from './routes/docs/token'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -31,9 +40,29 @@ const CandleRoute = CandleRouteImport.update({
   path: '/candle',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CupRoute = CupRouteImport.update({
+  id: '/cup',
+  path: '/cup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DocsRoute = DocsRouteImport.update({
+  id: '/docs',
+  path: '/docs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HardwareRoute = HardwareRouteImport.update({
+  id: '/hardware',
+  path: '/hardware',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LeaderboardRoute = LeaderboardRouteImport.update({
   id: '/leaderboard',
   path: '/leaderboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OptionsRoute = OptionsRouteImport.update({
+  id: '/options',
+  path: '/options',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PortfolioRoute = PortfolioRouteImport.update({
@@ -46,56 +75,148 @@ const StakingRoute = StakingRouteImport.update({
   path: '/staking',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TradeRoute = TradeRouteImport.update({
+  id: '/trade',
+  path: '/trade',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DocsIndexRoute = DocsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DocsRoute,
+} as any)
+const DocsPoolRoute = DocsPoolRouteImport.update({
+  id: '/pool',
+  path: '/pool',
+  getParentRoute: () => DocsRoute,
+} as any)
+const DocsRulesRoute = DocsRulesRouteImport.update({
+  id: '/rules',
+  path: '/rules',
+  getParentRoute: () => DocsRoute,
+} as any)
+const DocsTokenRoute = DocsTokenRouteImport.update({
+  id: '/token',
+  path: '/token',
+  getParentRoute: () => DocsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/analytics': typeof AnalyticsRoute
   '/candle': typeof CandleRoute
+  '/cup': typeof CupRoute
+  '/docs': typeof DocsRouteWithChildren
+  '/hardware': typeof HardwareRoute
   '/leaderboard': typeof LeaderboardRoute
+  '/options': typeof OptionsRoute
   '/portfolio': typeof PortfolioRoute
   '/staking': typeof StakingRoute
+  '/trade': typeof TradeRoute
+  '/docs/pool': typeof DocsPoolRoute
+  '/docs/rules': typeof DocsRulesRoute
+  '/docs/token': typeof DocsTokenRoute
+  '/docs/': typeof DocsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/analytics': typeof AnalyticsRoute
   '/candle': typeof CandleRoute
+  '/cup': typeof CupRoute
+  '/hardware': typeof HardwareRoute
   '/leaderboard': typeof LeaderboardRoute
+  '/options': typeof OptionsRoute
   '/portfolio': typeof PortfolioRoute
   '/staking': typeof StakingRoute
+  '/trade': typeof TradeRoute
+  '/docs/pool': typeof DocsPoolRoute
+  '/docs/rules': typeof DocsRulesRoute
+  '/docs/token': typeof DocsTokenRoute
+  '/docs': typeof DocsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/analytics': typeof AnalyticsRoute
   '/candle': typeof CandleRoute
+  '/cup': typeof CupRoute
+  '/docs': typeof DocsRouteWithChildren
+  '/hardware': typeof HardwareRoute
   '/leaderboard': typeof LeaderboardRoute
+  '/options': typeof OptionsRoute
   '/portfolio': typeof PortfolioRoute
   '/staking': typeof StakingRoute
+  '/trade': typeof TradeRoute
+  '/docs/pool': typeof DocsPoolRoute
+  '/docs/rules': typeof DocsRulesRoute
+  '/docs/token': typeof DocsTokenRoute
+  '/docs/': typeof DocsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/analytics' | '/candle' | '/leaderboard' | '/portfolio' | '/staking'
+    | '/'
+    | '/analytics'
+    | '/candle'
+    | '/cup'
+    | '/docs'
+    | '/hardware'
+    | '/leaderboard'
+    | '/options'
+    | '/portfolio'
+    | '/staking'
+    | '/trade'
+    | '/docs/pool'
+    | '/docs/rules'
+    | '/docs/token'
+    | '/docs/'
   fileRoutesByTo: FileRoutesByTo
   to:
-    '/' | '/analytics' | '/candle' | '/leaderboard' | '/portfolio' | '/staking'
+    | '/'
+    | '/analytics'
+    | '/candle'
+    | '/cup'
+    | '/hardware'
+    | '/leaderboard'
+    | '/options'
+    | '/portfolio'
+    | '/staking'
+    | '/trade'
+    | '/docs/pool'
+    | '/docs/rules'
+    | '/docs/token'
+    | '/docs'
   id:
     | '__root__'
     | '/'
     | '/analytics'
     | '/candle'
+    | '/cup'
+    | '/docs'
+    | '/hardware'
     | '/leaderboard'
+    | '/options'
     | '/portfolio'
     | '/staking'
+    | '/trade'
+    | '/docs/pool'
+    | '/docs/rules'
+    | '/docs/token'
+    | '/docs/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AnalyticsRoute: typeof AnalyticsRoute
   CandleRoute: typeof CandleRoute
+  CupRoute: typeof CupRoute
+  DocsRoute: typeof DocsRouteWithChildren
+  HardwareRoute: typeof HardwareRoute
   LeaderboardRoute: typeof LeaderboardRoute
+  OptionsRoute: typeof OptionsRoute
   PortfolioRoute: typeof PortfolioRoute
   StakingRoute: typeof StakingRoute
+  TradeRoute: typeof TradeRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -121,11 +242,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CandleRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/cup': {
+      id: '/cup'
+      path: '/cup'
+      fullPath: '/cup'
+      preLoaderRoute: typeof CupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/docs': {
+      id: '/docs'
+      path: '/docs'
+      fullPath: '/docs'
+      preLoaderRoute: typeof DocsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/hardware': {
+      id: '/hardware'
+      path: '/hardware'
+      fullPath: '/hardware'
+      preLoaderRoute: typeof HardwareRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/leaderboard': {
       id: '/leaderboard'
       path: '/leaderboard'
       fullPath: '/leaderboard'
       preLoaderRoute: typeof LeaderboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/options': {
+      id: '/options'
+      path: '/options'
+      fullPath: '/options'
+      preLoaderRoute: typeof OptionsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/portfolio': {
@@ -142,16 +291,72 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StakingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/trade': {
+      id: '/trade'
+      path: '/trade'
+      fullPath: '/trade'
+      preLoaderRoute: typeof TradeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/docs/': {
+      id: '/docs/'
+      path: '/'
+      fullPath: '/docs/'
+      preLoaderRoute: typeof DocsIndexRouteImport
+      parentRoute: typeof DocsRoute
+    }
+    '/docs/pool': {
+      id: '/docs/pool'
+      path: '/pool'
+      fullPath: '/docs/pool'
+      preLoaderRoute: typeof DocsPoolRouteImport
+      parentRoute: typeof DocsRoute
+    }
+    '/docs/rules': {
+      id: '/docs/rules'
+      path: '/rules'
+      fullPath: '/docs/rules'
+      preLoaderRoute: typeof DocsRulesRouteImport
+      parentRoute: typeof DocsRoute
+    }
+    '/docs/token': {
+      id: '/docs/token'
+      path: '/token'
+      fullPath: '/docs/token'
+      preLoaderRoute: typeof DocsTokenRouteImport
+      parentRoute: typeof DocsRoute
+    }
   }
 }
+
+interface DocsRouteChildren {
+  DocsPoolRoute: typeof DocsPoolRoute
+  DocsRulesRoute: typeof DocsRulesRoute
+  DocsTokenRoute: typeof DocsTokenRoute
+  DocsIndexRoute: typeof DocsIndexRoute
+}
+
+const DocsRouteChildren: DocsRouteChildren = {
+  DocsPoolRoute: DocsPoolRoute,
+  DocsRulesRoute: DocsRulesRoute,
+  DocsTokenRoute: DocsTokenRoute,
+  DocsIndexRoute: DocsIndexRoute,
+}
+
+const DocsRouteWithChildren = DocsRoute._addFileChildren(DocsRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AnalyticsRoute: AnalyticsRoute,
   CandleRoute: CandleRoute,
+  CupRoute: CupRoute,
+  DocsRoute: DocsRouteWithChildren,
+  HardwareRoute: HardwareRoute,
   LeaderboardRoute: LeaderboardRoute,
+  OptionsRoute: OptionsRoute,
   PortfolioRoute: PortfolioRoute,
   StakingRoute: StakingRoute,
+  TradeRoute: TradeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
