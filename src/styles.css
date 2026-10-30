@@ -42,19 +42,24 @@
   --color-loss-soft: var(--loss-soft);
   --color-ink: var(--foreground);
   --color-hairline: var(--border);
+  --color-chart-lavender: var(--chart-lavender);
+  --color-chart-peach: var(--chart-peach);
+  --color-chart-sage: var(--chart-sage);
+  --color-chart-yellow: var(--chart-yellow);
+  --color-overlay: var(--overlay);
 }
 
 :root {
   --radius: 20px;
   --background: oklch(1 0 0);
-  --foreground: oklch(0.15 0.005 90);
+  --foreground: #0a0a0a;
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.15 0.005 90);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.15 0.005 90);
   --primary: oklch(0.15 0.005 90);
   --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.968 0 0);
+  --secondary: #f6f6f4;
   --secondary-foreground: oklch(0.15 0.005 90);
   --muted: oklch(0.93 0.006 95);
   --muted-foreground: oklch(0.5 0.008 90);
@@ -62,11 +67,18 @@
   --accent-foreground: oklch(0.15 0.005 90);
   --destructive: oklch(0.58 0.21 29);
   --destructive-foreground: oklch(1 0 0);
-  --border: oklch(0.895 0.006 95);
+  --border: #e6e6e3;
   --input: oklch(0.895 0.006 95);
   --ring: oklch(0.15 0.005 90);
-  --gain: oklch(0.61 0.19 153);
-  --loss: oklch(0.63 0.23 28);
+  --gain: #06964a;
+  --loss: #ff3b30;
+  --trade-gain: #00d964;
+  --chart-lavender: #cecae9;
+  --chart-peach: #efd0c5;
+  --chart-sage: #8fb0ab;
+  --chart-yellow: #ffd60a;
+  --overlay: oklch(0.15 0 0 / 0.4);
+  --reward-gradient: linear-gradient(175deg, var(--chart-lavender), var(--chart-peach) 50%, var(--chart-sage));
   --gain-soft: oklch(0.95 0.03 157);
   --loss-soft: oklch(0.95 0.025 25);
   --chart-1: oklch(0.15 0.005 90);
@@ -160,9 +172,9 @@
   }
 }
 @utility btn-long-ink {
-  border: 1px solid var(--color-gain);
-  background: var(--color-gain);
-  color: var(--color-card);
+  border: 1px solid var(--trade-gain);
+  background: var(--trade-gain);
+  color: var(--foreground);
 }
 @utility btn-short-ink {
   border: 1px solid var(--color-loss);
@@ -223,3 +235,11 @@
 
 .pnl-compact { font-size: 26px; }
 .leverage-ruler { background-image: repeating-linear-gradient(to right, var(--border) 0px, var(--border) 1px, transparent 1px, transparent 9px); background-size: 100% 22px; background-repeat: no-repeat; background-position: center 8px; }
+
+.reward-panel { background: var(--reward-gradient); border-radius: 24px; }
+.data-label { font-family: var(--font-mono); font-size: 9px; color: var(--muted-foreground); letter-spacing: 0; }
+.page-content { padding: 24px 28px; }
+.metric-value { font-family: var(--font-mono); font-size: 22px; font-weight: 600; line-height: 1.25; }
+.chart-surface { min-height: 160px; width: 100%; }
+.market-dialog { top: 128px; left: 28px; transform: none; width: min(560px, calc(100vw - 32px)); max-height: calc(100dvh - 150px); overflow: auto; }
+@media (max-width: 640px) { .page-content { padding: 20px 16px; } .market-dialog { left: 16px; top: 100px; } .metric-value { font-size: 18px; } }
