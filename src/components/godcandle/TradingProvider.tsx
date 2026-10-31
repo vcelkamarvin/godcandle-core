@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { toast } from "sonner";
-import { type MarketSymbol } from "@/config/markets";
+import { getMarket, type MarketSymbol } from "@/config/markets";
 import { INITIAL_BALANCE } from "@/lib/mock-data";
 import { getSnap, startFeed, useFeeds } from "@/lib/price-feed";
 import { fmtSigned, fmtUsd, isLiquidated, liquidation, openingError, pnlOf, type ClosedTrade, type Position, type Side } from "@/lib/engine";
@@ -13,27 +13,49 @@ function useTradingState() {
   const positionsRef = useRef(positions);
   positionsRef.current = positions;
   useEffect(() => startFeed(), []);
-  function close(target: string, liquidated = false) {
-    const position = positionsRef.current.find(p => p.id === target || p.market === target);
+  function close(
+    target: string,
+    liquidated = false,
+    trigger?: "tp" | "sl" | "liquidation" | "manual"
+  ) {
+    const position = positionsRef.current.find((p) => p.id === target || p.market === target);
     if (!position) return;
     const exit = liquidated ? liquidation(position) : getSnap(position.market).price;
     const pnl = pnlOf(position, exit);
-    const trade = { ...position, exit, pnl, liquidated, closedAt: Date.now(), durationMs: Date.now() - position.openedAt };
-    positionsRef.current = positionsRef.current.filter(p => p.id !== position.id);
+    const trade = {
+      ...position,
+      exit,
+      pnl,
+      liquidated,
+      closedAt: Date.now(),
+      durationMs: Date.now() - position.openedAt,
+    };
+    positionsRef.current = positionsRef.current.filter((p) => p.id !== position.id);
     setPositions(positionsRef.current);
-    setHistory(h => [trade, ...h]);
-    setBalance(b => b + pnl);
-    toast(liquidated ? `${position.market} liquidated` : `Closed ${position.market} ${fmtSigned(pnl)}`);
+    setHistory((h) => [trade, ...h]);
+    setBalance((b) => b + pnl);
+
+    if (liquidated || trigger === "liquidation") {
+      toast.error(`${position.market} liquidated at $${fmtUsd(exit, getMarket(position.market).decimals)}`);
+    } else if (trigger === "tp") {
+      toast.success(`Take Profit triggered for ${position.market} (${fmtSigned(pnl)})`);
+    } else if (trigger === "sl") {
+      toast.error(`Stop Loss triggered for ${position.market} (${fmtSigned(pnl)})`);
+    } else {
+      toast(`Closed ${position.market} ${fmtSigned(pnl)}`);
+    }
   }
   useEffect(() => {
-    for (const p of positionsRef.current) {
-      const price = feeds[p.market].price;
+    for (const p of [...positionsRef.current]) {
+      const feed = feeds[p.market];
+      if (!feed) continue;
+      const price = feed.price;
       if (isLiquidated(p, price)) {
-        close(p.id, true);
+        close(p.id, true, "liquidation");
       } else if (p.tp != null && (p.side === "long" ? price >= p.tp : price <= p.tp)) {
-        close(p.id, false);
+        close(p.id, false, "tp");
       } else if (p.sl != null && (p.side === "long" ? price <= p.sl : price >= p.sl)) {
-        close(p.id, false);
+        close(p.id, false, "sl");
       }
     }
   }, [feeds]);

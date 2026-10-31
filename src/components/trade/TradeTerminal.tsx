@@ -6,7 +6,9 @@ import { SessionKeyPrompt } from '@/components/wallet/SessionKeyPrompt';
 import { useTrading } from '@/components/godcandle/TradingProvider';
 import { PriceChart } from '@/components/godcandle/PriceChart';
 import { TradingViewWidget, type TVInterval } from '@/components/godcandle/TradingViewWidget';
-import { fmtSigned, fmtUsd, pnlOf } from '@/lib/engine';
+import { Dock } from '@/components/godcandle/Dock';
+import { ShareModal } from '@/components/godcandle/ShareModal';
+import { fmtSigned, fmtUsd, pnlOf, type ClosedTrade } from '@/lib/engine';
 import { Shield, Layers, Zap, Database, BarChart2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -43,6 +45,7 @@ export function TradeTerminal() {
   const [chartMode, setChartMode] = useState<'reactive' | 'tradingview'>('reactive');
   const [windowMs, setWindowMs] = useState(30000);
   const [tvInterval, setTvInterval] = useState<TVInterval>('15');
+  const [shareTrade, setShareTrade] = useState<ClosedTrade | null>(null);
 
   const t = useTrading();
   const rawSymbol = selectedMarket.symbol.replace('-USD', '') as any;
@@ -98,14 +101,14 @@ export function TradeTerminal() {
 
           <div className="flex flex-wrap items-center gap-2">
             {/* Chart Mode Switcher */}
-            <div className="flex items-center rounded-full bg-secondary p-0.5 border border-border/60">
+            <div className="flex items-center rounded-md bg-secondary p-0.5 border border-border/60">
               <Button
                 variant="terminal"
                 onClick={() => setChartMode('reactive')}
-                className={`pill h-7 px-3 text-[11px] font-medium gap-1.5 transition-all ${
+                className={`h-6 px-2.5 rounded-sm text-[11px] font-mono font-medium gap-1.5 transition-all ${
                   chartMode === 'reactive'
-                    ? 'pill-ink shadow-sm'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-white/50'
+                    ? 'bg-foreground text-background font-bold shadow-xs'
+                    : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 <Zap className="size-3 text-[#FFD60A]" />
@@ -114,10 +117,10 @@ export function TradeTerminal() {
               <Button
                 variant="terminal"
                 onClick={() => setChartMode('tradingview')}
-                className={`pill h-7 px-3 text-[11px] font-medium gap-1.5 transition-all ${
+                className={`h-6 px-2.5 rounded-sm text-[11px] font-mono font-medium gap-1.5 transition-all ${
                   chartMode === 'tradingview'
-                    ? 'pill-ink shadow-sm'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-white/50'
+                    ? 'bg-foreground text-background font-bold shadow-xs'
+                    : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 <BarChart2 className="size-3 text-[#00D964]" />
@@ -126,16 +129,16 @@ export function TradeTerminal() {
             </div>
 
             {/* Timeframe Interval Pills */}
-            <div className="hidden sm:flex items-center rounded-full bg-secondary p-0.5 border border-border/60">
+            <div className="hidden sm:flex items-center rounded-md bg-secondary p-0.5 border border-border/60">
               {TIMEFRAMES.map((tf) => (
                 <button
                   key={tf.label}
                   type="button"
                   onClick={() => handleTimeframeChange(tf)}
-                  className={`pill h-7 px-2.5 text-[10px] font-mono transition-all ${
+                  className={`h-6 px-2 rounded-sm text-[10px] font-mono transition-all ${
                     windowMs === tf.ms
-                      ? 'pill-ink font-bold shadow-xs'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-white/50'
+                      ? 'bg-foreground text-background font-bold shadow-xs'
+                      : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
                   {tf.label}
@@ -154,7 +157,7 @@ export function TradeTerminal() {
               position={currentPosition}
               pnlLabel={pnlLabel}
               pnlPositive={posPnl >= 0}
-              onClose={() => t?.close && t.close(rawSymbol)}
+              onClose={() => t?.close && currentPosition && t.close(currentPosition.id)}
             />
           ) : (
             <TradingViewWidget
@@ -183,9 +186,9 @@ export function TradeTerminal() {
                       setSelectedMarket(m);
                       if (leverage > m.maxLev) setLeverage(m.maxLev);
                     }}
-                    className={`pill h-8 px-3 text-xs transition-all ${
+                    className={`h-7 px-2.5 rounded-sm text-xs font-mono transition-all ${
                       selectedMarket.symbol === m.symbol
-                        ? 'pill-ink font-semibold'
+                        ? 'bg-foreground text-background font-bold shadow-xs'
                         : 'border border-border bg-[#F6F6F4] text-muted-foreground hover:text-foreground hover:bg-[#F0F0EE]'
                     }`}
                   >
@@ -301,6 +304,29 @@ export function TradeTerminal() {
           </div>
         </div>
       </div>
+
+      {/* Discrete Positions Table & Trading History */}
+      <div className="mt-4">
+        <Dock
+          feeds={t?.feeds || ({} as any)}
+          open={t?.positions || []}
+          history={t?.history || []}
+          onSelect={(sym) => {
+            const found = MARKETS.find((def) => def.symbol.startsWith(sym));
+            if (found) setSelectedMarket(found);
+          }}
+          onClose={t?.close || (() => {})}
+          onShare={setShareTrade}
+        />
+      </div>
+
+      {/* Shareable PnL Card Modal */}
+      <ShareModal
+        trade={shareTrade}
+        onOpenChange={(open) => {
+          if (!open) setShareTrade(null);
+        }}
+      />
     </div>
   );
 }

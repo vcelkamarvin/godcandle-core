@@ -31,145 +31,182 @@ export function ShareModal({
     window.open(url, "_blank", "noopener,noreferrer");
   };
 
-  const copyText = () => {
+  const copyText = async () => {
     const text = `godcandle.trade | ${trade.market}-USD ${trade.side.toUpperCase()} ${trade.leverage}x: ${pctStr} ROI (${fmtSigned(trade.pnl)})`;
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    toast.success("Trade summary copied to clipboard");
-    setTimeout(() => setCopied(false), 2000);
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      toast.success("Trade summary copied to clipboard");
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast.error("Failed to copy to clipboard");
+    }
+  };
+
+  const drawCardCanvas = async (): Promise<HTMLCanvasElement | null> => {
+    const S = 1080;
+    const c = document.createElement("canvas");
+    c.width = S;
+    c.height = S;
+    const ctx = c.getContext("2d");
+    if (!ctx) return null;
+
+    const FONT_MONO = "Menlo, Monaco, Consolas, monospace";
+
+    // 1. Draw Monet "The Cliffs at Etretat" Background with robust loading
+    const img = new Image();
+    await new Promise<void>((resolve) => {
+      let settled = false;
+      const finish = (loaded: boolean) => {
+        if (settled) return;
+        settled = true;
+        if (loaded) {
+          try {
+            ctx.drawImage(img, 0, 0, S, S);
+          } catch {
+            ctx.fillStyle = "#0c1015";
+            ctx.fillRect(0, 0, S, S);
+          }
+        } else {
+          ctx.fillStyle = "#0c1015";
+          ctx.fillRect(0, 0, S, S);
+        }
+        resolve();
+      };
+
+      const timer = setTimeout(() => finish(false), 2500);
+      img.onload = () => {
+        clearTimeout(timer);
+        finish(true);
+      };
+      img.onerror = () => {
+        clearTimeout(timer);
+        finish(false);
+      };
+      img.crossOrigin = "anonymous";
+      img.src = "/images/monet-etretat.jpg";
+      if (img.complete && img.naturalWidth > 0) {
+        clearTimeout(timer);
+        finish(true);
+      }
+    });
+
+    // 2. Dark Gradient Overlay for sharp contrast and readability
+    const grad = ctx.createLinearGradient(0, 0, 0, S);
+    grad.addColorStop(0, "rgba(5, 7, 10, 0.82)");
+    grad.addColorStop(0.45, "rgba(8, 11, 16, 0.72)");
+    grad.addColorStop(1, "rgba(4, 5, 8, 0.95)");
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, S, S);
+
+    // Card Inner Border
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.15)";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    if (typeof ctx.roundRect === "function") {
+      ctx.roundRect(40, 40, S - 80, S - 80, 24);
+    } else {
+      ctx.rect(40, 40, S - 80, S - 80);
+    }
+    ctx.stroke();
+
+    // 3. Header: Brand & Protocol
+    ctx.fillStyle = "#00D964";
+    ctx.fillRect(90, 95, 12, 34);
+    ctx.fillStyle = "#FFFFFF";
+    ctx.font = `bold 38px ${FONT_MONO}`;
+    ctx.textBaseline = "middle";
+    ctx.fillText("godcandle", 115, 112);
+
+    ctx.font = `bold 22px ${FONT_MONO}`;
+    ctx.fillStyle = "rgba(255, 255, 255, 0.55)";
+    ctx.fillText("PRECOMPILE v1 · HyperEVM", 310, 112);
+
+    // Side & Leverage Pill (Top Right)
+    const sideText = `${trade.side.toUpperCase()} ${trade.leverage}×`;
+    ctx.font = `bold 26px ${FONT_MONO}`;
+    const sideWidth = ctx.measureText(sideText).width;
+    ctx.fillStyle = trade.side === "long" ? "#00D964" : "#FF3B30";
+    ctx.beginPath();
+    if (typeof ctx.roundRect === "function") {
+      ctx.roundRect(S - 100 - sideWidth - 28, 92, sideWidth + 28, 44, 8);
+    } else {
+      ctx.rect(S - 100 - sideWidth - 28, 92, sideWidth + 28, 44);
+    }
+    ctx.fill();
+    ctx.fillStyle = trade.side === "long" ? "#000000" : "#FFFFFF";
+    ctx.fillText(sideText, S - 100 - sideWidth - 14, 114);
+
+    // 4. Center: Asset & Market Details
+    ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+    ctx.font = `bold 36px ${FONT_MONO}`;
+    ctx.fillText(`${trade.market}-USD ${trade.leverage}x Isolated`, 90, 280);
+
+    // 5. Giant Bold ROI % Typography in High-Contrast Green
+    ctx.fillStyle = up ? "#00D964" : "#FF3B30";
+    ctx.font = `900 130px ${FONT_MONO}`;
+    ctx.fillText(pctStr, 85, 430);
+
+    // Optional PnL Amount
+    if (!hide) {
+      ctx.fillStyle = up ? "rgba(0, 217, 100, 0.9)" : "rgba(255, 59, 48, 0.9)";
+      ctx.font = `bold 44px ${FONT_MONO}`;
+      ctx.fillText(`${fmtSigned(trade.pnl)} USDC`, 90, 520);
+    }
+
+    // 6. Metrics Grid: Entry, Exit, Duration
+    const metricsY = 690;
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.12)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(90, metricsY - 40);
+    ctx.lineTo(S - 90, metricsY - 40);
+    ctx.stroke();
+
+    const stats: [string, string][] = [
+      ["ENTRY PRICE", `$${fmtUsd(trade.entry, market.decimals)}`],
+      ["EXIT PRICE", `$${fmtUsd(trade.exit, market.decimals)}`],
+      ["DURATION", fmtDuration(trade.durationMs)],
+    ];
+
+    stats.forEach(([label, val], idx) => {
+      const xPos = 90 + idx * 310;
+      ctx.fillStyle = "rgba(255, 255, 255, 0.45)";
+      ctx.font = `bold 20px ${FONT_MONO}`;
+      ctx.fillText(label, xPos, metricsY);
+
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = `bold 34px ${FONT_MONO}`;
+      ctx.fillText(val, xPos, metricsY + 45);
+    });
+
+    // 7. Footer Branding & Domain
+    const footerY = 930;
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.12)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(90, footerY - 40);
+    ctx.lineTo(S - 90, footerY - 40);
+    ctx.stroke();
+
+    ctx.fillStyle = "rgba(255, 255, 255, 0.45)";
+    ctx.font = `bold 22px ${FONT_MONO}`;
+    ctx.fillText("1000x SYNTHETIC PERPS · ZERO ENTRY FEES", 90, footerY);
+
+    ctx.fillStyle = "#FFFFFF";
+    ctx.font = `bold 28px ${FONT_MONO}`;
+    ctx.textAlign = "right";
+    ctx.fillText("godcandle.trade", S - 90, footerY);
+    ctx.textAlign = "left";
+
+    return c;
   };
 
   const download = async () => {
     try {
-      const S = 1080;
-      const c = document.createElement("canvas");
-      c.width = S;
-      c.height = S;
-      const ctx = c.getContext("2d");
-      if (!ctx) return;
+      const c = await drawCardCanvas();
+      if (!c) return;
 
-      const FONT_SANS = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-      const FONT_MONO = 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace';
-
-      // 1. Draw Monet "The Cliffs at Etretat" Background
-      const img = new Image();
-      img.crossOrigin = "anonymous";
-      img.src = "/images/monet-etretat.jpg";
-
-      await new Promise<void>((resolve) => {
-        img.onload = () => {
-          ctx.drawImage(img, 0, 0, S, S);
-          resolve();
-        };
-        img.onerror = () => {
-          // Fallback background if image fails
-          ctx.fillStyle = "#0c1015";
-          ctx.fillRect(0, 0, S, S);
-          resolve();
-        };
-      });
-
-      // 2. Dark Gradient Overlay for sharp readability
-      const grad = ctx.createLinearGradient(0, 0, 0, S);
-      grad.addColorStop(0, "rgba(5, 7, 10, 0.82)");
-      grad.addColorStop(0.45, "rgba(8, 11, 16, 0.72)");
-      grad.addColorStop(1, "rgba(4, 5, 8, 0.95)");
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, S, S);
-
-      // Card Inner Border
-      ctx.strokeStyle = "rgba(255, 255, 255, 0.15)";
-      ctx.lineWidth = 3;
-      ctx.beginPath();
-      ctx.roundRect(40, 40, S - 80, S - 80, 24);
-      ctx.stroke();
-
-      // 3. Header: Brand & Protocol
-      ctx.fillStyle = "#00D964";
-      ctx.fillRect(90, 95, 12, 34);
-      ctx.fillStyle = "#FFFFFF";
-      ctx.font = `bold 38px ${FONT_MONO}`;
-      ctx.textBaseline = "middle";
-      ctx.fillText("godcandle", 115, 112);
-
-      ctx.font = `bold 22px ${FONT_MONO}`;
-      ctx.fillStyle = "rgba(255, 255, 255, 0.55)";
-      ctx.fillText("PRECOMPILE v1 · HyperEVM", 310, 112);
-
-      // Side & Leverage Pill (Top Right)
-      const sideText = `${trade.side.toUpperCase()} ${trade.leverage}×`;
-      ctx.font = `bold 26px ${FONT_MONO}`;
-      const sideWidth = ctx.measureText(sideText).width;
-      ctx.fillStyle = trade.side === "long" ? "#00D964" : "#FF3B30";
-      ctx.beginPath();
-      ctx.roundRect(S - 100 - sideWidth - 28, 92, sideWidth + 28, 44, 8);
-      ctx.fill();
-      ctx.fillStyle = trade.side === "long" ? "#000000" : "#FFFFFF";
-      ctx.fillText(sideText, S - 100 - sideWidth - 14, 114);
-
-      // 4. Center: Asset & Market Details
-      ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
-      ctx.font = `bold 36px ${FONT_MONO}`;
-      ctx.fillText(`${trade.market}-USD · ${trade.leverage}x Isolated`, 90, 280);
-
-      // 5. Giant Bold ROI % Typography in Vibrant Green
-      ctx.fillStyle = "#00D964";
-      ctx.font = `900 130px ${FONT_MONO}`;
-      ctx.fillText(pctStr, 85, 430);
-
-      // Optional PnL Amount
-      if (!hide) {
-        ctx.fillStyle = up ? "rgba(0, 217, 100, 0.9)" : "rgba(255, 59, 48, 0.9)";
-        ctx.font = `bold 44px ${FONT_MONO}`;
-        ctx.fillText(`${fmtSigned(trade.pnl)} USDC`, 90, 520);
-      }
-
-      // 6. Metrics Grid: Entry, Exit, Duration
-      const metricsY = 690;
-      ctx.strokeStyle = "rgba(255, 255, 255, 0.12)";
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(90, metricsY - 40);
-      ctx.lineTo(S - 90, metricsY - 40);
-      ctx.stroke();
-
-      const stats: [string, string][] = [
-        ["ENTRY PRICE", `$${fmtUsd(trade.entry, market.decimals)}`],
-        ["EXIT PRICE", `$${fmtUsd(trade.exit, market.decimals)}`],
-        ["DURATION", fmtDuration(trade.durationMs)],
-      ];
-
-      stats.forEach(([label, val], idx) => {
-        const xPos = 90 + idx * 310;
-        ctx.fillStyle = "rgba(255, 255, 255, 0.45)";
-        ctx.font = `bold 20px ${FONT_MONO}`;
-        ctx.fillText(label, xPos, metricsY);
-
-        ctx.fillStyle = "#FFFFFF";
-        ctx.font = `bold 34px ${FONT_MONO}`;
-        ctx.fillText(val, xPos, metricsY + 45);
-      });
-
-      // 7. Footer Branding & Domain
-      const footerY = 930;
-      ctx.strokeStyle = "rgba(255, 255, 255, 0.12)";
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(90, footerY - 40);
-      ctx.lineTo(S - 90, footerY - 40);
-      ctx.stroke();
-
-      ctx.fillStyle = "rgba(255, 255, 255, 0.45)";
-      ctx.font = `bold 22px ${FONT_MONO}`;
-      ctx.fillText("1000x SYNTHETIC PERPS · ZERO ENTRY FEES", 90, footerY);
-
-      ctx.fillStyle = "#FFFFFF";
-      ctx.font = `bold 28px ${FONT_MONO}`;
-      ctx.textAlign = "right";
-      ctx.fillText("godcandle.trade", S - 90, footerY);
-      ctx.textAlign = "left";
-
-      // Download
       const a = document.createElement("a");
       a.href = c.toDataURL("image/png");
       a.download = `godcandle-${trade.market}-${Date.now()}.png`;
@@ -232,7 +269,11 @@ export function ShareModal({
               </div>
 
               {/* Large, Bold, High-Contrast Typography in Bright Green */}
-              <div className="font-mono text-5xl sm:text-6xl font-extrabold tracking-tight leading-none drop-shadow-md text-[#00D964]">
+              <div
+                className={`font-mono text-5xl sm:text-6xl font-extrabold tracking-tight leading-none drop-shadow-md ${
+                  up ? "text-[#00D964]" : "text-[#FF3B30]"
+                }`}
+              >
                 {pctStr}
               </div>
 

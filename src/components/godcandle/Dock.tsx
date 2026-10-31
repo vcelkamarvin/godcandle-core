@@ -88,7 +88,7 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
           ) : (
             <div className="space-y-2">
               {open.map((pos) => {
-                const price = feeds[pos.market].price;
+                const price = feeds[pos.market]?.price ?? pos.entry;
                 const market = getMarket(pos.market);
                 const pnl = pnlOf(pos, price);
                 const roi = (pnl / pos.stake) * 100;
@@ -194,11 +194,11 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
                       </div>
 
                       <div className="flex items-center gap-1.5">
-                        {/* Share PnL Card */}
+                        {/* Share to X Button */}
                         <Button
                           variant="terminal"
-                          aria-label="Share PnL card"
-                          title="Share PnL to X"
+                          aria-label="Share to X"
+                          title="Share to X"
                           onClick={() => {
                             onShare({
                               ...pos,
@@ -209,9 +209,12 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
                               durationMs: Date.now() - pos.openedAt,
                             });
                           }}
-                          className="rounded-sm border border-border bg-secondary hover:bg-secondary/80 h-7 w-7 p-0 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+                          className="rounded-sm border border-border bg-secondary hover:bg-secondary/80 h-7 px-2 text-[10px] font-mono flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors"
                         >
-                          <Share2 className="h-3.5 w-3.5" />
+                          <svg className="size-2.5 fill-current" viewBox="0 0 24 24">
+                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 24.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                          </svg>
+                          <span>Share to X</span>
                         </Button>
 
                         {/* Independent Close Button */}

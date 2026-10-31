@@ -80,6 +80,30 @@ describe("Trade Execution Mechanics", () => {
     const longSl = price * (1 - (20 / 100) / lev);
     expect(longSl).toBeLessThan(price);
     expect(longSl).toBeCloseTo(59976);
+
+    // Negative ROI string input handling (e.g. user typed -50):
+    const rawVal = parseFloat("-50");
+    const parsedRoi = Math.abs(rawVal);
+    expect(parsedRoi).toBe(50);
+    const parsedSlPrice = price * (1 - (parsedRoi / 100) / lev);
+    expect(parsedSlPrice).toBeCloseTo(59940);
+
+    // For SHORT TP:
+    const shortTp = price * (1 - (targetRoi / 100) / lev);
+    expect(shortTp).toBeLessThan(price);
+    expect(shortTp).toBeCloseTo(59940);
+
+    // For SHORT SL (+20% adverse move against short):
+    const shortSl = price * (1 + (20 / 100) / lev);
+    expect(shortSl).toBeGreaterThan(price);
+    expect(shortSl).toBeCloseTo(60024);
+  });
+
+  it("verifies Monet 'The Cliffs at Etretat' signature artwork path exists", () => {
+    const fs = require("fs");
+    const path = require("path");
+    const imagePath = path.resolve(__dirname, "../../public/images/monet-etretat.jpg");
+    expect(fs.existsSync(imagePath)).toBe(true);
   });
 });
 

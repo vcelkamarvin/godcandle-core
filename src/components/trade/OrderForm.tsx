@@ -45,12 +45,13 @@ export function OrderForm({
   const shortBustPrice = currentPrice * (1 + bustDistancePct / 100);
 
   const computeTargetPrice = (side: 'LONG' | 'SHORT', type: 'tp' | 'sl'): number | null => {
-    const val = type === 'tp' ? parseFloat(tpValue) : parseFloat(slValue);
-    if (!val || val <= 0 || isNaN(val)) return null;
+    const rawVal = type === 'tp' ? parseFloat(tpValue) : parseFloat(slValue);
+    if (isNaN(rawVal) || rawVal === 0) return null;
 
     const mode = type === 'tp' ? tpMode : slMode;
-    if (mode === 'price') return val;
+    if (mode === 'price') return rawVal;
 
+    const val = Math.abs(rawVal);
     const roiFraction = val / 100;
     if (side === 'LONG') {
       return type === 'tp'
@@ -64,9 +65,30 @@ export function OrderForm({
   };
 
   const handleOrder = (side: 'LONG' | 'SHORT') => {
-    setIsSubmitting(true);
     const tpPrice = computeTargetPrice(side, 'tp');
     const slPrice = computeTargetPrice(side, 'sl');
+
+    if (side === 'LONG') {
+      if (tpPrice != null && tpMode === 'price' && tpPrice <= currentPrice) {
+        toast.error('Take Profit must be higher than current price for LONG');
+        return;
+      }
+      if (slPrice != null && slMode === 'price' && slPrice >= currentPrice) {
+        toast.error('Stop Loss must be lower than current price for LONG');
+        return;
+      }
+    } else {
+      if (tpPrice != null && tpMode === 'price' && tpPrice >= currentPrice) {
+        toast.error('Take Profit must be lower than current price for SHORT');
+        return;
+      }
+      if (slPrice != null && slMode === 'price' && slPrice <= currentPrice) {
+        toast.error('Stop Loss must be higher than current price for SHORT');
+        return;
+      }
+    }
+
+    setIsSubmitting(true);
     setTimeout(() => {
       setIsSubmitting(false);
       if (onTrade) {
@@ -76,6 +98,8 @@ export function OrderForm({
           description: `$${numMargin} @ ${leverage}x ($${notional.toLocaleString()} notional) against House Pool`,
         });
       }
+      setTpValue('');
+      setSlValue('');
     }, 250);
   };
 

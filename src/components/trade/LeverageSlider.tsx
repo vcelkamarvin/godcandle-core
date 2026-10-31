@@ -32,9 +32,9 @@ export function LeverageSlider({
             key={preset}
             type="button"
             onClick={() => onChange(preset)}
-            className={`pill h-7 text-center text-[11px] transition-all ${
+            className={`h-7 rounded-sm text-center text-xs font-mono font-medium transition-all ${
               value === preset
-                ? 'pill-ink font-bold shadow-sm'
+                ? 'bg-foreground text-background font-bold shadow-xs'
                 : 'border border-border bg-[#F6F6F4] text-muted-foreground hover:text-foreground hover:bg-[#F0F0EE]'
             }`}
           >
@@ -52,7 +52,7 @@ export function LeverageSlider({
           step="1"
           value={value}
           onChange={(e) => onChange(Number(e.target.value))}
-          className="w-full accent-foreground bg-[#E6E6E3] h-1.5 appearance-none cursor-pointer rounded-full"
+          className="w-full accent-foreground bg-[#E6E6E3] h-1.5 appearance-none cursor-pointer rounded-xs"
         />
         <div className="flex justify-between text-[10px] text-muted-foreground pt-1 font-mono">
           <span>1×</span>

@@ -17,6 +17,8 @@ import {
 } from "@/lib/engine";
 import { MarginDialog } from "./MarginDialog";
 
+import { toast } from "sonner";
+
 interface Props {
   market: MarketSymbol;
   status: MarketStatus;
@@ -26,6 +28,7 @@ interface Props {
   leverage: number;
   setLeverage: (n: number) => void;
   position: Position | null;
+  positions?: Position[];
   onOpen: (s: Side, tp?: number | null, sl?: number | null) => void;
   onClose: (idOrMarket?: string) => void;
   limitReached: boolean;
@@ -40,7 +43,7 @@ export function TradePanel(p: Props) {
   const [slValue, setSlValue] = useState("");
 
   const m = getMarket(p.market);
-  const pnl = p.position ? pnlOf(p.position, p.price) : 0;
+  const activePositions = p.positions ?? (p.position ? [p.position] : []);
   const blocked = p.status !== "open" || p.limitReached;
   const stakes = [10, 25, 50, 100, 250, 500];
   const maxAllowedLev = m.maxLeverage;
@@ -55,12 +58,13 @@ export function TradePanel(p: Props) {
   const { execPrice } = computeClampedPrice(p.price, p.price, corridorBps);
 
   const computeTargetPrice = (side: Side, type: "tp" | "sl"): number | null => {
-    const val = type === "tp" ? parseFloat(tpValue) : parseFloat(slValue);
-    if (!val || val <= 0 || isNaN(val)) return null;
+    const rawVal = type === "tp" ? parseFloat(tpValue) : parseFloat(slValue);
+    if (isNaN(rawVal) || rawVal === 0) return null;
 
     const mode = type === "tp" ? tpMode : slMode;
-    if (mode === "price") return val;
+    if (mode === "price") return rawVal;
 
+    const val = Math.abs(rawVal);
     const roiFraction = val / 100;
     if (side === "long") {
       return type === "tp"
@@ -76,7 +80,30 @@ export function TradePanel(p: Props) {
   const handleOpen = (side: Side) => {
     const tpPrice = computeTargetPrice(side, "tp");
     const slPrice = computeTargetPrice(side, "sl");
+
+    if (side === "long") {
+      if (tpPrice != null && tpMode === "price" && tpPrice <= p.price) {
+        toast.error("Take Profit must be higher than current price for Long");
+        return;
+      }
+      if (slPrice != null && slMode === "price" && slPrice >= p.price) {
+        toast.error("Stop Loss must be lower than current price for Long");
+        return;
+      }
+    } else {
+      if (tpPrice != null && tpMode === "price" && tpPrice >= p.price) {
+        toast.error("Take Profit must be lower than current price for Short");
+        return;
+      }
+      if (slPrice != null && slMode === "price" && slPrice <= p.price) {
+        toast.error("Stop Loss must be higher than current price for Short");
+        return;
+      }
+    }
+
     p.onOpen(side, tpPrice, slPrice);
+    setTpValue("");
+    setSlValue("");
   };
 
   return (
@@ -96,41 +123,61 @@ export function TradePanel(p: Props) {
         </span>
       </div>
 
-      {/* Active Position Mini-Banner if position exists on this market */}
-      {p.position && (
-        <div
-          className={`rounded-md border p-2 text-[11px] font-mono transition-all ${
-            pnl >= 0 ? "border-[#00D964]/40 bg-[#E3F8EC]/60" : "border-[#FF3B30]/40 bg-[#FFECEA]/60"
-          }`}
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1.5">
-              <span
-                className={`rounded-sm px-1.5 py-0.2 text-[9px] uppercase font-bold text-white ${
-                  p.position.side === "long" ? "bg-[#06964A]" : "bg-[#FF3B30]"
+      {/* Discrete Isolated Position Slugs for this market */}
+      {activePositions.length > 0 && (
+        <div className="space-y-1.5">
+          {activePositions.map((pos) => {
+            const pnl = pnlOf(pos, p.price);
+            const roi = (pnl / pos.stake) * 100;
+            const isUp = pnl >= 0;
+            return (
+              <div
+                key={pos.id}
+                className={`rounded-md border p-1.5 text-[10px] font-mono transition-all ${
+                  isUp ? "border-[#00D964]/40 bg-[#E3F8EC]/60" : "border-[#FF3B30]/40 bg-[#FFECEA]/60"
                 }`}
               >
-                {p.position.side} {p.position.leverage}x
-              </span>
-              <span className="text-[10px] text-muted-foreground">
-                ${fmtUsd(p.position.stake, 0)}
-              </span>
-              <span
-                className={`tabular font-bold text-[10px] ${
-                  pnl >= 0 ? "text-[#06964A]" : "text-[#FF3B30]"
-                }`}
-              >
-                {fmtSigned(pnl)} ({((pnl / p.position.stake) * 100).toFixed(1)}%)
-              </span>
-            </div>
-            <button
-              type="button"
-              onClick={() => p.onClose(p.position?.id || p.market)}
-              className="rounded-sm bg-foreground/10 hover:bg-foreground/20 text-foreground px-1.5 py-0.5 text-[9px] font-mono font-bold transition-colors"
-            >
-              Close
-            </button>
-          </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span
+                      className={`rounded-sm px-1.5 py-0.2 text-[9px] uppercase font-bold text-white ${
+                        pos.side === "long" ? "bg-[#06964A]" : "bg-[#FF3B30]"
+                      }`}
+                    >
+                      {pos.side} {pos.leverage}x
+                    </span>
+                    <span className="text-[10px] text-muted-foreground">
+                      ${fmtUsd(pos.stake, 0)}
+                    </span>
+                    <span
+                      className={`tabular font-bold text-[10px] ${
+                        isUp ? "text-[#06964A]" : "text-[#FF3B30]"
+                      }`}
+                    >
+                      {fmtSigned(pnl)} ({roi >= 0 ? "+" : ""}{roi.toFixed(1)}%)
+                    </span>
+                    {pos.tp && (
+                      <span className="text-[#00D964] text-[9px]">
+                        TP ${fmtUsd(pos.tp, m.decimals)}
+                      </span>
+                    )}
+                    {pos.sl && (
+                      <span className="text-[#FF3B30] text-[9px]">
+                        SL ${fmtUsd(pos.sl, m.decimals)}
+                      </span>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => p.onClose(pos.id)}
+                    className="rounded-sm bg-foreground/10 hover:bg-foreground/20 text-foreground px-1.5 py-0.5 text-[9px] font-mono font-bold transition-colors ml-1"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
 

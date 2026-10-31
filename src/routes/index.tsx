@@ -59,8 +59,9 @@ function Terminal() {
   };
 
   const m = getMarket(market);
-  const feed = t.feeds[market];
-  const pos = t.positions.find((p) => p.market === market) ?? null;
+  const feed = t.feeds[market] ?? { price: m.basePrice, open24: m.basePrice, status: "open" as const };
+  const marketPositions = t.positions.filter((p) => p.market === market);
+  const pos = marketPositions[0] ?? null;
   const pnl = pos ? pnlOf(pos, feed.price) : 0;
   const change = (feed.price / feed.open24 - 1) * 100;
 
@@ -193,7 +194,7 @@ function Terminal() {
                   position={pos}
                   pnlLabel={fmtSigned(pnl)}
                   pnlPositive={pnl >= 0}
-                  onClose={() => t.close(market)}
+                  onClose={() => pos && t.close(pos.id)}
                 />
               ) : (
                 <TradingViewWidget market={market} interval={tvInterval} height="100%" />
@@ -258,6 +259,7 @@ function Terminal() {
             leverage={leverage}
             setLeverage={setLeverage}
             position={pos}
+            positions={marketPositions}
             onOpen={(side, tp, sl) => t.open(market, side, stake, leverage, tp, sl)}
             onClose={(target) => t.close(target || market)}
             limitReached={t.positions.length >= 3}
