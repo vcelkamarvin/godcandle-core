@@ -92,17 +92,17 @@ export function DevPanel({
           <div className="rounded-xl border border-hairline p-3 bg-secondary/50 space-y-2 text-xs font-mono">
             <div className="flex items-center gap-1.5 text-muted-foreground">
               <ShieldAlert className="h-3.5 w-3.5 text-amber-500" />
-              <span className="font-bold text-foreground">Corridor Clamp Test</span>
+              <span className="font-bold text-foreground">Deviation Telemetry Test</span>
             </div>
             <p className="text-[10px] text-muted-foreground leading-normal">
-              Test BBO corridor clamping bounds (+1.5 bps limit enforcement).
+              Test price deviation telemetry bounds and spread detection.
             </p>
             <Button
               variant="outline"
               size="sm"
               className="pill w-full text-[10px] h-7"
               onClick={() => {
-                toast.success("Corridor clamp simulated: BBO deviation clamped at +1.50 bps ceiling.");
+                toast.success("Price deviation simulated: telemetry bound active.");
               }}
             >
               Simulate 2.8 bps Spike

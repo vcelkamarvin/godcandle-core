@@ -453,10 +453,10 @@ export function ShareModal({
     ctx.textBaseline = "middle";
     ctx.fillText("godcandle", padding + 18, headerYCenter);
 
-    // Sub-tag: PRECOMPILE v1 · HyperEVM with delicate rainbow badge
+    // Sub-tag: HyperEVM Live with delicate rainbow badge
     const godcandleW = ctx.measureText("godcandle").width;
     const subTagX = padding + 18 + godcandleW + 16;
-    const subTagText = "PRECOMPILE v1 · HyperEVM";
+    const subTagText = "HyperEVM Live";
     ctx.font = "600 13px -apple-system, BlinkMacSystemFont, 'Inter', 'SF Pro Text', sans-serif";
     const subTagW = ctx.measureText(subTagText).width + 20;
     const subTagH = 26;
@@ -984,7 +984,7 @@ export function ShareModal({
 
   const shareToX = () => {
     if (!trade) return;
-    const text = `Just hit ${pnlPctFormatted} ROI on ${symbolFormatted} ${leverageStr} on @godcandle_trade!\n\nZero entry fees, mark-clamped BBO on HyperEVM.\n${referralUrl}`;
+    const text = `Just hit ${pnlPctFormatted} ROI on ${symbolFormatted} ${leverageStr} on @godcandle_trade!\n\nZero entry fees on HyperEVM.\n${referralUrl}`;
     const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
     window.open(url, "_blank", "noopener,noreferrer");
   };
@@ -1323,7 +1323,7 @@ export function ShareModal({
                   </div>
                   <span className="rounded-full border border-border/60 bg-gradient-to-r from-[#CDC3F0]/40 via-[#FFDAC8]/40 to-[#A0D4CA]/40 px-2 py-0.5 text-[9px] sm:text-[10px] font-semibold tracking-wider text-inherit flex items-center gap-1 font-mono">
                     <Sparkles className="size-2.5 text-[#00D964]" />
-                    PRECOMPILE v1 · HyperEVM
+                    HyperEVM Live
                   </span>
                 </div>
 

@@ -26,13 +26,13 @@ function DocsOverview() {
             <strong className="text-accent">Synthetic 1000x Engine:</strong> Trades execute against the collective House Pool rather than peer-to-peer order books.
           </li>
           <li>
-            <strong className="text-accent">Mark-Clamped BBO Pricing:</strong> Instant fills at mid-price anchored to Hyperliquid L1 precompiles (<code className="text-bull bg-background px-1 py-0.5 border border-border">0x080e</code> and <code className="text-bull bg-background px-1 py-0.5 border border-border">0x0806</code>).
+            <strong className="text-accent">Hyperliquid L1 Pricing:</strong> Instant fills at mid-price anchored directly to Hyperliquid L1 order book feeds.
           </li>
           <li>
             <strong className="text-accent">Pure FIFO Settlement:</strong> 100% of trader collateral returned immediately in the block of closing; net winning profits queued deterministically if exceeding available liquid buffer.
           </li>
           <li>
-            <strong className="text-accent">No Entry Fee & Zero Slippage:</strong> Upfront fee is 0%. Trading fees are assessed exclusively on net winning PnL.
+            <strong className="text-accent">No Entry Fee:</strong> Upfront fee is 0%. Trading fees are assessed exclusively on net winning PnL.
           </li>
           <li>
             <strong className="text-accent">Self-Decaying Token Emission:</strong> Fixed supply of 1,000,000,000 CANDLE, distributed algorithmically to liquidity contributors and active traders.
@@ -50,7 +50,7 @@ function DocsOverview() {
             <ArrowRight className="w-3.5 h-3.5" />
           </div>
           <p className="mt-2 text-[11px] text-subtle">
-            Mark-clamped corridor, bust distance math, and asymmetric haircuts.
+            Execution rules, bust distance math, and asymmetric haircuts.
           </p>
         </Link>
 

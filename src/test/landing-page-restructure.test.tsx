@@ -59,11 +59,10 @@ describe("Landing Page Restructure Specification", () => {
     expect(landingContent).toContain("[PHASE_01 // THE SYNTHETIC ENGINE]");
     expect(landingContent).toContain("1000x Synthetic Perps & The House Pool");
     expect(landingContent).toContain("Initial $10k-$25k Bootstrap Pool");
-    expect(landingContent).toContain("Mark-Clamped BBO Execution");
-    expect(landingContent).toContain("0x080e");
-    expect(landingContent).toContain("0x0806");
-    expect(landingContent).toContain("markPx");
-    expect(landingContent).toContain("±1.5 bps");
+    expect(landingContent).toContain("Hyperliquid L1 Mid Execution");
+    expect(landingContent).not.toContain("0x080e");
+    expect(landingContent).not.toContain("0x0806");
+    expect(landingContent).not.toContain("±1.5 bps");
     expect(landingContent).toContain("Pure FIFO Settlement");
 
     // Phase 2: Upcoming

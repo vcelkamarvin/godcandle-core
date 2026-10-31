@@ -480,7 +480,7 @@ export function LandingPage() {
                   {"1000x Synthetic Perps & The House Pool"}
                 </h3>
                 <p className="text-xs text-[#8B949E] mt-2 leading-relaxed">
-                  Sovereign high-leverage synthetic derivative engine with mark-clamped execution and automated FIFO solvency guarantees on HyperEVM.
+                  Sovereign high-leverage synthetic derivative engine with automated FIFO solvency guarantees on HyperEVM.
                 </p>
               </div>
 
@@ -491,17 +491,17 @@ export function LandingPage() {
                     <span>Initial $10k-$25k Bootstrap Pool</span>
                   </div>
                   <p className="text-[11px] text-[#8B949E] leading-normal">
-                    Initial $10k-$25k Bootstrap Pool providing instant house liquidity for zero-slippage 1000x perps.
+                    Initial $10k-$25k Bootstrap Pool providing instant house liquidity for 1000x synthetic perps.
                   </p>
                 </div>
 
                 <div className="p-2.5 rounded-lg bg-[#161B22] border border-[#21262D] space-y-1">
                   <div className="text-white font-semibold flex items-center gap-1.5">
                     <Layers className="size-3.5 text-[#E3B341]" />
-                    <span>Mark-Clamped BBO Execution</span>
+                    <span>Hyperliquid L1 Mid Execution</span>
                   </div>
                   <p className="text-[11px] text-[#8B949E] leading-normal">
-                    Reads 0x080e, clipped ±1.5 bps to 0x0806 markPx to prevent oracle manipulation.
+                    Direct L1 market telemetry feeds to ensure authentic pricing and prevent oracle manipulation.
                   </p>
                 </div>
 

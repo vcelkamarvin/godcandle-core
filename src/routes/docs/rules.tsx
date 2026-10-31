@@ -12,23 +12,23 @@ function DocsRules() {
       <div>
         <h1 className="text-2xl font-bold tracking-tight mb-2">Protocol Mechanics & Execution Rules</h1>
         <p className="text-subtle text-sm">
-          Deterministic execution anchored directly to HyperCore precompiles read via L1Read.sol.
+          Deterministic execution anchored directly to Hyperliquid L1 order book telemetry.
         </p>
       </div>
 
-      {/* Section 1: Mark-Clamped BBO */}
+      {/* Section 1: Execution Pricing */}
       <section className="border border-border bg-surface p-5 space-y-4">
         <h2 className="text-base font-bold text-accent flex items-center gap-2">
           <Shield className="w-4 h-4 text-bull" />
-          1. Mark-Clamped BBO Execution
+          1. Hyperliquid L1 Real-Time Execution
         </h2>
         <p className="text-subtle text-xs leading-relaxed">
-          Execution price uses real-time HyperCore precompiles read via <code className="text-bull bg-background px-1 py-0.5 border border-border">L1Read.sol</code>.
+          Execution price uses real-time Hyperliquid L1 order book feeds.
         </p>
 
         <ol className="list-decimal list-inside space-y-2 text-xs text-subtle pl-2">
-          <li>Contract fetches instantaneous Best Bid and Offer via <code className="text-accent bg-background px-1 py-0.5 border border-border">0x080e</code> (BBO).</li>
-          <li>Contract fetches official smoothed Mark Price via <code className="text-accent bg-background px-1 py-0.5 border border-border">0x0806</code> (markPx).</li>
+          <li>Contract fetches instantaneous Best Bid and Offer (BBO).</li>
+          <li>Contract fetches official smoothed Mark Price (markPx).</li>
           <li>
             Pricing rule:
             <ul className="list-disc list-inside pl-4 mt-1 space-y-1">
@@ -60,7 +60,7 @@ function DocsRules() {
           2. Liquidation Mechanics (Bust Distance)
         </h2>
         <p className="text-subtle text-xs leading-relaxed">
-          Liquidations are triggered exclusively when <code className="text-accent bg-background px-1 py-0.5 border border-border">markPx (0x0806)</code> crosses the position bust threshold. Transient spikes in BBO do not trigger liquidations.
+          Liquidations are triggered exclusively when smoothed mark price (<code className="text-accent bg-background px-1 py-0.5 border border-border">markPx</code>) crosses the position bust threshold. Transient spikes in BBO do not trigger liquidations.
         </p>
 
         <div className="p-4 bg-background border border-border text-center font-mono">

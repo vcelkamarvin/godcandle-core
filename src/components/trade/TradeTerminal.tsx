@@ -240,9 +240,6 @@ export function TradeTerminal() {
                     <span>Reset ($10k)</span>
                   </button>
                 )}
-                <div className="text-[10px] text-muted-foreground uppercase tracking-wider font-mono">
-                  Corridor: {selectedMarket.corridorBps} bps
-                </div>
               </div>
             </div>
 

@@ -195,7 +195,7 @@ function useTradingState() {
       );
       if (res.success) {
         toast.success(`1000x Paper Order Placed!`, {
-          description: `$${stake} margin @ ${leverage}x on ${market}. BBO Clamped fill.`,
+          description: `$${stake} margin @ ${leverage}x on ${market}.`,
         });
       } else {
         toast.error(res.error || "Failed to place paper order");

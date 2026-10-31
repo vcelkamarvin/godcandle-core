@@ -109,10 +109,10 @@ export function CorridorDeviationChart({
           <div className="flex items-center gap-2">
             <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
             <h2 className="text-xs font-semibold uppercase tracking-wider font-mono text-muted-foreground">
-              Mark-Clamped BBO Corridor Telemetry
+              L1 Price Deviation Telemetry
             </h2>
-            <span className="rounded bg-[#FFECEA] px-1.5 py-0.5 text-[9px] font-mono font-bold text-[#FF3B30]">
-              ±{corridorLimit.toFixed(1)} bps Limit
+            <span className="rounded bg-[#F6F6F4] border border-border px-1.5 py-0.5 text-[9px] font-mono font-medium text-muted-foreground">
+              ±{corridorLimit.toFixed(1)} bps Bound
             </span>
           </div>
 
@@ -126,8 +126,8 @@ export function CorridorDeviationChart({
               <span>·</span>
               <span>Mark: <strong className="text-foreground">${fmtUsd(activeTick?.markPx ?? 0, 2)}</strong></span>
               <span>·</span>
-              <span className={activeTick?.isClamped ? "text-loss font-bold" : "text-gain font-semibold"}>
-                {activeTick?.isClamped ? "CLAMPED (0 SLIPPAGE)" : "WITHIN CORRIDOR"}
+              <span className={activeTick?.isClamped ? "text-loss font-semibold" : "text-gain font-semibold"}>
+                {activeTick?.isClamped ? "MAX SPREAD" : "NORMAL SPREAD"}
               </span>
             </div>
           </div>
@@ -377,8 +377,8 @@ export function CorridorDeviationChart({
               </div>
               <div className="flex justify-between gap-4 text-muted-foreground pt-0.5 border-t border-hairline">
                 <span>Execution Status:</span>
-                <span className={activeTick.isClamped ? "text-loss font-bold" : "text-gain font-semibold"}>
-                  {activeTick.isClamped ? "Clamped (Protected)" : "BBO Passthrough"}
+                <span className={activeTick.isClamped ? "text-loss font-semibold" : "text-gain font-semibold"}>
+                  {activeTick.isClamped ? "Max Deviation" : "Market Spread"}
                 </span>
               </div>
             </div>

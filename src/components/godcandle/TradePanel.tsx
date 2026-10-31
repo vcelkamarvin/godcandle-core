@@ -157,7 +157,7 @@ export function TradePanel(p: Props) {
             </span>
           )}
           <span className="rounded-sm bg-secondary border border-border px-1.5 py-0.5 text-[10px] font-mono text-muted-foreground">
-            {p.market}-USD · {maxAllowedLev}x max
+            {p.market}-USD
           </span>
         </div>
         <span className="rounded-sm bg-foreground text-background px-2 py-0.5 text-[10px] font-mono font-semibold">
