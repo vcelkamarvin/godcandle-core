@@ -75,6 +75,16 @@ describe("Header Layout & Navigation Structure", () => {
     expect(headerContent).not.toContain('aria-label="Price Target Goal"');
     expect(headerContent).not.toContain('aria-label="Boost Multiplier"');
   });
+
+  it("houses Goal and Boost under More dropdown menu with proper close handlers", () => {
+    // Both desktop and mobile More dropdowns contain Goal and Boost
+    expect(headerContent).toMatch(/to="\/goal"[\s\S]*?onClick=\{\(\) => setMoreOpen\(false\)\}/);
+    expect(headerContent).toMatch(/to="\/boost"[\s\S]*?onClick=\{\(\) => setMoreOpen\(false\)\}/);
+    expect(headerContent).toMatch(/to="\/goal"[\s\S]*?onClick=\{\(\) => setMobileMoreOpen\(false\)\}/);
+    expect(headerContent).toMatch(/to="\/boost"[\s\S]*?onClick=\{\(\) => setMobileMoreOpen\(false\)\}/);
+    expect(headerContent).toContain('pathname === "/goal" ||');
+    expect(headerContent).toContain('pathname === "/boost" ||');
+  });
 });
 
 describe("ConnectModal Light Mode & Web3 Wallets", () => {

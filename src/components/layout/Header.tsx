@@ -146,7 +146,7 @@ export function Header() {
               </span>
             </Link>
 
-            {/* Left Nav: Trading [Perps | 1000x], Tools [Goal | Boost], Analysis, Leaderboard, More */}
+            {/* Left Nav: Trading [Perps | 1000x], Analysis, Leaderboard, More */}
             <nav aria-label="Main navigation" className="hidden md:flex items-center gap-2">
               {/* Primary Trading Segment */}
               <div className="flex items-center p-0.5 rounded-full bg-secondary/80 border border-border/80 shadow-2xs">
