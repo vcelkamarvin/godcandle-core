@@ -61,6 +61,7 @@ export function BoostPage() {
   const [boostMultiplier, setBoostMultiplier] = useState(10);
   const [shareModalOpen, setShareModalOpen] = useState(false);
   const [boostLocked, setBoostLocked] = useState(false);
+  const [mobileTab, setMobileTab] = useState<"params" | "payoff">("params");
 
   const spot = t?.feeds?.[underlying]?.price ?? DEFAULT_SPOTS[underlying];
 
@@ -227,10 +228,69 @@ export function BoostPage() {
         </div>
       </div>
 
+      {/* Mobile Real-Time Outcome Summary & Tab Switcher */}
+      <div className="lg:hidden p-3 rounded-2xl bg-white border border-border shadow-xs space-y-2.5">
+        <div className="flex items-center justify-between">
+          <div>
+            <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold block">
+              Estimated Return ({direction})
+            </span>
+            <div className="flex items-baseline gap-2 mt-0.5">
+              <span
+                className={`text-xl font-bold font-mono tabular ${
+                  roiPct >= 0 ? "text-[#06964A]" : "text-[#FF3B30]"
+                }`}
+              >
+                {roiPct >= 0 ? "+" : ""}
+                {roiPct.toFixed(1)}%
+              </span>
+              <span className="text-xs font-semibold font-mono text-foreground tabular">
+                ${(amount + payout).toLocaleString()}
+              </span>
+            </div>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="text-[10px] font-mono font-bold text-[#7C3AED] bg-[#FAF5FF] px-2 py-0.5 rounded-full border border-[#7C3AED]/20">
+              {boostMultiplier}× Multiplier
+            </span>
+          </div>
+        </div>
+
+        {/* 1-Tap Toggle between Parameters & Visual Trajectory */}
+        <div className="grid grid-cols-2 gap-1 p-0.5 rounded-xl bg-secondary border border-border/70">
+          <button
+            type="button"
+            onClick={() => setMobileTab("params")}
+            className={`h-7 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+              mobileTab === "params"
+                ? "bg-white text-foreground shadow-xs font-bold"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <Zap className="size-3 text-[#7C3AED]" />
+            <span>Multiplier Setup</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setMobileTab("payoff")}
+            className={`h-7 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+              mobileTab === "payoff"
+                ? "bg-white text-foreground shadow-xs font-bold"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <TrendingUp className="size-3 text-[#06964A]" />
+            <span>Curve & Milestones</span>
+          </button>
+        </div>
+      </div>
+
       {/* Main Grid: Left Controls (4 Cols) | Right Visual Orb & Breakdown (8 Cols) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-5 items-start">
         {/* Left Column: Boost Controls */}
-        <div className="lg:col-span-4 rounded-3xl border border-border bg-white p-3.5 sm:p-5 shadow-xs space-y-3 sm:space-y-4">
+        <div className={`lg:col-span-4 rounded-3xl border border-border bg-white p-3.5 sm:p-5 shadow-xs space-y-3 sm:space-y-4 ${
+          mobileTab === "params" ? "block" : "hidden lg:block"
+        }`}>
           <div className="flex items-center justify-between pb-3 border-b border-border">
             <span className="font-bold tracking-wider text-xs uppercase flex items-center gap-1.5">
               <Zap className="size-3.5 text-[#7C3AED]" />
@@ -506,7 +566,9 @@ export function BoostPage() {
         </div>
 
         {/* Center / Right: Convex Payout Orb & Matrix */}
-        <div className="lg:col-span-8 space-y-3 sm:space-y-5">
+        <div className={`lg:col-span-8 space-y-3 sm:space-y-5 ${
+          mobileTab === "payoff" ? "block" : "hidden lg:block"
+        }`}>
           {/* Holographic Showcase */}
           <div className="relative overflow-hidden rounded-3xl border border-border bg-white p-3.5 sm:p-6 shadow-xs">
             <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-[#CDC3F0] via-[#FFDAC8] to-[#A0D4CA]" />

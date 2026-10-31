@@ -134,7 +134,7 @@ export function TradeTerminal() {
   return (
     <div className={`mx-auto font-sans text-foreground transition-all ${
       isProMode ? 'space-y-1.5 max-w-7xl text-[11px]' : 'space-y-2.5 max-w-6xl text-xs'
-    } ${mobileTab === 'chart' ? 'pb-16 lg:pb-0' : 'pb-4 lg:pb-0'}`}>
+    } ${mobileTab === 'chart' ? 'pb-16 lg:pb-0' : 'pb-24 lg:pb-0'}`}>
       {/* Unified L1 Market Bar with Pair Selector, Real-Time Telemetry & Search */}
       <MarketBar
         market={rawSymbol}
@@ -170,6 +170,7 @@ export function TradeTerminal() {
         <div className="flex items-center p-0.5 rounded-xl bg-secondary border border-border/70 shadow-2xs">
           <Link
             to="/"
+            search={{ pair: selectedMarket.symbol } as any}
             onClick={() => t.setMode('perps')}
             className={`h-7.5 px-3 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
               isPerps
@@ -182,6 +183,7 @@ export function TradeTerminal() {
           </Link>
           <Link
             to="/trade"
+            search={{ pair: selectedMarket.symbol } as any}
             onClick={() => t.setMode('paper1000x')}
             className={`h-7.5 px-3 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
               !isPerps
@@ -198,7 +200,10 @@ export function TradeTerminal() {
         <div className="flex items-center p-0.5 rounded-xl bg-secondary border border-border/70 shadow-2xs">
           <button
             type="button"
-            onClick={() => setMobileTab('chart')}
+            onClick={() => {
+              setMobileTab('chart');
+              window.scrollTo({ top: 0, behavior: 'instant' });
+            }}
             className={`h-7.5 px-3 rounded-lg text-xs font-bold transition-all cursor-pointer ${
               mobileTab === 'chart'
                 ? 'bg-white text-foreground shadow-xs border border-border/40 font-bold'
@@ -209,7 +214,10 @@ export function TradeTerminal() {
           </button>
           <button
             type="button"
-            onClick={() => setMobileTab('trade')}
+            onClick={() => {
+              setMobileTab('trade');
+              window.scrollTo({ top: 0, behavior: 'instant' });
+            }}
             className={`h-7.5 px-3 rounded-lg text-xs font-bold transition-all cursor-pointer ${
               mobileTab === 'trade'
                 ? 'bg-white text-foreground shadow-xs border border-border/40 font-bold'
@@ -575,12 +583,12 @@ export function TradeTerminal() {
 
       {/* Mobile Sticky Bottom Action Bar (visible on mobile in 'chart' view) */}
       {mobileTab === 'chart' && (
-        <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-border p-2.5 px-3 flex items-center gap-2 shadow-lg">
+        <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-border p-2.5 px-3 flex items-center gap-2 shadow-xl pb-[max(0.6rem,env(safe-area-inset-bottom))]">
           <button
             type="button"
             onClick={() => {
               setMobileTab('trade');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
+              window.scrollTo({ top: 0, behavior: 'instant' });
             }}
             className="flex-1 h-11 rounded-xl bg-[#00D964] text-black font-bold font-sans flex items-center justify-center gap-1.5 shadow-xs active:scale-[0.98] transition-transform text-xs cursor-pointer"
           >
@@ -591,7 +599,7 @@ export function TradeTerminal() {
             type="button"
             onClick={() => {
               setMobileTab('trade');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
+              window.scrollTo({ top: 0, behavior: 'instant' });
             }}
             className="flex-1 h-11 rounded-xl bg-[#FF3B30] text-white font-bold font-sans flex items-center justify-center gap-1.5 shadow-xs active:scale-[0.98] transition-transform text-xs cursor-pointer"
           >

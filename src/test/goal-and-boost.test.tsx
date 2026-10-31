@@ -93,4 +93,19 @@ describe("Target Goal Studio & Convexity Boost Multiplier", () => {
     expect(boostContent).not.toContain("Convexity Boost Active!");
     expect(boostContent).not.toContain("Convexity Stats");
   });
+
+  it("provides streamlined mobile view with instant real-time outcome banner and segmented tabs", () => {
+    // Both goal and boost render mobile real-time outcome banner and segmented tabs
+    expect(goalContent).toContain("Mobile Real-Time Outcome Summary & Tab Switcher");
+    expect(goalContent).toContain('setMobileTab("params")');
+    expect(goalContent).toContain('setMobileTab("payoff")');
+    expect(goalContent).toContain('Target Setup');
+    expect(goalContent).toContain('Curve & Milestones');
+
+    expect(boostContent).toContain("Mobile Real-Time Outcome Summary & Tab Switcher");
+    expect(boostContent).toContain('setMobileTab("params")');
+    expect(boostContent).toContain('setMobileTab("payoff")');
+    expect(boostContent).toContain('Multiplier Setup');
+    expect(boostContent).toContain('Curve & Milestones');
+  });
 });

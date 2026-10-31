@@ -196,6 +196,31 @@ describe("Trade Execution Mechanics", () => {
     expect(goalContent).toContain('search={{ pair: `${underlying}-USD` } as any}');
     expect(boostContent).toContain('search={{ pair: `${underlying}-USD` } as any}');
   });
+
+  it("verifies mobile 1-tap Perps ↔ 1000x switcher preserves active market pair in TradeTerminal and Header", () => {
+    const fs = require("fs");
+    const path = require("path");
+    const terminalContent = fs.readFileSync(path.resolve(__dirname, "../components/trade/TradeTerminal.tsx"), "utf-8");
+    const headerContent = fs.readFileSync(path.resolve(__dirname, "../components/layout/Header.tsx"), "utf-8");
+
+    expect(terminalContent).toContain("search={{ pair: selectedMarket.symbol } as any}");
+    expect(headerContent).toContain("new URLSearchParams(window.location.search).get(\"pair\")");
+  });
+
+  it("verifies mobile sticky action bars with iOS safe area inset support", () => {
+    const fs = require("fs");
+    const path = require("path");
+    const terminalContent = fs.readFileSync(path.resolve(__dirname, "../components/trade/TradeTerminal.tsx"), "utf-8");
+    const orderFormContent = fs.readFileSync(path.resolve(__dirname, "../components/trade/OrderForm.tsx"), "utf-8");
+
+    // Terminal chart sticky bottom action bar
+    expect(terminalContent).toContain("env(safe-area-inset-bottom)");
+    expect(terminalContent).toContain("setMobileTab('trade')");
+
+    // OrderForm sticky bottom execution buttons
+    expect(orderFormContent).toContain("sticky bottom-0");
+    expect(orderFormContent).toContain("env(safe-area-inset-bottom)");
+  });
 });
 
 

@@ -526,7 +526,7 @@ export function OrderForm({
       )}
 
       {/* 8. Main LONG and SHORT Actions */}
-      <div className="grid grid-cols-2 gap-2 pt-0.5">
+      <div className="grid grid-cols-2 gap-2 pt-0.5 sticky bottom-0 z-30 bg-white/95 backdrop-blur-md p-2 -mx-2.5 sm:mx-0 sm:static sm:bg-transparent sm:p-0 border-t border-border/60 sm:border-t-0 shadow-lg sm:shadow-none pb-[max(0.6rem,env(safe-area-inset-bottom))] sm:pb-0">
         {/* LONG Action */}
         <button
           type="button"

@@ -106,7 +106,7 @@ export function Header() {
     <>
       <header className="sticky top-0 z-40 border-b border-border bg-white/95 text-foreground font-sans backdrop-blur-md">
         {/* Status Bar */}
-        <div className="border-b border-border/60 bg-secondary/50 text-muted-foreground px-4 sm:px-6 py-1 flex items-center justify-between text-[11px] font-mono tracking-tight select-none">
+        <div className="hidden sm:flex border-b border-border/60 bg-secondary/50 text-muted-foreground px-4 sm:px-6 py-1 items-center justify-between text-[11px] font-mono tracking-tight select-none">
           <div className="flex items-center gap-2">
             <span className="inline-block size-1.5 rounded-full bg-[#00D964] animate-pulse" />
             <span className="font-semibold text-foreground tracking-wide">
@@ -152,6 +152,7 @@ export function Header() {
               <div className="flex items-center p-0.5 rounded-full bg-secondary/80 border border-border/80 shadow-2xs">
                 <Link
                   to="/"
+                  search={typeof window !== "undefined" && new URLSearchParams(window.location.search).get("pair") ? { pair: new URLSearchParams(window.location.search).get("pair")! } as any : undefined}
                   onClick={() => t.setMode("perps")}
                   className={
                     pathname === "/" && t.mode === "perps"
@@ -168,6 +169,7 @@ export function Header() {
                 </Link>
                 <Link
                   to="/trade"
+                  search={typeof window !== "undefined" && new URLSearchParams(window.location.search).get("pair") ? { pair: new URLSearchParams(window.location.search).get("pair")! } as any : undefined}
                   onClick={() => t.setMode("paper1000x")}
                   className={
                     pathname === "/trade" && t.mode === "paper1000x"
@@ -549,6 +551,7 @@ export function Header() {
           <div className="flex items-center p-0.5 rounded-full bg-secondary/80 border border-border/80 shrink-0">
             <Link
               to="/"
+              search={typeof window !== "undefined" && new URLSearchParams(window.location.search).get("pair") ? { pair: new URLSearchParams(window.location.search).get("pair")! } as any : undefined}
               onClick={() => t.setMode("perps")}
               className={
                 pathname === "/" && t.mode === "perps"
@@ -563,6 +566,7 @@ export function Header() {
             </Link>
             <Link
               to="/trade"
+              search={typeof window !== "undefined" && new URLSearchParams(window.location.search).get("pair") ? { pair: new URLSearchParams(window.location.search).get("pair")! } as any : undefined}
               onClick={() => t.setMode("paper1000x")}
               className={
                 pathname === "/trade" && t.mode === "paper1000x"

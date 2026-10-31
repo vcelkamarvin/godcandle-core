@@ -65,7 +65,9 @@ export function MarketBar({
   resetLabel = "Reset ($10k)",
   onReset,
 }: MarketBarProps) {
-  const { feeds } = useTrading();
+  const trading = useTrading();
+  const feeds = trading.feeds;
+  const is1000x = trading.mode === "paper1000x";
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<(typeof FILTERS)[number]>("All");
@@ -207,8 +209,15 @@ export function MarketBar({
               <MarketLogo symbol={market} size={18} />
               <div className="flex items-center gap-1.5 text-left">
                 <span className="text-xs font-bold tracking-tight">{market}-USD</span>
-                <span className="rounded bg-white/20 border border-white/30 px-1 py-0.2 text-[8px] font-mono font-semibold uppercase">
-                  PERP
+                <span
+                  className={cn(
+                    "rounded px-1 py-0.2 text-[8px] font-mono font-semibold uppercase",
+                    is1000x
+                      ? "bg-[#FFD60A]/20 border border-[#FFD60A]/40 text-[#FFD60A]"
+                      : "bg-white/20 border border-white/30 text-white"
+                  )}
+                >
+                  {is1000x ? "1000X" : "PERP"}
                 </span>
               </div>
               <ChevronDown className="size-3.5 opacity-60 ml-0.5" />
