@@ -18,6 +18,7 @@ import {
 import { MarginDialog } from "./MarginDialog";
 
 import { toast } from "sonner";
+import { useTrading } from "./TradingProvider";
 
 interface Props {
   market: MarketSymbol;
@@ -42,12 +43,16 @@ export function TradePanel(p: Props) {
   const [slMode, setSlMode] = useState<"price" | "roi">("roi");
   const [slValue, setSlValue] = useState("");
 
+  const t = useTrading();
   const m = getMarket(p.market);
   const activePositions = p.positions ?? (p.position ? [p.position] : []);
   const blocked = p.status !== "open" || p.limitReached;
   const stakes = [10, 25, 50, 100, 250, 500];
-  const maxAllowedLev = m.maxLeverage;
-  const availableLevs = LEVERAGES.filter((l) => l <= maxAllowedLev);
+  const maxAllowedLev = t?.mode === 'perps' ? t.engine.getMaxLeverage(p.market) : m.maxLeverage;
+  const availableLevs = t?.mode === 'perps'
+    ? [1, Math.round(maxAllowedLev * 0.1), Math.round(maxAllowedLev * 0.25), Math.round(maxAllowedLev * 0.5), maxAllowedLev]
+        .filter((l, idx, arr) => l >= 1 && l <= maxAllowedLev && arr.indexOf(l) === idx)
+    : LEVERAGES.filter((l) => l <= maxAllowedLev);
 
   const longLiq = liqPrice(p.price, p.leverage, "long", m.feeRate);
   const shortLiq = liqPrice(p.price, p.leverage, "short", m.feeRate);

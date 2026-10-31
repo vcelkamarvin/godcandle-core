@@ -1,32 +1,45 @@
 import React, { useState } from 'react';
-import { Key, ShieldAlert, CheckCircle2, Clock, Zap } from 'lucide-react';
+import { Key, CheckCircle2, Clock, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useTrading } from '@/components/godcandle/TradingProvider';
+import { hyperliquidEngineInstance } from '@/lib/engine/hyperliquid';
 
 export function SessionKeyPrompt() {
-  const [isEnabled, setIsEnabled] = useState(false);
+  const t = useTrading();
   const [loading, setLoading] = useState(false);
+  const agentState = hyperliquidEngineInstance.getAgentState();
+  const isEnabled = t.isAgentApproved || agentState?.isApproved;
 
-  const handleToggle = () => {
+  const handleToggle = async () => {
     setLoading(true);
-    setTimeout(() => {
-      setIsEnabled((prev) => !prev);
+    try {
+      if (!isEnabled) {
+        await t.approveAgent();
+      } else {
+        // revoke
+        hyperliquidEngineInstance.markAgentApproved('');
+      }
+    } finally {
       setLoading(false);
-    }, 400);
+    }
   };
 
+  const agentAddr = agentState?.address;
+  const shortAddr = agentAddr ? `${agentAddr.slice(0, 6)}…${agentAddr.slice(-4)}` : '0x7c2…9e1';
+
   return (
-    <div className="border border-border bg-surface p-3 font-mono text-xs">
+    <div className="border border-border bg-surface p-3 font-mono text-xs rounded-xl shadow-2xs">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Key className={`w-4 h-4 ${isEnabled ? 'text-bull' : 'text-subtle'}`} />
+          <Key className={`w-4 h-4 ${isEnabled ? 'text-[#06964A]' : 'text-muted-foreground'}`} />
           <div>
-            <span className="font-semibold text-accent block">
-              1-Click Execution Delegate
+            <span className="font-semibold text-foreground block">
+              1-Click Hyperliquid Agent Key
             </span>
-            <span className="text-[10px] text-subtle block">
+            <span className="text-[10px] text-muted-foreground block">
               {isEnabled
-                ? 'Active · Sub-millisecond signing enabled for 1000x Perps'
-                : 'Disabled · Approve once for zero-signature 1000x trades'}
+                ? 'Active · Sub-millisecond EIP-712 signing enabled for live perps'
+                : 'Disabled · Approve once for non-custodial zero-popup trades'}
             </span>
           </div>
         </div>
@@ -36,25 +49,25 @@ export function SessionKeyPrompt() {
           variant={isEnabled ? 'outline' : 'default'}
           className={`h-7 px-3 text-[11px] font-mono ${
             isEnabled
-              ? 'border-border text-subtle hover:text-accent'
-              : 'bg-accent text-background hover:bg-white'
+              ? 'border-border text-muted-foreground hover:text-foreground'
+              : 'bg-foreground text-background hover:opacity-90'
           }`}
           onClick={handleToggle}
           disabled={loading}
         >
-          {loading ? 'Configuring…' : isEnabled ? 'Revoke Key' : 'Enable 1-Click'}
+          {loading ? 'Configuring…' : isEnabled ? 'Revoke Key' : 'Approve Agent'}
         </Button>
       </div>
 
       {isEnabled && (
-        <div className="mt-2.5 pt-2 border-t border-border flex items-center justify-between text-[10px] text-subtle">
-          <span className="flex items-center gap-1 text-bull">
+        <div className="mt-2.5 pt-2 border-t border-border flex items-center justify-between text-[10px] text-muted-foreground">
+          <span className="flex items-center gap-1 text-[#06964A]">
             <CheckCircle2 className="w-3 h-3" />
-            Session Key: 0x7c2…9e1
+            Agent Address: {shortAddr}
           </span>
           <span className="flex items-center gap-1">
             <Clock className="w-3 h-3" />
-            Expires in: 23h 58m
+            Session Nonce: Ready
           </span>
         </div>
       )}

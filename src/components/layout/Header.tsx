@@ -8,6 +8,7 @@ import { TransferDialog } from '@/components/godcandle/TransferDialog';
 import { Button } from '@/components/ui/button';
 import { useAccount, useBalance } from 'wagmi';
 import { formatUnits } from 'viem';
+import { toast } from 'sonner';
 
 export function Header() {
   const t = useTrading();
@@ -25,6 +26,15 @@ export function Header() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const isCandleActive =
     pathname.startsWith('/candle') || pathname.startsWith('/staking');
+
+  // Sync mode with pathname
+  useEffect(() => {
+    if (pathname === '/' && t.mode !== 'perps') {
+      t.setMode('perps');
+    } else if (pathname === '/trade' && t.mode !== 'paper1000x') {
+      t.setMode('paper1000x');
+    }
+  }, [pathname, t.mode]);
 
   // Close dropdown on click outside
   useEffect(() => {
@@ -67,6 +77,7 @@ export function Header() {
               <div className="flex items-center p-0.5 rounded-full bg-secondary border border-border/80 shadow-2xs">
                 <Link
                   to="/"
+                  onClick={() => t.setMode('perps')}
                   activeOptions={{ exact: true }}
                   activeProps={{
                     className: 'pill pill-ink h-8 px-3.5 text-xs font-semibold shadow-xs',
@@ -76,10 +87,16 @@ export function Header() {
                       'pill h-8 px-3.5 text-xs text-muted-foreground hover:text-foreground hover:bg-white/60 transition-colors',
                   }}
                 >
-                  Perps
+                  <span className="flex items-center gap-1.5">
+                    <span>Perps</span>
+                    <span className="rounded bg-[#E3F8EC] px-1.5 py-0.2 text-[8px] font-bold text-[#06964A]">
+                      LIVE
+                    </span>
+                  </span>
                 </Link>
                 <Link
                   to="/trade"
+                  onClick={() => t.setMode('paper1000x')}
                   activeProps={{
                     className: 'pill pill-ink h-8 px-3.5 text-xs font-semibold shadow-xs',
                   }}
@@ -92,6 +109,9 @@ export function Header() {
                     <span>1000x</span>
                     <span className="rounded bg-[#FFECEA] px-1.5 py-0.2 text-[9px] font-bold text-[#FF3B30]">
                       MAX
+                    </span>
+                    <span className="rounded bg-[#FFF4E5] px-1.5 py-0.2 text-[8px] font-bold text-[#D97706]">
+                      TEST · PAPER
                     </span>
                   </span>
                 </Link>
@@ -205,10 +225,15 @@ export function Header() {
             {/* Available Balance */}
             <div className="hidden lg:block text-right pr-1">
               <p className="data-label text-[9px] flex items-center justify-end gap-1">
-                <span>Available</span>
-                {hypeBalance && (
-                  <span className="font-mono text-muted-foreground font-normal">
-                    · {parseFloat(formatUnits(hypeBalance.value, hypeBalance.decimals)).toFixed(2)} HYPE
+                <span>{t.mode === 'perps' ? 'Real Withdrawable' : 'Paper Available'}</span>
+                {t.mode === 'perps' && (
+                  <span className="font-mono text-[#06964A] font-bold">
+                    · LIVE
+                  </span>
+                )}
+                {t.mode === 'paper1000x' && (
+                  <span className="font-mono text-[#D97706] font-bold">
+                    · 1000x
                   </span>
                 )}
               </p>
@@ -217,16 +242,34 @@ export function Header() {
               </p>
             </div>
 
-            {/* Deposit Button */}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setTransfer('Deposit')}
-              className="pill pill-ink h-8 px-3 text-xs gap-1 border-0 cursor-pointer shadow-xs"
-            >
-              <Plus className="size-3" />
-              Deposit
-            </Button>
+            {/* Deposit or Reset Button */}
+            {t.mode === 'paper1000x' ? (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={async () => {
+                  const res = await t.resetPaperBalance();
+                  if (res.success) {
+                    toast.success("Paper balance reset to $10,000.00 USDC");
+                  } else {
+                    toast.error(res.error || "Reset cooldown active");
+                  }
+                }}
+                className="pill pill-ink h-8 px-3 text-xs gap-1 border-0 cursor-pointer shadow-xs"
+              >
+                Reset ($10k)
+              </Button>
+            ) : (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setTransfer('Deposit')}
+                className="pill pill-ink h-8 px-3 text-xs gap-1 border-0 cursor-pointer shadow-xs"
+              >
+                <Plus className="size-3" />
+                Deposit
+              </Button>
+            )}
 
             {/* Connect Wallet Modal */}
             <ConnectModal />

@@ -117,6 +117,15 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
                             <span className="rounded-sm bg-secondary border border-border px-1.5 py-0.2 text-[10px] font-bold text-foreground">
                               {pos.leverage}x
                             </span>
+                            {pos.id.startsWith("paper-") ? (
+                              <span className="rounded bg-[#FFF4E5] border border-[#D97706]/30 px-1 py-0.2 text-[8px] font-bold text-[#D97706]">
+                                TEST · PAPER
+                              </span>
+                            ) : (
+                              <span className="rounded bg-[#E3F8EC] border border-[#06964A]/30 px-1 py-0.2 text-[8px] font-bold text-[#06964A]">
+                                LIVE
+                              </span>
+                            )}
                           </div>
                           <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground mt-0.5">
                             <span className="font-mono">#{pos.id.slice(0, 10)}</span>

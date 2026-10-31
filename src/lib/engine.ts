@@ -29,3 +29,9 @@ export function openingError(market: MarketSymbol, stake: number, leverage: numb
 export const fmtUsd = (n: number, dp = 2) => n.toLocaleString("en-US",{minimumFractionDigits:dp,maximumFractionDigits:dp});
 export const fmtSigned = (n: number, dp = 2) => `${n>=0?"+":"−"}$${fmtUsd(Math.abs(n),dp)}`;
 export const fmtDuration = (ms: number) => { const s = Math.max(0,Math.floor(ms/1000)); return s >= 60 ? `${Math.floor(s/60)}m ${String(s%60).padStart(2,"0")}s` : `${s}s`; };
+
+export * from "./engine/types";
+export * from "./engine/paper-math";
+export * from "./engine/paper";
+export * from "./engine/hyperliquid";
+export { getEngine } from "./engine/index";

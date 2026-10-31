@@ -1,13 +1,22 @@
 import React, { useState } from 'react';
 import { computeClampedPrice, computeBustDistance } from '@/lib/hyperliquid';
-import { ArrowUp, ArrowDown } from 'lucide-react';
+import { ArrowUp, ArrowDown, AlertTriangle, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
+import type { TradingMode } from '@/lib/engine/types';
+import {
+  paperLiquidationPrice,
+  DEFAULT_MMR,
+  DEFAULT_CORRIDOR_BPS,
+} from '@/lib/engine/paper-math';
+import { hyperliquidEngineInstance } from '@/lib/engine/hyperliquid';
 
 interface OrderFormProps {
   currentPrice: number;
   leverage: number;
+  asset?: string;
   corridorBps?: number;
   availableBalance?: number;
+  mode?: TradingMode;
   onTrade?: (
     side: 'LONG' | 'SHORT',
     margin: number,
@@ -22,8 +31,10 @@ const MARGIN_CHIPS = ['10', '25', '50', '100', '250', '500'];
 export function OrderForm({
   currentPrice,
   leverage,
+  asset = 'BTC',
   corridorBps = 1.5,
   availableBalance = 1000,
+  mode = 'paper1000x',
   onTrade,
 }: OrderFormProps) {
   const [margin, setMargin] = useState('50');
@@ -32,24 +43,51 @@ export function OrderForm({
   const [tpValue, setTpValue] = useState('');
   const [slMode, setSlMode] = useState<'price' | 'roi'>('roi');
   const [slValue, setSlValue] = useState('');
+  const [pendingConfirmSide, setPendingConfirmSide] = useState<'LONG' | 'SHORT' | null>(null);
 
   const numMargin = parseFloat(margin) || 0;
   const notional = numMargin * leverage;
-  const { bustDistanceBps, bustDistancePct } = computeBustDistance(leverage);
 
-  // Mark-Clamped BBO Execution Price
+  // Builder Fee Configuration
+  const builderAddress = typeof process !== 'undefined' ? process.env?.['NEXT_PUBLIC_HL_BUILDER_ADDRESS'] : null;
+  const builderFeeBps = typeof process !== 'undefined' ? parseFloat(process.env?.['NEXT_PUBLIC_HL_BUILDER_FEE_BPS'] || '0') : 0;
+  const builderFeeUsd = builderAddress && builderFeeBps > 0 ? (notional * builderFeeBps) / 10000 : 0;
+
+  // Pricing calculations
   const { execPrice } = computeClampedPrice(currentPrice, currentPrice, corridorBps);
 
-  // Liquidation prices calculated from markPx
-  const longBustPrice = currentPrice * (1 - bustDistancePct / 100);
-  const shortBustPrice = currentPrice * (1 + bustDistancePct / 100);
+  let longBustPrice: number;
+  let shortBustPrice: number;
+  let bustDistanceBps: number;
+  let bustDistancePct: number;
+
+  if (mode === 'perps') {
+    const imr = 1 / leverage;
+    const mmr = 0.005; // 0.5% default HL MMR
+    longBustPrice = execPrice * (1 - imr + mmr);
+    shortBustPrice = execPrice * (1 + imr - mmr);
+    bustDistancePct = Math.max(0.01, (imr - mmr) * 100);
+    bustDistanceBps = bustDistancePct * 100;
+  } else {
+    // 1000x Paper formulas
+    longBustPrice = paperLiquidationPrice(execPrice, leverage, 'long', DEFAULT_MMR);
+    shortBustPrice = paperLiquidationPrice(execPrice, leverage, 'short', DEFAULT_MMR);
+    const imr = 1 / leverage;
+    bustDistancePct = Math.max(0.001, (imr - DEFAULT_MMR) * 100);
+    bustDistanceBps = bustDistancePct * 100;
+  }
+
+  // Min notional validation error in Perps mode
+  const minNotionalError = mode === 'perps' && notional < 10
+    ? 'Order value too small: minimum $10 notional required'
+    : null;
 
   const computeTargetPrice = (side: 'LONG' | 'SHORT', type: 'tp' | 'sl'): number | null => {
     const rawVal = type === 'tp' ? parseFloat(tpValue) : parseFloat(slValue);
     if (isNaN(rawVal) || rawVal === 0) return null;
 
-    const mode = type === 'tp' ? tpMode : slMode;
-    if (mode === 'price') return rawVal;
+    const currentMode = type === 'tp' ? tpMode : slMode;
+    if (currentMode === 'price') return rawVal;
 
     const val = Math.abs(rawVal);
     const roiFraction = val / 100;
@@ -64,7 +102,32 @@ export function OrderForm({
     }
   };
 
-  const handleOrder = (side: 'LONG' | 'SHORT') => {
+  const executeOrder = (side: 'LONG' | 'SHORT') => {
+    const tpPrice = computeTargetPrice(side, 'tp');
+    const slPrice = computeTargetPrice(side, 'sl');
+
+    setIsSubmitting(true);
+    setTimeout(() => {
+      setIsSubmitting(false);
+      setPendingConfirmSide(null);
+      if (onTrade) {
+        onTrade(side, numMargin, leverage, tpPrice, slPrice);
+      } else {
+        toast.success(`${side} order executed`, {
+          description: `$${numMargin} @ ${leverage}x ($${notional.toLocaleString()} notional)`,
+        });
+      }
+      setTpValue('');
+      setSlValue('');
+    }, 250);
+  };
+
+  const handleOrderClick = (side: 'LONG' | 'SHORT') => {
+    if (minNotionalError) {
+      toast.error(minNotionalError);
+      return;
+    }
+
     const tpPrice = computeTargetPrice(side, 'tp');
     const slPrice = computeTargetPrice(side, 'sl');
 
@@ -88,23 +151,36 @@ export function OrderForm({
       }
     }
 
-    setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
-      if (onTrade) {
-        onTrade(side, numMargin, leverage, tpPrice, slPrice);
-      } else {
-        toast.success(`${side} order executed`, {
-          description: `$${numMargin} @ ${leverage}x ($${notional.toLocaleString()} notional) against House Pool`,
-        });
-      }
-      setTpValue('');
-      setSlValue('');
-    }, 250);
+    // First live order of session confirmation requirement in Perps mode
+    if (mode === 'perps' && !hyperliquidEngineInstance.hasConfirmedFirstOrder()) {
+      setPendingConfirmSide(side);
+      return;
+    }
+
+    executeOrder(side);
   };
 
   return (
     <div className="space-y-2 font-mono text-xs">
+      {/* Mode Badge & Order Header */}
+      <div className="flex items-center justify-between pb-1">
+        <div className="flex items-center gap-1.5">
+          {mode === 'perps' ? (
+            <span className="flex items-center gap-1 rounded bg-[#E3F8EC] border border-[#06964A]/30 px-2 py-0.5 text-[9px] font-bold text-[#06964A]">
+              <span className="size-1.5 rounded-full bg-[#06964A] animate-pulse" />
+              LIVE · REAL FUNDS
+            </span>
+          ) : (
+            <span className="flex items-center gap-1 rounded bg-[#FFF4E5] border border-[#D97706]/30 px-2 py-0.5 text-[9px] font-bold text-[#D97706]">
+              TEST · PAPER
+            </span>
+          )}
+          <span className="text-[10px] text-muted-foreground uppercase font-mono">
+            {mode === 'perps' ? 'Hyperliquid L1' : 'Synthetic 1000x'}
+          </span>
+        </div>
+      </div>
+
       {/* Margin Chip Picker */}
       <div>
         <div className="flex justify-between text-muted-foreground mb-1 text-[10px]">
@@ -169,11 +245,33 @@ export function OrderForm({
           </span>
         </div>
 
+        {/* Protocol & Builder Fees */}
         <div className="border-t border-border/50 pt-1 flex justify-between items-center text-muted-foreground text-[9px]">
-          <span>PROTOCOL FEES</span>
-          <span className="text-[#06964A] font-semibold">0% Entry · 2.0% Net Win Fee</span>
+          <span>FEES</span>
+          <div className="flex items-center gap-1.5 font-semibold">
+            {mode === 'perps' ? (
+              <>
+                <span className="text-foreground">0.035% Taker</span>
+                {builderAddress && builderFeeBps > 0 && (
+                  <span className="text-[#5E5CE6]">
+                    +{(builderFeeBps / 100).toFixed(2)}% Builder (${builderFeeUsd.toFixed(2)})
+                  </span>
+                )}
+              </>
+            ) : (
+              <span className="text-[#06964A]">0% Entry · 1.5 bps Clamped</span>
+            )}
+          </div>
         </div>
       </div>
+
+      {/* Validation Error Display */}
+      {minNotionalError && (
+        <div className="p-2 rounded bg-[#FFECEA] border border-[#FF3B30]/30 text-[#FF3B30] text-[10px] font-mono flex items-center gap-1.5">
+          <AlertTriangle className="size-3.5 shrink-0" />
+          <span>{minNotionalError}</span>
+        </div>
+      )}
 
       {/* TP & SL Compact Row */}
       <div className="grid grid-cols-2 gap-1.5 font-mono text-[11px]">
@@ -224,8 +322,8 @@ export function OrderForm({
       <div className="grid grid-cols-2 gap-1.5 pt-0.5">
         <button
           type="button"
-          onClick={() => handleOrder('LONG')}
-          disabled={isSubmitting || numMargin <= 0}
+          onClick={() => handleOrderClick('LONG')}
+          disabled={isSubmitting || numMargin <= 0 || !!minNotionalError}
           className="rounded-md bg-[#00D964] text-white h-10 text-center font-mono text-xs font-bold hover:bg-[#06964A] transition-all flex items-center justify-center gap-1.5 disabled:opacity-50 shadow-xs"
         >
           <ArrowUp className="w-3.5 h-3.5 stroke-[2.5]" />
@@ -234,14 +332,72 @@ export function OrderForm({
 
         <button
           type="button"
-          onClick={() => handleOrder('SHORT')}
-          disabled={isSubmitting || numMargin <= 0}
+          onClick={() => handleOrderClick('SHORT')}
+          disabled={isSubmitting || numMargin <= 0 || !!minNotionalError}
           className="rounded-md bg-[#FF3B30] text-white h-10 text-center font-mono text-xs font-bold hover:bg-[#d62e24] transition-all flex items-center justify-center gap-1.5 disabled:opacity-50 shadow-xs"
         >
           <ArrowDown className="w-3.5 h-3.5 stroke-[2.5]" />
           <span>SHORT {leverage}×</span>
         </button>
       </div>
+
+      {/* First Live Order Confirmation Modal */}
+      {pendingConfirmSide && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs">
+          <div className="w-full max-w-sm rounded-xl border border-border bg-white p-5 shadow-xl space-y-4 font-mono text-xs">
+            <div className="flex items-center gap-2 pb-2 border-b border-border">
+              <span className="flex items-center gap-1 rounded bg-[#E3F8EC] border border-[#06964A]/30 px-2 py-0.5 text-[10px] font-bold text-[#06964A]">
+                <span className="size-1.5 rounded-full bg-[#06964A]" />
+                LIVE · REAL FUNDS
+              </span>
+              <span className="font-bold text-foreground">Confirm Live Order</span>
+            </div>
+
+            <p className="text-muted-foreground text-[11px] leading-relaxed">
+              You are about to place a <strong className="text-foreground">{pendingConfirmSide}</strong> order on{' '}
+              <strong className="text-foreground">{asset}</strong> using real funds on Hyperliquid.
+            </p>
+
+            <div className="space-y-1.5 bg-[#F6F6F4] p-3 rounded-lg border border-border text-[11px]">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Side</span>
+                <span className={pendingConfirmSide === 'LONG' ? 'text-[#06964A] font-bold' : 'text-[#FF3B30] font-bold'}>
+                  {pendingConfirmSide}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Isolated Margin</span>
+                <span className="font-bold">${numMargin} USDC</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Leverage</span>
+                <span className="font-bold">{leverage}×</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Notional</span>
+                <span className="font-bold">${notional.toLocaleString()} USDC</span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setPendingConfirmSide(null)}
+                className="h-8 rounded-md border border-border bg-white text-muted-foreground hover:bg-[#F6F6F4] font-bold text-xs"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => executeOrder(pendingConfirmSide)}
+                className="h-8 rounded-md bg-foreground text-background hover:opacity-90 font-bold text-xs shadow-xs"
+              >
+                Confirm & Place
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
