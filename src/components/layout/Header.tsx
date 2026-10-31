@@ -24,12 +24,13 @@ export function Header() {
   const candleRef = useRef<HTMLDivElement>(null);
 
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isLanding = pathname === '/' || pathname === '/main';
   const isCandleActive =
     pathname.startsWith('/candle') || pathname.startsWith('/staking');
 
   // Sync mode with pathname
   useEffect(() => {
-    if (pathname === '/' && t.mode !== 'perps') {
+    if ((pathname === '/' || pathname === '/main') && t.mode !== 'perps') {
       t.setMode('perps');
     } else if (pathname === '/trade' && t.mode !== 'paper1000x') {
       t.setMode('paper1000x');
@@ -49,7 +50,13 @@ export function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 border-b border-border bg-white/95 backdrop-blur-md">
+      <header
+        className={`sticky top-0 z-40 border-b backdrop-blur-md ${
+          isLanding
+            ? 'border-[#21262D] bg-[#080B0F]/95 text-[#E6EDF3] font-mono'
+            : 'border-border bg-white/95 text-foreground font-sans'
+        }`}
+      >
         {/* Status Bar */}
         <div className="border-b border-[#22272E] bg-[#0A0D12] text-[#8B949E] px-4 sm:px-6 py-1.5 flex items-center justify-between text-[11px] font-mono tracking-tight select-none">
           <div className="flex items-center gap-2">
@@ -70,8 +77,8 @@ export function Header() {
           </div>
         </div>
 
-        {/* Signature Light Rainbow Iridescent Thin Bar */}
-        <div className="h-[2px] w-full rainbow-bar" />
+        {/* Signature Light Rainbow / Iridescent Thin Bar */}
+        <div className={`h-[2px] w-full ${isLanding ? 'bg-gradient-to-r from-[#00D964]/50 via-[#58A6FF]/50 to-[#A371F7]/50' : 'rainbow-bar'}`} />
 
         {/* Main Navbar */}
         <div className="flex h-14 items-center justify-between gap-4 px-4 sm:px-6">
@@ -79,16 +86,23 @@ export function Header() {
           <div className="flex items-center gap-6">
             <Link
               to="/"
-              className="group flex shrink-0 items-center gap-2 font-sans"
+              className={`group flex shrink-0 items-center gap-2 ${isLanding ? 'font-mono' : 'font-sans'}`}
               aria-label="godcandle home"
             >
-              <span className="text-[22px] font-normal tracking-tight text-foreground group-hover:opacity-85 transition-opacity">
+              <span className={`text-[22px] font-bold tracking-tight transition-colors ${isLanding ? 'text-white group-hover:text-[#00D964]' : 'text-foreground font-normal group-hover:opacity-85'}`}>
                 godcandle
               </span>
-              <span className="hidden rounded-full border border-border bg-gradient-to-r from-[#CDC3F0]/40 via-[#FFDAC8]/40 to-[#A0D4CA]/40 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-foreground sm:inline-flex items-center gap-1">
-                <Sparkles className="size-2.5 text-[#0A0A0A]/70" />
-                v3 Light
-              </span>
+              {isLanding ? (
+                <span className="hidden rounded-full border border-[#30363D] bg-[#161B22] px-2 py-0.5 text-[9px] font-semibold text-[#58A6FF] sm:inline-flex items-center gap-1 font-mono">
+                  <Sparkles className="size-2.5 text-[#00D964]" />
+                  BUILDER CODE: GODCANDLE
+                </span>
+              ) : (
+                <span className="hidden rounded-full border border-border bg-gradient-to-r from-[#CDC3F0]/40 via-[#FFDAC8]/40 to-[#A0D4CA]/40 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-foreground sm:inline-flex items-center gap-1">
+                  <Sparkles className="size-2.5 text-[#0A0A0A]/70" />
+                  v3 Light
+                </span>
+              )}
             </Link>
 
             {/* Left Nav: Products [Perps | 1000x], Trade (Live), Roadmap, Docs, Analysis, Leaderboard */}
@@ -330,41 +344,41 @@ export function Header() {
         </div>
 
         {/* Mobile Nav Sub-row */}
-        <div className="flex md:hidden items-center gap-1 overflow-x-auto border-t border-border px-3 py-1.5 bg-[#F6F6F4]/60 no-scrollbar">
-          <Link
-            to="/"
-            activeOptions={{ exact: true }}
-            activeProps={{
-              className: 'pill pill-ink h-7 px-2.5 text-[11px] font-semibold shrink-0',
-            }}
-            inactiveProps={{
-              className:
-                'pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary shrink-0',
-            }}
-          >
-            Perps
-          </Link>
+        <div
+          className={`flex md:hidden items-center gap-1 overflow-x-auto border-t px-3 py-1.5 no-scrollbar ${
+            isLanding
+              ? 'border-[#21262D] bg-[#0D1117] text-xs font-mono'
+              : 'border-border bg-[#F6F6F4]/60'
+          }`}
+        >
           <Link
             to="/trade"
-            activeProps={{
-              className: 'pill pill-ink h-7 px-2.5 text-[11px] font-semibold shrink-0',
-            }}
-            inactiveProps={{
-              className:
-                'pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary shrink-0',
-            }}
+            className={
+              isLanding
+                ? 'h-7 px-2.5 rounded-md bg-[#00D964]/10 border border-[#00D964]/30 text-[11px] font-bold text-[#00D964] flex items-center gap-1 shrink-0'
+                : 'pill pill-ink h-7 px-2.5 text-[11px] font-semibold shrink-0'
+            }
           >
-            1000x
+            <span>Trade (Live)</span>
+            <span className="size-1 rounded-full bg-[#00D964] animate-pulse" />
           </Link>
           <a
             href="/#roadmap"
-            className="pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary shrink-0"
+            className={
+              isLanding
+                ? 'h-7 px-2.5 rounded-md text-[11px] text-[#8B949E] hover:text-white hover:bg-[#161B22] flex items-center shrink-0'
+                : 'pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary shrink-0'
+            }
           >
             Roadmap
           </a>
           <a
             href="/docs"
-            className="pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary shrink-0"
+            className={
+              isLanding
+                ? 'h-7 px-2.5 rounded-md text-[11px] text-[#8B949E] hover:text-white hover:bg-[#161B22] flex items-center shrink-0'
+                : 'pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary shrink-0'
+            }
           >
             Docs
           </a>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
+import { useRouterState } from '@tanstack/react-router';
 import { useAccount, useDisconnect, useConnect, useBalance } from 'wagmi';
 import { formatUnits } from 'viem';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
@@ -150,7 +151,10 @@ function WalletIcon({ id }: { id: string }) {
   }
 }
 
-export function ConnectModal() {
+export function ConnectModal({ isDark: isDarkProp }: { isDark?: boolean } = {}) {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isDark = isDarkProp ?? (pathname === '/' || pathname === '/main');
+
   const { address: wagmiAddress, isConnected: wagmiConnected } = useAccount();
   const { disconnect: wagmiDisconnect } = useDisconnect();
   const { connectors, connect } = useConnect();
@@ -214,7 +218,7 @@ export function ConnectModal() {
       toast.success(`${wallet.name} Connected`, {
         description: 'Session active. Ready to trade.',
       });
-    }, 800);
+    }, 700);
   };
 
   const handleSelectWallet = (wallet: WalletOption) => {
@@ -225,12 +229,12 @@ export function ConnectModal() {
       const name = c.name.toLowerCase();
       const id = c.id.toLowerCase();
       const target = wallet.id.toLowerCase();
-      if (target === 'metamask') return name.includes('meta') || id.includes('meta') || id.includes('injected');
-      if (target === 'rabby') return name.includes('rabby') || id.includes('rabby');
-      if (target === 'rainbow') return name.includes('rainbow') || id.includes('rainbow');
+      if (target === 'metamask') return name.includes('meta') || id.includes('meta') || id === 'injected';
+      if (target === 'rabby') return name.includes('rabby') || id.includes('rabby') || id === 'injected';
+      if (target === 'rainbow') return name.includes('rainbow') || id.includes('rainbow') || id === 'injected';
       if (target === 'coinbase') return name.includes('coinbase') || id.includes('coinbase');
       if (target === 'walletconnect') return id.includes('walletconnect');
-      if (target === 'phantom') return name.includes('phantom') || id.includes('phantom');
+      if (target === 'phantom') return name.includes('phantom') || id.includes('phantom') || id === 'injected';
       return name.includes(target) || id.includes(target);
     });
 
@@ -245,15 +249,12 @@ export function ConnectModal() {
               description: 'Connected to HyperEVM Mainnet (999).',
             });
           },
-          onError: () => {
+          onError: (err) => {
+            console.warn('Connector failed or rejected, applying fallback session:', err);
             fallbackConnect(wallet);
           },
         }
       );
-    } else if (openConnectModal) {
-      setIsModalOpen(false);
-      setFlowState('default');
-      openConnectModal();
     } else {
       fallbackConnect(wallet);
     }
@@ -287,27 +288,35 @@ export function ConnectModal() {
         <button
           onClick={handleOpenLogin}
           type="button"
-          className="pill pill-ink h-8 px-3.5 text-xs font-sans font-semibold gap-2 hover:opacity-90 transition-all shadow-xs cursor-pointer"
+          className={
+            isDark
+              ? "h-8 px-3.5 rounded-xl bg-[#00D964] hover:bg-[#00BF57] text-[#080B0F] font-mono font-bold text-xs flex items-center gap-1.5 transition-all shadow-[0_0_15px_rgba(0,217,100,0.25)] cursor-pointer"
+              : "pill pill-ink h-8 px-3.5 text-xs font-sans font-semibold gap-2 hover:opacity-90 transition-all shadow-xs cursor-pointer"
+          }
         >
-          <Zap className="size-3.5 text-[#00D964]" />
+          <Zap className="size-3.5 text-current" />
           <span>Connect Wallet</span>
         </button>
       ) : (
         <button
           onClick={() => setDetailsOpen(true)}
           type="button"
-          className="h-8 px-3 rounded-full bg-secondary border border-border hover:border-foreground/40 transition-all flex items-center gap-2 text-xs font-sans cursor-pointer"
+          className={
+            isDark
+              ? "h-8 px-3 rounded-xl bg-[#161B22] border border-[#30363D] hover:border-[#58A6FF] text-[#E6EDF3] transition-all flex items-center gap-2 text-xs font-mono cursor-pointer"
+              : "h-8 px-3 rounded-full bg-secondary border border-border hover:border-foreground/40 transition-all flex items-center gap-2 text-xs font-sans cursor-pointer"
+          }
         >
           <span className="size-2 rounded-full bg-[#00D964] animate-pulse" />
-          <span className="font-mono font-semibold text-foreground">
+          <span className="font-mono font-semibold">
             {activeAddress ? `${activeAddress.slice(0, 6)}...${activeAddress.slice(-4)}` : ''}
           </span>
           {hypeBalance && (
-            <span className="tabular text-[11px] font-semibold text-foreground hidden sm:inline">
+            <span className="tabular text-[11px] font-semibold hidden sm:inline">
               {parseFloat(formatUnits(hypeBalance.value, hypeBalance.decimals)).toFixed(3)} HYPE
             </span>
           )}
-          <span className="rounded bg-white px-1.5 py-0.5 text-[9px] font-mono text-muted-foreground border border-border/60">
+          <span className={`rounded px-1.5 py-0.5 text-[9px] font-mono border ${isDark ? 'bg-[#21262D] text-[#58A6FF] border-[#30363D]' : 'bg-white text-muted-foreground border-border/60'}`}>
             999
           </span>
         </button>

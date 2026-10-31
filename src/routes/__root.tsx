@@ -4,6 +4,7 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
   type ErrorComponentProps,
@@ -141,16 +142,25 @@ function RootComponent() {
 }
 
 function TradingShell() {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isLanding = pathname === '/' || pathname === '/main';
+
   return (
-    <div className="relative mx-auto min-h-screen max-w-[1800px] bg-background text-foreground flex flex-col justify-between overflow-x-hidden">
-      {/* Subtle holographic rainbow atmospheric aura across all pages */}
-      <div className="pointer-events-none fixed inset-x-0 top-0 h-[480px] rainbow-aura -z-10 opacity-90" />
+    <div
+      className={`relative mx-auto min-h-screen max-w-[1800px] flex flex-col justify-between overflow-x-hidden ${
+        isLanding ? 'bg-[#080B0F] text-[#E6EDF3]' : 'bg-background text-foreground'
+      }`}
+    >
+      {/* Subtle holographic rainbow atmospheric aura on non-landing pages */}
+      {!isLanding && (
+        <div className="pointer-events-none fixed inset-x-0 top-0 h-[480px] rainbow-aura -z-10 opacity-90" />
+      )}
       <div>
         <Header />
         <Outlet />
       </div>
       <Footer />
-      <Toaster position="top-center" />
+      <Toaster position="top-center" theme={isLanding ? 'dark' : 'light'} />
     </div>
   );
 }

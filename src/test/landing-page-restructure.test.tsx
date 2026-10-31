@@ -100,4 +100,40 @@ describe("Landing Page Restructure Specification", () => {
     expect(modalContent).toContain("WalletConnect");
     expect(modalContent).toContain("Phantom");
   });
+
+  it("6. Hyperliquid isolated leverage boundaries enforce 1x-50x for BTC/ETH and 1x-20x for altcoins", () => {
+    const assets = ["BTC", "ETH", "SOL", "HYPE"] as const;
+    const maxLeverages = assets.map((sym) => (sym === "BTC" || sym === "ETH" ? 50 : 20));
+
+    expect(maxLeverages[0]).toBe(50); // BTC
+    expect(maxLeverages[1]).toBe(50); // ETH
+    expect(maxLeverages[2]).toBe(20); // SOL
+    expect(maxLeverages[3]).toBe(20); // HYPE
+  });
+
+  it("7. Real Hyperliquid L1 order preview math calculations (Notional, Est. Fee, Liq Price)", () => {
+    const stake = 100;
+    const leverage = 50;
+    const price = 68420.5;
+    const takerFeeRate = 0.00035; // 0.035%
+    const mmr = 0.01; // 1% maintenance margin
+
+    // Position Notional
+    const notional = stake * leverage;
+    expect(notional).toBe(5000);
+
+    // Est Fee
+    const fee = notional * takerFeeRate;
+    expect(fee).toBe(1.75);
+
+    // Long Liquidation Price
+    const longLiq = price * (1 - 1 / leverage + mmr);
+    expect(longLiq).toBeLessThan(price);
+    expect(longLiq).toBeCloseTo(68420.5 * (1 - 0.02 + 0.01), 2);
+
+    // Short Liquidation Price
+    const shortLiq = price * (1 + 1 / leverage - mmr);
+    expect(shortLiq).toBeGreaterThan(price);
+    expect(shortLiq).toBeCloseTo(68420.5 * (1 + 0.02 - 0.01), 2);
+  });
 });

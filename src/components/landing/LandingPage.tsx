@@ -34,6 +34,13 @@ export function LandingPage() {
   const [leverage, setLeverage] = useState<number>(20); // 1x to 50x, strictly clamped
   const [activeSide, setActiveSide] = useState<'long' | 'short'>('long');
 
+  // Enforce Hyperliquid L1 client mode
+  React.useEffect(() => {
+    if (t?.mode !== 'perps') {
+      t?.setMode('perps');
+    }
+  }, [t]);
+
   // Limits for standard Hyperliquid L1 perps
   const maxLeverage = selectedAsset === 'BTC' || selectedAsset === 'ETH' ? 50 : 20;
 

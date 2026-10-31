@@ -12,6 +12,7 @@ describe("App routing", () => {
 
     const routesToTest = [
       "/",
+      "/main",
       "/trade",
       "/cup",
       "/portfolio",
