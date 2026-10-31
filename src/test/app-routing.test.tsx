@@ -21,6 +21,7 @@ describe("App routing", () => {
       "/candle",
       "/leaderboard",
       "/docs",
+      "/settings",
     ];
 
     for (const path of routesToTest) {

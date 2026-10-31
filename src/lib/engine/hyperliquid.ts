@@ -102,6 +102,22 @@ export class HyperliquidEngine implements TradingEngine {
     }
   }
 
+  public revokeSessionKeys() {
+    this.isAgentApproved = false;
+    this.agentPrivateKey = null;
+    this.agentAccount = null;
+    if (typeof window !== "undefined") {
+      try {
+        sessionStorage.removeItem(AGENT_STORAGE_KEY);
+        sessionStorage.removeItem(`${AGENT_STORAGE_KEY}_approved_master`);
+        sessionStorage.removeItem(SESSION_CONFIRMED_KEY);
+        localStorage.removeItem(AGENT_STORAGE_KEY);
+        localStorage.removeItem(`${AGENT_STORAGE_KEY}_approved_master`);
+      } catch {}
+    }
+    this.initAgent();
+  }
+
   public async checkIsAgentApproved(masterAddress: string): Promise<boolean> {
     if (!this.agentAccount) return false;
     try {

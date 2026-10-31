@@ -1,5 +1,5 @@
 import { Plus, TrendingDown, TrendingUp, ShieldAlert, Zap, X, AlertTriangle, Key } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { getMarket, type MarketSymbol, type MarketStatus } from "@/config/markets";
 import {
@@ -14,6 +14,7 @@ import { MarginDialog } from "./MarginDialog";
 import { toast } from "sonner";
 import { useTrading } from "./TradingProvider";
 import { hyperliquidEngineInstance } from "@/lib/engine/hyperliquid";
+import { useSettings } from "@/lib/settings";
 
 interface Props {
   market: MarketSymbol;
@@ -40,12 +41,27 @@ export function TradePanel(p: Props) {
   const [pendingConfirmSide, setPendingConfirmSide] = useState<Side | null>(null);
 
   const t = useTrading();
+  const { settings } = useSettings();
   const m = getMarket(p.market);
   const activePositions = p.positions ?? (p.position ? [p.position] : []);
   const stakes = [10, 25, 50, 100, 250, 500];
 
   const maxAllowedLev = t.engine.getMaxLeverage(p.market);
   const isPerps = t.mode === "perps";
+
+  // Sync default margin and leverage from settings
+  useEffect(() => {
+    if (settings.defaultMargin && p.stake !== settings.defaultMargin) {
+      p.setStake(settings.defaultMargin);
+    }
+  }, [settings.defaultMargin]);
+
+  useEffect(() => {
+    if (settings.defaultLeverage && p.leverage !== settings.defaultLeverage) {
+      const allowed = Math.min(settings.defaultLeverage, maxAllowedLev);
+      p.setLeverage(allowed);
+    }
+  }, [settings.defaultLeverage, maxAllowedLev]);
 
   // Compute dynamic leverage choices
   const availableLevs = isPerps
@@ -129,8 +145,8 @@ export function TradePanel(p: Props) {
       }
     }
 
-    // First live order of session confirmation requirement in Perps mode
-    if (isPerps && !hyperliquidEngineInstance.hasConfirmedFirstOrder()) {
+    // First live order of session confirmation requirement in Perps mode, or when 1-Click Trading is disabled
+    if (!settings.oneClickTrading || (isPerps && !hyperliquidEngineInstance.hasConfirmedFirstOrder())) {
       setPendingConfirmSide(side);
       return;
     }
@@ -138,8 +154,10 @@ export function TradePanel(p: Props) {
     executeOrder(side);
   };
 
+  const isPro = settings.terminalDensity === 'pro';
+
   return (
-    <div className="p-3 space-y-2 font-mono text-xs">
+    <div className={`p-3 font-mono ${isPro ? 'space-y-1 text-[11px]' : 'space-y-2 text-xs'}`}>
       {/* Top Header: Mode & Live Status */}
       <div className="flex items-center justify-between pb-1 border-b border-hairline">
         <div className="flex items-center gap-1.5">

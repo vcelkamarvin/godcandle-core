@@ -36,6 +36,7 @@ export interface TradingContextType {
   resetPaperBalance: () => Promise<{ success: boolean; error?: string; remainingCooldownSec?: number }>;
   isAgentApproved: boolean;
   approveAgent: () => Promise<boolean>;
+  revokeSessionKeys: () => void;
 }
 
 function useTradingState() {
@@ -303,6 +304,12 @@ function useTradingState() {
     }
   }
 
+  function revokeSessionKeys() {
+    hyperliquidEngineInstance.revokeSessionKeys();
+    setIsAgentApproved(false);
+    toast.info("Session keys revoked. Local trading keys cleared.");
+  }
+
   return {
     mode,
     setMode,
@@ -319,6 +326,7 @@ function useTradingState() {
     resetPaperBalance,
     isAgentApproved,
     approveAgent,
+    revokeSessionKeys,
   };
 }
 

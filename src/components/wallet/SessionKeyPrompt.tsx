@@ -17,7 +17,7 @@ export function SessionKeyPrompt() {
         await t.approveAgent();
       } else {
         // revoke
-        hyperliquidEngineInstance.markAgentApproved('');
+        t.revokeSessionKeys();
       }
     } finally {
       setLoading(false);

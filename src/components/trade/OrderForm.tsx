@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowUp, ArrowDown, AlertTriangle, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
 import type { TradingMode } from '@/lib/engine/types';
 import { hyperliquidEngineInstance } from '@/lib/engine/hyperliquid';
 import { useTrading } from '@/components/godcandle/TradingProvider';
+import { useSettings } from '@/lib/settings';
 
 interface OrderFormProps {
   currentPrice: number;
@@ -33,13 +34,20 @@ export function OrderForm({
   onTrade,
 }: OrderFormProps) {
   const t = useTrading();
-  const [margin, setMargin] = useState('50');
+  const { settings } = useSettings();
+  const [margin, setMargin] = useState(() => (settings.defaultMargin ? String(settings.defaultMargin) : '50'));
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [tpMode, setTpMode] = useState<'price' | 'roi'>('roi');
   const [tpValue, setTpValue] = useState('');
   const [slMode, setSlMode] = useState<'price' | 'roi'>('roi');
   const [slValue, setSlValue] = useState('');
   const [pendingConfirmSide, setPendingConfirmSide] = useState<'LONG' | 'SHORT' | null>(null);
+
+  useEffect(() => {
+    if (settings.defaultMargin) {
+      setMargin(String(settings.defaultMargin));
+    }
+  }, [settings.defaultMargin]);
 
   const numMargin = parseFloat(margin) || 0;
 
@@ -132,8 +140,8 @@ export function OrderForm({
       }
     }
 
-    // First live order of session confirmation requirement in Perps mode
-    if (mode === 'perps' && !hyperliquidEngineInstance.hasConfirmedFirstOrder()) {
+    // First live order of session confirmation requirement in Perps mode, or when 1-Click Trading is disabled
+    if (!settings.oneClickTrading || (mode === 'perps' && !hyperliquidEngineInstance.hasConfirmedFirstOrder())) {
       setPendingConfirmSide(side);
       return;
     }

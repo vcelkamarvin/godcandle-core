@@ -143,16 +143,16 @@ function RootComponent() {
 
 function TradingShell() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const isLanding = pathname === '/' || pathname === '/main';
+  const isDark = pathname === '/' || pathname === '/main' || pathname === '/settings';
 
   return (
     <div
       className={`relative mx-auto min-h-screen max-w-[1800px] flex flex-col justify-between overflow-x-hidden ${
-        isLanding ? 'bg-[#080B0F] text-[#E6EDF3]' : 'bg-background text-foreground'
+        isDark ? 'bg-[#080B0F] text-[#E6EDF3]' : 'bg-background text-foreground'
       }`}
     >
       {/* Subtle holographic rainbow atmospheric aura on non-landing pages */}
-      {!isLanding && (
+      {!isDark && (
         <div className="pointer-events-none fixed inset-x-0 top-0 h-[480px] rainbow-aura -z-10 opacity-90" />
       )}
       <div>
@@ -160,7 +160,7 @@ function TradingShell() {
         <Outlet />
       </div>
       <Footer />
-      <Toaster position="top-center" theme={isLanding ? 'dark' : 'light'} />
+      <Toaster position="top-center" theme={isDark ? 'dark' : 'light'} />
     </div>
   );
 }

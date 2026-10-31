@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useRouterState } from '@tanstack/react-router';
 import { ConnectModal } from '@/components/wallet/ConnectModal';
-import { Sparkles, Plus, ChevronDown, BarChart2, Coins, Trophy, BookOpen } from 'lucide-react';
+import { Sparkles, Plus, ChevronDown, BarChart2, Coins, Trophy, BookOpen, Settings as SettingsIcon } from 'lucide-react';
+import { SettingsModal } from '@/components/settings/SettingsModal';
 import { useTrading } from '@/components/godcandle/TradingProvider';
 import { fmtUsd } from '@/lib/engine';
 import { TransferDialog } from '@/components/godcandle/TransferDialog';
@@ -24,7 +25,7 @@ export function Header() {
   const candleRef = useRef<HTMLDivElement>(null);
 
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const isLanding = pathname === '/' || pathname === '/main';
+  const isLanding = pathname === '/' || pathname === '/main' || pathname === '/settings';
   const isCandleActive =
     pathname.startsWith('/candle') || pathname.startsWith('/staking');
 
@@ -208,6 +209,22 @@ export function Header() {
               >
                 Leaderboard
               </Link>
+              <Link
+                to="/settings"
+                activeProps={{
+                  className: isLanding
+                    ? 'h-8 px-3 rounded-md bg-[#21262D] border border-[#30363D] text-xs font-semibold text-white shadow-xs inline-flex items-center gap-1.5'
+                    : 'pill pill-ink h-8 px-3.5 text-xs font-medium shadow-xs inline-flex items-center gap-1.5',
+                }}
+                inactiveProps={{
+                  className: isLanding
+                    ? 'h-8 px-3 rounded-md text-xs text-[#8B949E] hover:text-white hover:bg-[#161B22] transition-colors inline-flex items-center gap-1.5'
+                    : 'pill h-8 px-3.5 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary inline-flex items-center gap-1.5',
+                }}
+              >
+                <SettingsIcon className="size-3.5" />
+                <span>Settings</span>
+              </Link>
             </nav>
           </div>
 
@@ -340,6 +357,22 @@ export function Header() {
 
             {/* Connect Wallet Modal */}
             <ConnectModal />
+
+            {/* Settings Gear Icon Link */}
+            <Link
+              to="/settings"
+              title="Settings (Cmd+,)"
+              aria-label="Settings"
+              className={`flex size-8 items-center justify-center rounded-full transition-all cursor-pointer shrink-0 ${
+                pathname === '/settings'
+                  ? 'bg-[#00D964] text-black shadow-xs font-bold'
+                  : isLanding
+                    ? 'border border-[#30363D] bg-[#161B22] text-[#8B949E] hover:text-white hover:bg-[#21262D]'
+                    : 'border border-border/80 bg-secondary/70 text-muted-foreground hover:text-foreground hover:bg-secondary'
+              }`}
+            >
+              <SettingsIcon className="size-3.5" />
+            </Link>
           </div>
         </div>
 
@@ -442,10 +475,27 @@ export function Header() {
           >
             Staking
           </Link>
+          <Link
+            to="/settings"
+            activeProps={{
+              className: isLanding
+                ? 'h-7 px-2.5 rounded-md bg-[#21262D] border border-[#30363D] text-[11px] font-bold text-white flex items-center gap-1 shrink-0'
+                : 'pill pill-ink h-7 px-2.5 text-[11px] font-medium shrink-0',
+            }}
+            inactiveProps={{
+              className: isLanding
+                ? 'h-7 px-2.5 rounded-md text-[11px] text-[#8B949E] hover:text-white hover:bg-[#161B22] flex items-center gap-1 shrink-0'
+                : 'pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary shrink-0',
+            }}
+          >
+            <SettingsIcon className="size-3" />
+            <span>Settings</span>
+          </Link>
         </div>
       </header>
 
       {transfer && <TransferDialog mode={transfer} onClose={() => setTransfer(null)} />}
+      <SettingsModal />
     </>
   );
 }

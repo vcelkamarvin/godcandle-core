@@ -12,6 +12,7 @@ import { fmtSigned, fmtUsd, pnlOf, type ClosedTrade } from '@/lib/engine';
 import { Shield, Layers, Zap, Database, BarChart2, RotateCcw, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { useSettings } from '@/lib/settings';
 
 export interface MarketDef {
   symbol: string;
@@ -42,6 +43,7 @@ const TIMEFRAMES: Array<{ label: string; ms: number; tvInterval?: TVInterval }> 
 export function TradeTerminal() {
   const t = useTrading();
   const isPerps = t.mode === 'perps';
+  const { settings } = useSettings();
 
   const engineMarkets = t.engine.getMarkets();
   const marketsList: any[] = engineMarkets.length > 0 ? engineMarkets : MARKETS;
@@ -51,12 +53,21 @@ export function TradeTerminal() {
 
   // Determine dynamic max leverage
   const activeMaxLev = isPerps ? t.engine.getMaxLeverage(rawSymbol) : 1000;
-  const [leverage, setLeverage] = useState(isPerps ? Math.min(50, activeMaxLev) : 500);
+  const [leverage, setLeverage] = useState(() =>
+    isPerps ? Math.min(50, activeMaxLev) : Math.min(settings.defaultLeverage ?? 500, activeMaxLev)
+  );
 
   const [chartMode, setChartMode] = useState<'reactive' | 'tradingview'>('reactive');
   const [windowMs, setWindowMs] = useState(30000);
   const [tvInterval, setTvInterval] = useState<TVInterval>('15');
   const [shareTrade, setShareTrade] = useState<ClosedTrade | null>(null);
+
+  // Sync default leverage when changed in settings
+  useEffect(() => {
+    if (settings.defaultLeverage && !isPerps) {
+      setLeverage(Math.min(settings.defaultLeverage, activeMaxLev));
+    }
+  }, [settings.defaultLeverage, isPerps, activeMaxLev]);
 
   // Clamp leverage whenever mode or selected asset changes
   useEffect(() => {
@@ -91,9 +102,12 @@ export function TradeTerminal() {
   };
 
   const hlNetwork = typeof process !== 'undefined' ? (process.env?.['NEXT_PUBLIC_HL_NETWORK'] || 'testnet') : 'testnet';
+  const isProMode = settings.terminalDensity === 'pro';
 
   return (
-    <div className="space-y-4 max-w-6xl mx-auto font-sans text-xs text-foreground">
+    <div className={`mx-auto font-sans text-foreground transition-all ${
+      isProMode ? 'space-y-2 max-w-7xl text-[11px]' : 'space-y-4 max-w-6xl text-xs'
+    }`}>
       {/* Dynamic L1 Price Header */}
       <LivePriceHeader
         symbol={selectedMarket.symbol}
@@ -103,7 +117,9 @@ export function TradeTerminal() {
       />
 
       {/* Technical Chart Instance (Raw L1 Tick or TradingView Lightweight Instance) */}
-      <div className="relative overflow-hidden rounded-2xl border border-border bg-white p-4 shadow-sm space-y-3">
+      <div className={`relative overflow-hidden rounded-2xl border border-border bg-white shadow-sm ${
+        isProMode ? 'p-3 space-y-2' : 'p-4 space-y-3'
+      }`}>
         <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-[#CDC3F0] via-[#FFDAC8] to-[#A0D4CA] opacity-80" />
 
         <div className="flex flex-wrap items-center justify-between gap-3 pb-1 border-b border-border">
@@ -193,10 +209,12 @@ export function TradeTerminal() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+      <div className={`grid grid-cols-1 lg:grid-cols-12 ${isProMode ? 'gap-2.5' : 'gap-4'}`}>
         {/* Left Column: Trade Config & Execution */}
-        <div className="lg:col-span-7 space-y-4">
-          <div className="relative overflow-hidden rounded-2xl border border-border bg-white p-6 shadow-sm space-y-5">
+        <div className={`lg:col-span-7 ${isProMode ? 'space-y-2.5' : 'space-y-4'}`}>
+          <div className={`relative overflow-hidden rounded-2xl border border-border bg-white shadow-sm ${
+            isProMode ? 'p-3.5 space-y-3' : 'p-6 space-y-5'
+          }`}>
             <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-[#CDC3F0] via-[#FFDAC8] to-[#A0D4CA] opacity-80" />
 
             {/* Market Switcher */}
@@ -267,9 +285,11 @@ export function TradeTerminal() {
         </div>
 
         {/* Right Column: House Pool Solvency vs Hyperliquid Clearinghouse State */}
-        <div className="lg:col-span-5 space-y-4">
+        <div className={`lg:col-span-5 ${isProMode ? 'space-y-2.5' : 'space-y-4'}`}>
           {isPerps ? (
-            <div className="relative overflow-hidden rounded-2xl border border-border bg-white p-5 shadow-sm space-y-4">
+            <div className={`relative overflow-hidden rounded-2xl border border-border bg-white shadow-sm ${
+              isProMode ? 'p-3.5 space-y-3' : 'p-5 space-y-4'
+            }`}>
               <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-[#06964A] to-[#A0D4CA] opacity-80" />
 
               <div className="flex items-center justify-between pb-3 border-b border-border">

@@ -17,6 +17,7 @@ import { Route as DocsRouteImport } from './routes/docs'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as MainRouteImport } from './routes/main'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as StakingRouteImport } from './routes/staking'
 import { Route as TradeRouteImport } from './routes/trade'
 import { Route as DocsIndexRouteImport } from './routes/docs/index'
@@ -64,6 +65,11 @@ const PortfolioRoute = PortfolioRouteImport.update({
   path: '/portfolio',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StakingRoute = StakingRouteImport.update({
   id: '/staking',
   path: '/staking',
@@ -104,6 +110,7 @@ export interface FileRoutesByFullPath {
   '/leaderboard': typeof LeaderboardRoute
   '/main': typeof MainRoute
   '/portfolio': typeof PortfolioRoute
+  '/settings': typeof SettingsRoute
   '/staking': typeof StakingRoute
   '/trade': typeof TradeRoute
   '/docs/pool': typeof DocsPoolRoute
@@ -119,6 +126,7 @@ export interface FileRoutesByTo {
   '/leaderboard': typeof LeaderboardRoute
   '/main': typeof MainRoute
   '/portfolio': typeof PortfolioRoute
+  '/settings': typeof SettingsRoute
   '/staking': typeof StakingRoute
   '/trade': typeof TradeRoute
   '/docs/pool': typeof DocsPoolRoute
@@ -136,6 +144,7 @@ export interface FileRoutesById {
   '/leaderboard': typeof LeaderboardRoute
   '/main': typeof MainRoute
   '/portfolio': typeof PortfolioRoute
+  '/settings': typeof SettingsRoute
   '/staking': typeof StakingRoute
   '/trade': typeof TradeRoute
   '/docs/pool': typeof DocsPoolRoute
@@ -154,6 +163,7 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/main'
     | '/portfolio'
+    | '/settings'
     | '/staking'
     | '/trade'
     | '/docs/pool'
@@ -169,6 +179,7 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/main'
     | '/portfolio'
+    | '/settings'
     | '/staking'
     | '/trade'
     | '/docs/pool'
@@ -185,6 +196,7 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/main'
     | '/portfolio'
+    | '/settings'
     | '/staking'
     | '/trade'
     | '/docs/pool'
@@ -202,6 +214,7 @@ export interface RootRouteChildren {
   LeaderboardRoute: typeof LeaderboardRoute
   MainRoute: typeof MainRoute
   PortfolioRoute: typeof PortfolioRoute
+  SettingsRoute: typeof SettingsRoute
   StakingRoute: typeof StakingRoute
   TradeRoute: typeof TradeRoute
 }
@@ -262,6 +275,13 @@ declare module '@tanstack/react-router' {
       path: '/portfolio'
       fullPath: '/portfolio'
       preLoaderRoute: typeof PortfolioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/staking': {
@@ -334,6 +354,7 @@ const rootRouteChildren: RootRouteChildren = {
   LeaderboardRoute: LeaderboardRoute,
   MainRoute: MainRoute,
   PortfolioRoute: PortfolioRoute,
+  SettingsRoute: SettingsRoute,
   StakingRoute: StakingRoute,
   TradeRoute: TradeRoute,
 }
