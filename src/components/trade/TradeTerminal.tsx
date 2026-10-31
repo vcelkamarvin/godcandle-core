@@ -233,15 +233,11 @@ export function TradeTerminal() {
       </div>
 
       <div className={`grid grid-cols-1 lg:grid-cols-12 ${isProMode ? 'gap-2.5' : 'gap-4'}`}>
-        {/* Left Column: Trade Config & Execution */}
+        {/* Left Column: Markets, Solvency / Hyperliquid Clearinghouse State & Cashflow */}
         <div className={`lg:col-span-7 ${isProMode ? 'space-y-2.5' : 'space-y-4'}`}>
-          <div className={`relative overflow-hidden rounded-2xl border border-border bg-white shadow-sm ${
-            isProMode ? 'p-3.5 space-y-3' : 'p-6 space-y-5'
-          }`}>
-            <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-[#CDC3F0] via-[#FFDAC8] to-[#A0D4CA] opacity-80" />
-
-            {/* Market Switcher */}
-            <div className="flex justify-between items-center pb-4 border-b border-border">
+          {/* Market Switcher & Test Reset */}
+          <div className="rounded-2xl border border-border bg-white p-4 shadow-xs">
+            <div className="flex justify-between items-center">
               <div className="flex space-x-1.5 overflow-x-auto no-scrollbar">
                 {marketsList.slice(0, 15).map((m: any) => {
                   const asset = m.symbol.replace('-USD', '');
@@ -283,32 +279,8 @@ export function TradeTerminal() {
                 )}
               </div>
             </div>
-
-            {/* Discrete Leverage Slider */}
-            <LeverageSlider
-              value={leverage}
-              onChange={setLeverage}
-              maxLeverage={activeMaxLev}
-            />
-
-            {/* Technical Order Form */}
-            <OrderForm
-              currentPrice={currentPrice}
-              leverage={leverage}
-              asset={rawSymbol}
-              corridorBps={selectedMarket.corridorBps}
-              availableBalance={t?.available ?? 1000}
-              mode={t.mode}
-              onTrade={handleOrder}
-            />
           </div>
 
-          {/* 1-Click Session Key Delegate */}
-          <SessionKeyPrompt />
-        </div>
-
-        {/* Right Column: House Pool Solvency vs Hyperliquid Clearinghouse State */}
-        <div className={`lg:col-span-5 ${isProMode ? 'space-y-2.5' : 'space-y-4'}`}>
           {isPerps ? (
             <div className={`relative overflow-hidden rounded-2xl border border-border bg-white shadow-sm ${
               isProMode ? 'p-3.5 space-y-3' : 'p-5 space-y-4'
@@ -435,6 +407,24 @@ export function TradeTerminal() {
               </div>
             </div>
           </div>
+
+          {/* 1-Click Session Key Delegate */}
+          <SessionKeyPrompt />
+        </div>
+
+        {/* Right Column: Redesigned High-Precision Order Panel */}
+        <div className={`lg:col-span-5 ${isProMode ? 'space-y-2.5' : 'space-y-4'}`}>
+          <OrderForm
+            currentPrice={currentPrice}
+            leverage={leverage}
+            onLeverageChange={setLeverage}
+            maxLeverage={activeMaxLev}
+            asset={rawSymbol}
+            corridorBps={selectedMarket.corridorBps}
+            availableBalance={t?.available ?? 10000}
+            mode={t.mode}
+            onTrade={handleOrder}
+          />
         </div>
       </div>
 

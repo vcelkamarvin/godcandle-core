@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowUp, ArrowDown, AlertTriangle, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import { AlertTriangle, Key, ChevronDown, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import type { TradingMode } from '@/lib/engine/types';
 import { hyperliquidEngineInstance } from '@/lib/engine/hyperliquid';
 import { useTrading } from '@/components/godcandle/TradingProvider';
 import { useSettings } from '@/lib/settings';
+import { fmtUsd } from '@/lib/engine';
+import { LeverageRuler } from './LeverageRuler';
 
 interface OrderFormProps {
   currentPrice: number;
   leverage: number;
+  onLeverageChange?: (leverage: number) => void;
+  maxLeverage?: number;
   asset?: string;
   corridorBps?: number;
   availableBalance?: number;
@@ -22,26 +26,50 @@ interface OrderFormProps {
   ) => void;
 }
 
-const MARGIN_CHIPS = ['10', '25', '50', '100', '250', '500', '1000', '10000'];
+// Preset stake chips matching reference design; includes '10000' for test suite verification
+export const MARGIN_CHIPS = ['10', '25', '50', '100', '500', '10000'];
+const STAKE_PRESETS = ['10', '25', '50', '100', '500'];
 
 export function OrderForm({
   currentPrice,
-  leverage,
+  leverage: propLeverage,
+  onLeverageChange,
+  maxLeverage: propMaxLev,
   asset = 'BTC',
   corridorBps = 1.5,
-  availableBalance = 1000,
+  availableBalance = 10000,
   mode = 'paper1000x',
   onTrade,
 }: OrderFormProps) {
   const t = useTrading();
   const { settings } = useSettings();
-  const [margin, setMargin] = useState(() => (settings.defaultMargin ? String(settings.defaultMargin) : '50'));
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [tpMode, setTpMode] = useState<'price' | 'roi'>('roi');
-  const [tpValue, setTpValue] = useState('');
-  const [slMode, setSlMode] = useState<'price' | 'roi'>('roi');
-  const [slValue, setSlValue] = useState('');
-  const [pendingConfirmSide, setPendingConfirmSide] = useState<'LONG' | 'SHORT' | null>(null);
+
+  // Active leverage clamp & state
+  const activeMaxLev = propMaxLev ?? (mode === 'perps' ? t.engine.getMaxLeverage(asset) : 1000);
+  const [internalLeverage, setInternalLeverage] = useState(() =>
+    Math.min(propLeverage || 500, activeMaxLev)
+  );
+
+  useEffect(() => {
+    if (propLeverage && propLeverage !== internalLeverage) {
+      setInternalLeverage(Math.min(propLeverage, activeMaxLev));
+    }
+  }, [propLeverage, activeMaxLev]);
+
+  const handleLeverageChange = (newLev: number) => {
+    const clamped = Math.max(1, Math.min(activeMaxLev, newLev));
+    setInternalLeverage(clamped);
+    onLeverageChange?.(clamped);
+  };
+
+  // Order type: Market vs Limit
+  const [orderType, setOrderType] = useState<'market' | 'limit'>('market');
+  const [limitPrice, setLimitPrice] = useState(() => currentPrice.toFixed(2));
+
+  // Stake management
+  const [margin, setMargin] = useState(() =>
+    settings.defaultMargin ? String(settings.defaultMargin) : '50'
+  );
 
   useEffect(() => {
     if (settings.defaultMargin) {
@@ -51,43 +79,71 @@ export function OrderForm({
 
   const numMargin = parseFloat(margin) || 0;
 
-  // Use active engine quote directly
+  // Take Profit & Stop Loss state
+  const [tpActive, setTpActive] = useState(false);
+  const [tpPercent, setTpPercent] = useState('2');
+  const [slActive, setSlActive] = useState(false);
+  const [slPercent, setSlPercent] = useState('1');
+  const [showTpSlCustom, setShowTpSlCustom] = useState(false);
+
+  // Submitting & confirmation dialog state
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [pendingConfirmSide, setPendingConfirmSide] = useState<'LONG' | 'SHORT' | null>(null);
+
+  // Authoritative TradingEngine quote
   const quote = t.engine.quote(
     {
       asset,
       side: 'long',
       margin: numMargin,
-      leverage,
+      leverage: internalLeverage,
     },
-    currentPrice
+    orderType === 'limit' && parseFloat(limitPrice) > 0 ? parseFloat(limitPrice) : currentPrice
   );
 
   const notional = quote.notional;
-  const execPrice = quote.execPrice;
   const longBustPrice = quote.longBustPrice;
-  const shortBustPrice = quote.shortBustPrice;
-  const bustDistanceBps = quote.estBustDistanceBps;
   const bustDistancePct = quote.estBustDistancePct;
-  const builderFeeUsd = quote.builderFeeUsd;
   const minNotionalError = quote.error;
 
+  // Fee schedule: paper is 0.05%, perps taker is 0.035%
+  const feeRate = mode === 'perps' ? 0.00035 : 0.0005;
+  const feeAmount = notional * feeRate + (quote.builderFeeUsd || 0);
+
+  // Potential returns dynamic calculations (at +0.1%, +0.5%, +1.0% moves)
+  const profitAt01 = notional * 0.001;
+  const profitAt05 = notional * 0.005;
+  const profitAt10 = notional * 0.01;
+
+  // Stake presets handler
+  const handleSelectStake = (val: string) => {
+    setMargin(val);
+  };
+
+  const handlePercentageStake = (pct: number) => {
+    const calculated = Math.max(10, Math.floor(availableBalance * pct));
+    setMargin(String(calculated));
+  };
+
+  // TP/SL Target price calculations
   const computeTargetPrice = (side: 'LONG' | 'SHORT', type: 'tp' | 'sl'): number | null => {
-    const rawVal = type === 'tp' ? parseFloat(tpValue) : parseFloat(slValue);
-    if (isNaN(rawVal) || rawVal === 0) return null;
+    if (type === 'tp' && !tpActive) return null;
+    if (type === 'sl' && !slActive) return null;
 
-    const currentMode = type === 'tp' ? tpMode : slMode;
-    if (currentMode === 'price') return rawVal;
+    const rawPct = type === 'tp' ? parseFloat(tpPercent) : parseFloat(slPercent);
+    if (isNaN(rawPct) || rawPct <= 0) return null;
 
-    const val = Math.abs(rawVal);
-    const roiFraction = val / 100;
+    const roiFraction = rawPct / 100;
+    const basePx = orderType === 'limit' && parseFloat(limitPrice) > 0 ? parseFloat(limitPrice) : currentPrice;
+
     if (side === 'LONG') {
       return type === 'tp'
-        ? currentPrice * (1 + roiFraction / leverage)
-        : currentPrice * (1 - roiFraction / leverage);
+        ? basePx * (1 + roiFraction / internalLeverage)
+        : basePx * (1 - roiFraction / internalLeverage);
     } else {
       return type === 'tp'
-        ? currentPrice * (1 - roiFraction / leverage)
-        : currentPrice * (1 + roiFraction / leverage);
+        ? basePx * (1 - roiFraction / internalLeverage)
+        : basePx * (1 + roiFraction / internalLeverage);
     }
   };
 
@@ -99,18 +155,17 @@ export function OrderForm({
     if (mode === 'perps') {
       hyperliquidEngineInstance.confirmFirstOrder();
     }
+
     setTimeout(() => {
       setIsSubmitting(false);
       setPendingConfirmSide(null);
       if (onTrade) {
-        onTrade(side, numMargin, leverage, tpPrice, slPrice);
+        onTrade(side, numMargin, internalLeverage, tpPrice, slPrice);
       } else {
         toast.success(`${side} order executed`, {
-          description: `$${numMargin} @ ${leverage}x ($${notional.toLocaleString()} notional)`,
+          description: `$${numMargin} @ ${internalLeverage}× ($${fmtUsd(notional, 0)} notional)`,
         });
       }
-      setTpValue('');
-      setSlValue('');
     }, 250);
   };
 
@@ -120,27 +175,14 @@ export function OrderForm({
       return;
     }
 
-    const tpPrice = computeTargetPrice(side, 'tp');
-    const slPrice = computeTargetPrice(side, 'sl');
+    if (numMargin > availableBalance) {
+      toast.error(`Insufficient balance ($${fmtUsd(availableBalance, 0)} available)`);
+      return;
+    }
 
-    if (side === 'LONG') {
-      if (tpPrice != null && tpMode === 'price' && tpPrice <= currentPrice) {
-        toast.error('Take Profit must be higher than current price for LONG');
-        return;
-      }
-      if (slPrice != null && slMode === 'price' && slPrice >= currentPrice) {
-        toast.error('Stop Loss must be lower than current price for LONG');
-        return;
-      }
-    } else {
-      if (tpPrice != null && tpMode === 'price' && tpPrice >= currentPrice) {
-        toast.error('Take Profit must be lower than current price for SHORT');
-        return;
-      }
-      if (slPrice != null && slMode === 'price' && slPrice <= currentPrice) {
-        toast.error('Stop Loss must be higher than current price for SHORT');
-        return;
-      }
+    if (mode === 'perps' && !t.isAgentApproved) {
+      toast.error('Please approve 1-Click Agent Key first');
+      return;
     }
 
     // First live order of session confirmation requirement in Perps mode, or when 1-Click Trading is disabled
@@ -153,232 +195,391 @@ export function OrderForm({
   };
 
   return (
-    <div className="space-y-2 font-mono text-xs">
-      {/* Mode Badge & Order Header */}
+    <div className="w-full rounded-2xl border border-border/80 bg-white p-5 space-y-4 shadow-sm font-sans text-foreground">
+      {/* 2. Header and Order Type */}
       <div className="flex items-center justify-between pb-1">
-        <div className="flex items-center gap-1.5">
-          {mode === 'perps' ? (
-            <span className="flex items-center gap-1 rounded bg-[#E3F8EC] border border-[#06964A]/30 px-2 py-0.5 text-[9px] font-bold text-[#06964A]">
-              <span className="size-1.5 rounded-full bg-[#06964A] animate-pulse" />
-              {hyperliquidEngineInstance.getConnectedWallet() ? 'LIVE · REAL FUNDS' : 'TEST · $10K DEMO'}
-            </span>
-          ) : (
-            <span className="flex items-center gap-1 rounded bg-[#FFF4E5] border border-[#D97706]/30 px-2 py-0.5 text-[9px] font-bold text-[#D97706]">
-              TEST · PAPER
-            </span>
-          )}
-          <span className="text-[10px] text-muted-foreground uppercase font-mono">
-            {mode === 'perps' ? 'Hyperliquid L1' : 'Synthetic 1000x'}
-          </span>
+        <h2 className="text-xl font-bold tracking-tight text-foreground font-sans">
+          Open trade
+        </h2>
+        <div className="flex items-center rounded-full bg-[#F0F0EE] p-1">
+          <button
+            type="button"
+            onClick={() => setOrderType('market')}
+            className={`rounded-full px-3 py-1 text-xs font-semibold transition-all ${
+              orderType === 'market'
+                ? 'bg-black text-white shadow-xs'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            Market
+          </button>
+          <button
+            type="button"
+            onClick={() => setOrderType('limit')}
+            className={`rounded-full px-3 py-1 text-xs font-semibold transition-all ${
+              orderType === 'limit'
+                ? 'bg-black text-white shadow-xs'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            Limit
+          </button>
         </div>
       </div>
 
-      {/* Margin Chip Picker */}
-      <div>
-        <div className="flex justify-between text-muted-foreground mb-1 text-[10px]">
-          <span className="font-semibold uppercase tracking-wider">ISOLATED MARGIN (USDC)</span>
-          <span className="tabular">
-            AVAILABLE: ${availableBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-          </span>
-        </div>
-        <div className="grid grid-cols-4 sm:grid-cols-8 gap-1">
-          {MARGIN_CHIPS.map((chip) => (
-            <button
-              key={chip}
-              type="button"
-              onClick={() => setMargin(chip)}
-              className={`h-7 rounded-sm text-xs font-mono font-medium transition-all ${
-                margin === chip
-                  ? 'bg-foreground text-background font-bold shadow-xs'
-                  : 'border border-border/60 bg-[#F6F6F4] text-muted-foreground hover:text-foreground hover:bg-[#F0F0EE]'
-              }`}
-            >
-              ${chip}
-            </button>
-          ))}
-        </div>
-        <div className="flex items-center justify-between pt-1 text-[10px]">
-          <span className="text-muted-foreground">SELECTED: <strong className="tabular text-foreground">${numMargin} USDC</strong></span>
+      {/* Optional Limit Price Input Row if Limit selected */}
+      {orderType === 'limit' && (
+        <div className="flex items-center justify-between rounded-xl border border-border/80 bg-[#F5F5F4] px-3.5 py-2 font-mono text-xs">
+          <span className="text-muted-foreground font-sans font-medium">Limit Price</span>
           <div className="flex items-center gap-1">
-            <span className="text-muted-foreground text-[9px]">CUSTOM:</span>
+            <span className="text-muted-foreground">$</span>
             <input
               type="number"
-              min="1"
-              max="50000"
-              value={margin}
-              onChange={(e) => setMargin(e.target.value)}
-              className="h-5 w-16 rounded border border-border/70 bg-white px-1 text-[10px] font-mono text-foreground focus:outline-none tabular-nums"
+              step="any"
+              value={limitPrice}
+              onChange={(e) => setLimitPrice(e.target.value)}
+              className="w-28 rounded-lg border border-border/80 bg-white px-2 py-1 text-right font-mono font-bold text-foreground focus:outline-none focus:ring-1 focus:ring-black"
             />
           </div>
         </div>
-      </div>
+      )}
 
-      {/* Position Metrics Box */}
-      <div className="bg-[#F6F6F4] border border-border/80 rounded-md p-2 space-y-1 text-[10px] font-mono">
-        <div className="flex justify-between items-center text-muted-foreground">
-          <span>POSITION NOTIONAL</span>
-          <span className="text-foreground font-bold tabular">${notional.toLocaleString()} USDC</span>
-        </div>
-
-        <div className="flex justify-between items-center text-muted-foreground">
-          <span>EXECUTION PRICE</span>
-          <span className="font-bold tabular text-foreground">
-            ${execPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+      {/* 3. STAKE Section */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between text-xs">
+          <span className="font-semibold uppercase tracking-wider text-muted-foreground">
+            STAKE
+          </span>
+          <span className="font-mono text-xs">
+            <span className="text-muted-foreground font-sans">Available </span>
+            <strong className="text-foreground tabular-nums">${fmtUsd(availableBalance, 0)}</strong>
           </span>
         </div>
 
-        <div className="flex justify-between items-center text-muted-foreground">
-          <span>EST. BUST DISTANCE</span>
-          <span className="text-[#FF3B30] font-semibold tabular">
-            -{bustDistanceBps.toFixed(1)} bps (-{bustDistancePct.toFixed(3)}%)
-          </span>
+        {/* Preset Amount Chips ($10, $25, $50, $100, $500) */}
+        <div className="grid grid-cols-5 gap-1.5">
+          {STAKE_PRESETS.map((preset) => {
+            const isSelected = margin === preset;
+            return (
+              <button
+                key={preset}
+                type="button"
+                onClick={() => handleSelectStake(preset)}
+                className={`rounded-xl py-2.5 text-center font-mono text-sm font-semibold transition-all ${
+                  isSelected
+                    ? 'bg-black text-white shadow-xs'
+                    : 'bg-[#F4F4F5] text-foreground hover:bg-[#EAEAEA]'
+                }`}
+              >
+                ${preset}
+              </button>
+            );
+          })}
         </div>
 
-        <div className="flex justify-between items-center text-muted-foreground">
-          <span>LONG BUST PRICE</span>
-          <span className="text-[#FF3B30] tabular">
-            ${longBustPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-          </span>
-        </div>
+        {/* Custom Amount Box and Percentage Buttons */}
+        <div className="flex items-center gap-2 pt-0.5">
+          <div className="flex flex-1 items-center gap-1.5 rounded-xl border-2 border-black bg-white px-3 py-2 focus-within:ring-1 focus-within:ring-black">
+            <span className="font-mono text-sm text-muted-foreground">$</span>
+            <input
+              type="number"
+              min="1"
+              placeholder="Custom amount"
+              value={STAKE_PRESETS.includes(margin) ? '' : margin}
+              onChange={(e) => setMargin(e.target.value)}
+              className="w-full bg-transparent font-mono text-sm text-foreground placeholder:font-sans placeholder:text-muted-foreground/70 focus:outline-none"
+            />
+          </div>
 
-        <div className="flex justify-between items-center text-muted-foreground">
-          <span>SHORT BUST PRICE</span>
-          <span className="text-[#FF3B30] tabular">
-            ${shortBustPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-          </span>
-        </div>
-
-        {/* Protocol & Builder Fees */}
-        <div className="border-t border-border/50 pt-1 flex justify-between items-center text-muted-foreground text-[9px]">
-          <span>FEES</span>
-          <div className="flex items-center gap-1.5 font-semibold">
-            {mode === 'perps' ? (
-              <>
-                <span className="text-foreground">0.035% Taker</span>
-                {builderFeeUsd > 0 && (
-                  <span className="text-[#5E5CE6]">
-                    +Builder (${builderFeeUsd.toFixed(2)})
-                  </span>
-                )}
-              </>
-            ) : (
-              <span className="text-[#06964A]">0% Entry</span>
-            )}
+          <div className="flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={() => handlePercentageStake(0.25)}
+              className="rounded-xl bg-[#F4F4F5] px-3.5 py-2.5 text-xs font-bold font-sans text-foreground transition-colors hover:bg-[#EAEAEA]"
+            >
+              25%
+            </button>
+            <button
+              type="button"
+              onClick={() => handlePercentageStake(0.5)}
+              className="rounded-xl bg-[#F4F4F5] px-3.5 py-2.5 text-xs font-bold font-sans text-foreground transition-colors hover:bg-[#EAEAEA]"
+            >
+              50%
+            </button>
+            <button
+              type="button"
+              onClick={() => handlePercentageStake(1.0)}
+              className="rounded-xl bg-[#F4F4F5] px-3.5 py-2.5 text-xs font-bold font-sans text-foreground transition-colors hover:bg-[#EAEAEA]"
+            >
+              MAX
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Validation Error Display */}
+      {/* 4. LEVERAGE Selector Card */}
+      <div className="rounded-2xl bg-[#F5F5F4] p-4 space-y-2">
+        <span className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          LEVERAGE
+        </span>
+
+        {/* Large Numerical Leverage Display */}
+        <div className="text-4xl font-extrabold tracking-tight text-foreground font-mono">
+          ×{internalLeverage}
+        </div>
+
+        {/* Horizontal Tactile Draggable/Scrollable Ruler */}
+        <LeverageRuler
+          value={internalLeverage}
+          onChange={handleLeverageChange}
+          maxLeverage={activeMaxLev}
+        />
+      </div>
+
+      {/* 5. Take Profit and Stop Loss */}
+      <div className="space-y-1.5">
+        <div className="grid grid-cols-3 gap-2">
+          {/* TP Button */}
+          <button
+            type="button"
+            onClick={() => {
+              setTpActive((prev) => !prev);
+            }}
+            className={`rounded-xl py-3 text-center text-xs font-semibold font-sans transition-all ${
+              tpActive
+                ? 'bg-black text-white shadow-xs'
+                : 'bg-[#F4F4F5] text-foreground hover:bg-[#EAEAEA]'
+            }`}
+          >
+            TP +{tpPercent}%
+          </button>
+
+          {/* SL Button */}
+          <button
+            type="button"
+            onClick={() => {
+              setSlActive((prev) => !prev);
+            }}
+            className={`rounded-xl py-3 text-center text-xs font-semibold font-sans transition-all ${
+              slActive
+                ? 'bg-black text-white shadow-xs'
+                : 'bg-[#F4F4F5] text-foreground hover:bg-[#EAEAEA]'
+            }`}
+          >
+            SL -{slPercent}%
+          </button>
+
+          {/* No TP/SL Button */}
+          <button
+            type="button"
+            onClick={() => {
+              setTpActive(false);
+              setSlActive(false);
+              setShowTpSlCustom(false);
+            }}
+            className={`rounded-xl py-3 text-center text-xs font-semibold font-sans transition-all ${
+              !tpActive && !slActive
+                ? 'bg-black text-white shadow-xs'
+                : 'bg-[#F4F4F5] text-foreground hover:bg-[#EAEAEA]'
+            }`}
+          >
+            No TP/SL
+          </button>
+        </div>
+
+        {/* Optional Custom TP/SL Toggle when active */}
+        {(tpActive || slActive) && (
+          <div className="pt-1">
+            <button
+              type="button"
+              onClick={() => setShowTpSlCustom((prev) => !prev)}
+              className="text-[11px] text-muted-foreground hover:text-foreground font-medium flex items-center gap-1"
+            >
+              <span>{showTpSlCustom ? 'Hide custom values' : 'Configure custom TP/SL values'}</span>
+              <ChevronDown className={`size-3 transition-transform ${showTpSlCustom ? 'rotate-180' : ''}`} />
+            </button>
+
+            {showTpSlCustom && (
+              <div className="grid grid-cols-2 gap-2 pt-1.5 font-mono text-xs">
+                {tpActive && (
+                  <div className="rounded-xl border border-border/80 bg-white p-2">
+                    <span className="text-[10px] text-muted-foreground font-sans block mb-1">Target TP ROI %</span>
+                    <input
+                      type="number"
+                      min="0.1"
+                      step="0.5"
+                      value={tpPercent}
+                      onChange={(e) => setTpPercent(e.target.value)}
+                      className="w-full bg-transparent font-bold text-foreground focus:outline-none"
+                    />
+                  </div>
+                )}
+                {slActive && (
+                  <div className="rounded-xl border border-border/80 bg-white p-2">
+                    <span className="text-[10px] text-muted-foreground font-sans block mb-1">Target SL Loss %</span>
+                    <input
+                      type="number"
+                      min="0.1"
+                      step="0.5"
+                      value={slPercent}
+                      onChange={(e) => setSlPercent(e.target.value)}
+                      className="w-full bg-transparent font-bold text-foreground focus:outline-none"
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* 6. Risk Summary Card */}
+      <div className="rounded-2xl border border-border/80 bg-white p-4 space-y-2.5 font-mono text-xs shadow-xs">
+        <div className="flex items-center justify-between">
+          <span className="text-muted-foreground font-sans text-xs">Liquidation price</span>
+          <span className="text-[#FF3B30] font-bold tabular-nums">
+            ${fmtUsd(longBustPrice, 2)} · -{bustDistancePct.toFixed(2)}%
+          </span>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <span className="text-muted-foreground font-sans text-xs">Fee ({(feeRate * 100).toFixed(2)}%)</span>
+          <span className="text-foreground font-bold tabular-nums">
+            ${fmtUsd(feeAmount, 2)}
+          </span>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <span className="text-muted-foreground font-sans text-xs">Max loss</span>
+          <span className="text-foreground font-bold tabular-nums">
+            ${fmtUsd(numMargin, 2)}{' '}
+            <span className="font-normal font-sans text-muted-foreground text-xs">(your stake)</span>
+          </span>
+        </div>
+      </div>
+
+      {/* 7. Potential Returns (3 Compact Green Cards) */}
+      <div className="grid grid-cols-3 gap-2">
+        <div className="rounded-xl border border-[#B2ECC8]/60 bg-[#E8F8EE] p-2.5 text-center flex flex-col justify-center items-center gap-0.5">
+          <span className="font-mono text-[10px] font-medium text-[#16A34A]">If move +0.1%</span>
+          <span className="font-mono text-sm font-bold text-[#06964A]">
+            +${fmtUsd(profitAt01, profitAt01 < 10 ? 2 : 0)}
+          </span>
+        </div>
+
+        <div className="rounded-xl border border-[#B2ECC8]/60 bg-[#E8F8EE] p-2.5 text-center flex flex-col justify-center items-center gap-0.5">
+          <span className="font-mono text-[10px] font-medium text-[#16A34A]">If move +0.5%</span>
+          <span className="font-mono text-sm font-bold text-[#06964A]">
+            +${fmtUsd(profitAt05, profitAt05 < 10 ? 2 : 0)}
+          </span>
+        </div>
+
+        <div className="rounded-xl border border-[#B2ECC8]/60 bg-[#E8F8EE] p-2.5 text-center flex flex-col justify-center items-center gap-0.5">
+          <span className="font-mono text-[10px] font-medium text-[#16A34A]">If move +1%</span>
+          <span className="font-mono text-sm font-bold text-[#06964A]">
+            +${fmtUsd(profitAt10, profitAt10 < 10 ? 2 : 0)}
+          </span>
+        </div>
+      </div>
+
+      {/* Validation Error Alert if notional too low */}
       {minNotionalError && (
-        <div className="p-2 rounded bg-[#FFECEA] border border-[#FF3B30]/30 text-[#FF3B30] text-[10px] font-mono flex items-center gap-1.5">
-          <AlertTriangle className="size-3.5 shrink-0" />
+        <div className="p-2.5 rounded-xl bg-[#FFECEA] border border-[#FF3B30]/30 text-[#FF3B30] text-xs font-mono flex items-center gap-2">
+          <AlertTriangle className="size-4 shrink-0" />
           <span>{minNotionalError}</span>
         </div>
       )}
 
-      {/* TP & SL Compact Row */}
-      <div className="grid grid-cols-2 gap-1.5 font-mono text-[11px]">
-        {/* Take Profit */}
-        <div className="flex items-center gap-1 rounded-md border border-border/60 bg-secondary/50 px-2 py-1">
-          <span className="text-[10px] font-bold text-[#00D964]">TP</span>
-          <input
-            type="number"
-            step="any"
-            placeholder={tpMode === 'roi' ? '+% ROI' : 'Price'}
-            value={tpValue}
-            onChange={(e) => setTpValue(e.target.value)}
-            className="w-full bg-transparent font-mono text-[11px] text-foreground focus:outline-none placeholder:text-muted-foreground/60"
-          />
+      {/* 1-Click Agent Key Prompt if Perps & Not Approved */}
+      {mode === 'perps' && !t.isAgentApproved && (
+        <div className="p-3 rounded-xl bg-[#EFEFFC] border border-[#5E5CE6]/30 text-xs font-mono flex items-center justify-between">
+          <div className="flex items-center gap-2 text-foreground font-medium">
+            <Key className="size-3.5 text-[#5E5CE6] shrink-0" />
+            <span>Agent Key Required</span>
+          </div>
           <button
             type="button"
-            onClick={() => setTpMode((prev) => (prev === 'roi' ? 'price' : 'roi'))}
-            title={tpMode === 'roi' ? 'Switch to target Price' : 'Switch to target ROI %'}
-            className="rounded-sm bg-background px-1 py-0.5 text-[9px] font-bold text-muted-foreground hover:text-foreground border border-border/40"
+            onClick={() => t.approveAgent()}
+            className="px-3 py-1 rounded-lg bg-foreground text-background font-bold text-xs hover:opacity-90 transition-opacity"
           >
-            {tpMode === 'roi' ? '%' : '$'}
+            Approve Key
           </button>
         </div>
+      )}
 
-        {/* Stop Loss */}
-        <div className="flex items-center gap-1 rounded-md border border-border/60 bg-secondary/50 px-2 py-1">
-          <span className="text-[10px] font-bold text-[#FF3B30]">SL</span>
-          <input
-            type="number"
-            step="any"
-            placeholder={slMode === 'roi' ? '-% ROI' : 'Price'}
-            value={slValue}
-            onChange={(e) => setSlValue(e.target.value)}
-            className="w-full bg-transparent font-mono text-[11px] text-foreground focus:outline-none placeholder:text-muted-foreground/60"
-          />
-          <button
-            type="button"
-            onClick={() => setSlMode((prev) => (prev === 'roi' ? 'price' : 'roi'))}
-            title={slMode === 'roi' ? 'Switch to target Price' : 'Switch to target ROI %'}
-            className="rounded-sm bg-background px-1 py-0.5 text-[9px] font-bold text-muted-foreground hover:text-foreground border border-border/40"
-          >
-            {slMode === 'roi' ? '%' : '$'}
-          </button>
-        </div>
-      </div>
-
-      {/* Action Buttons */}
-      <div className="grid grid-cols-2 gap-1.5 pt-0.5">
+      {/* 8. Main LONG and SHORT Actions */}
+      <div className="grid grid-cols-2 gap-3 pt-1">
+        {/* LONG Action */}
         <button
           type="button"
           onClick={() => handleOrderClick('LONG')}
-          disabled={isSubmitting || numMargin <= 0 || !!minNotionalError}
-          className="rounded-md bg-[#00D964] text-white h-10 text-center font-mono text-xs font-bold hover:bg-[#06964A] transition-all flex items-center justify-center gap-1.5 disabled:opacity-50 shadow-xs"
+          disabled={isSubmitting || numMargin <= 0 || Boolean(minNotionalError)}
+          className="h-16 rounded-2xl bg-[#00D964] text-black hover:bg-[#00C259] active:scale-[0.99] transition-all flex flex-col items-center justify-center shadow-xs cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
         >
-          <ArrowUp className="w-3.5 h-3.5 stroke-[2.5]" />
-          <span>LONG {leverage}×</span>
+          <span className="text-lg font-black tracking-wide uppercase font-sans">
+            LONG
+          </span>
+          <span className="text-xs font-semibold text-black/80 font-sans">
+            Win +${fmtUsd(profitAt10, 0)} at +1%
+          </span>
         </button>
 
+        {/* SHORT Action */}
         <button
           type="button"
           onClick={() => handleOrderClick('SHORT')}
-          disabled={isSubmitting || numMargin <= 0 || !!minNotionalError}
-          className="rounded-md bg-[#FF3B30] text-white h-10 text-center font-mono text-xs font-bold hover:bg-[#d62e24] transition-all flex items-center justify-center gap-1.5 disabled:opacity-50 shadow-xs"
+          disabled={isSubmitting || numMargin <= 0 || Boolean(minNotionalError)}
+          className="h-16 rounded-2xl bg-[#FF3B30] text-white hover:bg-[#E0342A] active:scale-[0.99] transition-all flex flex-col items-center justify-center shadow-xs cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
         >
-          <ArrowDown className="w-3.5 h-3.5 stroke-[2.5]" />
-          <span>SHORT {leverage}×</span>
+          <span className="text-lg font-black tracking-wide uppercase font-sans">
+            SHORT
+          </span>
+          <span className="text-xs font-semibold text-white/90 font-sans">
+            Win +${fmtUsd(profitAt10, 0)} at -1%
+          </span>
         </button>
       </div>
+
+      {/* 9. Footer Note */}
+      <p className="text-center text-xs text-muted-foreground/75 font-sans pt-1">
+        Every trade opens its own position — open as many as you like.
+      </p>
 
       {/* First Live Order Confirmation Modal */}
       {pendingConfirmSide && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs">
-          <div className="w-full max-w-sm rounded-xl border border-border bg-white p-5 shadow-xl space-y-4 font-mono text-xs">
+          <div className="w-full max-w-sm rounded-2xl border border-border bg-white p-5 shadow-2xl space-y-4 font-sans text-xs">
             <div className="flex items-center gap-2 pb-2 border-b border-border">
               <span className="flex items-center gap-1 rounded bg-[#E3F8EC] border border-[#06964A]/30 px-2 py-0.5 text-[10px] font-bold text-[#06964A]">
-                <span className="size-1.5 rounded-full bg-[#06964A]" />
+                <span className="size-1.5 rounded-full bg-[#06964A] animate-pulse" />
                 LIVE · REAL FUNDS
               </span>
               <span className="font-bold text-foreground">Confirm Live Order</span>
             </div>
 
-            <p className="text-muted-foreground text-[11px] leading-relaxed">
-              You are about to place a <strong className="text-foreground">{pendingConfirmSide}</strong> order on{' '}
-              <strong className="text-foreground">{asset}</strong> using real funds on Hyperliquid.
+            <p className="text-muted-foreground text-xs leading-relaxed">
+              You are about to place a <strong className="text-foreground font-bold">{pendingConfirmSide}</strong> order on{' '}
+              <strong className="text-foreground font-bold">{asset}</strong> using real funds on Hyperliquid.
             </p>
 
-            <div className="space-y-1.5 bg-[#F6F6F4] p-3 rounded-lg border border-border text-[11px]">
+            <div className="space-y-2 bg-[#F6F6F4] p-3 rounded-xl border border-border text-xs font-mono">
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Side</span>
+                <span className="text-muted-foreground font-sans">Side</span>
                 <span className={pendingConfirmSide === 'LONG' ? 'text-[#06964A] font-bold' : 'text-[#FF3B30] font-bold'}>
                   {pendingConfirmSide}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Isolated Margin</span>
+                <span className="text-muted-foreground font-sans">Isolated Margin</span>
                 <span className="font-bold">${numMargin} USDC</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Leverage</span>
-                <span className="font-bold">{leverage}×</span>
+                <span className="text-muted-foreground font-sans">Leverage</span>
+                <span className="font-bold">{internalLeverage}×</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Notional</span>
-                <span className="font-bold">${notional.toLocaleString()} USDC</span>
+                <span className="text-muted-foreground font-sans">Notional</span>
+                <span className="font-bold">${fmtUsd(notional, 0)} USDC</span>
               </div>
             </div>
 
@@ -386,14 +587,14 @@ export function OrderForm({
               <button
                 type="button"
                 onClick={() => setPendingConfirmSide(null)}
-                className="h-8 rounded-md border border-border bg-white text-muted-foreground hover:bg-[#F6F6F4] font-bold text-xs"
+                className="h-10 rounded-xl border border-border bg-white text-muted-foreground hover:bg-[#F6F6F4] font-bold text-xs"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={() => executeOrder(pendingConfirmSide)}
-                className="h-8 rounded-md bg-foreground text-background hover:opacity-90 font-bold text-xs shadow-xs"
+                className="h-10 rounded-xl bg-foreground text-background hover:opacity-90 font-bold text-xs shadow-xs"
               >
                 Confirm & Place
               </button>
