@@ -149,17 +149,37 @@ export function ShareModal({
   const [customBoost, setCustomBoost] = useState<number>(5.0);
   const [syndicateDesk, setSyndicateDesk] = useState<string>("Alpha Syndicate");
 
+  // Sync mode and hideDollar when modal opens or initial props change
   useEffect(() => {
     if (trade) {
+      if (initialMode) {
+        setMode(initialMode);
+      }
+      if (initialHideDollar !== undefined) {
+        setHideDollar(initialHideDollar);
+      }
       setCustomGoal(Math.round(rawEntry * (side === "long" ? 1.15 : 0.85)));
       setCustomBoost(Math.min(25, Math.max(2, Math.round(rawLeverage / 20))));
     }
-  }, [trade, rawEntry, side, rawLeverage]);
+  }, [trade, initialMode, initialHideDollar, rawEntry, side, rawLeverage]);
+
+  // Dismiss on Escape key
+  useEffect(() => {
+    if (!trade) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onOpenChange(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [trade, onOpenChange]);
 
   // Calculations per Mode
   const { displayRoiPct, displayDollar, statCols, modeBadgeText, pnlHeadingLabel } = useMemo(() => {
     if (mode === "goal") {
-      const priceDeltaPct = rawEntry > 0 ? ((customGoal - rawEntry) / rawEntry) * (side === "long" ? 1 : -1) : 0;
+      const effectiveGoal = customGoal > 0 ? customGoal : defaultGoalPrice;
+      const priceDeltaPct = rawEntry > 0 ? ((effectiveGoal - rawEntry) / rawEntry) * (side === "long" ? 1 : -1) : 0;
       const goalRoi = priceDeltaPct * rawLeverage * 100;
       const goalPnl = rawStake * (goalRoi / 100);
 
@@ -171,7 +191,7 @@ export function ShareModal({
         statCols: [
           { label: "ENTRY PRICE", value: `$${fmtUsd(rawEntry, market.decimals)}` },
           { label: "CURRENT EXIT", value: `$${fmtUsd(rawExit, market.decimals)}` },
-          { label: "TARGET GOAL", value: `$${fmtUsd(customGoal, market.decimals)}` },
+          { label: "TARGET GOAL", value: `$${fmtUsd(effectiveGoal, market.decimals)}` },
         ],
       };
     }
@@ -196,18 +216,19 @@ export function ShareModal({
     }
 
     if (mode === "teamwork") {
+      const effectiveDesk = syndicateDesk.trim() || "Alpha Syndicate";
       const teamRoi = baseRoiPct * 1.2;
       const teamPoolPnl = rawPnl * 4;
 
       return {
         displayRoiPct: teamRoi,
         displayDollar: teamPoolPnl,
-        modeBadgeText: `👥 ${syndicateDesk}`,
+        modeBadgeText: `👥 ${effectiveDesk}`,
         pnlHeadingLabel: "SYNDICATE DESK POOL ROI",
         statCols: [
           { label: "DESK ENTRY", value: `$${fmtUsd(rawEntry, market.decimals)}` },
           { label: "DESK EXIT", value: `$${fmtUsd(rawExit, market.decimals)}` },
-          { label: "SYNDICATE DESK", value: syndicateDesk },
+          { label: "SYNDICATE DESK", value: effectiveDesk },
         ],
       };
     }
@@ -266,11 +287,15 @@ export function ShareModal({
 
   // Referral code logic (wallet or local session key)
   const referralCode = useMemo(() => {
-    if (typeof window !== "undefined") {
-      const stored = localStorage.getItem("godcandle_wallet_address");
-      if (stored && stored.length >= 6) {
-        return `GOD-${stored.slice(2, 6).toUpperCase()}`;
+    try {
+      if (typeof window !== "undefined" && window.localStorage) {
+        const stored = localStorage.getItem("godcandle_wallet_address");
+        if (stored && stored.length >= 6) {
+          return `GOD-${stored.slice(2, 6).toUpperCase()}`;
+        }
       }
+    } catch {
+      // In private browsing or sandboxed iframes, localStorage might throw
     }
     return "GOD-8K2F";
   }, []);
@@ -598,16 +623,16 @@ export function ShareModal({
     ctx.fillText(pnlPctFormatted, textX, pnlFigureY);
     ctx.letterSpacing = "0px";
 
-    // Optional Dollar Amount
+    // Optional Dollar Amount (stacked beneath percentage for clean alignment & no horizontal overflow)
+    let dollarY = pnlFigureY + pnlFontSize + 4;
     if (!hideDollar) {
-      const pnlW = ctx.measureText(pnlPctFormatted).width;
       ctx.fillStyle = colors.textSecondary;
       ctx.font = "600 24px -apple-system, BlinkMacSystemFont, 'Inter', 'SF Pro Text', sans-serif";
-      ctx.fillText(`(${dollarFormatted})`, textX + pnlW + 20, pnlFigureY + pnlFontSize - 30);
+      ctx.fillText(dollarFormatted, textX, dollarY);
     }
 
     // F. Trading Data Row Divider
-    const dataDividerY = pnlFigureY + 130;
+    const dataDividerY = !hideDollar ? dollarY + 44 : pnlFigureY + pnlFontSize + 28;
     ctx.strokeStyle = colors.divider;
     ctx.lineWidth = 1;
     ctx.beginPath();
@@ -648,12 +673,12 @@ export function ShareModal({
     }
 
     // --- RIGHT COLUMN (46%): Claude Monet Impressionist Art Panel ---
-    if (photoImg) {
-      ctx.save();
-      // Clip right column to 16px radius
-      drawRoundedRect(ctx, rightColX, mainTop, rightColW, mainH, 16);
-      ctx.clip();
+    ctx.save();
+    // Clip right column to 16px radius
+    drawRoundedRect(ctx, rightColX, mainTop, rightColW, mainH, 16);
+    ctx.clip();
 
+    if (photoImg) {
       // Object-fit: cover, centered
       const imgAspect = photoImg.width / photoImg.height;
       const targetAspect = rightColW / mainH;
@@ -671,103 +696,118 @@ export function ShareModal({
       }
 
       ctx.drawImage(photoImg, drawX, drawY, drawW, drawH);
-
-      // Delicate iridescent pastel rainbow gradient sheen overlay
-      const artRainbow = ctx.createLinearGradient(
-        rightColX,
-        mainTop,
-        rightColX + rightColW,
-        mainTop + mainH
-      );
-      artRainbow.addColorStop(0, "rgba(205, 195, 240, 0.28)");
-      artRainbow.addColorStop(0.5, "rgba(255, 218, 200, 0.22)");
-      artRainbow.addColorStop(1, "rgba(160, 212, 202, 0.26)");
-      ctx.fillStyle = artRainbow;
+    } else {
+      // Impressionist fallback palette gradient when image is not loaded
+      const fallbackGrad = ctx.createLinearGradient(rightColX, mainTop, rightColX + rightColW, mainTop + mainH);
+      fallbackGrad.addColorStop(0, "#7AA5BD"); // Étretat sea blue
+      fallbackGrad.addColorStop(0.3, "#A8C3D2");
+      fallbackGrad.addColorStop(0.65, "#E2CBB4"); // Cliffs ochre
+      fallbackGrad.addColorStop(1, "#D6A374");
+      ctx.fillStyle = fallbackGrad;
       ctx.fillRect(rightColX, mainTop, rightColW, mainH);
-
-      // Impressionist depth vignettes
-      const artVignette = ctx.createLinearGradient(rightColX, mainTop, rightColX, mainTop + mainH);
-      artVignette.addColorStop(0, "rgba(0, 0, 0, 0.15)");
-      artVignette.addColorStop(0.5, "transparent");
-      artVignette.addColorStop(1, "rgba(0, 0, 0, 0.45)");
-      ctx.fillStyle = artVignette;
-      ctx.fillRect(rightColX, mainTop, rightColW, mainH);
-
-      // Top Right Network Badge on Monet panel
-      const topBadgeText = "HyperEVM Live";
-      ctx.font = "600 13px -apple-system, BlinkMacSystemFont, 'Inter', 'SF Pro Text', sans-serif";
-      const topBadgeW = ctx.measureText(topBadgeText).width + 30;
-      const topBadgeH = 28;
-      const topBadgeX = rightColX + rightColW - topBadgeW - 16;
-      const topBadgeY = mainTop + 16;
-
-      drawRoundedRect(ctx, topBadgeX, topBadgeY, topBadgeW, topBadgeH, 14);
-      ctx.fillStyle = "rgba(255, 255, 255, 0.88)";
-      ctx.fill();
-      ctx.strokeStyle = "rgba(255, 255, 255, 0.9)";
-      ctx.stroke();
-
-      // Green pulse dot
-      ctx.beginPath();
-      ctx.arc(topBadgeX + 13, topBadgeY + topBadgeH / 2, 3.5, 0, Math.PI * 2);
-      ctx.fillStyle = "#00D964";
-      ctx.fill();
-
-      ctx.fillStyle = "#0A0A0A";
-      ctx.textAlign = "left";
-      ctx.textBaseline = "middle";
-      ctx.fillText(topBadgeText, topBadgeX + 22, topBadgeY + topBadgeH / 2 + 1);
-
-      // Floating Plaque on Monet Panel
-      const plaquePadding = 20;
-      const plaqueW = rightColW - plaquePadding * 2;
-      const plaqueH = 104;
-      const plaqueX = rightColX + plaquePadding;
-      const plaqueY = mainTop + mainH - plaqueH - plaquePadding;
-
-      // Glass plaque background
-      drawRoundedRect(ctx, plaqueX, plaqueY, plaqueW, plaqueH, 14);
-      ctx.fillStyle = colors.plaqueBg;
-      ctx.fill();
-      ctx.strokeStyle = colors.plaqueBorder;
-      ctx.lineWidth = 1;
-      ctx.stroke();
-
-      // Plaque Title
-      ctx.fillStyle = colors.plaqueText;
-      ctx.font = "700 22px -apple-system, BlinkMacSystemFont, 'Inter', 'SF Pro Display', sans-serif";
-      ctx.textAlign = "left";
-      ctx.textBaseline = "top";
-      ctx.fillText("1000x Synthetic Perps.", plaqueX + 20, plaqueY + 22);
-
-      // Plaque Subtitle
-      ctx.fillStyle = colors.textSecondary;
-      ctx.font = "500 15px -apple-system, BlinkMacSystemFont, 'Inter', 'SF Pro Text', sans-serif";
-      ctx.fillText("Mark-clamped BBO · Zero Entry Fees", plaqueX + 20, plaqueY + 54);
-
-      // Rainbow Pill Badge: Claude Monet, 1885
-      const pillText = `${selectedArt.artist}, ${selectedArt.year}`;
-      ctx.font = "600 13px -apple-system, BlinkMacSystemFont, 'Inter', 'SF Pro Text', sans-serif";
-      const pillW = ctx.measureText(pillText).width + 22;
-      const pillH = 26;
-      const pillX = plaqueX + plaqueW - pillW - 18;
-      const pillY = plaqueY + 18;
-
-      drawRoundedRect(ctx, pillX, pillY, pillW, pillH, 13);
-      const pillGrad = ctx.createLinearGradient(pillX, pillY, pillX + pillW, pillY + pillH);
-      pillGrad.addColorStop(0, "#CDC3F0");
-      pillGrad.addColorStop(0.5, "#FFDAC8");
-      pillGrad.addColorStop(1, "#A0D4CA");
-      ctx.fillStyle = pillGrad;
-      ctx.fill();
-
-      ctx.fillStyle = "#0A0A0A";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText(pillText, pillX + pillW / 2, pillY + pillH / 2);
-
-      ctx.restore();
     }
+
+    // Delicate iridescent pastel rainbow gradient sheen overlay
+    const artRainbow = ctx.createLinearGradient(
+      rightColX,
+      mainTop,
+      rightColX + rightColW,
+      mainTop + mainH
+    );
+    artRainbow.addColorStop(0, "rgba(205, 195, 240, 0.28)");
+    artRainbow.addColorStop(0.5, "rgba(255, 218, 200, 0.22)");
+    artRainbow.addColorStop(1, "rgba(160, 212, 202, 0.26)");
+    ctx.fillStyle = artRainbow;
+    ctx.fillRect(rightColX, mainTop, rightColW, mainH);
+
+    // Impressionist depth vignettes
+    const artVignette = ctx.createLinearGradient(rightColX, mainTop, rightColX, mainTop + mainH);
+    artVignette.addColorStop(0, "rgba(0, 0, 0, 0.15)");
+    artVignette.addColorStop(0.5, "transparent");
+    artVignette.addColorStop(1, "rgba(0, 0, 0, 0.45)");
+    ctx.fillStyle = artVignette;
+    ctx.fillRect(rightColX, mainTop, rightColW, mainH);
+
+    // Top Right Network Badge on Monet panel
+    const topBadgeText = "HyperEVM Live";
+    ctx.font = "600 13px -apple-system, BlinkMacSystemFont, 'Inter', 'SF Pro Text', sans-serif";
+    const topBadgeW = ctx.measureText(topBadgeText).width + 30;
+    const topBadgeH = 28;
+    const topBadgeX = rightColX + rightColW - topBadgeW - 16;
+    const topBadgeY = mainTop + 16;
+
+    drawRoundedRect(ctx, topBadgeX, topBadgeY, topBadgeW, topBadgeH, 14);
+    ctx.fillStyle = "rgba(255, 255, 255, 0.88)";
+    ctx.fill();
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.9)";
+    ctx.stroke();
+
+    // Green pulse dot
+    ctx.beginPath();
+    ctx.arc(topBadgeX + 13, topBadgeY + topBadgeH / 2, 3.5, 0, Math.PI * 2);
+    ctx.fillStyle = "#00D964";
+    ctx.fill();
+
+    ctx.fillStyle = "#0A0A0A";
+    ctx.textAlign = "left";
+    ctx.textBaseline = "middle";
+    ctx.fillText(topBadgeText, topBadgeX + 22, topBadgeY + topBadgeH / 2 + 1);
+
+    // Floating Plaque on Monet Panel
+    const plaquePadding = 20;
+    const plaqueW = rightColW - plaquePadding * 2;
+    const plaqueH = 104;
+    const plaqueX = rightColX + plaquePadding;
+    const plaqueY = mainTop + mainH - plaqueH - plaquePadding;
+
+    // Glass plaque background
+    drawRoundedRect(ctx, plaqueX, plaqueY, plaqueW, plaqueH, 14);
+    ctx.fillStyle = colors.plaqueBg;
+    ctx.fill();
+    ctx.strokeStyle = colors.plaqueBorder;
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // Plaque Title
+    ctx.fillStyle = colors.plaqueText;
+    ctx.font = "700 22px -apple-system, BlinkMacSystemFont, 'Inter', 'SF Pro Display', sans-serif";
+    ctx.textAlign = "left";
+    ctx.textBaseline = "top";
+    ctx.fillText("1000x Synthetic Perps.", plaqueX + 20, plaqueY + 22);
+
+    // Plaque Subtitle
+    ctx.fillStyle = colors.textSecondary;
+    ctx.font = "500 15px -apple-system, BlinkMacSystemFont, 'Inter', 'SF Pro Text', sans-serif";
+    ctx.fillText("Mark-clamped BBO · Zero Entry Fees", plaqueX + 20, plaqueY + 54);
+
+    // Rainbow Pill Badge: Claude Monet, 1885
+    const pillText = `${selectedArt.artist}, ${selectedArt.year}`;
+    ctx.font = "600 13px -apple-system, BlinkMacSystemFont, 'Inter', 'SF Pro Text', sans-serif";
+    const pillW = ctx.measureText(pillText).width + 22;
+    const pillH = 26;
+    const pillX = plaqueX + plaqueW - pillW - 18;
+    const pillY = plaqueY + 18;
+
+    drawRoundedRect(ctx, pillX, pillY, pillW, pillH, 13);
+    const pillGrad = ctx.createLinearGradient(pillX, pillY, pillX + pillW, pillY + pillH);
+    pillGrad.addColorStop(0, "#CDC3F0");
+    pillGrad.addColorStop(0.5, "#FFDAC8");
+    pillGrad.addColorStop(1, "#A0D4CA");
+    ctx.fillStyle = pillGrad;
+    ctx.fill();
+
+    ctx.fillStyle = "#0A0A0A";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(pillText, pillX + pillW / 2, pillY + pillH / 2);
+
+    // Plaque Art Title right-aligned bottom
+    ctx.fillStyle = colors.textSecondary;
+    ctx.font = "italic 500 13px -apple-system, BlinkMacSystemFont, 'Inter', 'SF Pro Text', sans-serif";
+    ctx.textAlign = "right";
+    ctx.fillText(selectedArt.title, plaqueX + plaqueW - 20, plaqueY + 66);
+
+    ctx.restore();
 
     // ==========================================
     // 3. BOTTOM REFERRAL STRIP (Y: 767 -> 946)
@@ -806,6 +846,15 @@ export function ShareModal({
     const qrSize = 82;
     const qrX = width - padding - 310;
     const qrY = footerYCenter - qrSize / 2;
+
+    // Draw quiet rounded background box with subtle border matching preview
+    drawRoundedRect(ctx, qrX - 4, qrY - 4, qrSize + 8, qrSize + 8, 8);
+    ctx.fillStyle = colors.qrBg;
+    ctx.fill();
+    ctx.strokeStyle = "#E5E5E5";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
     drawQrMatrixToCanvas(ctx, qrMatrix, qrX, qrY, qrSize, colors.qrFg, colors.qrBg);
 
     // Group 3: Right - Referral Action
@@ -863,43 +912,56 @@ export function ShareModal({
   const handleDownload = async () => {
     if (!trade) return;
     setIsExporting(true);
-    await drawCardToCanvas();
-    const canvas = canvasRef.current;
-    if (!canvas) {
+    try {
+      await drawCardToCanvas();
+      const canvas = canvasRef.current;
+      if (!canvas) {
+        setIsExporting(false);
+        return;
+      }
+      const url = canvas.toDataURL("image/png");
+      const link = document.createElement("a");
+      link.download = `godcandle-${market.symbol}-PnL-${Date.now()}.png`;
+      link.href = url;
+      link.click();
+      setCopied("image");
+      toast.success("1600 × 1000 px PnL card downloaded successfully!");
+      setTimeout(() => setCopied(null), 2500);
+    } catch (err) {
+      console.error("Failed to download canvas:", err);
+      toast.error("Failed to export image. Copied text summary instead.");
+      handleCopyText();
+    } finally {
       setIsExporting(false);
-      return;
     }
-    const url = canvas.toDataURL("image/png");
-    const link = document.createElement("a");
-    link.download = `godcandle-${market.symbol}-PnL-${Date.now()}.png`;
-    link.href = url;
-    link.click();
-    setCopied("image");
-    toast.success("1600 × 1000 px PnL card downloaded successfully!");
-    setIsExporting(false);
-    setTimeout(() => setCopied(null), 2500);
   };
 
   const handleCopyImage = async () => {
     if (!trade) return;
     setIsExporting(true);
-    await drawCardToCanvas();
-    const canvas = canvasRef.current;
-    if (!canvas) {
-      setIsExporting(false);
-      return;
-    }
     try {
+      await drawCardToCanvas();
+      const canvas = canvasRef.current;
+      if (!canvas) {
+        setIsExporting(false);
+        return;
+      }
       canvas.toBlob(async (blob) => {
         if (!blob) {
           setIsExporting(false);
+          handleCopyText();
           return;
         }
-        await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
-        setCopied("image");
-        toast.success("PnL card image copied to clipboard!");
-        setIsExporting(false);
-        setTimeout(() => setCopied(null), 2500);
+        try {
+          await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
+          setCopied("image");
+          toast.success("PnL card image copied to clipboard!");
+          setTimeout(() => setCopied(null), 2500);
+        } catch {
+          handleCopyText();
+        } finally {
+          setIsExporting(false);
+        }
       });
     } catch {
       handleCopyText();
@@ -1269,7 +1331,7 @@ export function ShareModal({
                   className="text-[9px] sm:text-[11px] uppercase tracking-[2px] font-semibold"
                   style={{ color: colors.textSecondary }}
                 >
-                  TRADE SMARTER TOGETHER
+                  TRADE SMARTER TOGETHER · ZERO FEES
                 </span>
               </div>
 
@@ -1422,11 +1484,17 @@ export function ShareModal({
                       className="text-[9px] sm:text-[11px] font-medium mt-0.5"
                       style={{ color: colors.textSecondary }}
                     >
-                      Mark-clamped BBO · Zero Fees
+                      Mark-clamped BBO · Zero Entry Fees
                     </p>
                     <div className="mt-1.5 flex items-center justify-between text-[8px] sm:text-[10px]">
                       <span className="rounded-full bg-gradient-to-r from-[#CDC3F0]/80 via-[#FFDAC8]/80 to-[#A0D4CA]/80 px-2 py-0.5 font-bold text-[#0A0A0A] border border-black/10">
                         {selectedArt.artist}, {selectedArt.year}
+                      </span>
+                      <span
+                        className="italic truncate max-w-[130px] pl-1 font-serif text-[8px] sm:text-[10px]"
+                        style={{ color: colors.textSecondary }}
+                      >
+                        {selectedArt.title}
                       </span>
                     </div>
                   </div>

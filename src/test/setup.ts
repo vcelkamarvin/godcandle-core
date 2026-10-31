@@ -1,5 +1,8 @@
 import "@testing-library/jest-dom/vitest";
 
+// @ts-expect-error react act flag
+globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+
 Object.defineProperty(window, "scrollTo", {
   writable: true,
   value: () => {},
