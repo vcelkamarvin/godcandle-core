@@ -139,104 +139,104 @@ export function TradeTerminal() {
         corridorBps={selectedMarket.corridorBps}
       />
 
-      {/* Technical Chart Instance (Raw L1 Tick or TradingView Lightweight Instance) */}
-      <div className={`relative overflow-hidden rounded-2xl border border-border bg-white shadow-sm ${
-        isProMode ? 'p-3 space-y-2' : 'p-4 space-y-3'
-      }`}>
-        <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-[#CDC3F0] via-[#FFDAC8] to-[#A0D4CA] opacity-80" />
-
-        <div className="flex flex-wrap items-center justify-between gap-3 pb-1 border-b border-border">
-          <div className="flex items-center gap-2">
-            <span className="font-mono text-[11px] font-bold text-foreground">
-              {selectedMarket.symbol}
-            </span>
-            {isPerps ? (
-              <span className="rounded bg-[#E3F8EC] border border-[#06964A]/30 px-2 py-0.5 text-[9px] font-bold text-[#06964A] flex items-center gap-1">
-                <span className="size-1.5 rounded-full bg-[#06964A] animate-pulse" />
-                {address ? `LIVE · REAL FUNDS (${hlNetwork.toUpperCase()})` : 'TEST · $10K DEMO'}
-              </span>
-            ) : (
-              <span className="rounded bg-[#FFF4E5] border border-[#D97706]/30 px-2 py-0.5 text-[9px] font-bold text-[#D97706]">
-                TEST · PAPER
-              </span>
-            )}
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2">
-            {/* Chart Mode Switcher */}
-            <div className="flex items-center rounded-md bg-secondary p-0.5 border border-border/60">
-              <Button
-                variant="terminal"
-                onClick={() => setChartMode('reactive')}
-                className={`h-6 px-2.5 rounded-sm text-[11px] font-mono font-medium gap-1.5 transition-all ${
-                  chartMode === 'reactive'
-                    ? 'bg-foreground text-background font-bold shadow-xs'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                <Zap className="size-3 text-[#FFD60A]" />
-                <span>Raw L1 Tick</span>
-              </Button>
-              <Button
-                variant="terminal"
-                onClick={() => setChartMode('tradingview')}
-                className={`h-6 px-2.5 rounded-sm text-[11px] font-mono font-medium gap-1.5 transition-all ${
-                  chartMode === 'tradingview'
-                    ? 'bg-foreground text-background font-bold shadow-xs'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                <BarChart2 className="size-3 text-[#00D964]" />
-                <span>TradingView</span>
-              </Button>
-            </div>
-
-            {/* Timeframe Interval Pills */}
-            <div className="hidden sm:flex items-center rounded-md bg-secondary p-0.5 border border-border/60">
-              {TIMEFRAMES.map((tf) => (
-                <button
-                  key={tf.label}
-                  type="button"
-                  onClick={() => handleTimeframeChange(tf)}
-                  className={`h-6 px-2 rounded-sm text-[10px] font-mono transition-all ${
-                    windowMs === tf.ms
-                      ? 'bg-foreground text-background font-bold shadow-xs'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}
-                >
-                  {tf.label}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Chart Viewport */}
-        <div className="relative h-[340px] w-full rounded-xl overflow-hidden bg-[#FAF9F5] border border-border/40">
-          {chartMode === 'reactive' ? (
-            <PriceChart
-              market={rawSymbol}
-              windowMs={windowMs}
-              position={currentPosition}
-              pnlLabel={pnlLabel}
-              pnlPositive={posPnl >= 0}
-              onClose={() => t?.close && currentPosition && t.close(currentPosition.id)}
-            />
-          ) : (
-            <TradingViewWidget
-              market={rawSymbol}
-              interval={tvInterval}
-              height="100%"
-            />
-          )}
-        </div>
-      </div>
-
-      <div className={`grid grid-cols-1 lg:grid-cols-12 ${isProMode ? 'gap-2.5' : 'gap-4'}`}>
-        {/* Left Column: Markets, Solvency / Hyperliquid Clearinghouse State & Cashflow */}
+      <div className={`grid grid-cols-1 lg:grid-cols-12 ${isProMode ? 'gap-2.5' : 'gap-4'} items-start`}>
+        {/* Left Column: Chart, Markets, Solvency / Hyperliquid Clearinghouse State & Cashflow */}
         <div className={`lg:col-span-7 ${isProMode ? 'space-y-2.5' : 'space-y-4'}`}>
+          {/* Technical Chart Instance (Raw L1 Tick or TradingView Lightweight Instance) */}
+          <div className={`relative overflow-hidden rounded-2xl border border-border bg-white shadow-sm ${
+            isProMode ? 'p-2.5 space-y-2' : 'p-3 space-y-2.5'
+          }`}>
+            <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-[#CDC3F0] via-[#FFDAC8] to-[#A0D4CA] opacity-80" />
+
+            <div className="flex flex-wrap items-center justify-between gap-2.5 pb-1 border-b border-border">
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-[11px] font-bold text-foreground">
+                  {selectedMarket.symbol}
+                </span>
+                {isPerps ? (
+                  <span className="rounded bg-[#E3F8EC] border border-[#06964A]/30 px-2 py-0.5 text-[9px] font-bold text-[#06964A] flex items-center gap-1">
+                    <span className="size-1.5 rounded-full bg-[#06964A] animate-pulse" />
+                    {address ? `LIVE · REAL FUNDS (${hlNetwork.toUpperCase()})` : 'TEST · $10K DEMO'}
+                  </span>
+                ) : (
+                  <span className="rounded bg-[#FFF4E5] border border-[#D97706]/30 px-2 py-0.5 text-[9px] font-bold text-[#D97706]">
+                    TEST · PAPER
+                  </span>
+                )}
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2">
+                {/* Chart Mode Switcher */}
+                <div className="flex items-center rounded-md bg-secondary p-0.5 border border-border/60">
+                  <Button
+                    variant="terminal"
+                    onClick={() => setChartMode('reactive')}
+                    className={`h-6 px-2.5 rounded-sm text-[11px] font-mono font-medium gap-1.5 transition-all ${
+                      chartMode === 'reactive'
+                        ? 'bg-foreground text-background font-bold shadow-xs'
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    <Zap className="size-3 text-[#FFD60A]" />
+                    <span>Raw L1 Tick</span>
+                  </Button>
+                  <Button
+                    variant="terminal"
+                    onClick={() => setChartMode('tradingview')}
+                    className={`h-6 px-2.5 rounded-sm text-[11px] font-mono font-medium gap-1.5 transition-all ${
+                      chartMode === 'tradingview'
+                        ? 'bg-foreground text-background font-bold shadow-xs'
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    <BarChart2 className="size-3 text-[#00D964]" />
+                    <span>TradingView</span>
+                  </Button>
+                </div>
+
+                {/* Timeframe Interval Pills */}
+                <div className="hidden sm:flex items-center rounded-md bg-secondary p-0.5 border border-border/60">
+                  {TIMEFRAMES.map((tf) => (
+                    <button
+                      key={tf.label}
+                      type="button"
+                      onClick={() => handleTimeframeChange(tf)}
+                      className={`h-6 px-2 rounded-sm text-[10px] font-mono transition-all ${
+                        windowMs === tf.ms
+                          ? 'bg-foreground text-background font-bold shadow-xs'
+                          : 'text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      {tf.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Chart Viewport */}
+            <div className="relative h-[290px] sm:h-[310px] w-full rounded-xl overflow-hidden bg-[#FAF9F5] border border-border/40">
+              {chartMode === 'reactive' ? (
+                <PriceChart
+                  market={rawSymbol}
+                  windowMs={windowMs}
+                  position={currentPosition}
+                  pnlLabel={pnlLabel}
+                  pnlPositive={posPnl >= 0}
+                  onClose={() => t?.close && currentPosition && t.close(currentPosition.id)}
+                />
+              ) : (
+                <TradingViewWidget
+                  market={rawSymbol}
+                  interval={tvInterval}
+                  height="100%"
+                />
+              )}
+            </div>
+          </div>
+
           {/* Market Switcher & Test Reset */}
-          <div className="rounded-2xl border border-border bg-white p-4 shadow-xs">
+          <div className="rounded-2xl border border-border bg-white p-3.5 shadow-xs">
             <div className="flex justify-between items-center">
               <div className="flex space-x-1.5 overflow-x-auto no-scrollbar">
                 {marketsList.slice(0, 15).map((m: any) => {
@@ -413,7 +413,7 @@ export function TradeTerminal() {
         </div>
 
         {/* Right Column: Redesigned High-Precision Order Panel */}
-        <div className={`lg:col-span-5 ${isProMode ? 'space-y-2.5' : 'space-y-4'}`}>
+        <div className={`lg:col-span-5 ${isProMode ? 'space-y-2.5' : 'space-y-4'} lg:sticky lg:top-16`}>
           <OrderForm
             currentPrice={currentPrice}
             leverage={leverage}

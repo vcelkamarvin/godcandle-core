@@ -213,10 +213,10 @@ export function OrderForm({
   };
 
   return (
-    <div className="w-full rounded-2xl border border-border/80 bg-white p-5 space-y-4 shadow-sm font-sans text-foreground">
+    <div className="w-full rounded-2xl border border-border/80 bg-white p-3.5 space-y-2.5 shadow-sm font-sans text-foreground">
       {/* 2. Header and Order Type */}
-      <div className="flex items-center justify-between pb-1">
-        <h2 className="text-xl font-bold tracking-tight text-foreground font-sans">
+      <div className="flex items-center justify-between pb-0.5">
+        <h2 className="text-base font-bold tracking-tight text-foreground font-sans">
           Open trade
         </h2>
         <div className="flex items-center rounded-full bg-[#F0F0EE] p-1">
@@ -275,7 +275,7 @@ export function OrderForm({
         </div>
 
         {/* Preset Amount Chips ($10, $25, $50, $100, $500) */}
-        <div className="grid grid-cols-5 gap-1.5">
+        <div className="grid grid-cols-5 gap-1">
           {STAKE_PRESETS.map((preset) => {
             const isSelected = margin === preset && customAmount === '';
             return (
@@ -283,7 +283,7 @@ export function OrderForm({
                 key={preset}
                 type="button"
                 onClick={() => handleSelectStake(preset)}
-                className={`rounded-xl py-2.5 text-center font-mono text-sm font-semibold transition-all ${
+                className={`rounded-lg py-1.5 text-center font-mono text-xs font-semibold transition-all ${
                   isSelected
                     ? 'bg-black text-white shadow-xs'
                     : 'bg-[#F4F4F5] text-foreground hover:bg-[#EAEAEA]'
@@ -296,38 +296,38 @@ export function OrderForm({
         </div>
 
         {/* Custom Amount Box and Percentage Buttons */}
-        <div className="flex items-center gap-2 pt-0.5">
-          <div className="flex flex-1 items-center gap-1.5 rounded-xl border border-black bg-white px-3 py-2 focus-within:ring-1 focus-within:ring-black">
-            <span className="font-mono text-sm text-muted-foreground">$</span>
+        <div className="flex items-center gap-1.5 pt-0.5">
+          <div className="flex flex-1 items-center gap-1.5 rounded-lg border border-black bg-white px-2.5 py-1.5 focus-within:ring-1 focus-within:ring-black">
+            <span className="font-mono text-xs text-muted-foreground">$</span>
             <input
               type="number"
               min="1"
               placeholder="Custom amount"
               value={customAmount}
               onChange={(e) => handleCustomAmountChange(e.target.value)}
-              className="w-full bg-transparent font-mono text-sm text-foreground placeholder:font-sans placeholder:text-muted-foreground/70 focus:outline-none"
+              className="w-full bg-transparent font-mono text-xs text-foreground placeholder:font-sans placeholder:text-muted-foreground/70 focus:outline-none"
             />
           </div>
 
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1">
             <button
               type="button"
               onClick={() => handlePercentageStake(0.25)}
-              className="rounded-xl bg-[#F4F4F5] px-3.5 py-2.5 text-xs font-bold font-sans text-foreground transition-colors hover:bg-[#EAEAEA]"
+              className="rounded-lg bg-[#F4F4F5] px-2.5 py-1.5 text-[11px] font-bold font-sans text-foreground transition-colors hover:bg-[#EAEAEA]"
             >
               25%
             </button>
             <button
               type="button"
               onClick={() => handlePercentageStake(0.5)}
-              className="rounded-xl bg-[#F4F4F5] px-3.5 py-2.5 text-xs font-bold font-sans text-foreground transition-colors hover:bg-[#EAEAEA]"
+              className="rounded-lg bg-[#F4F4F5] px-2.5 py-1.5 text-[11px] font-bold font-sans text-foreground transition-colors hover:bg-[#EAEAEA]"
             >
               50%
             </button>
             <button
               type="button"
               onClick={() => handlePercentageStake(1.0)}
-              className="rounded-xl bg-[#F4F4F5] px-3.5 py-2.5 text-xs font-bold font-sans text-foreground transition-colors hover:bg-[#EAEAEA]"
+              className="rounded-lg bg-[#F4F4F5] px-2.5 py-1.5 text-[11px] font-bold font-sans text-foreground transition-colors hover:bg-[#EAEAEA]"
             >
               MAX
             </button>
@@ -336,13 +336,13 @@ export function OrderForm({
       </div>
 
       {/* 4. LEVERAGE Selector Card */}
-      <div className="rounded-2xl bg-[#F5F5F4] p-4 space-y-2">
-        <span className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+      <div className="rounded-xl bg-[#F5F5F4] p-2.5 space-y-1">
+        <span className="block text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
           LEVERAGE
         </span>
 
         {/* Large Numerical Leverage Display */}
-        <div className="text-4xl font-extrabold tracking-tight text-foreground font-mono">
+        <div className="text-2xl font-extrabold tracking-tight text-foreground font-mono">
           ×{internalLeverage}
         </div>
 
@@ -355,15 +355,15 @@ export function OrderForm({
       </div>
 
       {/* 5. Take Profit and Stop Loss */}
-      <div className="space-y-1.5">
-        <div className="grid grid-cols-3 gap-2">
+      <div className="space-y-1">
+        <div className="grid grid-cols-3 gap-1.5">
           {/* TP Button */}
           <button
             type="button"
             onClick={() => {
               setTpActive((prev) => !prev);
             }}
-            className={`rounded-xl py-3 text-center text-xs font-semibold font-sans transition-all ${
+            className={`rounded-lg py-1.5 text-center text-xs font-semibold font-sans transition-all ${
               tpActive
                 ? 'bg-black text-white shadow-xs'
                 : 'bg-[#F4F4F5] text-foreground hover:bg-[#EAEAEA]'
@@ -378,7 +378,7 @@ export function OrderForm({
             onClick={() => {
               setSlActive((prev) => !prev);
             }}
-            className={`rounded-xl py-3 text-center text-xs font-semibold font-sans transition-all ${
+            className={`rounded-lg py-1.5 text-center text-xs font-semibold font-sans transition-all ${
               slActive
                 ? 'bg-black text-white shadow-xs'
                 : 'bg-[#F4F4F5] text-foreground hover:bg-[#EAEAEA]'
@@ -395,7 +395,7 @@ export function OrderForm({
               setSlActive(false);
               setShowTpSlCustom(false);
             }}
-            className={`rounded-xl py-3 text-center text-xs font-semibold font-sans transition-all ${
+            className={`rounded-lg py-1.5 text-center text-xs font-semibold font-sans transition-all ${
               !tpActive && !slActive
                 ? 'bg-black text-white shadow-xs'
                 : 'bg-[#F4F4F5] text-foreground hover:bg-[#EAEAEA]'
@@ -452,7 +452,7 @@ export function OrderForm({
       </div>
 
       {/* 6. Risk Summary Card */}
-      <div className="rounded-2xl border border-border/80 bg-white p-4 space-y-2.5 font-mono text-xs shadow-xs">
+      <div className="rounded-xl border border-border/80 bg-white p-2.5 space-y-1.5 font-mono text-xs shadow-xs">
         <div className="flex items-center justify-between">
           <span className="text-muted-foreground font-sans text-xs">Liquidation price</span>
           <span className="text-[#FF3B30] font-bold tabular-nums">
@@ -478,23 +478,23 @@ export function OrderForm({
 
       {/* 7. Potential Returns (3 Compact Green Cards) */}
       <div className="grid grid-cols-3 gap-2">
-        <div className="rounded-xl border border-[#B2ECC8]/60 bg-[#E8F8EE] p-2.5 text-center flex flex-col justify-center items-center gap-0.5">
+        <div className="rounded-xl border border-[#B2ECC8]/60 bg-[#E8F8EE] p-1.5 text-center flex flex-col justify-center items-center gap-0.5">
           <span className="font-mono text-[10px] font-medium text-[#16A34A]">If move +0.1%</span>
-          <span className="font-mono text-sm font-bold text-[#06964A]">
+          <span className="font-mono text-xs font-bold text-[#06964A]">
             +${fmtUsd(profitAt01, profitAt01 < 10 ? 2 : 0)}
           </span>
         </div>
 
-        <div className="rounded-xl border border-[#B2ECC8]/60 bg-[#E8F8EE] p-2.5 text-center flex flex-col justify-center items-center gap-0.5">
+        <div className="rounded-xl border border-[#B2ECC8]/60 bg-[#E8F8EE] p-1.5 text-center flex flex-col justify-center items-center gap-0.5">
           <span className="font-mono text-[10px] font-medium text-[#16A34A]">If move +0.5%</span>
-          <span className="font-mono text-sm font-bold text-[#06964A]">
+          <span className="font-mono text-xs font-bold text-[#06964A]">
             +${fmtUsd(profitAt05, profitAt05 < 10 ? 2 : 0)}
           </span>
         </div>
 
-        <div className="rounded-xl border border-[#B2ECC8]/60 bg-[#E8F8EE] p-2.5 text-center flex flex-col justify-center items-center gap-0.5">
+        <div className="rounded-xl border border-[#B2ECC8]/60 bg-[#E8F8EE] p-1.5 text-center flex flex-col justify-center items-center gap-0.5">
           <span className="font-mono text-[10px] font-medium text-[#16A34A]">If move +1%</span>
-          <span className="font-mono text-sm font-bold text-[#06964A]">
+          <span className="font-mono text-xs font-bold text-[#06964A]">
             +${fmtUsd(profitAt10, profitAt10 < 10 ? 2 : 0)}
           </span>
         </div>
@@ -502,15 +502,15 @@ export function OrderForm({
 
       {/* Validation Error Alert if notional too low */}
       {minNotionalError && (
-        <div className="p-2.5 rounded-xl bg-[#FFECEA] border border-[#FF3B30]/30 text-[#FF3B30] text-xs font-mono flex items-center gap-2">
-          <AlertTriangle className="size-4 shrink-0" />
+        <div className="p-2 rounded-xl bg-[#FFECEA] border border-[#FF3B30]/30 text-[#FF3B30] text-xs font-mono flex items-center gap-2">
+          <AlertTriangle className="size-3.5 shrink-0" />
           <span>{minNotionalError}</span>
         </div>
       )}
 
       {/* 1-Click Agent Key Prompt if Perps & Not Approved */}
       {mode === 'perps' && !t.isAgentApproved && (
-        <div className="p-3 rounded-xl bg-[#EFEFFC] border border-[#5E5CE6]/30 text-xs font-mono flex items-center justify-between">
+        <div className="p-2.5 rounded-xl bg-[#EFEFFC] border border-[#5E5CE6]/30 text-xs font-mono flex items-center justify-between">
           <div className="flex items-center gap-2 text-foreground font-medium">
             <Key className="size-3.5 text-[#5E5CE6] shrink-0" />
             <span>Agent Key Required</span>
@@ -526,18 +526,18 @@ export function OrderForm({
       )}
 
       {/* 8. Main LONG and SHORT Actions */}
-      <div className="grid grid-cols-2 gap-3 pt-1">
+      <div className="grid grid-cols-2 gap-2.5 pt-0.5">
         {/* LONG Action */}
         <button
           type="button"
           onClick={() => handleOrderClick('LONG')}
           disabled={isSubmitting || numMargin <= 0 || Boolean(minNotionalError)}
-          className="h-16 rounded-2xl bg-[#00D964] text-black hover:bg-[#00C259] active:scale-[0.99] transition-all flex flex-col items-center justify-center shadow-xs cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
+          className="h-13 rounded-xl bg-[#00D964] text-black hover:bg-[#00C259] active:scale-[0.99] transition-all flex flex-col items-center justify-center shadow-xs cursor-pointer disabled:opacity-50 disabled:pointer-events-none py-1"
         >
-          <span className="text-lg font-black tracking-wide uppercase font-sans">
+          <span className="text-base font-black tracking-wide uppercase font-sans">
             LONG
           </span>
-          <span className="text-xs font-semibold text-black/80 font-sans">
+          <span className="text-[11px] font-semibold text-black/80 font-sans">
             Win +${fmtUsd(profitAt10, 0)} at +1%
           </span>
         </button>
@@ -547,19 +547,19 @@ export function OrderForm({
           type="button"
           onClick={() => handleOrderClick('SHORT')}
           disabled={isSubmitting || numMargin <= 0 || Boolean(minNotionalError)}
-          className="h-16 rounded-2xl bg-[#FF3B30] text-white hover:bg-[#E0342A] active:scale-[0.99] transition-all flex flex-col items-center justify-center shadow-xs cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
+          className="h-13 rounded-xl bg-[#FF3B30] text-white hover:bg-[#E0342A] active:scale-[0.99] transition-all flex flex-col items-center justify-center shadow-xs cursor-pointer disabled:opacity-50 disabled:pointer-events-none py-1"
         >
-          <span className="text-lg font-black tracking-wide uppercase font-sans">
+          <span className="text-base font-black tracking-wide uppercase font-sans">
             SHORT
           </span>
-          <span className="text-xs font-semibold text-white/90 font-sans">
+          <span className="text-[11px] font-semibold text-white/90 font-sans">
             Win +${fmtUsd(profitAt10, 0)} at -1%
           </span>
         </button>
       </div>
 
       {/* 9. Footer Note */}
-      <p className="text-center text-xs text-muted-foreground/75 font-sans pt-1">
+      <p className="text-center text-[11px] text-muted-foreground/75 font-sans pt-0.5">
         Every trade opens its own position — open as many as you like.
       </p>
 

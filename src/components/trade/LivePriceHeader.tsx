@@ -26,22 +26,22 @@ export function LivePriceHeader({
   const isPositive = change24h >= 0;
 
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-border bg-white p-5 font-sans text-xs shadow-sm">
+    <div className="relative overflow-hidden rounded-2xl border border-border bg-white p-3 sm:p-3.5 font-sans text-xs shadow-sm">
       {/* Subtle iridescent top highlight */}
       <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-[#CDC3F0] via-[#FFDAC8] to-[#A0D4CA] opacity-80" />
 
-      <div className="flex flex-wrap items-center justify-between gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         {/* Market & Price Display */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-lg font-bold text-foreground">{symbol}</span>
+              <span className="text-base font-bold text-foreground">{symbol}</span>
               <span className="rounded-full border border-border bg-[#F6F6F4] px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
                 PERP
               </span>
             </div>
-            <div className="mt-1 flex items-baseline gap-2.5">
-              <span className="tabular text-3xl font-bold tracking-tight text-foreground">
+            <div className="mt-0.5 flex items-baseline gap-2">
+              <span className="tabular text-2xl font-bold tracking-tight text-foreground">
                 ${price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>
               <span

@@ -28,7 +28,7 @@ function TradePage() {
   }, [t]);
 
   return (
-    <div className="py-6 px-4 md:px-6">
+    <div className="py-2.5 sm:py-3 px-3 md:px-5">
       <TradeTerminal />
     </div>
   );
