@@ -1,6 +1,5 @@
 import React from 'react';
-import { computeClampedPrice } from '@/lib/hyperliquid';
-import { ShieldCheck, AlertCircle, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import { ArrowUpRight, ArrowDownRight } from 'lucide-react';
 
 interface LivePriceHeaderProps {
   symbol: string;
@@ -13,7 +12,6 @@ export function LivePriceHeader({
   symbol,
   price,
   open24h,
-  corridorBps = 1.5,
 }: LivePriceHeaderProps) {
   // Simulate tiny spread for mid / bbo
   const halfSpread = price * 0.00008;
@@ -21,9 +19,10 @@ export function LivePriceHeader({
   const ask = price + halfSpread;
   const mid = (bid + ask) / 2;
   const markPx = price * (1 + 0.00005); // smoothed mark
+  const high24h = open24h ? Math.max(price, open24h) * 1.012 : price * 1.012;
+  const low24h = open24h ? Math.min(price, open24h) * 0.988 : price * 0.988;
 
-  const { execPrice, isClamped, deviationBps } = computeClampedPrice(mid, markPx, corridorBps);
-  const change24h = ((price - open24h) / open24h) * 100;
+  const change24h = open24h ? ((price - open24h) / open24h) * 100 : 0;
   const isPositive = change24h >= 0;
 
   return (
@@ -39,9 +38,6 @@ export function LivePriceHeader({
               <span className="text-lg font-bold text-foreground">{symbol}</span>
               <span className="rounded-full border border-border bg-[#F6F6F4] px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
                 PERP
-              </span>
-              <span className="rounded-full border border-border bg-gradient-to-r from-[#CDC3F0]/30 to-[#FFDAC8]/30 px-2 py-0.5 text-[10px] font-semibold text-foreground">
-                1000× MAX
               </span>
             </div>
             <div className="mt-1 flex items-baseline gap-2.5">
@@ -61,48 +57,33 @@ export function LivePriceHeader({
           </div>
         </div>
 
-        {/* Hyperliquid L1 Precompile Indicators */}
+        {/* Clean Standard Market Stats */}
         <div className="grid grid-cols-2 gap-2 text-[11px] sm:grid-cols-4 sm:gap-3">
           <div className="rounded-xl border border-border bg-[#F6F6F4] px-3 py-2">
-            <span className="block text-[9px] font-medium text-muted-foreground">BBO MID (0x080e)</span>
-            <span className="tabular font-semibold text-foreground">
-              ${mid.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            </span>
-          </div>
-
-          <div className="rounded-xl border border-border bg-[#F6F6F4] px-3 py-2">
-            <span className="block text-[9px] font-medium text-muted-foreground">MARK PX (0x0806)</span>
+            <span className="block text-[9px] font-medium text-muted-foreground">MARK PRICE</span>
             <span className="tabular font-semibold text-foreground">
               ${markPx.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </span>
           </div>
 
           <div className="rounded-xl border border-border bg-[#F6F6F4] px-3 py-2">
-            <span className="block text-[9px] font-medium text-muted-foreground">EXECUTION PRICE</span>
-            <span className="tabular font-semibold text-[#06964A]">
-              ${execPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            <span className="block text-[9px] font-medium text-muted-foreground">INDEX PRICE</span>
+            <span className="tabular font-semibold text-foreground">
+              ${mid.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </span>
           </div>
 
-          <div
-            className={`flex flex-col justify-center rounded-xl border px-3 py-2 ${
-              isClamped
-                ? 'border-[#FF3B30]/30 bg-[#FFECEA] text-[#FF3B30]'
-                : 'border-[#06964A]/30 bg-[#E3F8EC] text-[#06964A]'
-            }`}
-          >
-            <div className="flex items-center gap-1">
-              {isClamped ? (
-                <AlertCircle className="h-3 w-3 text-[#FF3B30]" />
-              ) : (
-                <ShieldCheck className="h-3 w-3 text-[#06964A]" />
-              )}
-              <span className="text-[9px] font-bold">
-                {isClamped ? 'CLAMPED' : 'UNCLAMPED'}
-              </span>
-            </div>
-            <span className="tabular text-[9px] opacity-80">
-              ±{corridorBps} bps corridor ({deviationBps.toFixed(2)} bps)
+          <div className="rounded-xl border border-border bg-[#F6F6F4] px-3 py-2">
+            <span className="block text-[9px] font-medium text-muted-foreground">24H HIGH</span>
+            <span className="tabular font-semibold text-foreground">
+              ${high24h.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </span>
+          </div>
+
+          <div className="rounded-xl border border-border bg-[#F6F6F4] px-3 py-2">
+            <span className="block text-[9px] font-medium text-muted-foreground">24H LOW</span>
+            <span className="tabular font-semibold text-foreground">
+              ${low24h.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </span>
           </div>
         </div>

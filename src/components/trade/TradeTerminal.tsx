@@ -109,7 +109,7 @@ export function TradeTerminal() {
         <div className="flex flex-wrap items-center justify-between gap-3 pb-1 border-b border-border">
           <div className="flex items-center gap-2">
             <span className="font-mono text-[11px] font-bold text-foreground">
-              {selectedMarket.symbol} {isPerps ? 'REAL L1 PERPS' : 'L1 EXECUTION CHART'}
+              {selectedMarket.symbol}
             </span>
             {isPerps ? (
               <span className="rounded bg-[#E3F8EC] border border-[#06964A]/30 px-2 py-0.5 text-[9px] font-bold text-[#06964A] flex items-center gap-1">
@@ -118,12 +118,9 @@ export function TradeTerminal() {
               </span>
             ) : (
               <span className="rounded bg-[#FFF4E5] border border-[#D97706]/30 px-2 py-0.5 text-[9px] font-bold text-[#D97706]">
-                TEST · PAPER (1000x)
+                TEST · PAPER
               </span>
             )}
-            <span className="rounded bg-secondary px-2 py-0.5 text-[9px] font-mono text-muted-foreground">
-              {isPerps ? `${activeMaxLev}× Max` : `±${selectedMarket.corridorBps} bps Clamped`}
-            </span>
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
@@ -351,8 +348,8 @@ export function TradeTerminal() {
                   <span className="text-foreground font-bold tabular">1× to 1000× (All Assets)</span>
                 </div>
                 <div className="flex justify-between text-muted-foreground">
-                  <span>EXECUTION CLAMP</span>
-                  <span className="text-[#5E5CE6] font-bold tabular">±1.5 bps BBO Clamped</span>
+                  <span>EXECUTION TYPE</span>
+                  <span className="text-foreground font-semibold">Instant Market Execution</span>
                 </div>
                 <div className="flex justify-between text-muted-foreground">
                   <span>LIQUIDATION ENGINE</span>

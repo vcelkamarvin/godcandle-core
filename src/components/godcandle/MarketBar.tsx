@@ -157,7 +157,7 @@ export function MarketBar({
             <span className="block text-xs font-semibold">{market}-USD</span>
             {!compact && (
               <span className="block text-[9px] opacity-60">
-                Perp · up to {getMarket(market).maxLeverage}x
+                Perpetual
               </span>
             )}
           </span>
@@ -533,19 +533,19 @@ export function MarketBar({
 
                 <div className="p-2.5 rounded-xl bg-white border border-border shadow-2xs">
                   <span className="text-[9px] font-mono uppercase text-muted-foreground block">
-                    Execution Corridor
+                    Index Price
                   </span>
                   <span className="text-xs font-mono font-semibold text-foreground">
-                    1.5 bps BBO Clamp
+                    ${fmtUsd(previewPrice, previewMarket.decimals)}
                   </span>
                 </div>
 
                 <div className="p-2.5 rounded-xl bg-white border border-border shadow-2xs">
                   <span className="text-[9px] font-mono uppercase text-muted-foreground block">
-                    Slippage
+                    Order Type
                   </span>
                   <span className="text-xs font-mono font-semibold text-[#06964A]">
-                    0.00% Zero Slippage
+                    Market / Limit
                   </span>
                 </div>
 
@@ -554,7 +554,7 @@ export function MarketBar({
                     Taker Fee
                   </span>
                   <span className="text-xs font-mono font-semibold text-foreground">
-                    0.04% (0% Entry)
+                    0.035%
                   </span>
                 </div>
 

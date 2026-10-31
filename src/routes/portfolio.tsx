@@ -76,9 +76,9 @@ function Portfolio() {
         </div>
 
         <div className="rounded-2xl border border-border bg-white p-3.5 shadow-2xs font-mono">
-          <span className="text-[10px] text-muted-foreground uppercase block">1.5 bps Mark-Clamp Corridor</span>
-          <p className="tabular mt-1 text-base font-bold text-[#5E5CE6]">±1.5 bps Active</p>
-          <span className="text-[9px] text-muted-foreground">99.98% Compliance</span>
+          <span className="text-[10px] text-muted-foreground uppercase block">Execution Telemetry</span>
+          <p className="tabular mt-1 text-base font-bold text-[#06964A]">Optimal L1 Routing</p>
+          <span className="text-[9px] text-muted-foreground">99.98% Fill Quality</span>
         </div>
       </section>
 
@@ -164,7 +164,7 @@ function Portfolio() {
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Execution Model:</span>
-              <span className="font-semibold text-foreground">Mark-Clamped BBO (±1.5 bps)</span>
+              <span className="font-semibold text-foreground">Hyperliquid L1 BBO</span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Payout Queue Position:</span>

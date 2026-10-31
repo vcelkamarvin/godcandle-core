@@ -196,13 +196,10 @@ export function OrderForm({
         </div>
 
         <div className="flex justify-between items-center text-muted-foreground">
-          <span>EXECUTION PRICE (BBO)</span>
-          <div className="flex items-center gap-1 font-bold tabular text-foreground">
-            <span>${execPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-            <span className="text-[9px] px-1 py-0.2 rounded-xs bg-[#EFEFFC] text-[#5E5CE6] font-mono">
-              ±{corridorBps} bps
-            </span>
-          </div>
+          <span>EXECUTION PRICE</span>
+          <span className="font-bold tabular text-foreground">
+            ${execPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          </span>
         </div>
 
         <div className="flex justify-between items-center text-muted-foreground">
@@ -240,7 +237,7 @@ export function OrderForm({
                 )}
               </>
             ) : (
-              <span className="text-[#06964A]">0% Entry · 1.5 bps Clamped</span>
+              <span className="text-[#06964A]">0% Entry</span>
             )}
           </div>
         </div>

@@ -22,13 +22,13 @@ export const Route = createFileRoute("/analytics")({
       {
         name: "description",
         content:
-          "Real-time House Pool solvency, mark-clamped corridor statistics, perps volume, and FIFO settlement depth.",
+          "Real-time House Pool solvency, market statistics, perps volume, and FIFO settlement depth.",
       },
       { property: "og:title", content: "godcandle — Protocol Analytics" },
       {
         property: "og:description",
         content:
-          "Live Hyperliquid precompiles, House Pool reserves, and corridor telemetry.",
+          "Live Hyperliquid telemetry, House Pool reserves, and settlement metrics.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -93,7 +93,7 @@ function AnalyticsPage() {
               </span>
             </div>
             <p className="mt-0.5 text-xs font-mono text-muted-foreground">
-              Solvency, BBO Corridor (±1.5 bps), and FIFO Settlement Queue
+              Solvency, Market Telemetry, and FIFO Settlement Queue
             </p>
           </div>
 
@@ -222,7 +222,7 @@ function AnalyticsPage() {
               </span>
             </div>
             <span className="text-[10px] text-muted-foreground">
-              Precompiles: 0x0806 (MarkPx) · 0x080e (BBO Mid)
+              Oracles: Hyperliquid L1 MarkPx &amp; BBO Mid
             </span>
           </div>
 
@@ -523,10 +523,10 @@ function AnalyticsPage() {
                   Execution Terminal
                 </p>
                 <p className="mt-1 text-xs font-bold text-foreground">
-                  Trade {selectedMarket} · 1.5 bps BBO Clamp
+                  Trade {selectedMarket} Perpetual
                 </p>
                 <p className="mt-1 text-[10px] font-mono text-muted-foreground">
-                  Zero Slippage · Instant Collateral Return · Up to {currentMarket.maxLeverage}x
+                  Instant Collateral Return · Direct L1 Routing
                 </p>
                 <Link
                   to="/"

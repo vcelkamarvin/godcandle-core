@@ -5,8 +5,8 @@ import { TradeTerminal } from '@/components/trade/TradeTerminal';
 export const Route = createFileRoute('/trade')({
   head: () => ({
     meta: [
-      { title: 'godcandle — 1000x Synthetic Perps' },
-      { name: 'description', content: 'Mark-clamped BBO execution, zero entry fee, discrete 1000x leverage on HyperEVM.' },
+      { title: 'godcandle — Pro Trading Terminal' },
+      { name: 'description', content: 'Zero entry fee, high leverage perpetual trading terminal on Hyperliquid.' },
     ],
   }),
   component: TradePage,

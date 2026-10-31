@@ -320,13 +320,10 @@ export function TradePanel(p: Props) {
           <span className="text-foreground font-bold tabular">${fmtUsd(quote.notional, 0)} USDC</span>
         </div>
         <div className="flex justify-between items-center text-muted-foreground">
-          <span>EXECUTION PRICE (BBO)</span>
-          <div className="flex items-center gap-1 font-bold text-foreground tabular">
-            <span>${fmtUsd(quote.execPrice, m.decimals)}</span>
-            <span className="text-[9px] px-1 rounded-xs bg-[#EFEFFC] text-[#5E5CE6]">
-              ±{quote.isClamped ? "1.5 bps Clamped" : "1.5 bps"}
-            </span>
-          </div>
+          <span>EXECUTION PRICE</span>
+          <span className="font-bold text-foreground tabular">
+            ${fmtUsd(quote.execPrice, m.decimals)}
+          </span>
         </div>
         <div className="flex justify-between items-center text-muted-foreground">
           <span>EST. BUST DISTANCE</span>
@@ -354,7 +351,7 @@ export function TradePanel(p: Props) {
                 )}
               </>
             ) : (
-              <span className="text-[#06964A]">0% Entry · 1.5 bps Clamped</span>
+              <span className="text-[#06964A]">0% Entry</span>
             )}
           </div>
         </div>

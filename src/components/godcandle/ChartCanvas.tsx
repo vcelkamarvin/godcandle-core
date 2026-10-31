@@ -83,7 +83,7 @@ export function ChartCanvas({
         }
         ctx.globalAlpha = 1;
 
-        // Draw Mid Market Parity Corridor line
+        // Draw Mid Market line
         const midY = midRow * cellH;
         ctx.beginPath();
         ctx.moveTo(pad, midY);
@@ -92,9 +92,9 @@ export function ChartCanvas({
         ctx.lineWidth = 1.5;
         ctx.stroke();
 
-        // Corridor boundary dashed lines (±1.5 bps)
+        // Depth boundary dashed lines
         ctx.setLineDash([3, 3]);
-        ctx.strokeStyle = loss;
+        ctx.strokeStyle = grid;
         ctx.lineWidth = 1;
         ctx.beginPath();
         ctx.moveTo(pad, midY - cellH * 2);
@@ -107,11 +107,11 @@ export function ChartCanvas({
         // Right axis labels
         ctx.font = '9px "JetBrains Mono", monospace';
         ctx.fillStyle = loss;
-        ctx.fillText("+1.5 bps", pad + plotW + 6, midY - cellH * 2 + 3);
+        ctx.fillText("Asks", pad + plotW + 6, midY - cellH * 2 + 3);
         ctx.fillStyle = ink;
-        ctx.fillText("BBO Mid", pad + plotW + 6, midY + 3);
+        ctx.fillText("Mid", pad + plotW + 6, midY + 3);
         ctx.fillStyle = gain;
-        ctx.fillText("-1.5 bps", pad + plotW + 6, midY + cellH * 2 + 3);
+        ctx.fillText("Bids", pad + plotW + 6, midY + cellH * 2 + 3);
 
         return;
       }

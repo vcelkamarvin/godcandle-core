@@ -87,7 +87,7 @@ export function Footer() {
                   rel="noreferrer"
                   className="text-[#8B949E] hover:text-white flex items-center gap-1.5 transition-colors"
                 >
-                  <span>L1Read.sol (0x0806/0x080e)</span>
+                  <span>L1Read.sol</span>
                   <ExternalLink className="w-3 h-3 ml-auto text-[#484F58]" />
                 </a>
               </li>
@@ -174,7 +174,7 @@ export function Footer() {
               <Activity className="w-3 h-3 text-[#00D964]" />
               <span>Execution Engine: Active (Hyperliquid L1 Consensus)</span>
             </span>
-            <span>Zero Slippage · Zero Protocol Surcharge</span>
+            <span>Zero Protocol Surcharge</span>
           </div>
         </div>
       </div>

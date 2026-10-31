@@ -123,7 +123,7 @@ describe("MarketBar Rich Detail Preview and Centering", () => {
     expect(marketBarContent).toContain("24h High");
     expect(marketBarContent).toContain("24h Volume");
     expect(marketBarContent).toContain("Funding Rate");
-    expect(marketBarContent).toContain("Execution Corridor");
+    expect(marketBarContent).toContain("Index Price");
     expect(marketBarContent).toContain("Switch to");
   });
 
