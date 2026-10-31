@@ -60,25 +60,25 @@ function Portfolio() {
         <div className="rounded-2xl border border-border bg-white p-3.5 shadow-2xs font-mono">
           <span className="text-[10px] text-muted-foreground uppercase block">House Pool Liquid Reserve</span>
           <p className="tabular mt-1 text-base font-bold text-foreground">$10,000.00</p>
-          <span className="text-[9px] text-[#06964A] font-semibold">100% Solvency Guarantee</span>
+          <span className="text-[9px] text-[#06964A] font-semibold">100% Solvent</span>
         </div>
 
         <div className="rounded-2xl border border-border bg-white p-3.5 shadow-2xs font-mono">
           <span className="text-[10px] text-muted-foreground uppercase block">FIFO Payout Queue Depth</span>
           <p className="tabular mt-1 text-base font-bold text-[#06964A]">$0.00</p>
-          <span className="text-[9px] text-muted-foreground">Zero Backlog · Atomic Cash</span>
+          <span className="text-[9px] text-muted-foreground">0 Backlog · Block Payout</span>
         </div>
 
         <div className="rounded-2xl border border-border bg-white p-3.5 shadow-2xs font-mono">
           <span className="text-[10px] text-muted-foreground uppercase block">Net Open Interest</span>
           <p className="tabular mt-1 text-base font-bold text-foreground">Long $1.84M / Short $1.40M</p>
-          <span className="text-[9px] text-[#06964A] font-semibold">Net Long +$440,300 (54.2%)</span>
+          <span className="text-[9px] text-[#06964A] font-semibold">Net Long +$440,300</span>
         </div>
 
         <div className="rounded-2xl border border-border bg-white p-3.5 shadow-2xs font-mono">
           <span className="text-[10px] text-muted-foreground uppercase block">1.5 bps Mark-Clamp Corridor</span>
           <p className="tabular mt-1 text-base font-bold text-[#5E5CE6]">±1.5 bps Active</p>
-          <span className="text-[9px] text-muted-foreground">99.98% Clamped BBO Fidelity</span>
+          <span className="text-[9px] text-muted-foreground">99.98% Compliance</span>
         </div>
       </section>
 
@@ -86,10 +86,10 @@ function Portfolio() {
         <section className="min-w-0 rounded-2xl border p-3.5 bg-white">
           <div className="flex flex-wrap items-start justify-between gap-2.5">
             <div>
-              <h1 className="data-label font-mono">Total Account Equity</h1>
+              <h1 className="data-label font-mono">Account Equity</h1>
               <p className="tabular mt-1 text-3xl font-semibold font-mono">${fmtUsd(t.balance + unrealized)}</p>
               <p className={`tabular mt-1 text-xs font-mono ${realized + unrealized >= 0 ? "text-gain font-semibold" : "text-loss font-semibold"}`}>
-                {fmtSigned(realized + unrealized)} <span className="font-sans text-muted-foreground font-normal">this session</span>
+                {fmtSigned(realized + unrealized)} <span className="text-muted-foreground font-normal">Session</span>
               </p>
             </div>
             <div className="flex flex-wrap gap-1.5">

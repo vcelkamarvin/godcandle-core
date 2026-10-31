@@ -92,8 +92,8 @@ function AnalyticsPage() {
                 MAINNET LIVE
               </span>
             </div>
-            <p className="mt-0.5 text-xs text-muted-foreground">
-              Atomic House Pool solvency, Mark-Clamped BBO corridor (±1.5 bps), and FIFO settlement payout queue.
+            <p className="mt-0.5 text-xs font-mono text-muted-foreground">
+              Solvency, BBO Corridor (±1.5 bps), and FIFO Settlement Queue
             </p>
           </div>
 
@@ -144,8 +144,8 @@ function AnalyticsPage() {
             <p className="tabular mt-1.5 text-lg font-bold text-foreground font-mono">
               ${fmtUsd(totalVolume24h, 0)}
             </p>
-            <p className="mt-1 text-[10px] text-muted-foreground">
-              Across 6 core perps markets
+            <p className="mt-1 text-[10px] font-mono text-muted-foreground">
+              6 Markets Total
             </p>
           </div>
 
@@ -204,8 +204,8 @@ function AnalyticsPage() {
             <p className="tabular mt-1.5 text-lg font-bold text-foreground font-mono">
               {corridorStats.complianceRatePct}%
             </p>
-            <p className="mt-1 text-[10px] text-muted-foreground">
-              Zero front-running slippage
+            <p className="mt-1 text-[10px] font-mono text-muted-foreground">
+              Zero Slippage
             </p>
           </div>
         </section>
@@ -344,8 +344,8 @@ function AnalyticsPage() {
                     <h2 className="text-xs font-semibold uppercase tracking-wider font-mono text-muted-foreground">
                       Order Book Liquidity Heatmap · {selectedMarket}/USD
                     </h2>
-                    <p className="text-[11px] text-muted-foreground">
-                      Concentrated bid/ask liquidity depth and liquidation cluster walls
+                    <p className="text-[10px] font-mono text-muted-foreground">
+                      Bid/ask depth &amp; liquidation clusters
                     </p>
                   </div>
                   <div className="flex gap-1">
@@ -389,8 +389,8 @@ function AnalyticsPage() {
                     values={revenueSeries.slice(0, 20).map((v, j) => (j % 3 === 0 ? -v : v))}
                   />
                 </div>
-                <p className="mt-1 text-[10px] text-muted-foreground">
-                  Flows 100% to clearing FIFO claims when queue &gt; $0.
+                <p className="mt-1 text-[10px] font-mono text-muted-foreground">
+                  FIFO Priority Clearing
                 </p>
               </article>
 
@@ -523,10 +523,10 @@ function AnalyticsPage() {
                   Execution Terminal
                 </p>
                 <p className="mt-1 text-xs font-bold text-foreground">
-                  Trade {selectedMarket} with 1.5 bps Zero Slippage
+                  Trade {selectedMarket} · 1.5 bps BBO Clamp
                 </p>
-                <p className="mt-1 text-[10px] text-muted-foreground">
-                  Mark-clamped execution, instant collateral return, and up to 1000x leverage.
+                <p className="mt-1 text-[10px] font-mono text-muted-foreground">
+                  Zero Slippage · Instant Collateral Return · Up to {currentMarket.maxLeverage}x
                 </p>
                 <Link
                   to="/"

@@ -37,7 +37,7 @@ function Leaderboard() {
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2.5">
           <div>
             <h1 className="text-xl font-semibold">Leaderboard</h1>
-            <p className="mt-0.5 text-xs text-muted-foreground">Top traders on godcandle · weekly season</p>
+            <p className="mt-0.5 text-xs font-mono text-muted-foreground">Weekly Season Rankings</p>
           </div>
           <div className="flex flex-wrap items-center gap-1.5">
             <Link
@@ -131,22 +131,19 @@ function Leaderboard() {
 
       <aside className="space-y-2.5">
         <section className="reward-panel p-3.5">
-          <p className="data-label text-foreground">Weekly competition</p>
-          <h2 className="mt-2 text-xl font-bold">The Candle Cup</h2>
-          <p className="mt-1 text-xs text-muted-foreground">$50,000 weekly pool · HyperEVM</p>
+          <p className="data-label text-foreground font-mono">Weekly Competition</p>
+          <h2 className="mt-1.5 text-lg font-bold">The Candle Cup</h2>
+          <p className="mt-0.5 text-xs font-mono text-muted-foreground">$50,000 Pool · HyperEVM</p>
           <div className="mt-2 overflow-hidden rounded-xl bg-card">
             <ChartCanvas height={90} values={analysisSeries} />
           </div>
-          <p className="mt-2 text-xs font-semibold">Your ROI vs top-10 cutoff</p>
+          <p className="mt-2 text-xs font-semibold">ROI vs top-10 cutoff</p>
           <div className="mt-1.5 h-1.5 rounded-full bg-card">
             <div className="h-full w-[35%] rounded-full bg-foreground" />
           </div>
           <div className="mt-3 flex flex-col gap-1.5">
-            <Link to="/cup" className="pill pill-ink h-8 w-full text-xs flex items-center justify-center gap-1.5 shadow-xs">
-              View Cup Standings &amp; Trophies →
-            </Link>
-            <Link to="/" className="pill pill-ghost h-7 w-full text-[11px] text-muted-foreground hover:text-foreground text-center">
-              Trade to climb rank
+            <Link to="/cup" className="pill pill-ink h-8 w-full text-xs flex items-center justify-center gap-1.5 shadow-xs font-semibold">
+              View Cup Standings →
             </Link>
           </div>
         </section>

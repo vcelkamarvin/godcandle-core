@@ -5,23 +5,16 @@ import { formatUnits } from 'viem';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
 import {
   X,
-  Search,
-  Wallet,
-  ArrowLeft,
-  Check,
-  AlertCircle,
   ShieldCheck,
-  Mail,
   ExternalLink,
   Sparkles,
   Zap,
-  Key,
   Copy,
   CheckCircle2,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
-type ModalFlowState = 'default' | 'email' | 'email-verify' | 'connecting';
+type ModalFlowState = 'default' | 'connecting';
 
 interface WalletOption {
   id: string;
@@ -157,37 +150,6 @@ function WalletIcon({ id }: { id: string }) {
   }
 }
 
-function GoogleLogo() {
-  return (
-    <svg viewBox="0 0 24 24" className="size-4 shrink-0">
-      <path
-        fill="#EA4335"
-        d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.7 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.2 8.9 5 12 5z"
-      />
-      <path
-        fill="#4285F4"
-        d="M23.5 12.3c0-.8-.1-1.7-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"
-      />
-      <path
-        fill="#FBBC05"
-        d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.8s.2-2.1.4-2.8L1.9 6.3C.7 8.7 0 10.3 0 12s.7 3.3 1.9 5.7l3.7-2.9z"
-      />
-      <path
-        fill="#34A853"
-        d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3.1 0-5.5-2.2-6.4-5.2L1.9 16c1.8 3.7 5.6 7 10.1 7z"
-      />
-    </svg>
-  );
-}
-
-function AppleLogo() {
-  return (
-    <svg viewBox="0 0 24 24" className="size-4 fill-current shrink-0">
-      <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.38c.62-.75 1.04-1.8 1.01-2.88-.93.04-2.07.62-2.73 1.38-.58.67-1.1 1.74-1.01 2.8.96.08 2.03-.54 2.73-1.3" />
-    </svg>
-  );
-}
-
 export function ConnectModal() {
   const { address: wagmiAddress, isConnected: wagmiConnected } = useAccount();
   const { disconnect: wagmiDisconnect } = useDisconnect();
@@ -199,8 +161,6 @@ export function ConnectModal() {
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [flowState, setFlowState] = useState<ModalFlowState>('default');
   const [selectedWallet, setSelectedWallet] = useState<WalletOption | null>(null);
-  const [email, setEmail] = useState('');
-  const [otp, setOtp] = useState('');
   const [copied, setCopied] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -248,10 +208,7 @@ export function ConnectModal() {
 
   const fallbackConnect = (wallet: WalletOption) => {
     setTimeout(() => {
-      const mockAddr =
-        wallet.id === 'demo'
-          ? '0x9c97Fa21b9E48b724C12EAcC48259A42'
-          : `0x${Array.from({ length: 40 }, () => Math.floor(Math.random() * 16).toString(16)).join('')}`;
+      const mockAddr = `0x${Array.from({ length: 40 }, () => Math.floor(Math.random() * 16).toString(16)).join('')}`;
 
       setLocalAddress(mockAddr);
       localStorage.setItem('godcandle_wallet_address', mockAddr);
@@ -304,74 +261,6 @@ export function ConnectModal() {
     } else {
       fallbackConnect(wallet);
     }
-  };
-
-  const handleDemoLogin = () => {
-    setSelectedWallet({ id: 'demo', name: 'Demo Trader Account', desc: 'Instant funded testnet wallet' });
-    setFlowState('connecting');
-
-    setTimeout(() => {
-      const mockAddr = '0x9c97Fa21b9E48b724C12EAcC48259A42';
-      setLocalAddress(mockAddr);
-      localStorage.setItem('godcandle_wallet_address', mockAddr);
-      setIsModalOpen(false);
-      setFlowState('default');
-
-      toast.success('Demo Trader Connected', {
-        description: 'Funded with $1,000 demo trading balance.',
-      });
-    }, 800);
-  };
-
-  const handleSocialLogin = (provider: string) => {
-    setFlowState('connecting');
-    setSelectedWallet({ id: 'privy', name: `${provider} Account`, desc: 'Privy Embedded Wallet' });
-
-    setTimeout(() => {
-      const mockAddr = '0x71C80e921820bE9804C88A83726Fa3988A24bA41';
-      setLocalAddress(mockAddr);
-      localStorage.setItem('godcandle_wallet_address', mockAddr);
-      setIsModalOpen(false);
-      setFlowState('default');
-
-      toast.success(`Logged in with ${provider}`, {
-        description: 'Embedded wallet active and ready.',
-      });
-    }, 900);
-  };
-
-  const handleEmailSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email || !email.includes('@')) {
-      toast.error('Invalid Email', { description: 'Please enter a valid email address.' });
-      return;
-    }
-    setFlowState('email-verify');
-    toast.info('Verification Code Sent', {
-      description: `We sent a 6-digit passcode to ${email}.`,
-    });
-  };
-
-  const handleVerifyOtp = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (otp.length < 4) {
-      toast.error('Invalid Code', { description: 'Please enter the 6-digit code.' });
-      return;
-    }
-    setFlowState('connecting');
-    setSelectedWallet({ id: 'privy', name: email, desc: 'Privy Embedded Wallet' });
-
-    setTimeout(() => {
-      const mockAddr = '0x88219Db718eAcF65901Abb344Fa20988A72491a1';
-      setLocalAddress(mockAddr);
-      localStorage.setItem('godcandle_wallet_address', mockAddr);
-      setIsModalOpen(false);
-      setFlowState('default');
-
-      toast.success('Email Verified & Connected', {
-        description: 'Welcome! Embedded wallet ready.',
-      });
-    }, 800);
   };
 
   const copyAddress = () => {
@@ -444,7 +333,7 @@ export function ConnectModal() {
               role="dialog"
               aria-modal="true"
               aria-labelledby="login-modal-title"
-              className="relative z-10 w-full sm:max-w-[880px] lg:max-w-[920px] max-h-[92vh] sm:h-[580px] rounded-[28px] p-[1.5px] bg-gradient-to-tr from-[#CDC3F0] via-[#FFDAC8] to-[#A0D4CA] shadow-[0_24px_80px_rgba(0,0,0,0.28)] flex overflow-hidden animate-in zoom-in-95 fade-in-0 duration-200"
+              className="relative z-10 w-full sm:max-w-[880px] lg:max-w-[920px] max-h-[92vh] sm:h-[500px] rounded-[28px] p-[1.5px] bg-gradient-to-tr from-[#CDC3F0] via-[#FFDAC8] to-[#A0D4CA] shadow-[0_24px_80px_rgba(0,0,0,0.28)] flex overflow-hidden animate-in zoom-in-95 fade-in-0 duration-200"
             >
               <div className="w-full h-full bg-white rounded-[26.5px] flex flex-col sm:flex-row overflow-hidden relative">
                 {/* Close Button */}
@@ -480,7 +369,7 @@ export function ConnectModal() {
                             Connect Web3 Wallet
                           </h2>
                           <p className="text-xs text-[#737373]">
-                            Connect directly with your EVM wallet or continue with email.
+                            Connect Web3 wallet.
                           </p>
                         </div>
 
@@ -513,78 +402,8 @@ export function ConnectModal() {
                           ))}
                         </div>
 
-                        {/* Demo Trader Account 1-Click Option */}
-                        <button
-                          type="button"
-                          onClick={handleDemoLogin}
-                          className="w-full p-2.5 rounded-2xl bg-gradient-to-r from-[#CDC3F0]/25 via-[#FFDAC8]/25 to-[#A0D4CA]/25 hover:from-[#CDC3F0]/40 hover:via-[#FFDAC8]/40 hover:to-[#A0D4CA]/40 border border-[#CDC3F0]/70 flex items-center justify-between transition-all cursor-pointer text-left"
-                        >
-                          <div className="flex items-center gap-2.5">
-                            <div className="flex size-8 items-center justify-center rounded-xl bg-white border border-border shadow-xs text-[#0A0A0A]">
-                              <Sparkles className="size-4 text-[#FFD60A]" />
-                            </div>
-                            <div>
-                              <div className="flex items-center gap-1.5">
-                                <span className="font-sans font-semibold text-xs text-[#0A0A0A]">
-                                  Demo Trader Account
-                                </span>
-                                <span className="rounded bg-[#E3F8EC] px-1.5 py-0.2 text-[9px] font-bold text-[#06964A]">
-                                  $1,000 Instant
-                                </span>
-                              </div>
-                              <p className="text-[10px] text-[#737373]">
-                                Testnet practice with zero financial commitment
-                              </p>
-                            </div>
-                          </div>
-                          <span className="text-xs font-mono font-semibold text-[#0A0A0A]">
-                            Try →
-                          </span>
-                        </button>
-
-                        {/* Divider */}
-                        <div className="flex items-center gap-3 pt-0.5">
-                          <div className="h-[1px] flex-1 bg-border" />
-                          <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">
-                            or continue with
-                          </span>
-                          <div className="h-[1px] flex-1 bg-border" />
-                        </div>
-
-                        {/* Email & Social fallback */}
-                        <div className="flex items-center gap-2">
-                          <button
-                            type="button"
-                            onClick={() => setFlowState('email')}
-                            className="flex-1 h-9 rounded-full bg-[#F5F5F4] hover:bg-[#EAEAEA] border border-[#E5E5E5] text-[#0A0A0A] text-xs font-medium transition-all flex items-center justify-center gap-1.5 cursor-pointer"
-                          >
-                            <Mail className="size-3.5 text-[#737373]" />
-                            <span>Email Passcode</span>
-                          </button>
-
-                          <button
-                            type="button"
-                            onClick={() => handleSocialLogin('Google')}
-                            className="h-9 px-3 rounded-full bg-[#F5F5F4] hover:bg-[#EAEAEA] border border-[#E5E5E5] transition-all flex items-center justify-center gap-1.5 cursor-pointer text-xs font-medium text-[#0A0A0A]"
-                            title="Log in with Google"
-                          >
-                            <GoogleLogo />
-                            <span className="hidden sm:inline">Google</span>
-                          </button>
-
-                          <button
-                            type="button"
-                            onClick={() => handleSocialLogin('Apple')}
-                            className="h-9 px-3 rounded-full bg-[#F5F5F4] hover:bg-[#EAEAEA] border border-[#E5E5E5] transition-all flex items-center justify-center gap-1.5 cursor-pointer text-xs font-medium text-[#0A0A0A]"
-                            title="Log in with Apple"
-                          >
-                            <AppleLogo />
-                            <span className="hidden sm:inline">Apple</span>
-                          </button>
-                        </div>
-
                         {/* Read-only Explorer link */}
-                        <div className="text-center pt-0.5">
+                        <div className="text-center pt-1">
                           <button
                             type="button"
                             onClick={() => {
@@ -601,85 +420,7 @@ export function ConnectModal() {
                       </div>
                     )}
 
-                    {/* --- B. EMAIL INPUT FLOW --- */}
-                    {flowState === 'email' && (
-                      <div className="space-y-4 my-auto max-w-[340px] mx-auto w-full">
-                        <div className="flex items-center gap-2.5">
-                          <button
-                            type="button"
-                            onClick={() => setFlowState('default')}
-                            className="flex size-8 items-center justify-center rounded-full bg-secondary hover:bg-secondary/80 border border-border text-foreground transition-colors cursor-pointer"
-                            aria-label="Back"
-                          >
-                            <ArrowLeft className="size-4" />
-                          </button>
-                          <div>
-                            <h3 className="font-sans text-lg font-semibold text-[#0A0A0A]">
-                              Log in with Email
-                            </h3>
-                            <p className="text-[11px] text-muted-foreground">
-                              We will send a 6-digit passcode.
-                            </p>
-                          </div>
-                        </div>
-
-                        <form onSubmit={handleEmailSubmit} className="space-y-3 pt-2">
-                          <div>
-                            <label className="block text-[11px] font-mono text-muted-foreground mb-1">
-                              EMAIL ADDRESS
-                            </label>
-                            <input
-                              autoFocus
-                              type="email"
-                              value={email}
-                              onChange={(e) => setEmail(e.target.value)}
-                              placeholder="trader@hyperliquid.xyz"
-                              className="h-11 w-full rounded-2xl border border-border bg-[#F8F8F7] px-4 text-xs text-[#0A0A0A] placeholder:text-[#A3A3A3] focus:border-[#0A0A0A] focus:outline-none transition-colors"
-                            />
-                          </div>
-
-                          <button
-                            type="submit"
-                            className="w-full h-11 rounded-full pill pill-ink text-xs font-semibold shadow-xs cursor-pointer"
-                          >
-                            Send Verification Code
-                          </button>
-                        </form>
-                      </div>
-                    )}
-
-                    {/* --- C. EMAIL OTP VERIFY FLOW --- */}
-                    {flowState === 'email-verify' && (
-                      <div className="space-y-4 my-auto max-w-[340px] mx-auto w-full text-center">
-                        <h3 className="font-sans text-lg font-semibold text-[#0A0A0A]">
-                          Check your inbox
-                        </h3>
-                        <p className="text-xs text-[#737373]">
-                          We sent a verification passcode to <strong className="text-[#0A0A0A]">{email}</strong>.
-                        </p>
-
-                        <form onSubmit={handleVerifyOtp} className="space-y-3 pt-2">
-                          <input
-                            autoFocus
-                            type="text"
-                            maxLength={6}
-                            value={otp}
-                            onChange={(e) => setOtp(e.target.value)}
-                            placeholder="123456"
-                            className="h-12 w-full text-center font-mono tracking-widest text-lg rounded-2xl border border-border bg-[#F8F8F7] text-[#0A0A0A] focus:border-[#0A0A0A] focus:outline-none"
-                          />
-
-                          <button
-                            type="submit"
-                            className="w-full h-11 rounded-full pill pill-ink text-xs font-semibold shadow-xs cursor-pointer"
-                          >
-                            Verify &amp; Log In
-                          </button>
-                        </form>
-                      </div>
-                    )}
-
-                    {/* --- D. CONNECTING HANDSHAKE STATE --- */}
+                    {/* --- B. CONNECTING HANDSHAKE STATE --- */}
                     {flowState === 'connecting' && (
                       <div className="text-center space-y-4 my-auto">
                         <div className="flex justify-center">

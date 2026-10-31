@@ -18,12 +18,12 @@ export function Footer() {
                 HyperEVM
               </span>
             </div>
-            <p className="text-muted-foreground text-[11px] leading-relaxed">
-              High-leverage synthetic derivative exchange and gamified trading arena deployed natively on HyperEVM. Pure FIFO settlement against the on-chain House Pool.
+            <p className="text-muted-foreground text-[11px] leading-relaxed font-mono">
+              Synthetic perps on HyperEVM. Pure FIFO settlement against on-chain House Pool.
             </p>
-            <div className="text-[10px] text-[#06964A] flex items-center gap-1.5 font-semibold">
+            <div className="text-[10px] text-[#06964A] flex items-center gap-1.5 font-semibold font-mono">
               <ShieldCheck className="w-3.5 h-3.5" />
-              Contractual Solvency Guarantee
+              100% Solvency Guarantee
             </div>
           </div>
 

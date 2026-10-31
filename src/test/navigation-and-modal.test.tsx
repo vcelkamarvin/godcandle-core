@@ -98,6 +98,15 @@ describe("ConnectModal Light Mode & Web3 Wallets", () => {
     expect(modalContent).toContain("bg-white");
     expect(modalContent).toContain("text-[#0A0A0A]");
   });
+
+  it("removes Demo Trader Account and social continue with options, simplifying subtitle", () => {
+    expect(modalContent).toContain("Connect Web3 wallet.");
+    expect(modalContent).not.toContain("Demo Trader Account");
+    expect(modalContent).not.toContain("or continue with");
+    expect(modalContent).not.toContain("Email Passcode");
+    expect(modalContent).not.toContain("Log in with Google");
+    expect(modalContent).not.toContain("Log in with Apple");
+  });
 });
 
 describe("MarketBar Rich Detail Preview and Centering", () => {

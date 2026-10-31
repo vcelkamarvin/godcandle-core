@@ -293,52 +293,43 @@ export function FeeWaterfallChart({ solvency }: Props) {
       </div>
 
       {/* Waterfall Allocation 3 Cards */}
-      <div className="mt-3 grid gap-2.5 sm:grid-cols-3 border-t border-hairline pt-3">
+      <div className="mt-3 grid gap-2.5 sm:grid-cols-3 border-t border-hairline pt-3 font-mono">
         <div className="rounded-xl border border-hairline bg-[#FAFBFB] p-3">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-mono text-muted-foreground uppercase">Staking Yield + TWAP</span>
-            <span className="rounded bg-[#EAF2F1] px-1.5 py-0.2 text-[9px] font-mono font-bold text-[#4A7C75]">
+            <span className="text-[10px] text-muted-foreground uppercase">Staking Yield + TWAP</span>
+            <span className="rounded bg-[#EAF2F1] px-1.5 py-0.2 text-[9px] font-bold text-[#4A7C75]">
               60% Split
             </span>
           </div>
-          <p className="tabular mt-1 text-base font-bold text-foreground font-mono">
+          <p className="tabular mt-1 text-base font-bold text-foreground">
             ${fmtUsd(feeWaterfall.stakingYieldAndBurn, 0)}
             <span className="text-[10px] font-normal text-muted-foreground ml-1">/ 24h</span>
-          </p>
-          <p className="mt-1 text-[10px] text-muted-foreground">
-            Distributed in real-time USDC to CANDLE stakers with continuous buyback TWAP.
           </p>
         </div>
 
         <div className="rounded-xl border border-hairline bg-[#FCFAF8] p-3">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-mono text-muted-foreground uppercase">Builders Code</span>
-            <span className="rounded bg-[#FFF3ED] px-1.5 py-0.2 text-[9px] font-mono font-bold text-[#A8644A]">
+            <span className="text-[10px] text-muted-foreground uppercase">Builders Code</span>
+            <span className="rounded bg-[#FFF3ED] px-1.5 py-0.2 text-[9px] font-bold text-[#A8644A]">
               20% Split
             </span>
           </div>
-          <p className="tabular mt-1 text-base font-bold text-foreground font-mono">
+          <p className="tabular mt-1 text-base font-bold text-foreground">
             ${fmtUsd(feeWaterfall.buildersCode, 0)}
             <span className="text-[10px] font-normal text-muted-foreground ml-1">/ 24h</span>
-          </p>
-          <p className="mt-1 text-[10px] text-muted-foreground">
-            Algorithmically routed to verified referral partners, quant integrations, and SDK devs.
           </p>
         </div>
 
         <div className="rounded-xl border border-hairline bg-[#F9F8FC] p-3">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-mono text-muted-foreground uppercase">Team USDC Treasury</span>
-            <span className="rounded bg-[#EFEFFC] px-1.5 py-0.2 text-[9px] font-mono font-bold text-[#5D55A6]">
+            <span className="text-[10px] text-muted-foreground uppercase">Team Treasury</span>
+            <span className="rounded bg-[#EFEFFC] px-1.5 py-0.2 text-[9px] font-bold text-[#5D55A6]">
               20% Split
             </span>
           </div>
-          <p className="tabular mt-1 text-base font-bold text-foreground font-mono">
+          <p className="tabular mt-1 text-base font-bold text-foreground">
             ${fmtUsd(feeWaterfall.teamUsdc, 0)}
             <span className="text-[10px] font-normal text-muted-foreground ml-1">/ 24h</span>
-          </p>
-          <p className="mt-1 text-[10px] text-muted-foreground">
-            Protocol engineering, oracle infrastructure maintenance, and hyper-low latency precompiles.
           </p>
         </div>
       </div>

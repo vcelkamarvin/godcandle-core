@@ -262,14 +262,12 @@ export function TradeTerminal() {
               </div>
             </div>
 
-            <div className="p-3 bg-[#F6F6F4] border border-border rounded-xl text-[10px] text-muted-foreground space-y-1.5">
+            <div className="p-3 bg-[#F6F6F4] border border-border rounded-xl text-[10px] text-muted-foreground font-mono flex items-center justify-between">
               <div className="flex items-center gap-1.5 text-foreground font-semibold">
                 <Shield className="w-3.5 h-3.5 text-[#06964A]" />
-                Pure FIFO Guarantee
+                <span>FIFO Settlement</span>
               </div>
-              <p className="leading-relaxed">
-                100% of collateral is returned immediately in the execution block. Winning profits are paid atomically from liquid reserves. Outlier profits are prioritized ahead of all protocol fees.
-              </p>
+              <span className="text-[#06964A] font-semibold">Atomic Block Return · 0 Debt</span>
             </div>
           </div>
 

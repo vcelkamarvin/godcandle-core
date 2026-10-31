@@ -48,8 +48,8 @@ export function LeaderboardTable() {
                 Live
               </span>
             </div>
-            <p className="text-muted-foreground text-[11px]">
-              Weekly ROI competition paying out real USDC and custom hardware trophies directly on HyperEVM.
+            <p className="text-muted-foreground text-[11px] font-mono">
+              Weekly ROI rankings · HyperEVM settlement
             </p>
           </div>
 
