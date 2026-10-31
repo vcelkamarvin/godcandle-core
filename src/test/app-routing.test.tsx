@@ -13,21 +13,29 @@ describe("App routing", () => {
     const routesToTest = [
       "/",
       "/trade",
-      "/options",
-      "/goal",
-      "/boost",
       "/cup",
       "/portfolio",
       "/analytics",
       "/staking",
+      "/candle",
       "/leaderboard",
-      "/hardware",
       "/docs",
     ];
 
     for (const path of routesToTest) {
       const matches = router.matchRoutes(path);
       expect(matches.at(-1)?.routeId).not.toBe(rootRouteId);
+    }
+  });
+
+  it("does not match removed routes (/goal, /boost, /hardware, /options)", () => {
+    const router = createRouter({ routeTree, context: { queryClient: new QueryClient() } });
+
+    const removedRoutes = ["/goal", "/boost", "/hardware", "/options"];
+
+    for (const path of removedRoutes) {
+      const matches = router.matchRoutes(path);
+      expect(matches.at(-1)?.routeId).toBe(rootRouteId);
     }
   });
 });

@@ -7,7 +7,16 @@ import { useTrading } from '@/components/godcandle/TradingProvider';
 import { Shield, Layers, Zap, Database } from 'lucide-react';
 import { toast } from 'sonner';
 
-export const MARKETS = [
+export interface MarketDef {
+  symbol: string;
+  name: string;
+  index: number;
+  maxLev: number;
+  corridorBps: number;
+  defaultPrice: number;
+}
+
+export const MARKETS: MarketDef[] = [
   { symbol: 'BTC-USD', name: 'Bitcoin', index: 0, maxLev: 1000, corridorBps: 1.5, defaultPrice: 68420.5 },
   { symbol: 'ETH-USD', name: 'Ethereum', index: 1, maxLev: 1000, corridorBps: 1.5, defaultPrice: 2540.2 },
   { symbol: 'SOL-USD', name: 'Solana', index: 2, maxLev: 1000, corridorBps: 1.5, defaultPrice: 182.4 },
@@ -15,7 +24,7 @@ export const MARKETS = [
 ];
 
 export function TradeTerminal() {
-  const [selectedMarket, setSelectedMarket] = useState(MARKETS[0]);
+  const [selectedMarket, setSelectedMarket] = useState<MarketDef>(MARKETS[0]!);
   const [leverage, setLeverage] = useState(500);
 
   // Read simulated prices from trading context if available
@@ -26,7 +35,7 @@ export function TradeTerminal() {
 
   const handleOrder = (side: 'LONG' | 'SHORT', margin: number, lev: number) => {
     if (t?.open) {
-      t.open(rawSymbol as any, side, margin, lev);
+      t.open(rawSymbol as any, side.toLowerCase() as 'long' | 'short', margin, lev);
       toast.success(`${side} 1000x Perp Placed!`, {
         description: `$${margin} margin at ${lev}× leverage on ${selectedMarket.symbol}. Instant FIFO block settlement.`,
       });

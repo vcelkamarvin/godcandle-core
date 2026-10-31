@@ -9,13 +9,10 @@ import { Button } from '@/components/ui/button';
 
 const NAV_LINKS = [
   { href: '/', label: 'Trade' },
-  { href: '/options', label: '0DTE Options' },
-  { href: '/goal', label: 'Goal' },
-  { href: '/boost', label: 'Boost' },
-  { href: '/cup', label: 'Candle Cup' },
   { href: '/portfolio', label: 'Portfolio' },
   { href: '/analytics', label: 'Analysis' },
   { href: '/leaderboard', label: 'Leaderboard' },
+  { href: '/cup', label: 'Candle Cup' },
   { href: '/staking', label: 'Staking' },
   { href: '/docs', label: 'Docs' },
 ];

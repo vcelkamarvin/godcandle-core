@@ -116,11 +116,6 @@ export function Footer() {
                   CANDLE Tokenomics & Waterfall
                 </Link>
               </li>
-              <li>
-                <Link to="/hardware" className="text-muted-foreground hover:text-foreground transition-colors">
-                  Physical Terminal Specs
-                </Link>
-              </li>
             </ul>
           </div>
         </div>

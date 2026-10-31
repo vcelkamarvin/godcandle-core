@@ -11,14 +11,10 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AnalyticsRouteImport } from './routes/analytics'
-import { Route as BoostRouteImport } from './routes/boost'
 import { Route as CandleRouteImport } from './routes/candle'
 import { Route as CupRouteImport } from './routes/cup'
 import { Route as DocsRouteImport } from './routes/docs'
-import { Route as GoalRouteImport } from './routes/goal'
-import { Route as HardwareRouteImport } from './routes/hardware'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
-import { Route as OptionsRouteImport } from './routes/options'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
 import { Route as StakingRouteImport } from './routes/staking'
 import { Route as TradeRouteImport } from './routes/trade'
@@ -37,11 +33,6 @@ const AnalyticsRoute = AnalyticsRouteImport.update({
   path: '/analytics',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BoostRoute = BoostRouteImport.update({
-  id: '/boost',
-  path: '/boost',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const CandleRoute = CandleRouteImport.update({
   id: '/candle',
   path: '/candle',
@@ -57,24 +48,9 @@ const DocsRoute = DocsRouteImport.update({
   path: '/docs',
   getParentRoute: () => rootRouteImport,
 } as any)
-const GoalRoute = GoalRouteImport.update({
-  id: '/goal',
-  path: '/goal',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HardwareRoute = HardwareRouteImport.update({
-  id: '/hardware',
-  path: '/hardware',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const LeaderboardRoute = LeaderboardRouteImport.update({
   id: '/leaderboard',
   path: '/leaderboard',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const OptionsRoute = OptionsRouteImport.update({
-  id: '/options',
-  path: '/options',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PortfolioRoute = PortfolioRouteImport.update({
@@ -116,14 +92,10 @@ const DocsTokenRoute = DocsTokenRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/analytics': typeof AnalyticsRoute
-  '/boost': typeof BoostRoute
   '/candle': typeof CandleRoute
   '/cup': typeof CupRoute
   '/docs': typeof DocsRouteWithChildren
-  '/goal': typeof GoalRoute
-  '/hardware': typeof HardwareRoute
   '/leaderboard': typeof LeaderboardRoute
-  '/options': typeof OptionsRoute
   '/portfolio': typeof PortfolioRoute
   '/staking': typeof StakingRoute
   '/trade': typeof TradeRoute
@@ -135,13 +107,9 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/analytics': typeof AnalyticsRoute
-  '/boost': typeof BoostRoute
   '/candle': typeof CandleRoute
   '/cup': typeof CupRoute
-  '/goal': typeof GoalRoute
-  '/hardware': typeof HardwareRoute
   '/leaderboard': typeof LeaderboardRoute
-  '/options': typeof OptionsRoute
   '/portfolio': typeof PortfolioRoute
   '/staking': typeof StakingRoute
   '/trade': typeof TradeRoute
@@ -154,14 +122,10 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/analytics': typeof AnalyticsRoute
-  '/boost': typeof BoostRoute
   '/candle': typeof CandleRoute
   '/cup': typeof CupRoute
   '/docs': typeof DocsRouteWithChildren
-  '/goal': typeof GoalRoute
-  '/hardware': typeof HardwareRoute
   '/leaderboard': typeof LeaderboardRoute
-  '/options': typeof OptionsRoute
   '/portfolio': typeof PortfolioRoute
   '/staking': typeof StakingRoute
   '/trade': typeof TradeRoute
@@ -175,14 +139,10 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/analytics'
-    | '/boost'
     | '/candle'
     | '/cup'
     | '/docs'
-    | '/goal'
-    | '/hardware'
     | '/leaderboard'
-    | '/options'
     | '/portfolio'
     | '/staking'
     | '/trade'
@@ -194,13 +154,9 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/analytics'
-    | '/boost'
     | '/candle'
     | '/cup'
-    | '/goal'
-    | '/hardware'
     | '/leaderboard'
-    | '/options'
     | '/portfolio'
     | '/staking'
     | '/trade'
@@ -212,14 +168,10 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/analytics'
-    | '/boost'
     | '/candle'
     | '/cup'
     | '/docs'
-    | '/goal'
-    | '/hardware'
     | '/leaderboard'
-    | '/options'
     | '/portfolio'
     | '/staking'
     | '/trade'
@@ -232,14 +184,10 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AnalyticsRoute: typeof AnalyticsRoute
-  BoostRoute: typeof BoostRoute
   CandleRoute: typeof CandleRoute
   CupRoute: typeof CupRoute
   DocsRoute: typeof DocsRouteWithChildren
-  GoalRoute: typeof GoalRoute
-  HardwareRoute: typeof HardwareRoute
   LeaderboardRoute: typeof LeaderboardRoute
-  OptionsRoute: typeof OptionsRoute
   PortfolioRoute: typeof PortfolioRoute
   StakingRoute: typeof StakingRoute
   TradeRoute: typeof TradeRoute
@@ -259,13 +207,6 @@ declare module '@tanstack/react-router' {
       path: '/analytics'
       fullPath: '/analytics'
       preLoaderRoute: typeof AnalyticsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/boost': {
-      id: '/boost'
-      path: '/boost'
-      fullPath: '/boost'
-      preLoaderRoute: typeof BoostRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/candle': {
@@ -289,32 +230,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DocsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/goal': {
-      id: '/goal'
-      path: '/goal'
-      fullPath: '/goal'
-      preLoaderRoute: typeof GoalRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/hardware': {
-      id: '/hardware'
-      path: '/hardware'
-      fullPath: '/hardware'
-      preLoaderRoute: typeof HardwareRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/leaderboard': {
       id: '/leaderboard'
       path: '/leaderboard'
       fullPath: '/leaderboard'
       preLoaderRoute: typeof LeaderboardRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/options': {
-      id: '/options'
-      path: '/options'
-      fullPath: '/options'
-      preLoaderRoute: typeof OptionsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/portfolio': {
@@ -388,14 +308,10 @@ const DocsRouteWithChildren = DocsRoute._addFileChildren(DocsRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AnalyticsRoute: AnalyticsRoute,
-  BoostRoute: BoostRoute,
   CandleRoute: CandleRoute,
   CupRoute: CupRoute,
   DocsRoute: DocsRouteWithChildren,
-  GoalRoute: GoalRoute,
-  HardwareRoute: HardwareRoute,
   LeaderboardRoute: LeaderboardRoute,
-  OptionsRoute: OptionsRoute,
   PortfolioRoute: PortfolioRoute,
   StakingRoute: StakingRoute,
   TradeRoute: TradeRoute,

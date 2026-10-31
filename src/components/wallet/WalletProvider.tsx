@@ -7,7 +7,7 @@ import { hyperEVM } from '@/lib/chains';
 
 export const wagmiConfig = getDefaultConfig({
   appName: 'godcandle',
-  projectId: (typeof process !== 'undefined' && process.env?.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID) || '3fcc6bba00d440409a6358c2b719be2f',
+  projectId: (typeof process !== 'undefined' && process.env?.['NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID']) || '3fcc6bba00d440409a6358c2b719be2f',
   chains: [hyperEVM],
   ssr: true,
 });
