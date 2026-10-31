@@ -52,35 +52,29 @@ export function Header() {
 
   return (
     <>
-      <header
-        className={`sticky top-0 z-40 border-b backdrop-blur-md ${
-          isLanding
-            ? 'border-[#21262D] bg-[#080B0F]/95 text-[#E6EDF3] font-mono'
-            : 'border-border bg-white/95 text-foreground font-sans'
-        }`}
-      >
+      <header className="sticky top-0 z-40 border-b border-border bg-white/95 text-foreground font-sans backdrop-blur-md">
         {/* Status Bar */}
-        <div className="border-b border-[#22272E] bg-[#0A0D12] text-[#8B949E] px-4 sm:px-6 py-1.5 flex items-center justify-between text-[11px] font-mono tracking-tight select-none">
+        <div className="border-b border-border/60 bg-secondary/50 text-muted-foreground px-4 sm:px-6 py-1 flex items-center justify-between text-[11px] font-mono tracking-tight select-none">
           <div className="flex items-center gap-2">
-            <span className="inline-block size-2 rounded-full bg-[#00D964] animate-pulse" />
-            <span className="font-semibold text-white tracking-wide">
+            <span className="inline-block size-1.5 rounded-full bg-[#00D964] animate-pulse" />
+            <span className="font-semibold text-foreground tracking-wide">
               ● HYPERLIQUID L1 CONNECTED · BUILDER CODE ACTIVE
             </span>
           </div>
-          <div className="hidden sm:flex items-center gap-4 text-[10px] text-[#8B949E]">
+          <div className="hidden sm:flex items-center gap-4 text-[10px] text-muted-foreground">
             <span className="flex items-center gap-1.5">
               <span className="size-1.5 rounded-full bg-[#00D964]" />
-              BUILDER CODE: <span className="text-[#58A6FF] font-semibold">GODCANDLE</span>
+              BUILDER CODE: <span className="text-[#2563EB] font-semibold">GODCANDLE</span>
             </span>
-            <span className="text-[#30363D]">|</span>
+            <span className="text-border">|</span>
             <span>DIRECT L1 ROUTING</span>
-            <span className="text-[#30363D]">|</span>
-            <span className="text-[#00D964]">ZERO ADDED LATENCY</span>
+            <span className="text-border">|</span>
+            <span className="text-[#06964A] font-semibold">ZERO ADDED LATENCY</span>
           </div>
         </div>
 
         {/* Signature Light Rainbow / Iridescent Thin Bar */}
-        <div className={`h-[2px] w-full ${isLanding ? 'bg-gradient-to-r from-[#00D964]/50 via-[#58A6FF]/50 to-[#A371F7]/50' : 'rainbow-bar'}`} />
+        <div className="h-[2px] w-full rainbow-bar" />
 
         {/* Main Navbar */}
         <div className="flex h-14 items-center justify-between gap-4 px-4 sm:px-6">

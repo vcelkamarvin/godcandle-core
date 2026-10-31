@@ -110,7 +110,7 @@ export function TradeTerminal() {
 
   return (
     <div className={`mx-auto font-sans text-foreground transition-all ${
-      isProMode ? 'space-y-2 max-w-7xl text-[11px]' : 'space-y-4 max-w-6xl text-xs'
+      isProMode ? 'space-y-1.5 max-w-7xl text-[11px]' : 'space-y-2.5 max-w-6xl text-xs'
     }`}>
       {/* Dynamic L1 Market Bar with Search and Filters */}
       <div className="rounded-2xl overflow-hidden border border-border bg-white shadow-xs">
@@ -139,12 +139,12 @@ export function TradeTerminal() {
         corridorBps={selectedMarket.corridorBps}
       />
 
-      <div className={`grid grid-cols-1 lg:grid-cols-12 ${isProMode ? 'gap-2.5' : 'gap-4'} items-start`}>
+      <div className={`grid grid-cols-1 lg:grid-cols-12 ${isProMode ? 'gap-2' : 'gap-3'} items-start`}>
         {/* Left Column: Chart, Markets, Solvency / Hyperliquid Clearinghouse State & Cashflow */}
-        <div className={`lg:col-span-7 ${isProMode ? 'space-y-2.5' : 'space-y-4'}`}>
+        <div className={`lg:col-span-7 ${isProMode ? 'space-y-2' : 'space-y-3'}`}>
           {/* Technical Chart Instance (Raw L1 Tick or TradingView Lightweight Instance) */}
           <div className={`relative overflow-hidden rounded-2xl border border-border bg-white shadow-sm ${
-            isProMode ? 'p-2.5 space-y-2' : 'p-3 space-y-2.5'
+            isProMode ? 'p-2 space-y-1.5' : 'p-2.5 space-y-2'
           }`}>
             <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-[#CDC3F0] via-[#FFDAC8] to-[#A0D4CA] opacity-80" />
 
@@ -215,7 +215,7 @@ export function TradeTerminal() {
             </div>
 
             {/* Chart Viewport */}
-            <div className="relative h-[290px] sm:h-[310px] w-full rounded-xl overflow-hidden bg-[#FAF9F5] border border-border/40">
+            <div className="relative h-[250px] sm:h-[270px] w-full rounded-xl overflow-hidden bg-[#FAF9F5] border border-border/40">
               {chartMode === 'reactive' ? (
                 <PriceChart
                   market={rawSymbol}

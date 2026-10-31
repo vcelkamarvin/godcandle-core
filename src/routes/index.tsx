@@ -40,7 +40,7 @@ function IndexPage() {
   }, [t]);
 
   return (
-    <div className="py-2.5 sm:py-3 px-3 md:px-5">
+    <div className="py-1.5 sm:py-2 px-2.5 sm:px-4 md:px-5">
       <TradeTerminal />
     </div>
   );

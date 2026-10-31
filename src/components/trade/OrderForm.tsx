@@ -213,17 +213,17 @@ export function OrderForm({
   };
 
   return (
-    <div className="w-full rounded-2xl border border-border/80 bg-white p-3.5 space-y-2.5 shadow-sm font-sans text-foreground">
+    <div className="w-full rounded-2xl border border-border/80 bg-white p-3 space-y-2 shadow-sm font-sans text-foreground">
       {/* 2. Header and Order Type */}
       <div className="flex items-center justify-between pb-0.5">
-        <h2 className="text-base font-bold tracking-tight text-foreground font-sans">
+        <h2 className="text-sm sm:text-base font-bold tracking-tight text-foreground font-sans">
           Open trade
         </h2>
-        <div className="flex items-center rounded-full bg-[#F0F0EE] p-1">
+        <div className="flex items-center rounded-full bg-[#F0F0EE] p-0.5 sm:p-1">
           <button
             type="button"
             onClick={() => setOrderType('market')}
-            className={`rounded-full px-3 py-1 text-xs font-semibold transition-all ${
+            className={`rounded-full px-2.5 sm:px-3 py-0.5 sm:py-1 text-[11px] sm:text-xs font-semibold transition-all ${
               orderType === 'market'
                 ? 'bg-black text-white shadow-xs'
                 : 'text-muted-foreground hover:text-foreground'
@@ -234,7 +234,7 @@ export function OrderForm({
           <button
             type="button"
             onClick={() => setOrderType('limit')}
-            className={`rounded-full px-3 py-1 text-xs font-semibold transition-all ${
+            className={`rounded-full px-2.5 sm:px-3 py-0.5 sm:py-1 text-[11px] sm:text-xs font-semibold transition-all ${
               orderType === 'limit'
                 ? 'bg-black text-white shadow-xs'
                 : 'text-muted-foreground hover:text-foreground'
@@ -247,7 +247,7 @@ export function OrderForm({
 
       {/* Optional Limit Price Input Row if Limit selected */}
       {orderType === 'limit' && (
-        <div className="flex items-center justify-between rounded-xl border border-border/80 bg-[#F5F5F4] px-3.5 py-2 font-mono text-xs">
+        <div className="flex items-center justify-between rounded-xl border border-border/80 bg-[#F5F5F4] px-3 py-1.5 font-mono text-xs">
           <span className="text-muted-foreground font-sans font-medium">Limit Price</span>
           <div className="flex items-center gap-1">
             <span className="text-muted-foreground">$</span>
@@ -256,19 +256,19 @@ export function OrderForm({
               step="any"
               value={limitPrice}
               onChange={(e) => setLimitPrice(e.target.value)}
-              className="w-28 rounded-lg border border-border/80 bg-white px-2 py-1 text-right font-mono font-bold text-foreground focus:outline-none focus:ring-1 focus:ring-black"
+              className="w-28 rounded-lg border border-border/80 bg-white px-2 py-0.5 text-right font-mono font-bold text-foreground focus:outline-none focus:ring-1 focus:ring-black"
             />
           </div>
         </div>
       )}
 
       {/* 3. STAKE Section */}
-      <div className="space-y-2">
+      <div className="space-y-1.5">
         <div className="flex items-center justify-between text-xs">
-          <span className="font-semibold uppercase tracking-wider text-muted-foreground">
+          <span className="font-semibold uppercase tracking-wider text-muted-foreground text-[10px]">
             STAKE
           </span>
-          <span className="font-mono text-xs">
+          <span className="font-mono text-[11px]">
             <span className="text-muted-foreground font-sans">Available </span>
             <strong className="text-foreground tabular-nums">${fmtUsd(availableBalance, 0)}</strong>
           </span>
@@ -283,7 +283,7 @@ export function OrderForm({
                 key={preset}
                 type="button"
                 onClick={() => handleSelectStake(preset)}
-                className={`rounded-lg py-1.5 text-center font-mono text-xs font-semibold transition-all ${
+                className={`rounded-lg py-1 text-center font-mono text-[11px] font-semibold transition-all ${
                   isSelected
                     ? 'bg-black text-white shadow-xs'
                     : 'bg-[#F4F4F5] text-foreground hover:bg-[#EAEAEA]'
@@ -297,7 +297,7 @@ export function OrderForm({
 
         {/* Custom Amount Box and Percentage Buttons */}
         <div className="flex items-center gap-1.5 pt-0.5">
-          <div className="flex flex-1 items-center gap-1.5 rounded-lg border border-black bg-white px-2.5 py-1.5 focus-within:ring-1 focus-within:ring-black">
+          <div className="flex flex-1 items-center gap-1 rounded-lg border border-black bg-white px-2 py-1 focus-within:ring-1 focus-within:ring-black">
             <span className="font-mono text-xs text-muted-foreground">$</span>
             <input
               type="number"
@@ -313,21 +313,21 @@ export function OrderForm({
             <button
               type="button"
               onClick={() => handlePercentageStake(0.25)}
-              className="rounded-lg bg-[#F4F4F5] px-2.5 py-1.5 text-[11px] font-bold font-sans text-foreground transition-colors hover:bg-[#EAEAEA]"
+              className="rounded-lg bg-[#F4F4F5] px-2 py-1 text-[10.5px] font-bold font-sans text-foreground transition-colors hover:bg-[#EAEAEA]"
             >
               25%
             </button>
             <button
               type="button"
               onClick={() => handlePercentageStake(0.5)}
-              className="rounded-lg bg-[#F4F4F5] px-2.5 py-1.5 text-[11px] font-bold font-sans text-foreground transition-colors hover:bg-[#EAEAEA]"
+              className="rounded-lg bg-[#F4F4F5] px-2 py-1 text-[10.5px] font-bold font-sans text-foreground transition-colors hover:bg-[#EAEAEA]"
             >
               50%
             </button>
             <button
               type="button"
               onClick={() => handlePercentageStake(1.0)}
-              className="rounded-lg bg-[#F4F4F5] px-2.5 py-1.5 text-[11px] font-bold font-sans text-foreground transition-colors hover:bg-[#EAEAEA]"
+              className="rounded-lg bg-[#F4F4F5] px-2 py-1 text-[10.5px] font-bold font-sans text-foreground transition-colors hover:bg-[#EAEAEA]"
             >
               MAX
             </button>
@@ -336,13 +336,13 @@ export function OrderForm({
       </div>
 
       {/* 4. LEVERAGE Selector Card */}
-      <div className="rounded-xl bg-[#F5F5F4] p-2.5 space-y-1">
-        <span className="block text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+      <div className="rounded-xl bg-[#F5F5F4] p-2 space-y-0.5">
+        <span className="block text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
           LEVERAGE
         </span>
 
         {/* Large Numerical Leverage Display */}
-        <div className="text-2xl font-extrabold tracking-tight text-foreground font-mono">
+        <div className="text-xl font-extrabold tracking-tight text-foreground font-mono leading-none py-0.5">
           ×{internalLeverage}
         </div>
 
@@ -363,7 +363,7 @@ export function OrderForm({
             onClick={() => {
               setTpActive((prev) => !prev);
             }}
-            className={`rounded-lg py-1.5 text-center text-xs font-semibold font-sans transition-all ${
+            className={`rounded-lg py-1 text-center text-[11px] font-semibold font-sans transition-all ${
               tpActive
                 ? 'bg-black text-white shadow-xs'
                 : 'bg-[#F4F4F5] text-foreground hover:bg-[#EAEAEA]'
@@ -378,7 +378,7 @@ export function OrderForm({
             onClick={() => {
               setSlActive((prev) => !prev);
             }}
-            className={`rounded-lg py-1.5 text-center text-xs font-semibold font-sans transition-all ${
+            className={`rounded-lg py-1 text-center text-[11px] font-semibold font-sans transition-all ${
               slActive
                 ? 'bg-black text-white shadow-xs'
                 : 'bg-[#F4F4F5] text-foreground hover:bg-[#EAEAEA]'
@@ -395,7 +395,7 @@ export function OrderForm({
               setSlActive(false);
               setShowTpSlCustom(false);
             }}
-            className={`rounded-lg py-1.5 text-center text-xs font-semibold font-sans transition-all ${
+            className={`rounded-lg py-1 text-center text-[11px] font-semibold font-sans transition-all ${
               !tpActive && !slActive
                 ? 'bg-black text-white shadow-xs'
                 : 'bg-[#F4F4F5] text-foreground hover:bg-[#EAEAEA]'
@@ -452,49 +452,49 @@ export function OrderForm({
       </div>
 
       {/* 6. Risk Summary Card */}
-      <div className="rounded-xl border border-border/80 bg-white p-2.5 space-y-1.5 font-mono text-xs shadow-xs">
+      <div className="rounded-xl border border-border/80 bg-white p-2 space-y-1 font-mono text-[11px] shadow-xs">
         <div className="flex items-center justify-between">
-          <span className="text-muted-foreground font-sans text-xs">Liquidation price</span>
+          <span className="text-muted-foreground font-sans text-[11px]">Liquidation price</span>
           <span className="text-[#FF3B30] font-bold tabular-nums">
             ${fmtUsd(longBustPrice, 2)} · -{bustDistancePct.toFixed(2)}%
           </span>
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="text-muted-foreground font-sans text-xs">Fee ({(feeRate * 100).toFixed(2)}%)</span>
+          <span className="text-muted-foreground font-sans text-[11px]">Fee ({(feeRate * 100).toFixed(2)}%)</span>
           <span className="text-foreground font-bold tabular-nums">
             ${fmtUsd(feeAmount, 2)}
           </span>
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="text-muted-foreground font-sans text-xs">Max loss</span>
+          <span className="text-muted-foreground font-sans text-[11px]">Max loss</span>
           <span className="text-foreground font-bold tabular-nums">
             ${fmtUsd(numMargin, 2)}{' '}
-            <span className="font-normal font-sans text-muted-foreground text-xs">(your stake)</span>
+            <span className="font-normal font-sans text-muted-foreground text-[10px]">(your stake)</span>
           </span>
         </div>
       </div>
 
       {/* 7. Potential Returns (3 Compact Green Cards) */}
-      <div className="grid grid-cols-3 gap-2">
-        <div className="rounded-xl border border-[#B2ECC8]/60 bg-[#E8F8EE] p-1.5 text-center flex flex-col justify-center items-center gap-0.5">
-          <span className="font-mono text-[10px] font-medium text-[#16A34A]">If move +0.1%</span>
-          <span className="font-mono text-xs font-bold text-[#06964A]">
+      <div className="grid grid-cols-3 gap-1.5">
+        <div className="rounded-xl border border-[#B2ECC8]/60 bg-[#E8F8EE] p-1 text-center flex flex-col justify-center items-center gap-0.5">
+          <span className="font-mono text-[9.5px] font-medium text-[#16A34A] leading-tight">If move +0.1%</span>
+          <span className="font-mono text-[11px] font-bold text-[#06964A] leading-tight">
             +${fmtUsd(profitAt01, profitAt01 < 10 ? 2 : 0)}
           </span>
         </div>
 
-        <div className="rounded-xl border border-[#B2ECC8]/60 bg-[#E8F8EE] p-1.5 text-center flex flex-col justify-center items-center gap-0.5">
-          <span className="font-mono text-[10px] font-medium text-[#16A34A]">If move +0.5%</span>
-          <span className="font-mono text-xs font-bold text-[#06964A]">
+        <div className="rounded-xl border border-[#B2ECC8]/60 bg-[#E8F8EE] p-1 text-center flex flex-col justify-center items-center gap-0.5">
+          <span className="font-mono text-[9.5px] font-medium text-[#16A34A] leading-tight">If move +0.5%</span>
+          <span className="font-mono text-[11px] font-bold text-[#06964A] leading-tight">
             +${fmtUsd(profitAt05, profitAt05 < 10 ? 2 : 0)}
           </span>
         </div>
 
-        <div className="rounded-xl border border-[#B2ECC8]/60 bg-[#E8F8EE] p-1.5 text-center flex flex-col justify-center items-center gap-0.5">
-          <span className="font-mono text-[10px] font-medium text-[#16A34A]">If move +1%</span>
-          <span className="font-mono text-xs font-bold text-[#06964A]">
+        <div className="rounded-xl border border-[#B2ECC8]/60 bg-[#E8F8EE] p-1 text-center flex flex-col justify-center items-center gap-0.5">
+          <span className="font-mono text-[9.5px] font-medium text-[#16A34A] leading-tight">If move +1%</span>
+          <span className="font-mono text-[11px] font-bold text-[#06964A] leading-tight">
             +${fmtUsd(profitAt10, profitAt10 < 10 ? 2 : 0)}
           </span>
         </div>
@@ -502,7 +502,7 @@ export function OrderForm({
 
       {/* Validation Error Alert if notional too low */}
       {minNotionalError && (
-        <div className="p-2 rounded-xl bg-[#FFECEA] border border-[#FF3B30]/30 text-[#FF3B30] text-xs font-mono flex items-center gap-2">
+        <div className="p-1.5 rounded-xl bg-[#FFECEA] border border-[#FF3B30]/30 text-[#FF3B30] text-[11px] font-mono flex items-center gap-2">
           <AlertTriangle className="size-3.5 shrink-0" />
           <span>{minNotionalError}</span>
         </div>
@@ -510,7 +510,7 @@ export function OrderForm({
 
       {/* 1-Click Agent Key Prompt if Perps & Not Approved */}
       {mode === 'perps' && !t.isAgentApproved && (
-        <div className="p-2.5 rounded-xl bg-[#EFEFFC] border border-[#5E5CE6]/30 text-xs font-mono flex items-center justify-between">
+        <div className="p-2 rounded-xl bg-[#EFEFFC] border border-[#5E5CE6]/30 text-[11px] font-mono flex items-center justify-between">
           <div className="flex items-center gap-2 text-foreground font-medium">
             <Key className="size-3.5 text-[#5E5CE6] shrink-0" />
             <span>Agent Key Required</span>
@@ -518,7 +518,7 @@ export function OrderForm({
           <button
             type="button"
             onClick={() => t.approveAgent()}
-            className="px-3 py-1 rounded-lg bg-foreground text-background font-bold text-xs hover:opacity-90 transition-opacity"
+            className="px-2.5 py-0.5 rounded-lg bg-foreground text-background font-bold text-[11px] hover:opacity-90 transition-opacity"
           >
             Approve Key
           </button>
@@ -526,18 +526,18 @@ export function OrderForm({
       )}
 
       {/* 8. Main LONG and SHORT Actions */}
-      <div className="grid grid-cols-2 gap-2.5 pt-0.5">
+      <div className="grid grid-cols-2 gap-2 pt-0.5">
         {/* LONG Action */}
         <button
           type="button"
           onClick={() => handleOrderClick('LONG')}
           disabled={isSubmitting || numMargin <= 0 || Boolean(minNotionalError)}
-          className="h-13 rounded-xl bg-[#00D964] text-black hover:bg-[#00C259] active:scale-[0.99] transition-all flex flex-col items-center justify-center shadow-xs cursor-pointer disabled:opacity-50 disabled:pointer-events-none py-1"
+          className="h-11 sm:h-12 rounded-xl bg-[#00D964] text-black hover:bg-[#00C259] active:scale-[0.99] transition-all flex flex-col items-center justify-center shadow-xs cursor-pointer disabled:opacity-50 disabled:pointer-events-none py-0.5"
         >
-          <span className="text-base font-black tracking-wide uppercase font-sans">
+          <span className="text-sm sm:text-base font-black tracking-wide uppercase font-sans leading-none">
             LONG
           </span>
-          <span className="text-[11px] font-semibold text-black/80 font-sans">
+          <span className="text-[10px] sm:text-[11px] font-semibold text-black/80 font-sans leading-tight mt-0.5">
             Win +${fmtUsd(profitAt10, 0)} at +1%
           </span>
         </button>
@@ -547,19 +547,19 @@ export function OrderForm({
           type="button"
           onClick={() => handleOrderClick('SHORT')}
           disabled={isSubmitting || numMargin <= 0 || Boolean(minNotionalError)}
-          className="h-13 rounded-xl bg-[#FF3B30] text-white hover:bg-[#E0342A] active:scale-[0.99] transition-all flex flex-col items-center justify-center shadow-xs cursor-pointer disabled:opacity-50 disabled:pointer-events-none py-1"
+          className="h-11 sm:h-12 rounded-xl bg-[#FF3B30] text-white hover:bg-[#E0342A] active:scale-[0.99] transition-all flex flex-col items-center justify-center shadow-xs cursor-pointer disabled:opacity-50 disabled:pointer-events-none py-0.5"
         >
-          <span className="text-base font-black tracking-wide uppercase font-sans">
+          <span className="text-sm sm:text-base font-black tracking-wide uppercase font-sans leading-none">
             SHORT
           </span>
-          <span className="text-[11px] font-semibold text-white/90 font-sans">
+          <span className="text-[10px] sm:text-[11px] font-semibold text-white/90 font-sans leading-tight mt-0.5">
             Win +${fmtUsd(profitAt10, 0)} at -1%
           </span>
         </button>
       </div>
 
       {/* 9. Footer Note */}
-      <p className="text-center text-[11px] text-muted-foreground/75 font-sans pt-0.5">
+      <p className="text-center text-[10px] text-muted-foreground/75 font-sans pt-0.5">
         Every trade opens its own position — open as many as you like.
       </p>
 

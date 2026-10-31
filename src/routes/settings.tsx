@@ -22,7 +22,7 @@ export const Route = createFileRoute('/settings')({
 
 function SettingsPage() {
   return (
-    <main className="min-h-[calc(100vh-130px)] bg-[#080B0F] text-[#E6EDF3] py-5 px-3 sm:px-6 font-mono">
+    <main className="min-h-[calc(100vh-130px)] bg-background text-foreground py-5 px-3 sm:px-6 font-mono">
       <div className="max-w-6xl mx-auto">
         <SettingsView />
       </div>
