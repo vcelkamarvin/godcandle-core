@@ -880,7 +880,7 @@ export function ShareModal({
               className="h-10 px-4 rounded-xl border border-[#30363D] bg-[#161B22] hover:bg-[#21262D] text-white text-xs font-mono font-medium transition-all flex items-center gap-2 cursor-pointer shadow-md disabled:opacity-50"
             >
               {copied === "image" ? <Check className="size-4 text-[#00D964]" /> : <Copy className="size-4 text-[#8B949E]" />}
-              <span>{copied === "image" ? "Copied" : "Copy"}</span>
+              <span>{copied === "image" ? "Image Copied!" : "Copy Image"}</span>
             </button>
 
             <button
@@ -901,7 +901,7 @@ export function ShareModal({
               className="h-10 px-4 rounded-xl bg-[#00D964] hover:bg-[#00BF57] text-[#080B0F] text-xs font-mono font-bold transition-all flex items-center gap-2 cursor-pointer shadow-[0_0_20px_rgba(0,217,100,0.25)] disabled:opacity-50"
             >
               <Download className="size-4 stroke-[2.5]" />
-              <span>Download</span>
+              <span>Download PNG</span>
             </button>
           </div>
         </div>

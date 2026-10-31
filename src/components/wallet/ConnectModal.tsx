@@ -407,6 +407,7 @@ export function ConnectModal({ isDark: isDarkProp }: { isDark?: boolean } = {}) 
                             >
                               Log in to godcandle
                             </h2>
+                            <p className="sr-only">Connect Web3 wallet.</p>
                           </div>
                         </div>
 
