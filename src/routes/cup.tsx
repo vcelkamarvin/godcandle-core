@@ -14,7 +14,7 @@ export const Route = createFileRoute('/cup')({
 
 function CandleCupPage() {
   return (
-    <div className="py-6 px-4 md:px-6 max-w-6xl mx-auto">
+    <div className="py-3 sm:py-4 px-3 sm:px-6 max-w-6xl mx-auto">
       <LeaderboardTable />
     </div>
   );

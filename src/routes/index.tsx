@@ -78,11 +78,11 @@ function Terminal() {
 
       <div className="grid min-w-0 grid-cols-1 lg:grid-cols-[minmax(0,1fr)_340px] xl:grid-cols-[minmax(0,1fr)_360px]">
         {/* Left Section: Live Chart, 24h Stats, and Position Dock */}
-        <div className="min-w-0 px-4 py-5 sm:px-6 lg:px-7">
+        <div className="min-w-0 px-4 py-3 sm:px-5 lg:px-6">
           {/* Headline Price & Controls Header */}
-          <section className="flex flex-wrap items-end justify-between gap-4 pb-4">
+          <section className="flex flex-wrap items-end justify-between gap-3 pb-2.5">
             <div>
-              <p className="mb-2 flex items-center gap-2 text-xs font-semibold tracking-tight text-foreground">
+              <p className="mb-1.5 flex items-center gap-2 text-xs font-semibold tracking-tight text-foreground">
                 <span>{market}-USD</span>
                 <span className="rounded bg-secondary border border-border px-2 py-0.5 text-[9px] font-normal text-muted-foreground">
                   Perp · {m.maxLeverage}x max
@@ -92,12 +92,12 @@ function Terminal() {
                 </span>
               </p>
 
-              <div className="flex flex-wrap items-baseline gap-3">
-                <h1 className="tabular text-4xl sm:text-5xl font-bold tracking-tight text-foreground">
+              <div className="flex flex-wrap items-baseline gap-2.5">
+                <h1 className="tabular text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
                   ${fmtUsd(feed.price, m.decimals)}
                 </h1>
                 <span
-                  className={`tabular rounded-lg px-2.5 py-1 text-xs font-semibold ${
+                  className={`tabular rounded-lg px-2 py-0.5 text-xs font-semibold ${
                     change >= 0 ? "bg-[#E3F8EC] text-[#06964A]" : "bg-[#FFECEA] text-[#FF3B30]"
                   }`}
                 >
@@ -185,7 +185,7 @@ function Terminal() {
             </div>
 
             {/* Dynamic Chart Display */}
-            <div className="h-[380px] sm:h-[440px] w-full">
+            <div className="h-[320px] sm:h-[370px] w-full">
               {chartMode === "reactive" ? (
                 <PriceChart
                   market={market}
@@ -202,7 +202,7 @@ function Terminal() {
           </section>
 
           {/* 24h Market Stats Grid */}
-          <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-3 rounded-2xl bg-secondary p-3.5 text-xs">
+          <div className="mt-2.5 grid grid-cols-2 sm:grid-cols-4 gap-2.5 rounded-2xl bg-secondary p-2.5 text-xs">
             <div>
               <p className="text-[10px] uppercase font-mono tracking-wider text-muted-foreground">
                 24h Open
@@ -234,7 +234,7 @@ function Terminal() {
           </div>
 
           {/* Trade Dock (Open Positions, History, Share PnL) */}
-          <div className="mt-6 border-t border-border pt-4">
+          <div className="mt-3.5 border-t border-border pt-3">
             <Dock
               feeds={t.feeds}
               open={t.positions}
