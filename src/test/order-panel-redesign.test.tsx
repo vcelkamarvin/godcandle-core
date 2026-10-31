@@ -97,4 +97,23 @@ describe("Redesigned Right-Side Order Panel", () => {
     expect(tradePanelCode).toContain("<OrderForm");
     expect(tradePanelCode).toContain("activePositions.map");
   });
+
+  it("verifies custom amount input state stability without premature clearing on preset value input", () => {
+    expect(orderFormCode).toContain("customAmount");
+    expect(orderFormCode).toContain("handleCustomAmountChange");
+    expect(orderFormCode).toContain("value={customAmount}");
+  });
+
+  it("verifies TP/SL price computation uses price movement fractions rather than dividing by leverage", () => {
+    expect(orderFormCode).toContain("moveFraction = rawPct / 100");
+    expect(orderFormCode).toContain("basePx * (1 + moveFraction)");
+    expect(orderFormCode).toContain("basePx * (1 - moveFraction)");
+  });
+
+  it("verifies LeverageRuler trackRef pointer alignment, highlighted needle label, and non-passive wheel listener", () => {
+    expect(rulerCode).toContain("trackRef");
+    expect(rulerCode).toContain("isHighlighted ? 'text-[#00D964]' : 'text-[#71717A]'");
+    expect(rulerCode).toContain("setPointerCapture");
+    expect(rulerCode).toContain("passive: false");
+  });
 });

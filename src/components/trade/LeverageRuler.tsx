@@ -1,4 +1,4 @@
-import React, { useRef, useMemo } from 'react';
+import React, { useRef, useMemo, useEffect } from 'react';
 
 interface LeverageRulerProps {
   value: number;
@@ -12,6 +12,7 @@ export function LeverageRuler({
   maxLeverage = 1000,
 }: LeverageRulerProps) {
   const rulerRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
 
   // Clamped active leverage
   const clampedValue = Math.max(1, Math.min(maxLeverage, value));
@@ -32,16 +33,22 @@ export function LeverageRuler({
 
   // Generate 41 ticks for clean visual ruler density
   const totalTicks = 41;
+  const keyTickIndices = useMemo(() => {
+    return new Set(
+      keyValues.map((kv) => Math.round((kv / maxLeverage) * (totalTicks - 1)))
+    );
+  }, [keyValues, maxLeverage, totalTicks]);
+
   const ticks = useMemo(() => {
     const list = [];
     for (let i = 0; i < totalTicks; i++) {
       const pct = (i / (totalTicks - 1)) * 100;
-      const tickLev = Math.round((i / (totalTicks - 1)) * maxLeverage);
-      const isKey = keyValues.some((kv) => Math.abs(kv - tickLev) <= maxLeverage / (totalTicks * 1.5));
+      const tickLev = Math.max(1, Math.round((i / (totalTicks - 1)) * maxLeverage));
+      const isKey = keyTickIndices.has(i);
       list.push({ index: i, pct, tickLev, isKey });
     }
     return list;
-  }, [totalTicks, maxLeverage, keyValues]);
+  }, [totalTicks, maxLeverage, keyTickIndices]);
 
   // Standard presets matching reference: 10x, 50x, 100x, 250x, 500x, 1000x
   const presets = useMemo(() => {
@@ -53,23 +60,36 @@ export function LeverageRuler({
     return Array.from(new Set(filtered));
   }, [maxLeverage]);
 
-  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    const updateFromPointer = (clientX: number) => {
-      if (!rulerRef.current) return;
-      const rect = rulerRef.current.getBoundingClientRect();
-      const rawPct = (clientX - rect.left) / rect.width;
-      const clampedPct = Math.max(0, Math.min(1, rawPct));
-      const newLev = Math.max(1, Math.round(clampedPct * maxLeverage));
-      onChange(newLev);
-    };
+  const updateFromClientX = (clientX: number) => {
+    const targetRef = trackRef.current || rulerRef.current;
+    if (!targetRef) return;
+    const rect = targetRef.getBoundingClientRect();
+    const rawPct = (clientX - rect.left) / rect.width;
+    const clampedPct = Math.max(0, Math.min(1, rawPct));
+    const newLev = Math.max(1, Math.round(clampedPct * maxLeverage));
+    onChange(newLev);
+  };
 
-    updateFromPointer(e.clientX);
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    const target = e.currentTarget;
+    try {
+      target.setPointerCapture(e.pointerId);
+    } catch {
+      // ignore if pointer capture not supported
+    }
+
+    updateFromClientX(e.clientX);
 
     const handleMove = (ev: PointerEvent) => {
-      updateFromPointer(ev.clientX);
+      updateFromClientX(ev.clientX);
     };
 
-    const handleUp = () => {
+    const handleUp = (ev: PointerEvent) => {
+      try {
+        target.releasePointerCapture(ev.pointerId);
+      } catch {
+        // ignore
+      }
       window.removeEventListener('pointermove', handleMove);
       window.removeEventListener('pointerup', handleUp);
     };
@@ -78,13 +98,32 @@ export function LeverageRuler({
     window.addEventListener('pointerup', handleUp);
   };
 
+  // Keep handleWheel function for test and fallback compatibility
   const handleWheel = (e: React.WheelEvent) => {
-    e.preventDefault();
     const step = maxLeverage >= 500 ? 10 : 2;
     const delta = e.deltaY < 0 ? step : -step;
     const next = Math.max(1, Math.min(maxLeverage, clampedValue + delta));
     onChange(next);
   };
+
+  // Register non-passive wheel listener on DOM node to prevent Chrome passive event violation
+  useEffect(() => {
+    const el = rulerRef.current;
+    if (!el) return;
+
+    const onNativeWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      const step = maxLeverage >= 500 ? 10 : 2;
+      const delta = e.deltaY < 0 ? step : -step;
+      const next = Math.max(1, Math.min(maxLeverage, clampedValue + delta));
+      onChange(next);
+    };
+
+    el.addEventListener('wheel', onNativeWheel, { passive: false });
+    return () => {
+      el.removeEventListener('wheel', onNativeWheel);
+    };
+  }, [clampedValue, maxLeverage, onChange]);
 
   const activePct = (clampedValue / maxLeverage) * 100;
 
@@ -95,47 +134,49 @@ export function LeverageRuler({
         ref={rulerRef}
         onPointerDown={handlePointerDown}
         onWheel={handleWheel}
-        className="relative h-16 w-full rounded-xl border border-border/40 bg-white px-3 pt-3 pb-2 cursor-ew-resize overflow-hidden touch-none"
+        className="relative h-16 w-full rounded-xl border border-border/40 bg-white px-3.5 pt-3 pb-2 cursor-ew-resize overflow-hidden touch-none"
       >
-        {/* Ticks container */}
-        <div className="relative h-6 w-full">
-          {ticks.map((t) => {
-            const isRightOfActive = t.tickLev > clampedValue;
-            return (
-              <div
-                key={t.index}
-                style={{ left: `${t.pct}%` }}
-                className={`absolute top-0 -translate-x-1/2 rounded-full transition-colors ${
-                  t.isKey ? 'w-[1.5px] h-5' : 'w-[1px] h-2.5'
-                } ${isRightOfActive ? 'bg-[#00D964]' : 'bg-[#D4D4D8]'}`}
-              />
-            );
-          })}
+        <div ref={trackRef} className="relative h-full w-full">
+          {/* Ticks container */}
+          <div className="relative h-6 w-full">
+            {ticks.map((t) => {
+              const isRightOfActive = t.tickLev > clampedValue;
+              return (
+                <div
+                  key={t.index}
+                  style={{ left: `${t.pct}%` }}
+                  className={`absolute top-0 -translate-x-1/2 rounded-full transition-colors ${
+                    t.isKey ? 'w-[1.5px] h-5' : 'w-[1px] h-2.5'
+                  } ${isRightOfActive ? 'bg-[#00D964]' : 'bg-[#D4D4D8]'}`}
+                />
+              );
+            })}
 
-          {/* Prominent Black Selection Indicator Needle */}
-          <div
-            style={{ left: `${activePct}%` }}
-            className="absolute -top-1 -translate-x-1/2 w-[3px] h-7 bg-black rounded-full z-10 shadow-xs pointer-events-none"
-          />
-        </div>
+            {/* Prominent Black Selection Indicator Needle */}
+            <div
+              style={{ left: `${activePct}%` }}
+              className="absolute -top-1 -translate-x-1/2 w-[3px] h-7 bg-black rounded-full z-10 shadow-xs pointer-events-none"
+            />
+          </div>
 
-        {/* Numerical Labels beneath key ticks */}
-        <div className="relative h-4 w-full">
-          {keyValues.map((kv) => {
-            const pct = (kv / maxLeverage) * 100;
-            const isRightOfActive = kv > clampedValue;
-            return (
-              <span
-                key={kv}
-                style={{ left: `${pct}%` }}
-                className={`absolute top-0 -translate-x-1/2 font-mono text-[10px] font-semibold tabular-nums pointer-events-none ${
-                  isRightOfActive ? 'text-[#00D964]' : 'text-[#71717A]'
-                }`}
-              >
-                {kv}
-              </span>
-            );
-          })}
+          {/* Numerical Labels beneath key ticks */}
+          <div className="relative h-4 w-full">
+            {keyValues.map((kv) => {
+              const pct = (kv / maxLeverage) * 100;
+              const isHighlighted = kv >= clampedValue;
+              return (
+                <span
+                  key={kv}
+                  style={{ left: `${pct}%` }}
+                  className={`absolute top-0 -translate-x-1/2 font-mono text-[10px] font-semibold tabular-nums pointer-events-none transition-colors ${
+                    isHighlighted ? 'text-[#00D964]' : 'text-[#71717A]'
+                  }`}
+                >
+                  {kv}
+                </span>
+              );
+            })}
+          </div>
         </div>
       </div>
 

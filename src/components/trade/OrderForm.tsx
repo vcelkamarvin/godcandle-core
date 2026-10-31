@@ -51,10 +51,13 @@ export function OrderForm({
   );
 
   useEffect(() => {
-    if (propLeverage && propLeverage !== internalLeverage) {
+    if (internalLeverage > activeMaxLev) {
+      setInternalLeverage(activeMaxLev);
+      onLeverageChange?.(activeMaxLev);
+    } else if (propLeverage && propLeverage !== internalLeverage) {
       setInternalLeverage(Math.min(propLeverage, activeMaxLev));
     }
-  }, [propLeverage, activeMaxLev]);
+  }, [propLeverage, activeMaxLev, internalLeverage, onLeverageChange]);
 
   const handleLeverageChange = (newLev: number) => {
     const clamped = Math.max(1, Math.min(activeMaxLev, newLev));
@@ -70,10 +73,17 @@ export function OrderForm({
   const [margin, setMargin] = useState(() =>
     settings.defaultMargin ? String(settings.defaultMargin) : '50'
   );
+  const [customAmount, setCustomAmount] = useState(() =>
+    settings.defaultMargin && !STAKE_PRESETS.includes(String(settings.defaultMargin))
+      ? String(settings.defaultMargin)
+      : ''
+  );
 
   useEffect(() => {
     if (settings.defaultMargin) {
-      setMargin(String(settings.defaultMargin));
+      const valStr = String(settings.defaultMargin);
+      setMargin(valStr);
+      setCustomAmount(STAKE_PRESETS.includes(valStr) ? '' : valStr);
     }
   }, [settings.defaultMargin]);
 
@@ -118,11 +128,19 @@ export function OrderForm({
   // Stake presets handler
   const handleSelectStake = (val: string) => {
     setMargin(val);
+    setCustomAmount('');
   };
 
   const handlePercentageStake = (pct: number) => {
     const calculated = Math.max(10, Math.floor(availableBalance * pct));
-    setMargin(String(calculated));
+    const calcStr = String(calculated);
+    setMargin(calcStr);
+    setCustomAmount(calcStr);
+  };
+
+  const handleCustomAmountChange = (val: string) => {
+    setCustomAmount(val);
+    setMargin(val);
   };
 
   // TP/SL Target price calculations
@@ -133,17 +151,17 @@ export function OrderForm({
     const rawPct = type === 'tp' ? parseFloat(tpPercent) : parseFloat(slPercent);
     if (isNaN(rawPct) || rawPct <= 0) return null;
 
-    const roiFraction = rawPct / 100;
+    const moveFraction = rawPct / 100;
     const basePx = orderType === 'limit' && parseFloat(limitPrice) > 0 ? parseFloat(limitPrice) : currentPrice;
 
     if (side === 'LONG') {
       return type === 'tp'
-        ? basePx * (1 + roiFraction / internalLeverage)
-        : basePx * (1 - roiFraction / internalLeverage);
+        ? basePx * (1 + moveFraction)
+        : basePx * (1 - moveFraction);
     } else {
       return type === 'tp'
-        ? basePx * (1 - roiFraction / internalLeverage)
-        : basePx * (1 + roiFraction / internalLeverage);
+        ? basePx * (1 - moveFraction)
+        : basePx * (1 + moveFraction);
     }
   };
 
@@ -259,7 +277,7 @@ export function OrderForm({
         {/* Preset Amount Chips ($10, $25, $50, $100, $500) */}
         <div className="grid grid-cols-5 gap-1.5">
           {STAKE_PRESETS.map((preset) => {
-            const isSelected = margin === preset;
+            const isSelected = margin === preset && customAmount === '';
             return (
               <button
                 key={preset}
@@ -279,14 +297,14 @@ export function OrderForm({
 
         {/* Custom Amount Box and Percentage Buttons */}
         <div className="flex items-center gap-2 pt-0.5">
-          <div className="flex flex-1 items-center gap-1.5 rounded-xl border-2 border-black bg-white px-3 py-2 focus-within:ring-1 focus-within:ring-black">
+          <div className="flex flex-1 items-center gap-1.5 rounded-xl border border-black bg-white px-3 py-2 focus-within:ring-1 focus-within:ring-black">
             <span className="font-mono text-sm text-muted-foreground">$</span>
             <input
               type="number"
               min="1"
               placeholder="Custom amount"
-              value={STAKE_PRESETS.includes(margin) ? '' : margin}
-              onChange={(e) => setMargin(e.target.value)}
+              value={customAmount}
+              onChange={(e) => handleCustomAmountChange(e.target.value)}
               className="w-full bg-transparent font-mono text-sm text-foreground placeholder:font-sans placeholder:text-muted-foreground/70 focus:outline-none"
             />
           </div>
