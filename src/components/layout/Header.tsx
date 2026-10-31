@@ -26,13 +26,13 @@ export function Header() {
   const candleRef = useRef<HTMLDivElement>(null);
 
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const isLanding = pathname === '/' || pathname === '/main' || pathname === '/settings';
+  const isLanding = pathname === '/main' || pathname === '/settings';
   const isCandleActive =
     pathname.startsWith('/candle') || pathname.startsWith('/staking');
 
   // Sync mode with pathname
   useEffect(() => {
-    if ((pathname === '/' || pathname === '/main') && t.mode !== 'perps') {
+    if (pathname === '/' && t.mode !== 'perps') {
       t.setMode('perps');
     } else if (pathname === '/trade' && t.mode !== 'paper1000x') {
       t.setMode('paper1000x');
@@ -114,14 +114,11 @@ export function Header() {
                 <Link
                   to="/"
                   onClick={() => t.setMode('perps')}
-                  activeOptions={{ exact: true }}
-                  activeProps={{
-                    className: 'pill pill-ink h-8 px-3.5 text-xs font-semibold shadow-xs',
-                  }}
-                  inactiveProps={{
-                    className:
-                      'pill h-8 px-3.5 text-xs text-muted-foreground hover:text-foreground hover:bg-white/60 transition-colors',
-                  }}
+                  className={
+                    t.mode === 'perps'
+                      ? 'pill pill-ink h-8 px-3.5 text-xs font-semibold shadow-xs'
+                      : 'pill h-8 px-3.5 text-xs text-muted-foreground hover:text-foreground hover:bg-white/60 transition-colors'
+                  }
                 >
                   <span className="flex items-center gap-1.5">
                     <span>Perps</span>
@@ -133,13 +130,11 @@ export function Header() {
                 <Link
                   to="/trade"
                   onClick={() => t.setMode('paper1000x')}
-                  activeProps={{
-                    className: 'pill pill-ink h-8 px-3.5 text-xs font-semibold shadow-xs',
-                  }}
-                  inactiveProps={{
-                    className:
-                      'pill h-8 px-3.5 text-xs text-muted-foreground hover:text-foreground hover:bg-white/60 transition-colors',
-                  }}
+                  className={
+                    t.mode === 'paper1000x'
+                      ? 'pill pill-ink h-8 px-3.5 text-xs font-semibold shadow-xs'
+                      : 'pill h-8 px-3.5 text-xs text-muted-foreground hover:text-foreground hover:bg-white/60 transition-colors'
+                  }
                 >
                   <span className="flex items-center gap-1.5">
                     <span>1000x</span>

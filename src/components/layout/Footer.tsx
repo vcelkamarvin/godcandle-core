@@ -5,7 +5,7 @@ import { CONTRACT_ADDRESSES } from '@/lib/contracts';
 
 export function Footer() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const isLanding = pathname === '/' || pathname === '/main';
+  const isLanding = pathname === '/main';
 
   return (
     <footer

@@ -143,7 +143,7 @@ function RootComponent() {
 
 function TradingShell() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const isDark = pathname === '/' || pathname === '/main' || pathname === '/settings';
+  const isDark = pathname === '/main' || pathname === '/settings';
 
   return (
     <div

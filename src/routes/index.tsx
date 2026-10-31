@@ -1,16 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { LandingPage } from "@/components/landing/LandingPage";
+import { TradeTerminal } from "@/components/trade/TradeTerminal";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "godcandle — Pro Trading Terminal for Hyperliquid" },
+      { title: "godcandle — Pro Perpetual Terminal" },
       {
         name: "description",
         content:
           "Pro trading terminal for Hyperliquid L1 order books with zero added latency. Powered by native Builder Code GODCANDLE and 1000x synthetic roadmap.",
       },
-      { property: "og:title", content: "godcandle — Pro Trading Terminal for Hyperliquid" },
+      { property: "og:title", content: "godcandle — Pro Perpetual Terminal" },
       {
         property: "og:description",
         content:
@@ -20,5 +20,13 @@ export const Route = createFileRoute("/")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: LandingPage,
+  component: IndexPage,
 });
+
+function IndexPage() {
+  return (
+    <div className="py-6 px-4 md:px-6">
+      <TradeTerminal />
+    </div>
+  );
+}

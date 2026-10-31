@@ -13,6 +13,8 @@ import { Shield, Layers, Zap, Database, BarChart2, RotateCcw, AlertTriangle } fr
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { useSettings } from '@/lib/settings';
+import { MarketBar } from '@/components/godcandle/MarketBar';
+import { useAccount } from 'wagmi';
 
 export interface MarketDef {
   symbol: string;
@@ -28,7 +30,8 @@ export const MARKETS: MarketDef[] = [
   { symbol: 'ETH-USD', name: 'Ethereum', index: 1, maxLev: 1000, corridorBps: 1.5, defaultPrice: 2540.2 },
   { symbol: 'SOL-USD', name: 'Solana', index: 2, maxLev: 1000, corridorBps: 1.5, defaultPrice: 182.4 },
   { symbol: 'HYPE-USD', name: 'Hyperliquid', index: 3, maxLev: 500, corridorBps: 3.0, defaultPrice: 42.8 },
-  { symbol: 'DOGE-USD', name: 'Dogecoin', index: 4, maxLev: 500, corridorBps: 3.0, defaultPrice: 0.164 },
+  { symbol: 'SPX-USD', name: 'S&P 500', index: 4, maxLev: 500, corridorBps: 1.5, defaultPrice: 6120.0 },
+  { symbol: 'DOGE-USD', name: 'Dogecoin', index: 5, maxLev: 500, corridorBps: 3.0, defaultPrice: 0.164 },
 ];
 
 const TIMEFRAMES: Array<{ label: string; ms: number; tvInterval?: TVInterval }> = [
@@ -44,6 +47,7 @@ export function TradeTerminal() {
   const t = useTrading();
   const isPerps = t.mode === 'perps';
   const { settings } = useSettings();
+  const { address } = useAccount();
 
   const engineMarkets = t.engine.getMarkets();
   const marketsList: any[] = engineMarkets.length > 0 ? engineMarkets : MARKETS;
@@ -108,6 +112,25 @@ export function TradeTerminal() {
     <div className={`mx-auto font-sans text-foreground transition-all ${
       isProMode ? 'space-y-2 max-w-7xl text-[11px]' : 'space-y-4 max-w-6xl text-xs'
     }`}>
+      {/* Dynamic L1 Market Bar with Search and Filters */}
+      <div className="rounded-2xl overflow-hidden border border-border bg-white shadow-xs">
+        <MarketBar
+          market={rawSymbol}
+          onSelect={(s) => {
+            const found = marketsList.find((m: any) => m.symbol.replace('-USD', '') === s) || {
+              symbol: `${s}-USD`,
+              name: s,
+              index: 0,
+              maxLev: isPerps ? t.engine.getMaxLeverage(s) : 1000,
+              corridorBps: 1.5,
+              defaultPrice: (t?.feeds as any)?.[s]?.price || 100,
+            };
+            handleMarketSelect(found);
+          }}
+          compact
+        />
+      </div>
+
       {/* Dynamic L1 Price Header */}
       <LivePriceHeader
         symbol={selectedMarket.symbol}
@@ -241,13 +264,13 @@ export function TradeTerminal() {
                 })}
               </div>
               <div className="flex items-center gap-2">
-                {!isPerps && (
+                {(!isPerps || !address) && (
                   <button
                     type="button"
                     onClick={async () => {
                       const res = await t.resetPaperBalance();
                       if (res.success) {
-                        toast.success("Paper balance reset to $10,000.00 USDC");
+                        toast.success("Test balance reset to $10,000.00 USDC");
                       } else {
                         toast.error(res.error || "Reset cooldown active");
                       }

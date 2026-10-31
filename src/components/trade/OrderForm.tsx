@@ -22,7 +22,7 @@ interface OrderFormProps {
   ) => void;
 }
 
-const MARGIN_CHIPS = ['10', '25', '50', '100', '250', '500'];
+const MARGIN_CHIPS = ['10', '25', '50', '100', '250', '500', '1000', '10000'];
 
 export function OrderForm({
   currentPrice,
@@ -181,7 +181,7 @@ export function OrderForm({
             AVAILABLE: ${availableBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </span>
         </div>
-        <div className="grid grid-cols-6 gap-1">
+        <div className="grid grid-cols-4 sm:grid-cols-8 gap-1">
           {MARGIN_CHIPS.map((chip) => (
             <button
               key={chip}

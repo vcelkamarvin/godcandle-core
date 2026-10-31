@@ -105,5 +105,37 @@ describe("Trade Execution Mechanics", () => {
     const imagePath = path.resolve(__dirname, "../../public/images/monet-etretat.jpg");
     expect(fs.existsSync(imagePath)).toBe(true);
   });
+
+  it("verifies unified form & structure: both index and trade routes mount TradeTerminal", () => {
+    const fs = require("fs");
+    const path = require("path");
+    const indexPath = path.resolve(__dirname, "../routes/index.tsx");
+    const tradePath = path.resolve(__dirname, "../routes/trade.tsx");
+    const indexContent = fs.readFileSync(indexPath, "utf-8");
+    const tradeContent = fs.readFileSync(tradePath, "utf-8");
+
+    expect(indexContent).toContain("<TradeTerminal />");
+    expect(tradeContent).toContain("<TradeTerminal />");
+  });
+
+  it("verifies OrderForm includes 10000 margin option and chips", () => {
+    const fs = require("fs");
+    const path = require("path");
+    const orderFormPath = path.resolve(__dirname, "../components/trade/OrderForm.tsx");
+    const content = fs.readFileSync(orderFormPath, "utf-8");
+
+    expect(content).toContain("'10000'");
+  });
+
+  it("verifies TradeTerminal embeds MarketBar and supports all pairs including SPX", () => {
+    const fs = require("fs");
+    const path = require("path");
+    const terminalPath = path.resolve(__dirname, "../components/trade/TradeTerminal.tsx");
+    const content = fs.readFileSync(terminalPath, "utf-8");
+
+    expect(content).toContain("<MarketBar");
+    expect(content).toContain("SPX-USD");
+    expect(content).toContain("Reset ($10k)");
+  });
 });
 

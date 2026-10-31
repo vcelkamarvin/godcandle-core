@@ -94,6 +94,29 @@ function useTradingState() {
   const [perpsBalance, setPerpsBalance] = useState<number>(0);
   const [perpsAvailable, setPerpsAvailable] = useState<number>(0);
 
+  // Perps Test/Demo Mode State (Available when no wallet is connected)
+  const [perpsTestBalance, setPerpsTestBalance] = useState<number>(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("godcandle_perps_test_balance");
+      if (stored) return parseFloat(stored) || 10000;
+    }
+    return 10000;
+  });
+  const [perpsTestPositions, setPerpsTestPositions] = useState<Position[]>(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("godcandle_perps_test_positions");
+      if (stored) return JSON.parse(stored) || [];
+    }
+    return [];
+  });
+  const [perpsTestHistory, setPerpsTestHistory] = useState<ClosedTrade[]>(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("godcandle_perps_test_history");
+      if (stored) return JSON.parse(stored) || [];
+    }
+    return [];
+  });
+
   // Subscribe to Paper Engine updates
   useEffect(() => {
     const unsub = paperEngineInstance.subscribe(() => {
@@ -164,12 +187,12 @@ function useTradingState() {
   const activeEngine: TradingEngine = mode === "perps" ? hyperliquidEngineInstance : paperEngineInstance;
 
   // Active positions & history strictly separated
-  const positions = mode === "perps" ? perpsPositions : paperPositions;
-  const history = mode === "perps" ? perpsHistory : paperHistory;
-  const balance = mode === "perps" ? perpsBalance : paperBalance;
+  const positions = mode === "perps" ? (address ? perpsPositions : perpsTestPositions) : paperPositions;
+  const history = mode === "perps" ? (address ? perpsHistory : perpsTestHistory) : paperHistory;
+  const balance = mode === "perps" ? (address ? perpsBalance : perpsTestBalance) : paperBalance;
   const available =
     mode === "perps"
-      ? perpsAvailable
+      ? (address ? perpsAvailable : Math.max(0, perpsTestBalance - perpsTestPositions.reduce((s, p) => s + p.stake, 0)))
       : Math.max(0, paperBalance - paperPositions.reduce((s, p) => s + p.stake, 0));
 
   async function open(
@@ -202,22 +225,52 @@ function useTradingState() {
         toast.error(res.error || "Failed to place paper order");
       }
     } else {
-      // Perps Mode (Real funds)
-      const res = await hyperliquidEngineInstance.placeOrder(
-        {
-          asset: market,
-          side,
-          margin: stake,
-          leverage,
-        },
-        price
-      );
-      if (res.success) {
-        toast.success(`Real Hyperliquid Perp Placed!`, {
-          description: `$${stake} margin @ ${leverage}x on ${market}`,
-        });
+      // Perps Mode
+      if (address) {
+        const res = await hyperliquidEngineInstance.placeOrder(
+          {
+            asset: market,
+            side,
+            margin: stake,
+            leverage,
+          },
+          price
+        );
+        if (res.success) {
+          toast.success(`Real Hyperliquid Perp Placed!`, {
+            description: `$${stake} margin @ ${leverage}x on ${market}`,
+          });
+        } else {
+          toast.error(res.error || "Order rejected by Hyperliquid");
+        }
       } else {
-        toast.error(res.error || "Order rejected by Hyperliquid");
+        // Test demo funds ($10,000) for perps
+        const maxAllowed = hyperliquidEngineInstance.getMaxLeverage(market);
+        const lev = Math.min(leverage, maxAllowed);
+        const avail = perpsTestBalance - perpsTestPositions.reduce((s, p) => s + p.stake, 0);
+        if (stake > avail) {
+          toast.error("Insufficient test balance ($10,000)");
+          return;
+        }
+        const newPos: Position = {
+          id: `perps-test-${Date.now()}`,
+          market,
+          side,
+          stake,
+          leverage: lev,
+          entry: price,
+          openedAt: Date.now(),
+          ...(tp != null ? { tp } : {}),
+          ...(sl != null ? { sl } : {}),
+        };
+        const updated = [newPos, ...perpsTestPositions];
+        setPerpsTestPositions(updated);
+        if (typeof window !== "undefined") {
+          localStorage.setItem("godcandle_perps_test_positions", JSON.stringify(updated));
+        }
+        toast.success(`Perps Test Order Placed!`, {
+          description: `$${stake} margin @ ${lev}x on ${market} ($10k demo balance). Connect wallet for live L1 execution.`,
+        });
       }
     }
   }
@@ -246,19 +299,46 @@ function useTradingState() {
         }
       }
     } else {
-      const res = await hyperliquidEngineInstance.closePosition(pos.id, price);
-      if (res.success) {
-        toast.success(`Real Hyperliquid position closed for ${pos.market}`);
+      if (address) {
+        const res = await hyperliquidEngineInstance.closePosition(pos.id, price);
+        if (res.success) {
+          toast.success(`Real Hyperliquid position closed for ${pos.market}`);
+        } else {
+          toast.error(res.error || "Failed to close real position");
+        }
       } else {
-        toast.error(res.error || "Failed to close real position");
+        const p = perpsTestPositions.find((item) => item.id === target || item.market === target);
+        if (p) {
+          const pnl = pnlOf(p, price);
+          const closedTrade: ClosedTrade = {
+            ...p,
+            exit: price,
+            pnl,
+            durationMs: Date.now() - p.openedAt,
+            liquidated,
+            closedAt: Date.now(),
+          };
+          const updatedPos = perpsTestPositions.filter((item) => item.id !== p.id);
+          const updatedHist = [closedTrade, ...perpsTestHistory];
+          const newBal = perpsTestBalance + pnl;
+          setPerpsTestPositions(updatedPos);
+          setPerpsTestHistory(updatedHist);
+          setPerpsTestBalance(newBal);
+          if (typeof window !== "undefined") {
+            localStorage.setItem("godcandle_perps_test_positions", JSON.stringify(updatedPos));
+            localStorage.setItem("godcandle_perps_test_history", JSON.stringify(updatedHist));
+            localStorage.setItem("godcandle_perps_test_balance", String(newBal));
+          }
+          toast(`Closed ${p.market} (${fmtSigned(pnl)})`);
+        }
       }
     }
   }
 
   function deposit(amount: number) {
     if (amount <= 0 || !Number.isFinite(amount)) return;
-    if (mode === "paper1000x") {
-      toast.info("Paper mode uses simulated USDC. Use Reset Balance to reset to $10,000.");
+    if (mode === "paper1000x" || !address) {
+      toast.info("Test mode uses simulated USDC. Use Reset Balance to reset to $10,000.");
     } else {
       toast.info("Deposit to Hyperliquid via the official bridge or Arbitrum deposit.");
     }
@@ -266,14 +346,22 @@ function useTradingState() {
 
   function withdraw(amount: number) {
     if (amount <= 0 || !Number.isFinite(amount)) return;
-    if (mode === "paper1000x") {
-      toast.info("Paper trading mode has no real withdrawals.");
+    if (mode === "paper1000x" || !address) {
+      toast.info("Paper/test trading mode has no real withdrawals.");
     } else {
       toast.info("Withdraw from Hyperliquid via clearinghouse bridge.");
     }
   }
 
   async function resetPaperBalance() {
+    setPerpsTestBalance(10000);
+    setPerpsTestPositions([]);
+    setPerpsTestHistory([]);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("godcandle_perps_test_balance", "10000");
+      localStorage.removeItem("godcandle_perps_test_positions");
+      localStorage.removeItem("godcandle_perps_test_history");
+    }
     return await paperEngineInstance.resetBalance();
   }
 
