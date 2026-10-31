@@ -5,19 +5,20 @@ import {
   Share2,
   TrendingUp,
   CheckCircle2,
-  Sparkles,
-  ArrowRight,
   ShieldCheck,
-  Layers,
   ArrowUpRight,
+  TrendingDown,
+  Plus,
+  Minus,
 } from "lucide-react";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { Slider } from "@/components/ui/slider";
 import { useTrading } from "@/components/godcandle/TradingProvider";
 import { ShareModal } from "@/components/godcandle/ShareModal";
 import { ChartCanvas } from "@/components/godcandle/ChartCanvas";
-import { fmtUsd, fmtSigned, type ClosedTrade } from "@/lib/engine";
+import type { ClosedTrade } from "@/lib/engine";
 
 export const Route = createFileRoute("/goal")({
   head: () => ({
@@ -40,6 +41,7 @@ export const Route = createFileRoute("/goal")({
 });
 
 type Underlying = "BTC" | "ETH" | "SOL" | "HYPE";
+type Direction = "LONG" | "SHORT";
 
 const DEFAULT_SPOTS: Record<Underlying, number> = {
   BTC: 68420.5,
@@ -51,58 +53,108 @@ const DEFAULT_SPOTS: Record<Underlying, number> = {
 export function GoalPage() {
   const t = useTrading();
   const [underlying, setUnderlying] = useState<Underlying>("BTC");
+  const [direction, setDirection] = useState<Direction>("LONG");
   const [amount, setAmount] = useState(10_000);
   const [days, setDays] = useState(30);
   const [shareModalOpen, setShareModalOpen] = useState(false);
   const [goalLocked, setGoalLocked] = useState(false);
 
   const spot = t?.feeds?.[underlying]?.price ?? DEFAULT_SPOTS[underlying];
-  const [targetPrice, setTargetPrice] = useState(Math.round(spot * 1.15));
 
-  // Sync target when underlying changes
+  // Target price state
+  const [targetPrice, setTargetPrice] = useState(() => Math.round(spot * 1.15));
+
+  // Only re-anchor target price when underlying asset or direction explicitly changes
+  const prevUnderlyingRef = useRef(underlying);
+  const prevDirectionRef = useRef(direction);
+
   useEffect(() => {
-    setTargetPrice(Math.round(spot * 1.15));
-  }, [underlying, spot]);
+    const underlyingChanged = prevUnderlyingRef.current !== underlying;
+    const directionChanged = prevDirectionRef.current !== direction;
 
-  const targetMove = spot > 0 ? ((targetPrice - spot) / spot) * 100 : 0;
-  const isUp = targetPrice >= spot;
+    if (underlyingChanged || directionChanged) {
+      prevUnderlyingRef.current = underlying;
+      prevDirectionRef.current = direction;
+      const factor = direction === "LONG" ? 1.15 : 0.85;
+      setTargetPrice(Math.round(spot * factor));
+    }
+  }, [underlying, direction, spot]);
+
+  // Pricing & ROI calculations
   const boostMultiplier = 3.2;
-  const roiPct = targetMove * boostMultiplier;
+
+  // Calculate move percentage based on chosen direction
+  const movePct = useMemo(() => {
+    if (spot <= 0) return 0;
+    if (direction === "LONG") {
+      return ((targetPrice - spot) / spot) * 100;
+    } else {
+      return ((spot - targetPrice) / spot) * 100;
+    }
+  }, [spot, targetPrice, direction]);
+
+  const roiPct = Math.max(-100, movePct * boostMultiplier);
   const payout = Math.round(amount * (roiPct / 100));
 
-  const minTarget = Math.round(spot * 0.65);
-  const maxTarget = Math.round(spot * 1.6);
+  // Slider bounds
+  const minTarget = useMemo(() => {
+    if (direction === "LONG") {
+      return Math.round(spot * 1.01);
+    } else {
+      return Math.max(1, Math.round(spot * 0.3));
+    }
+  }, [spot, direction]);
 
-  const milestones = useMemo(
-    () => [
-      { id: "1", label: "+5% Near Pivot", price: Math.round(spot * 1.05), pct: 5 },
-      { id: "2", label: "+15% Structural Move", price: Math.round(spot * 1.15), pct: 15 },
-      { id: "3", label: "+30% Godcandle Run", price: Math.round(spot * 1.3), pct: 30 },
-      { id: "4", label: "+50% Macro Expansion", price: Math.round(spot * 1.5), pct: 50 },
-    ],
-    [spot]
-  );
+  const maxTarget = useMemo(() => {
+    if (direction === "LONG") {
+      return Math.round(spot * 2.0);
+    } else {
+      return Math.round(spot * 0.99);
+    }
+  }, [spot, direction]);
 
+  const sliderStep = useMemo(() => {
+    return Math.max(1, Math.round(spot * 0.005));
+  }, [spot]);
+
+  // Quick milestone chips
+  const milestones = useMemo(() => {
+    if (direction === "LONG") {
+      return [
+        { id: "1", label: "+5% Near Pivot", price: Math.round(spot * 1.05), pct: 5 },
+        { id: "2", label: "+15% Structural Move", price: Math.round(spot * 1.15), pct: 15 },
+        { id: "3", label: "+30% Godcandle Run", price: Math.round(spot * 1.3), pct: 30 },
+        { id: "4", label: "+50% Macro Expansion", price: Math.round(spot * 1.5), pct: 50 },
+      ];
+    } else {
+      return [
+        { id: "1", label: "-5% Local Pullback", price: Math.round(spot * 0.95), pct: -5 },
+        { id: "2", label: "-15% Support Retest", price: Math.round(spot * 0.85), pct: -15 },
+        { id: "3", label: "-30% Liquidation Flush", price: Math.round(spot * 0.7), pct: -30 },
+        { id: "4", label: "-50% Macro Capitulation", price: Math.round(spot * 0.5), pct: -50 },
+      ];
+    }
+  }, [spot, direction]);
+
+  // Modeled progression curve for ChartCanvas
   const trajectoryValues = useMemo(() => {
     const points = 30;
     const vals: number[] = [];
     for (let i = 0; i <= points; i++) {
       const progress = i / points;
-      const curPrice = spot + (targetPrice - spot) * Math.pow(progress, 1.2);
-      const movePct = spot > 0 ? ((curPrice - spot) / spot) * 100 : 0;
-      const simRoi = movePct * boostMultiplier;
+      const simRoi = roiPct * Math.pow(progress, 1.3);
       vals.push(amount * (1 + simRoi / 100));
     }
     return vals;
-  }, [spot, targetPrice, amount, boostMultiplier]);
+  }, [amount, roiPct]);
 
   const handleLockInGoal = () => {
     if (t?.open) {
-      t.open(underlying, isUp ? "LONG" : "SHORT", Math.min(amount, 500), 50);
+      t.open(underlying, direction, Math.min(amount, 500), 50);
     }
     setGoalLocked(true);
     toast.success("Target Goal Locked In!", {
-      description: `${underlying} target $${targetPrice.toLocaleString()} (${targetMove >= 0 ? "+" : ""}${targetMove.toFixed(1)}%). Modeled Payout: $${(amount + payout).toLocaleString()}`,
+      description: `${underlying} ${direction} target $${targetPrice.toLocaleString()} (${movePct >= 0 ? "+" : ""}${movePct.toFixed(1)}%). Modeled Payout: $${(amount + payout).toLocaleString()}`,
     });
     setTimeout(() => setGoalLocked(false), 2400);
   };
@@ -111,7 +163,7 @@ export function GoalPage() {
     () => ({
       id: `goal-${Date.now()}`,
       market: underlying,
-      direction: isUp ? "LONG" : "SHORT",
+      direction: direction,
       stake: amount,
       leverage: Math.round(boostMultiplier * 10),
       entryPrice: spot,
@@ -122,7 +174,7 @@ export function GoalPage() {
       fees: amount * 0.001,
       reason: "take_profit",
     }),
-    [underlying, isUp, amount, boostMultiplier, spot, targetPrice, days, payout]
+    [underlying, direction, amount, boostMultiplier, spot, targetPrice, days, payout],
   );
 
   return (
@@ -145,7 +197,8 @@ export function GoalPage() {
               </span>
             </div>
             <p className="text-muted-foreground text-xs font-sans">
-              Model non-linear outcome scenarios, target price payoff milestones, and capital trajectory on HyperEVM.
+              Model non-linear outcome scenarios, target price payoff milestones, and capital
+              trajectory on HyperEVM.
             </p>
           </div>
 
@@ -208,6 +261,39 @@ export function GoalPage() {
             </span>
           </div>
 
+          {/* Direction Selector (Long vs Short) */}
+          <div className="space-y-1.5">
+            <span className="text-[10px] text-muted-foreground uppercase font-semibold block">
+              Market Direction
+            </span>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => setDirection("LONG")}
+                className={`pill h-8 text-xs font-semibold transition-all cursor-pointer ${
+                  direction === "LONG"
+                    ? "btn-long-ink font-bold shadow-xs"
+                    : "border border-border bg-[#F6F6F4] text-muted-foreground hover:text-foreground hover:bg-white"
+                }`}
+              >
+                <TrendingUp className="size-3.5 text-[#06964A]" />
+                Long ↗ (Expansion)
+              </button>
+              <button
+                type="button"
+                onClick={() => setDirection("SHORT")}
+                className={`pill h-8 text-xs font-semibold transition-all cursor-pointer ${
+                  direction === "SHORT"
+                    ? "btn-short-ink font-bold shadow-xs"
+                    : "border border-border bg-[#F6F6F4] text-muted-foreground hover:text-foreground hover:bg-white"
+                }`}
+              >
+                <TrendingDown className="size-3.5 text-[#FF3B30]" />
+                Short ↘ (Pullback)
+              </button>
+            </div>
+          </div>
+
           {/* Current Spot Reference */}
           <div className="p-3 rounded-2xl bg-[#F6F6F4] border border-border flex justify-between items-center">
             <div>
@@ -215,7 +301,11 @@ export function GoalPage() {
                 {underlying} Spot Reference
               </span>
               <span className="text-sm font-bold tabular text-foreground font-mono">
-                ${spot.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                $
+                {spot.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
               </span>
             </div>
             <span className="text-[10px] text-[#06964A] font-semibold flex items-center gap-1">
@@ -224,38 +314,57 @@ export function GoalPage() {
             </span>
           </div>
 
-          {/* Target Price Slider */}
-          <div className="space-y-2">
+          {/* Target Price with Radix Slider & Stepper Controls */}
+          <div className="space-y-2 pt-1">
             <div className="flex justify-between items-center text-[11px]">
               <span className="text-muted-foreground font-semibold">TARGET PRICE</span>
               <div className="flex items-center gap-1.5 font-mono">
+                {/* Stepper buttons for micro-adjustments */}
+                <div className="flex items-center gap-1 mr-1">
+                  <button
+                    type="button"
+                    onClick={() => setTargetPrice((p) => Math.max(minTarget, p - sliderStep))}
+                    className="size-5 rounded border border-border bg-white flex items-center justify-center hover:bg-secondary cursor-pointer"
+                    title="Decrease target price"
+                  >
+                    <Minus className="size-2.5 text-muted-foreground" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setTargetPrice((p) => Math.min(maxTarget, p + sliderStep))}
+                    className="size-5 rounded border border-border bg-white flex items-center justify-center hover:bg-secondary cursor-pointer"
+                    title="Increase target price"
+                  >
+                    <Plus className="size-2.5 text-muted-foreground" />
+                  </button>
+                </div>
                 <span className="text-foreground font-bold text-sm tabular">
                   ${targetPrice.toLocaleString()}
                 </span>
                 <span
                   className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
-                    targetMove >= 0
-                      ? "bg-[#E3F8EC] text-[#06964A]"
-                      : "bg-[#FFECEA] text-[#FF3B30]"
+                    movePct >= 0 ? "bg-[#E3F8EC] text-[#06964A]" : "bg-[#FFECEA] text-[#FF3B30]"
                   }`}
                 >
-                  {targetMove >= 0 ? "+" : ""}
-                  {targetMove.toFixed(1)}%
+                  {movePct >= 0 ? "+" : ""}
+                  {movePct.toFixed(1)}%
                 </span>
               </div>
             </div>
 
-            <div className="pt-1">
-              <input
-                type="range"
+            {/* Radix UI Slider Component */}
+            <div className="py-2">
+              <Slider
+                value={[targetPrice]}
                 min={minTarget}
                 max={maxTarget}
-                step={Math.max(1, Math.round(spot * 0.005))}
-                value={targetPrice}
-                onChange={(e) => setTargetPrice(Number(e.target.value))}
-                className="w-full accent-foreground bg-[#E6E6E3] h-2 appearance-none cursor-pointer rounded-full"
+                step={sliderStep}
+                onValueChange={([val]) => {
+                  if (typeof val === "number") setTargetPrice(val);
+                }}
+                className="py-1 cursor-grab active:cursor-grabbing"
               />
-              <div className="flex justify-between text-[10px] text-muted-foreground font-mono mt-1">
+              <div className="flex justify-between text-[10px] text-muted-foreground font-mono mt-1.5">
                 <span>${minTarget.toLocaleString()}</span>
                 <span>Spot: ${Math.round(spot).toLocaleString()}</span>
                 <span>${maxTarget.toLocaleString()}</span>
@@ -266,7 +375,7 @@ export function GoalPage() {
           {/* Quick Milestones Matrix */}
           <div className="space-y-1.5 pt-2 border-t border-border">
             <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold block">
-              Quick Milestone Targets
+              Quick Milestone Targets ({direction})
             </span>
             <div className="grid grid-cols-2 gap-2">
               {milestones.map((m) => {
@@ -433,9 +542,23 @@ export function GoalPage() {
 
                 <div className="space-y-2 text-[11px] font-mono">
                   <div className="flex justify-between py-1.5 border-b border-border">
+                    <span className="text-muted-foreground font-sans">Direction</span>
+                    <span
+                      className={`font-bold tabular ${
+                        direction === "LONG" ? "text-[#06964A]" : "text-[#FF3B30]"
+                      }`}
+                    >
+                      {direction === "LONG" ? "LONG ↗ (Upward)" : "SHORT ↘ (Downward)"}
+                    </span>
+                  </div>
+                  <div className="flex justify-between py-1.5 border-b border-border">
                     <span className="text-muted-foreground font-sans">Current Spot</span>
                     <span className="font-bold tabular text-foreground">
-                      ${spot.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      $
+                      {spot.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
                     </span>
                   </div>
                   <div className="flex justify-between py-1.5 border-b border-border">
@@ -445,14 +568,14 @@ export function GoalPage() {
                     </span>
                   </div>
                   <div className="flex justify-between py-1.5 border-b border-border">
-                    <span className="text-muted-foreground font-sans">Underlying Move</span>
+                    <span className="text-muted-foreground font-sans">Price Distance</span>
                     <span
                       className={`font-bold tabular ${
-                        targetMove >= 0 ? "text-[#06964A]" : "text-[#FF3B30]"
+                        movePct >= 0 ? "text-[#06964A]" : "text-[#FF3B30]"
                       }`}
                     >
-                      {targetMove >= 0 ? "+" : ""}
-                      {targetMove.toFixed(2)}%
+                      {movePct >= 0 ? "+" : ""}
+                      {movePct.toFixed(2)}%
                     </span>
                   </div>
                   <div className="flex justify-between py-1.5 border-b border-border">
@@ -462,8 +585,7 @@ export function GoalPage() {
                         payout >= 0 ? "text-[#06964A]" : "text-[#FF3B30]"
                       }`}
                     >
-                      {payout >= 0 ? "+" : ""}
-                      ${payout.toLocaleString()}
+                      {payout >= 0 ? "+" : ""}${payout.toLocaleString()}
                     </span>
                   </div>
                   <div className="flex justify-between py-1.5">
@@ -485,7 +607,7 @@ export function GoalPage() {
                 Modeled Capital Trajectory Curve
               </span>
               <span className="text-[10px] text-muted-foreground font-mono">
-                {days}D Payoff Ramp
+                {days}D Payoff Ramp ({direction})
               </span>
             </div>
             <div className="pt-1">
@@ -496,31 +618,36 @@ export function GoalPage() {
           {/* Modeled Milestones Ladder */}
           <div className="relative overflow-hidden rounded-3xl border border-border bg-white p-5 shadow-xs space-y-3">
             <h3 className="font-bold text-foreground text-xs tracking-wider uppercase">
-              Target Milestone Ladder (${amount.toLocaleString()} Principal)
+              Target Milestone Ladder (${amount.toLocaleString()} Principal · {direction})
             </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
-              {[1.05, 1.15, 1.3, 1.5].map((mult) => {
-                const p = Math.round(spot * mult);
-                const move = ((p - spot) / spot) * 100;
-                const r = move * boostMultiplier;
-                const g = Math.round(amount * (r / 100));
-                return (
-                  <div
-                    key={mult}
-                    className="p-3 rounded-2xl border border-border bg-[#F6F6F4] space-y-1 transition-all hover:bg-white hover:border-foreground/30 shadow-2xs"
-                  >
-                    <div className="text-[10px] text-muted-foreground font-semibold font-sans">
-                      +{move.toFixed(0)}% Expansion
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              {(direction === "LONG" ? [1.05, 1.15, 1.3, 1.5] : [0.95, 0.85, 0.7, 0.5]).map(
+                (mult) => {
+                  const p = Math.round(spot * mult);
+                  const move =
+                    direction === "LONG" ? ((p - spot) / spot) * 100 : ((spot - p) / spot) * 100;
+                  const r = move * boostMultiplier;
+                  const g = Math.round(amount * (r / 100));
+                  return (
+                    <div
+                      key={mult}
+                      className="p-3 rounded-2xl border border-border bg-[#F6F6F4] space-y-1 transition-all hover:bg-white hover:border-foreground/30 shadow-2xs"
+                    >
+                      <div className="text-[10px] text-muted-foreground font-semibold font-sans">
+                        {direction === "LONG"
+                          ? `+${move.toFixed(0)}% Expansion`
+                          : `-${move.toFixed(0)}% Pullback`}
+                      </div>
+                      <div className="text-sm font-bold text-foreground font-mono tabular">
+                        ${p.toLocaleString()}
+                      </div>
+                      <div className="text-[11px] font-bold text-[#06964A] font-mono tabular">
+                        +${g.toLocaleString()} (+{r.toFixed(0)}%)
+                      </div>
                     </div>
-                    <div className="text-sm font-bold text-foreground font-mono tabular">
-                      ${p.toLocaleString()}
-                    </div>
-                    <div className="text-[11px] font-bold text-[#06964A] font-mono tabular">
-                      +${g.toLocaleString()} (+{r.toFixed(0)}%)
-                    </div>
-                  </div>
-                );
-              })}
+                  );
+                },
+              )}
             </div>
           </div>
         </div>

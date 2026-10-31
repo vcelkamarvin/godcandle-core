@@ -58,10 +58,13 @@ export function ChartCanvas({
             const wave1 = Math.sin(c * 0.35 + r * 0.25);
             const wave2 = Math.cos(c * 0.15 - r * 0.4);
             const noise = ((c * 13 + r * 7) % 19) / 19;
-            const intensity = Math.max(0, Math.min(1, 0.35 + wave1 * 0.25 + wave2 * 0.2 + noise * 0.2));
+            const intensity = Math.max(
+              0,
+              Math.min(1, 0.35 + wave1 * 0.25 + wave2 * 0.2 + noise * 0.2),
+            );
 
             // Concentrated wall clusters
-            const isWall = (r === 6 || r === 12 || r === 24 || r === 30) && (c % 8 < 5);
+            const isWall = (r === 6 || r === 12 || r === 24 || r === 30) && c % 8 < 5;
 
             if (isWall) {
               ctx.fillStyle = isAsk ? "#FFDAC8" : "#A0D4CA";
@@ -131,7 +134,10 @@ export function ChartCanvas({
 
       const data = values.length
         ? values
-        : Array.from({ length: 60 }, (_, i) => 30 + i * 0.5 + Math.sin(i * 0.32) * 6 + Math.sin(i * 1.2) * 3);
+        : Array.from(
+            { length: 60 },
+            (_, i) => 30 + i * 0.5 + Math.sin(i * 0.32) * 6 + Math.sin(i * 1.2) * 3,
+          );
 
       const min = Math.min(...data);
       const max = Math.max(...data);
@@ -211,7 +217,10 @@ export function ChartCanvas({
       // Time axis bottom marks
       ctx.font = '9px "JetBrains Mono", monospace';
       ctx.fillStyle = color("--muted-foreground") || "#8A8A86";
-      const times = ["-24h", "-18h", "-12h", "-6h", "-1h", "NOW"];
+      const times =
+        kind === "curve"
+          ? ["NOW", "+25%", "+50%", "+75%", "TARGET"]
+          : ["-24h", "-18h", "-12h", "-6h", "-1h", "NOW"];
       for (let i = 0; i < times.length; i++) {
         const x = pad + (i / (times.length - 1)) * (plotW - 20);
         const label = times[i];

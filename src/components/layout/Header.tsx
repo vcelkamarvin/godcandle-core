@@ -1,41 +1,51 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Link, useRouterState } from '@tanstack/react-router';
-import { ConnectModal } from '@/components/wallet/ConnectModal';
-import { Sparkles, Plus, ChevronDown, BarChart2, Coins, Trophy, BookOpen, Settings as SettingsIcon } from 'lucide-react';
-import { SettingsModal } from '@/components/settings/SettingsModal';
-import { useTrading } from '@/components/godcandle/TradingProvider';
-import { fmtUsd } from '@/lib/engine';
-import { TransferDialog } from '@/components/godcandle/TransferDialog';
-import { Button } from '@/components/ui/button';
-import { useAccount, useBalance } from 'wagmi';
-import { formatUnits } from 'viem';
-import { toast } from 'sonner';
+import React, { useState, useRef, useEffect } from "react";
+import { Link, useRouterState } from "@tanstack/react-router";
+import { ConnectModal } from "@/components/wallet/ConnectModal";
+import {
+  Sparkles,
+  Plus,
+  ChevronDown,
+  BarChart2,
+  Coins,
+  Trophy,
+  BookOpen,
+  Settings as SettingsIcon,
+} from "lucide-react";
+import { SettingsModal } from "@/components/settings/SettingsModal";
+import { useTrading } from "@/components/godcandle/TradingProvider";
+import { fmtUsd } from "@/lib/engine";
+import { TransferDialog } from "@/components/godcandle/TransferDialog";
+import { Button } from "@/components/ui/button";
+import { useAccount, useBalance } from "wagmi";
+import { formatUnits } from "viem";
+import { toast } from "sonner";
 
 export function Header() {
   const t = useTrading();
   const { address: wagmiAddress } = useAccount();
-  const localAddr = typeof window !== 'undefined' ? localStorage.getItem('godcandle_wallet_address') : null;
+  const localAddr =
+    typeof window !== "undefined" ? localStorage.getItem("godcandle_wallet_address") : null;
   const activeAddr = wagmiAddress || localAddr;
   const { data: hypeBalance } = useBalance({
     address: activeAddr as `0x${string}` | undefined,
     chainId: 999,
   });
-  const [transfer, setTransfer] = useState<'Deposit' | 'Withdraw' | null>(null);
+  const [transfer, setTransfer] = useState<"Deposit" | "Withdraw" | null>(null);
   const [candleOpen, setCandleOpen] = useState(false);
   const [settingsModalOpen, setSettingsModalOpen] = useState(false);
   const candleRef = useRef<HTMLDivElement>(null);
 
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const isLanding = pathname === '/main' || pathname === '/settings';
-  const isCandleActive =
-    pathname.startsWith('/candle') || pathname.startsWith('/staking');
+  const isLanding = pathname === "/main" || pathname === "/settings";
+  const isCandleActive = pathname.startsWith("/candle") || pathname.startsWith("/staking");
+  const isGoalOrBoost = pathname === "/goal" || pathname === "/boost";
 
   // Sync mode with pathname
   useEffect(() => {
-    if (pathname === '/' && t.mode !== 'perps') {
-      t.setMode('perps');
-    } else if (pathname === '/trade' && t.mode !== 'paper1000x') {
-      t.setMode('paper1000x');
+    if (pathname === "/" && t.mode !== "perps") {
+      t.setMode("perps");
+    } else if (pathname === "/trade" && t.mode !== "paper1000x") {
+      t.setMode("paper1000x");
     }
   }, [pathname, t.mode]);
 
@@ -46,8 +56,8 @@ export function Header() {
         setCandleOpen(false);
       }
     }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   return (
@@ -82,10 +92,12 @@ export function Header() {
           <div className="flex items-center gap-6">
             <Link
               to="/"
-              className={`group flex shrink-0 items-center gap-2 ${isLanding ? 'font-mono' : 'font-sans'}`}
+              className={`group flex shrink-0 items-center gap-2 ${isLanding ? "font-mono" : "font-sans"}`}
               aria-label="godcandle home"
             >
-              <span className={`text-[22px] font-bold tracking-tight transition-colors ${isLanding ? 'text-white group-hover:text-[#00D964]' : 'text-foreground font-normal group-hover:opacity-85'}`}>
+              <span
+                className={`text-[22px] font-bold tracking-tight transition-colors ${isLanding ? "text-white group-hover:text-[#00D964]" : "text-foreground font-normal group-hover:opacity-85"}`}
+              >
                 godcandle
               </span>
               {isLanding ? (
@@ -107,11 +119,11 @@ export function Header() {
               <div className="flex items-center p-0.5 rounded-full bg-secondary border border-border/80 shadow-2xs">
                 <Link
                   to="/"
-                  onClick={() => t.setMode('perps')}
+                  onClick={() => t.setMode("perps")}
                   className={
-                    t.mode === 'perps'
-                      ? 'pill pill-ink h-8 px-3.5 text-xs font-semibold shadow-xs'
-                      : 'pill h-8 px-3.5 text-xs text-muted-foreground hover:text-foreground hover:bg-white/60 transition-colors'
+                    t.mode === "perps"
+                      ? "pill pill-ink h-8 px-3.5 text-xs font-semibold shadow-xs"
+                      : "pill h-8 px-3.5 text-xs text-muted-foreground hover:text-foreground hover:bg-white/60 transition-colors"
                   }
                 >
                   <span className="flex items-center gap-1.5">
@@ -123,11 +135,11 @@ export function Header() {
                 </Link>
                 <Link
                   to="/trade"
-                  onClick={() => t.setMode('paper1000x')}
+                  onClick={() => t.setMode("paper1000x")}
                   className={
-                    t.mode === 'paper1000x'
-                      ? 'pill pill-ink h-8 px-3.5 text-xs font-semibold shadow-xs'
-                      : 'pill h-8 px-3.5 text-xs text-muted-foreground hover:text-foreground hover:bg-white/60 transition-colors'
+                    t.mode === "paper1000x"
+                      ? "pill pill-ink h-8 px-3.5 text-xs font-semibold shadow-xs"
+                      : "pill h-8 px-3.5 text-xs text-muted-foreground hover:text-foreground hover:bg-white/60 transition-colors"
                   }
                 >
                   <span className="flex items-center gap-1.5">
@@ -146,11 +158,11 @@ export function Header() {
               <Link
                 to="/trade"
                 activeProps={{
-                  className: 'pill pill-ink h-8 px-3 text-xs font-semibold shadow-xs',
+                  className: "pill pill-ink h-8 px-3 text-xs font-semibold shadow-xs",
                 }}
                 inactiveProps={{
                   className:
-                    'pill h-8 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors',
+                    "pill h-8 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors",
                 }}
               >
                 <span className="flex items-center gap-1.5">
@@ -177,13 +189,11 @@ export function Header() {
 
               <Link
                 to="/goal"
-                activeProps={{
-                  className: 'pill pill-ink h-8 px-3.5 text-xs font-medium shadow-xs',
-                }}
-                inactiveProps={{
-                  className:
-                    'pill h-8 px-3.5 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary',
-                }}
+                className={
+                  isGoalOrBoost
+                    ? "pill pill-ink h-8 px-3.5 text-xs font-medium shadow-xs"
+                    : "pill h-8 px-3.5 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+                }
               >
                 Goal &amp; Boost
               </Link>
@@ -191,11 +201,11 @@ export function Header() {
               <Link
                 to="/analytics"
                 activeProps={{
-                  className: 'pill pill-ink h-8 px-3.5 text-xs font-medium shadow-xs',
+                  className: "pill pill-ink h-8 px-3.5 text-xs font-medium shadow-xs",
                 }}
                 inactiveProps={{
                   className:
-                    'pill h-8 px-3.5 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary',
+                    "pill h-8 px-3.5 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary",
                 }}
               >
                 Analysis
@@ -203,11 +213,11 @@ export function Header() {
               <Link
                 to="/leaderboard"
                 activeProps={{
-                  className: 'pill pill-ink h-8 px-3.5 text-xs font-medium shadow-xs',
+                  className: "pill pill-ink h-8 px-3.5 text-xs font-medium shadow-xs",
                 }}
                 inactiveProps={{
                   className:
-                    'pill h-8 px-3.5 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary',
+                    "pill h-8 px-3.5 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary",
                 }}
               >
                 Leaderboard
@@ -216,13 +226,13 @@ export function Header() {
                 to="/settings"
                 activeProps={{
                   className: isLanding
-                    ? 'h-8 px-3 rounded-md bg-[#21262D] border border-[#30363D] text-xs font-semibold text-white shadow-xs inline-flex items-center gap-1.5'
-                    : 'pill pill-ink h-8 px-3.5 text-xs font-medium shadow-xs inline-flex items-center gap-1.5',
+                    ? "h-8 px-3 rounded-md bg-[#21262D] border border-[#30363D] text-xs font-semibold text-white shadow-xs inline-flex items-center gap-1.5"
+                    : "pill pill-ink h-8 px-3.5 text-xs font-medium shadow-xs inline-flex items-center gap-1.5",
                 }}
                 inactiveProps={{
                   className: isLanding
-                    ? 'h-8 px-3 rounded-md text-xs text-[#8B949E] hover:text-white hover:bg-[#161B22] transition-colors inline-flex items-center gap-1.5'
-                    : 'pill h-8 px-3.5 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary inline-flex items-center gap-1.5',
+                    ? "h-8 px-3 rounded-md text-xs text-[#8B949E] hover:text-white hover:bg-[#161B22] transition-colors inline-flex items-center gap-1.5"
+                    : "pill h-8 px-3.5 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary inline-flex items-center gap-1.5",
                 }}
               >
                 <SettingsIcon className="size-3.5" />
@@ -238,11 +248,11 @@ export function Header() {
               to="/portfolio"
               className="hidden md:inline-flex"
               activeProps={{
-                className: 'pill pill-ink h-8 px-3.5 text-xs font-medium shadow-xs',
+                className: "pill pill-ink h-8 px-3.5 text-xs font-medium shadow-xs",
               }}
               inactiveProps={{
                 className:
-                  'pill h-8 px-3.5 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary',
+                  "pill h-8 px-3.5 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary",
               }}
             >
               Portfolio
@@ -255,8 +265,8 @@ export function Header() {
                 onClick={() => setCandleOpen((v) => !v)}
                 className={`pill h-8 px-3 text-xs font-semibold gap-1.5 transition-all cursor-pointer ${
                   isCandleActive
-                    ? 'pill-ink shadow-xs'
-                    : 'bg-secondary/70 hover:bg-secondary text-foreground border border-border/80'
+                    ? "pill-ink shadow-xs"
+                    : "bg-secondary/70 hover:bg-secondary text-foreground border border-border/80"
                 }`}
                 aria-expanded={candleOpen}
                 aria-haspopup="menu"
@@ -266,7 +276,7 @@ export function Header() {
                 </span>
                 <ChevronDown
                   className={`size-3 text-muted-foreground transition-transform duration-200 ${
-                    candleOpen ? 'rotate-180' : ''
+                    candleOpen ? "rotate-180" : ""
                   }`}
                 />
               </button>
@@ -287,7 +297,9 @@ export function Header() {
                     </div>
                     <div>
                       <p className="text-xs font-semibold text-foreground">Platform Analysis</p>
-                      <p className="text-[10px] text-muted-foreground">Protocol supply &amp; activity</p>
+                      <p className="text-[10px] text-muted-foreground">
+                        Protocol supply &amp; activity
+                      </p>
                     </div>
                   </Link>
 
@@ -302,7 +314,9 @@ export function Header() {
                     </div>
                     <div>
                       <p className="text-xs font-semibold text-foreground">Staking</p>
-                      <p className="text-[10px] text-muted-foreground">USDC revenue distributions</p>
+                      <p className="text-[10px] text-muted-foreground">
+                        USDC revenue distributions
+                      </p>
                     </div>
                   </Link>
                 </div>
@@ -312,16 +326,12 @@ export function Header() {
             {/* Available Balance */}
             <div className="hidden lg:block text-right pr-1">
               <p className="data-label text-[9px] flex items-center justify-end gap-1">
-                <span>{t.mode === 'perps' ? 'Real Withdrawable' : 'Paper Available'}</span>
-                {t.mode === 'perps' && (
-                  <span className="font-mono text-[#06964A] font-bold">
-                    · LIVE
-                  </span>
+                <span>{t.mode === "perps" ? "Real Withdrawable" : "Paper Available"}</span>
+                {t.mode === "perps" && (
+                  <span className="font-mono text-[#06964A] font-bold">· LIVE</span>
                 )}
-                {t.mode === 'paper1000x' && (
-                  <span className="font-mono text-[#D97706] font-bold">
-                    · 1000x
-                  </span>
+                {t.mode === "paper1000x" && (
+                  <span className="font-mono text-[#D97706] font-bold">· 1000x</span>
                 )}
               </p>
               <p className="tabular text-xs font-semibold text-foreground">
@@ -330,7 +340,7 @@ export function Header() {
             </div>
 
             {/* Deposit or Reset Button */}
-            {t.mode === 'paper1000x' ? (
+            {t.mode === "paper1000x" ? (
               <Button
                 variant="outline"
                 size="sm"
@@ -350,7 +360,7 @@ export function Header() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setTransfer('Deposit')}
+                onClick={() => setTransfer("Deposit")}
                 className="pill pill-ink h-8 px-3 text-xs gap-1 border-0 cursor-pointer shadow-xs"
               >
                 <Plus className="size-3" />
@@ -362,7 +372,7 @@ export function Header() {
             <ConnectModal />
 
             {/* Settings Gear Icon Link / Modal Trigger */}
-            {pathname === '/settings' ? (
+            {pathname === "/settings" ? (
               <Link
                 to="/settings"
                 title="Settings Page"
@@ -379,8 +389,8 @@ export function Header() {
                 aria-label="Settings"
                 className={`flex size-8 items-center justify-center rounded-full transition-all cursor-pointer shrink-0 ${
                   isLanding
-                    ? 'border border-[#30363D] bg-[#161B22] text-[#8B949E] hover:text-white hover:bg-[#21262D]'
-                    : 'border border-border/80 bg-secondary/70 text-muted-foreground hover:text-foreground hover:bg-secondary'
+                    ? "border border-[#30363D] bg-[#161B22] text-[#8B949E] hover:text-white hover:bg-[#21262D]"
+                    : "border border-border/80 bg-secondary/70 text-muted-foreground hover:text-foreground hover:bg-secondary"
                 }`}
               >
                 <SettingsIcon className="size-3.5" />
@@ -393,16 +403,16 @@ export function Header() {
         <div
           className={`flex md:hidden items-center gap-1 overflow-x-auto border-t px-3 py-1.5 no-scrollbar ${
             isLanding
-              ? 'border-[#21262D] bg-[#0D1117] text-xs font-mono'
-              : 'border-border bg-[#F6F6F4]/60'
+              ? "border-[#21262D] bg-[#0D1117] text-xs font-mono"
+              : "border-border bg-[#F6F6F4]/60"
           }`}
         >
           <Link
             to="/trade"
             className={
               isLanding
-                ? 'h-7 px-2.5 rounded-md bg-[#00D964]/10 border border-[#00D964]/30 text-[11px] font-bold text-[#00D964] flex items-center gap-1 shrink-0'
-                : 'pill pill-ink h-7 px-2.5 text-[11px] font-semibold shrink-0'
+                ? "h-7 px-2.5 rounded-md bg-[#00D964]/10 border border-[#00D964]/30 text-[11px] font-bold text-[#00D964] flex items-center gap-1 shrink-0"
+                : "pill pill-ink h-7 px-2.5 text-[11px] font-semibold shrink-0"
             }
           >
             <span>Trade (Live)</span>
@@ -412,8 +422,8 @@ export function Header() {
             href="/main#roadmap"
             className={
               isLanding
-                ? 'h-7 px-2.5 rounded-md text-[11px] text-[#8B949E] hover:text-white hover:bg-[#161B22] flex items-center shrink-0'
-                : 'pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary shrink-0'
+                ? "h-7 px-2.5 rounded-md text-[11px] text-[#8B949E] hover:text-white hover:bg-[#161B22] flex items-center shrink-0"
+                : "pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary shrink-0"
             }
           >
             Roadmap
@@ -422,32 +432,30 @@ export function Header() {
             href="/docs"
             className={
               isLanding
-                ? 'h-7 px-2.5 rounded-md text-[11px] text-[#8B949E] hover:text-white hover:bg-[#161B22] flex items-center shrink-0'
-                : 'pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary shrink-0'
+                ? "h-7 px-2.5 rounded-md text-[11px] text-[#8B949E] hover:text-white hover:bg-[#161B22] flex items-center shrink-0"
+                : "pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary shrink-0"
             }
           >
             Docs
           </a>
           <Link
             to="/goal"
-            activeProps={{
-              className: 'pill pill-ink h-7 px-2.5 text-[11px] font-medium shrink-0',
-            }}
-            inactiveProps={{
-              className:
-                'pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary shrink-0',
-            }}
+            className={
+              isGoalOrBoost
+                ? "pill pill-ink h-7 px-2.5 text-[11px] font-medium shrink-0"
+                : "pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary shrink-0"
+            }
           >
-            Goal
+            Goal &amp; Boost
           </Link>
           <Link
             to="/analytics"
             activeProps={{
-              className: 'pill pill-ink h-7 px-2.5 text-[11px] font-medium shrink-0',
+              className: "pill pill-ink h-7 px-2.5 text-[11px] font-medium shrink-0",
             }}
             inactiveProps={{
               className:
-                'pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary shrink-0',
+                "pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary shrink-0",
             }}
           >
             Analysis
@@ -455,11 +463,11 @@ export function Header() {
           <Link
             to="/leaderboard"
             activeProps={{
-              className: 'pill pill-ink h-7 px-2.5 text-[11px] font-medium shrink-0',
+              className: "pill pill-ink h-7 px-2.5 text-[11px] font-medium shrink-0",
             }}
             inactiveProps={{
               className:
-                'pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary shrink-0',
+                "pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary shrink-0",
             }}
           >
             Leaderboard
@@ -467,11 +475,11 @@ export function Header() {
           <Link
             to="/portfolio"
             activeProps={{
-              className: 'pill pill-ink h-7 px-2.5 text-[11px] font-medium shrink-0',
+              className: "pill pill-ink h-7 px-2.5 text-[11px] font-medium shrink-0",
             }}
             inactiveProps={{
               className:
-                'pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary shrink-0',
+                "pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary shrink-0",
             }}
           >
             Portfolio
@@ -479,11 +487,11 @@ export function Header() {
           <Link
             to="/candle"
             activeProps={{
-              className: 'pill pill-ink h-7 px-2.5 text-[11px] font-medium shrink-0',
+              className: "pill pill-ink h-7 px-2.5 text-[11px] font-medium shrink-0",
             }}
             inactiveProps={{
               className:
-                'pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary shrink-0',
+                "pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary shrink-0",
             }}
           >
             CANDLE
@@ -491,11 +499,11 @@ export function Header() {
           <Link
             to="/staking"
             activeProps={{
-              className: 'pill pill-ink h-7 px-2.5 text-[11px] font-medium shrink-0',
+              className: "pill pill-ink h-7 px-2.5 text-[11px] font-medium shrink-0",
             }}
             inactiveProps={{
               className:
-                'pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary shrink-0',
+                "pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary shrink-0",
             }}
           >
             Staking
@@ -504,13 +512,13 @@ export function Header() {
             to="/settings"
             activeProps={{
               className: isLanding
-                ? 'h-7 px-2.5 rounded-md bg-[#21262D] border border-[#30363D] text-[11px] font-bold text-white flex items-center gap-1 shrink-0'
-                : 'pill pill-ink h-7 px-2.5 text-[11px] font-medium shrink-0',
+                ? "h-7 px-2.5 rounded-md bg-[#21262D] border border-[#30363D] text-[11px] font-bold text-white flex items-center gap-1 shrink-0"
+                : "pill pill-ink h-7 px-2.5 text-[11px] font-medium shrink-0",
             }}
             inactiveProps={{
               className: isLanding
-                ? 'h-7 px-2.5 rounded-md text-[11px] text-[#8B949E] hover:text-white hover:bg-[#161B22] flex items-center gap-1 shrink-0'
-                : 'pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary shrink-0',
+                ? "h-7 px-2.5 rounded-md text-[11px] text-[#8B949E] hover:text-white hover:bg-[#161B22] flex items-center gap-1 shrink-0"
+                : "pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary shrink-0",
             }}
           >
             <SettingsIcon className="size-3" />

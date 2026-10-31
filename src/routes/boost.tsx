@@ -4,19 +4,21 @@ import {
   Target,
   Share2,
   TrendingUp,
+  TrendingDown,
   CheckCircle2,
-  Sparkles,
   ShieldCheck,
   ArrowUpRight,
-  Layers,
+  Plus,
+  Minus,
 } from "lucide-react";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { Slider } from "@/components/ui/slider";
 import { useTrading } from "@/components/godcandle/TradingProvider";
 import { ShareModal } from "@/components/godcandle/ShareModal";
 import { ChartCanvas } from "@/components/godcandle/ChartCanvas";
-import { fmtUsd, fmtSigned, type ClosedTrade } from "@/lib/engine";
+import type { ClosedTrade } from "@/lib/engine";
 
 export const Route = createFileRoute("/boost")({
   head: () => ({
@@ -29,7 +31,7 @@ export const Route = createFileRoute("/boost")({
       },
       { property: "og:title", content: "godcandle — Convexity Boost Multiplier" },
       {
-        property: "og:description",
+        name: "og:description",
         content:
           "Model non-linear payout boost curves with up to 100× asymmetric multipliers directly on HyperEVM.",
       },
@@ -39,6 +41,7 @@ export const Route = createFileRoute("/boost")({
 });
 
 type Underlying = "BTC" | "ETH" | "SOL" | "HYPE";
+type Direction = "LONG" | "SHORT";
 
 const DEFAULT_SPOTS: Record<Underlying, number> = {
   BTC: 68420.5,
@@ -50,6 +53,7 @@ const DEFAULT_SPOTS: Record<Underlying, number> = {
 export function BoostPage() {
   const t = useTrading();
   const [underlying, setUnderlying] = useState<Underlying>("BTC");
+  const [direction, setDirection] = useState<Direction>("LONG");
   const [amount, setAmount] = useState(10_000);
   const [days, setDays] = useState(30);
   const [boostMultiplier, setBoostMultiplier] = useState(10);
@@ -57,40 +61,79 @@ export function BoostPage() {
   const [boostLocked, setBoostLocked] = useState(false);
 
   const spot = t?.feeds?.[underlying]?.price ?? DEFAULT_SPOTS[underlying];
-  const [targetPrice, setTargetPrice] = useState(Math.round(spot * 1.15));
+
+  // Target price state
+  const [targetPrice, setTargetPrice] = useState(() => Math.round(spot * 1.15));
+
+  // Only re-anchor target price when underlying asset or direction explicitly changes
+  const prevUnderlyingRef = useRef(underlying);
+  const prevDirectionRef = useRef(direction);
 
   useEffect(() => {
-    setTargetPrice(Math.round(spot * 1.15));
-  }, [underlying, spot]);
+    const underlyingChanged = prevUnderlyingRef.current !== underlying;
+    const directionChanged = prevDirectionRef.current !== direction;
 
-  const targetMove = spot > 0 ? ((targetPrice - spot) / spot) * 100 : 0;
-  const isUp = targetPrice >= spot;
-  const rawRoiPct = Math.max(-100, targetMove * boostMultiplier);
+    if (underlyingChanged || directionChanged) {
+      prevUnderlyingRef.current = underlying;
+      prevDirectionRef.current = direction;
+      const factor = direction === "LONG" ? 1.15 : 0.85;
+      setTargetPrice(Math.round(spot * factor));
+    }
+  }, [underlying, direction, spot]);
+
+  // Pricing & ROI calculations
+  const movePct = useMemo(() => {
+    if (spot <= 0) return 0;
+    if (direction === "LONG") {
+      return ((targetPrice - spot) / spot) * 100;
+    } else {
+      return ((spot - targetPrice) / spot) * 100;
+    }
+  }, [spot, targetPrice, direction]);
+
+  const rawRoiPct = Math.max(-100, movePct * boostMultiplier);
   const payout = Math.round(amount * (rawRoiPct / 100));
 
-  const minTarget = Math.round(spot * 0.7);
-  const maxTarget = Math.round(spot * 1.6);
+  // Slider bounds
+  const minTarget = useMemo(() => {
+    if (direction === "LONG") {
+      return Math.round(spot * 1.01);
+    } else {
+      return Math.max(1, Math.round(spot * 0.3));
+    }
+  }, [spot, direction]);
 
+  const maxTarget = useMemo(() => {
+    if (direction === "LONG") {
+      return Math.round(spot * 2.0);
+    } else {
+      return Math.round(spot * 0.99);
+    }
+  }, [spot, direction]);
+
+  const sliderStep = useMemo(() => {
+    return Math.max(1, Math.round(spot * 0.005));
+  }, [spot]);
+
+  // Modeled non-linear trajectory curve for ChartCanvas
   const trajectoryValues = useMemo(() => {
     const points = 30;
     const vals: number[] = [];
     for (let i = 0; i <= points; i++) {
       const progress = i / points;
-      const curPrice = spot + (targetPrice - spot) * Math.pow(progress, 1.4);
-      const movePct = spot > 0 ? ((curPrice - spot) / spot) * 100 : 0;
-      const simRoi = movePct * boostMultiplier;
+      const simRoi = rawRoiPct * Math.pow(progress, 1.4);
       vals.push(amount * (1 + simRoi / 100));
     }
     return vals;
-  }, [spot, targetPrice, amount, boostMultiplier]);
+  }, [amount, rawRoiPct]);
 
   const handleLockInBoost = () => {
     if (t?.open) {
-      t.open(underlying, isUp ? "LONG" : "SHORT", Math.min(amount, 500), Math.min(boostMultiplier * 10, 50));
+      t.open(underlying, direction, Math.min(amount, 500), Math.min(boostMultiplier * 10, 50));
     }
     setBoostLocked(true);
     toast.success(`${boostMultiplier}× Convexity Boost Active!`, {
-      description: `${underlying} ${boostMultiplier}× Boost · Target $${targetPrice.toLocaleString()} (${targetMove >= 0 ? "+" : ""}${targetMove.toFixed(1)}%). Modeled Payout: $${(amount + payout).toLocaleString()}`,
+      description: `${underlying} ${direction} ${boostMultiplier}× Boost · Target $${targetPrice.toLocaleString()} (${movePct >= 0 ? "+" : ""}${movePct.toFixed(1)}%). Modeled Payout: $${(amount + payout).toLocaleString()}`,
     });
     setTimeout(() => setBoostLocked(false), 2400);
   };
@@ -99,7 +142,7 @@ export function BoostPage() {
     () => ({
       id: `boost-${Date.now()}`,
       market: underlying,
-      direction: isUp ? "LONG" : "SHORT",
+      direction: direction,
       stake: amount,
       leverage: Math.round(boostMultiplier * 5),
       entryPrice: spot,
@@ -110,7 +153,7 @@ export function BoostPage() {
       fees: amount * 0.001,
       reason: "take_profit",
     }),
-    [underlying, isUp, amount, boostMultiplier, spot, targetPrice, days, payout]
+    [underlying, direction, amount, boostMultiplier, spot, targetPrice, days, payout],
   );
 
   return (
@@ -133,7 +176,8 @@ export function BoostPage() {
               </span>
             </div>
             <p className="text-muted-foreground text-xs font-sans">
-              Non-linear payout boost curves with up to 100× asymmetric multipliers directly on HyperEVM.
+              Non-linear payout boost curves with up to 100× asymmetric multipliers directly on
+              HyperEVM.
             </p>
           </div>
 
@@ -196,6 +240,39 @@ export function BoostPage() {
             </span>
           </div>
 
+          {/* Direction Selector (Long vs Short) */}
+          <div className="space-y-1.5">
+            <span className="text-[10px] text-muted-foreground uppercase font-semibold block">
+              Market Direction
+            </span>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => setDirection("LONG")}
+                className={`pill h-8 text-xs font-semibold transition-all cursor-pointer ${
+                  direction === "LONG"
+                    ? "btn-long-ink font-bold shadow-xs"
+                    : "border border-border bg-[#F6F6F4] text-muted-foreground hover:text-foreground hover:bg-white"
+                }`}
+              >
+                <TrendingUp className="size-3.5 text-[#06964A]" />
+                Long ↗ (Upside)
+              </button>
+              <button
+                type="button"
+                onClick={() => setDirection("SHORT")}
+                className={`pill h-8 text-xs font-semibold transition-all cursor-pointer ${
+                  direction === "SHORT"
+                    ? "btn-short-ink font-bold shadow-xs"
+                    : "border border-border bg-[#F6F6F4] text-muted-foreground hover:text-foreground hover:bg-white"
+                }`}
+              >
+                <TrendingDown className="size-3.5 text-[#FF3B30]" />
+                Short ↘ (Downside)
+              </button>
+            </div>
+          </div>
+
           {/* Current Spot Reference */}
           <div className="p-3 rounded-2xl bg-[#F6F6F4] border border-border flex justify-between items-center">
             <div>
@@ -203,7 +280,11 @@ export function BoostPage() {
                 {underlying} Spot Reference
               </span>
               <span className="text-sm font-bold tabular text-foreground font-mono">
-                ${spot.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                $
+                {spot.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
               </span>
             </div>
             <span className="text-[10px] text-[#06964A] font-semibold flex items-center gap-1">
@@ -220,7 +301,7 @@ export function BoostPage() {
                 {boostMultiplier}× Factor
               </span>
             </div>
-            <div className="grid grid-cols-6 gap-1">
+            <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5">
               {[2, 5, 10, 25, 50, 100].map((m) => (
                 <button
                   key={m}
@@ -238,38 +319,55 @@ export function BoostPage() {
             </div>
           </div>
 
-          {/* Target Price */}
+          {/* Target Price with Radix Slider & Steppers */}
           <div className="space-y-2 pt-2 border-t border-border">
             <div className="flex justify-between items-center text-[11px]">
               <span className="text-muted-foreground font-semibold">TARGET PRICE</span>
               <div className="flex items-center gap-1.5 font-mono">
+                <div className="flex items-center gap-1 mr-1">
+                  <button
+                    type="button"
+                    onClick={() => setTargetPrice((p) => Math.max(minTarget, p - sliderStep))}
+                    className="size-5 rounded border border-border bg-white flex items-center justify-center hover:bg-secondary cursor-pointer"
+                    title="Decrease target price"
+                  >
+                    <Minus className="size-2.5 text-muted-foreground" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setTargetPrice((p) => Math.min(maxTarget, p + sliderStep))}
+                    className="size-5 rounded border border-border bg-white flex items-center justify-center hover:bg-secondary cursor-pointer"
+                    title="Increase target price"
+                  >
+                    <Plus className="size-2.5 text-muted-foreground" />
+                  </button>
+                </div>
                 <span className="text-foreground font-bold text-sm tabular">
                   ${targetPrice.toLocaleString()}
                 </span>
                 <span
                   className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
-                    targetMove >= 0
-                      ? "bg-[#E3F8EC] text-[#06964A]"
-                      : "bg-[#FFECEA] text-[#FF3B30]"
+                    movePct >= 0 ? "bg-[#E3F8EC] text-[#06964A]" : "bg-[#FFECEA] text-[#FF3B30]"
                   }`}
                 >
-                  {targetMove >= 0 ? "+" : ""}
-                  {targetMove.toFixed(1)}%
+                  {movePct >= 0 ? "+" : ""}
+                  {movePct.toFixed(1)}%
                 </span>
               </div>
             </div>
 
-            <div className="pt-1">
-              <input
-                type="range"
+            <div className="py-2">
+              <Slider
+                value={[targetPrice]}
                 min={minTarget}
                 max={maxTarget}
-                step={Math.max(1, Math.round(spot * 0.005))}
-                value={targetPrice}
-                onChange={(e) => setTargetPrice(Number(e.target.value))}
-                className="w-full accent-foreground bg-[#E6E6E3] h-2 appearance-none cursor-pointer rounded-full"
+                step={sliderStep}
+                onValueChange={([val]) => {
+                  if (typeof val === "number") setTargetPrice(val);
+                }}
+                className="py-1 cursor-grab active:cursor-grabbing"
               />
-              <div className="flex justify-between text-[10px] text-muted-foreground font-mono mt-1">
+              <div className="flex justify-between text-[10px] text-muted-foreground font-mono mt-1.5">
                 <span>${minTarget.toLocaleString()}</span>
                 <span>Spot: ${Math.round(spot).toLocaleString()}</span>
                 <span>${maxTarget.toLocaleString()}</span>
@@ -280,11 +378,14 @@ export function BoostPage() {
           {/* Quick Target Move Chips */}
           <div className="space-y-1.5 pt-2 border-t border-border">
             <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold block">
-              Quick Target Expansion
+              Quick Target Expansion ({direction})
             </span>
             <div className="grid grid-cols-4 gap-1.5">
               {[5, 10, 20, 40].map((pct) => {
-                const target = Math.round(spot * (1 + pct / 100));
+                const target =
+                  direction === "LONG"
+                    ? Math.round(spot * (1 + pct / 100))
+                    : Math.round(spot * (1 - pct / 100));
                 return (
                   <button
                     key={pct}
@@ -292,7 +393,13 @@ export function BoostPage() {
                     onClick={() => setTargetPrice(target)}
                     className="p-2 rounded-xl border border-border bg-[#F6F6F4] text-center hover:bg-white hover:border-foreground/30 transition-all cursor-pointer"
                   >
-                    <div className="text-[10px] font-bold text-[#06964A]">+{pct}%</div>
+                    <div
+                      className={`text-[10px] font-bold ${
+                        direction === "LONG" ? "text-[#06964A]" : "text-[#FF3B30]"
+                      }`}
+                    >
+                      {direction === "LONG" ? `+${pct}%` : `-${pct}%`}
+                    </div>
                     <div className="text-[9px] font-mono text-muted-foreground mt-0.5">
                       ${target.toLocaleString()}
                     </div>
@@ -442,9 +549,23 @@ export function BoostPage() {
 
                 <div className="space-y-2 text-[11px] font-mono">
                   <div className="flex justify-between py-1.5 border-b border-border">
+                    <span className="text-muted-foreground font-sans">Direction</span>
+                    <span
+                      className={`font-bold tabular ${
+                        direction === "LONG" ? "text-[#06964A]" : "text-[#FF3B30]"
+                      }`}
+                    >
+                      {direction === "LONG" ? "LONG ↗ (Upside)" : "SHORT ↘ (Downside)"}
+                    </span>
+                  </div>
+                  <div className="flex justify-between py-1.5 border-b border-border">
                     <span className="text-muted-foreground font-sans">Spot Reference</span>
                     <span className="font-bold tabular text-foreground">
-                      ${spot.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      $
+                      {spot.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
                     </span>
                   </div>
                   <div className="flex justify-between py-1.5 border-b border-border">
@@ -454,14 +575,14 @@ export function BoostPage() {
                     </span>
                   </div>
                   <div className="flex justify-between py-1.5 border-b border-border">
-                    <span className="text-muted-foreground font-sans">Underlying Move</span>
+                    <span className="text-muted-foreground font-sans">Price Distance</span>
                     <span
                       className={`font-bold tabular ${
-                        targetMove >= 0 ? "text-[#06964A]" : "text-[#FF3B30]"
+                        movePct >= 0 ? "text-[#06964A]" : "text-[#FF3B30]"
                       }`}
                     >
-                      {targetMove >= 0 ? "+" : ""}
-                      {targetMove.toFixed(2)}%
+                      {movePct >= 0 ? "+" : ""}
+                      {movePct.toFixed(2)}%
                     </span>
                   </div>
                   <div className="flex justify-between py-1.5 border-b border-border">
@@ -471,8 +592,7 @@ export function BoostPage() {
                         payout >= 0 ? "text-[#06964A]" : "text-[#FF3B30]"
                       }`}
                     >
-                      {payout >= 0 ? "+" : ""}
-                      ${payout.toLocaleString()}
+                      {payout >= 0 ? "+" : ""}${payout.toLocaleString()}
                     </span>
                   </div>
                   <div className="flex justify-between py-1.5">
@@ -494,7 +614,7 @@ export function BoostPage() {
                 Non-Linear Payoff Multiplier Curve
               </span>
               <span className="text-[10px] text-muted-foreground font-mono">
-                {boostMultiplier}× Convex Curve
+                {boostMultiplier}× Convex Curve ({direction})
               </span>
             </div>
             <div className="pt-1">
@@ -505,11 +625,12 @@ export function BoostPage() {
           {/* Convex Multiplier Ladder */}
           <div className="relative overflow-hidden rounded-3xl border border-border bg-white p-5 shadow-xs space-y-3">
             <h3 className="font-bold text-foreground text-xs tracking-wider uppercase">
-              Payout at Alternate Boost Multipliers (+{targetMove.toFixed(1)}% Move)
+              Payout at Alternate Boost Multipliers ({direction} {movePct >= 0 ? "+" : ""}
+              {movePct.toFixed(1)}% Move)
             </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               {[2, 5, 10, 25].map((m) => {
-                const r = targetMove * m;
+                const r = movePct * m;
                 const p = Math.round(amount * (r / 100));
                 return (
                   <div
