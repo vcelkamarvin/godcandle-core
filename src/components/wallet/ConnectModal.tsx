@@ -467,11 +467,6 @@ export function ConnectModal({ isDark: isDarkProp }: { isDark?: boolean } = {}) 
                   className="relative hidden sm:block sm:w-1/2 h-full overflow-hidden select-none bg-[#0D1117]"
                   aria-label="Claude Monet, 1885 · The Cliffs at Étretat"
                   title="Claude Monet, 1885 · The Cliffs at Étretat"
-                  style={{
-                    backgroundImage: "url('/images/monet-etretat.jpg')",
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                  }}
                 >
                   <img
                     src="/images/monet-etretat.jpg"

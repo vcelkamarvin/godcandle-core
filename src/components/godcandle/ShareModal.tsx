@@ -537,15 +537,18 @@ export function ShareModal({
     ctx.font = "600 14px -apple-system, BlinkMacSystemFont, 'Inter', monospace";
     ctx.fillText("godcandle.trade", padX, footY);
 
-    ctx.textAlign = "right";
-    ctx.fillText(`Ref: ${referralCode}`, splitX - padX, footY);
-
     // Optional scannable QR Matrix
     try {
+      const qrSize = 36;
       const matrix = encodeQr(referralUrl);
-      drawQrMatrixToCanvas(ctx, matrix, splitX - padX - 140, footY - 75, 45, "#FFFFFF", "#0A0A0A");
+      const qrX = splitX - padX - qrSize;
+      const qrY = footY - qrSize / 2;
+      drawQrMatrixToCanvas(ctx, matrix, qrX, qrY, qrSize, "#FFFFFF", "#0D1117");
+      ctx.textAlign = "right";
+      ctx.fillText(`Ref: ${referralCode}`, qrX - 12, footY);
     } catch {
-      // Fallback
+      ctx.textAlign = "right";
+      ctx.fillText(`Ref: ${referralCode}`, splitX - padX, footY);
     }
 
     ctx.restore();
@@ -570,7 +573,9 @@ export function ShareModal({
   // Actions
   const handleCopyText = useCallback(() => {
     const text = `godcandle · ${symbolFormatted} ${sideLabel} ${rawLeverage}×\n${pnlHeadingLabel}: ${pnlPctFormatted} (${dollarFormatted})\nEntry: ${statCols[0]?.value} · Exit: ${statCols[1]?.value}\nTrade on ${referralUrl}`;
-    navigator.clipboard.writeText(text);
+    if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(text).catch(() => {});
+    }
     setCopied("text");
     setTimeout(() => setCopied(null), 2000);
     toast.success("Trade summary copied to clipboard!");
@@ -673,7 +678,7 @@ export function ShareModal({
         <span className="sr-only">1600 × 1000 px</span>
 
         {/* Split Card with delicate rainbow gradient border */}
-        <div className="relative w-full aspect-[16/10] sm:aspect-auto sm:h-[480px] md:h-[500px] rounded-[28px] p-[1.5px] bg-gradient-to-tr from-[#CDC3F0] via-[#FFDAC8] to-[#A0D4CA] shadow-[0_24px_80px_rgba(0,0,0,0.55)] flex overflow-hidden">
+        <div className="relative w-full min-h-[460px] sm:min-h-0 aspect-[16/10] sm:aspect-auto sm:h-[480px] md:h-[500px] rounded-[28px] p-[1.5px] bg-gradient-to-tr from-[#CDC3F0] via-[#FFDAC8] to-[#A0D4CA] shadow-[0_24px_80px_rgba(0,0,0,0.55)] flex overflow-hidden">
           <div className="w-full h-full bg-[#0D1117] rounded-[26.5px] flex flex-col sm:flex-row overflow-hidden relative">
             {/* Close Button */}
             <button
@@ -699,7 +704,7 @@ export function ShareModal({
                       HyperEVM Live
                     </span>
                   </div>
-                  <span className="text-[9px] uppercase tracking-[1.5px] font-mono text-[#8B949E]">
+                  <span className="hidden md:inline-block text-[9px] uppercase tracking-[1.5px] font-mono text-[#8B949E]">
                     TRADE SMARTER TOGETHER · ZERO FEES
                   </span>
                 </div>
