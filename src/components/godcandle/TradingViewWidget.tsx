@@ -2,11 +2,12 @@ import React, { useEffect, useRef, useState } from 'react';
 import type { MarketSymbol } from '@/config/markets';
 
 // Map godcandle markets to TradingView symbols
-const TRADINGVIEW_SYMBOLS: Record<MarketSymbol, string> = {
+const TRADINGVIEW_SYMBOLS: Record<string, string> = {
   BTC: 'BINANCE:BTCUSDT',
   ETH: 'BINANCE:ETHUSDT',
   SOL: 'BINANCE:SOLUSDT',
   HYPE: 'BYBIT:HYPEUSDT',
+  DOGE: 'BINANCE:DOGEUSDT',
   AVAX: 'BINANCE:AVAXUSDT',
   BNB: 'BINANCE:BNBUSDT',
   SPX: 'FOREXCOM:SPXUSD',

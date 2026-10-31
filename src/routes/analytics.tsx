@@ -50,7 +50,7 @@ function AnalyticsPage() {
   const [heatmapPeriod, setHeatmapPeriod] = useState("1d");
 
   const t = useTrading();
-  const livePrice = t.feeds[selectedMarket]?.price ?? 68400;
+  const livePrice = (t.feeds as Record<string, any>)[selectedMarket]?.price ?? 68400;
 
   // Real data integration from Hyperliquid feeds
   const {
@@ -65,7 +65,7 @@ function AnalyticsPage() {
     refresh,
   } = useHyperliquidAnalytics();
 
-  const currentMarket = markets[selectedMarket] ?? markets.BTC;
+  const currentMarket = (markets as Record<string, any>)[selectedMarket] ?? markets.BTC;
 
   return (
     <main className="min-h-screen bg-[#F6F6F4] pb-16">

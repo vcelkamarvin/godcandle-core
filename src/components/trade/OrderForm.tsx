@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { computeBustDistance } from '@/lib/hyperliquid';
+import { computeClampedPrice, computeBustDistance } from '@/lib/hyperliquid';
 import { ArrowUp, ArrowDown, Shield, Zap, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
 

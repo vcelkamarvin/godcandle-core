@@ -32,7 +32,7 @@ describe("MarketBar & Market Picker Architecture", () => {
       DOGE: { price: 0.14, open24: 0.15 }, // -6.67%
     };
 
-    const change = (s: string) => (mockFeeds[s].price / mockFeeds[s].open24 - 1) * 100;
+    const change = (s: string) => (mockFeeds[s]!.price / mockFeeds[s]!.open24 - 1) * 100;
 
     // Filter 1000x
     const thousandX = MARKETS.filter((m) => m.maxLeverage === 1000);

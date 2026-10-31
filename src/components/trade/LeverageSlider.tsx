@@ -26,7 +26,7 @@ export function LeverageSlider({
       </div>
 
       {/* Preset Chips */}
-      <div className="grid grid-cols-6 gap-1.5">
+      <div className={`grid gap-1.5 ${availablePresets.length === 5 ? 'grid-cols-5' : 'grid-cols-6'}`}>
         {availablePresets.map((preset) => (
           <button
             key={preset}

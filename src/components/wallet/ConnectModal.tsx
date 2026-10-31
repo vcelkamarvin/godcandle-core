@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useAccount, useDisconnect, useConnect, useBalance } from 'wagmi';
+import { formatUnits } from 'viem';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
 import {
   X,
@@ -418,7 +419,7 @@ export function ConnectModal() {
           </span>
           {hypeBalance && (
             <span className="tabular text-[11px] font-semibold text-foreground hidden sm:inline">
-              {parseFloat(hypeBalance.formatted).toFixed(3)} HYPE
+              {parseFloat(formatUnits(hypeBalance.value, hypeBalance.decimals)).toFixed(3)} HYPE
             </span>
           )}
           <span className="rounded bg-white px-1.5 py-0.5 text-[9px] font-mono text-muted-foreground border border-border/60">
@@ -827,7 +828,7 @@ export function ConnectModal() {
                       Native Balance
                     </span>
                     <span className="font-semibold text-foreground tabular">
-                      {hypeBalance ? `${parseFloat(hypeBalance.formatted).toFixed(4)} HYPE` : '0.0000 HYPE'}
+                      {hypeBalance ? `${parseFloat(formatUnits(hypeBalance.value, hypeBalance.decimals)).toFixed(4)} HYPE` : '0.0000 HYPE'}
                     </span>
                   </div>
                   <div className="p-3 bg-secondary/50 border border-border/60 rounded-xl">

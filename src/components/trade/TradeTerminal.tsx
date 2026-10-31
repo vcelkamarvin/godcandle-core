@@ -46,8 +46,8 @@ export function TradeTerminal() {
 
   const t = useTrading();
   const rawSymbol = selectedMarket.symbol.replace('-USD', '') as any;
-  const currentPrice = t?.feeds?.[rawSymbol]?.price || selectedMarket.defaultPrice;
-  const open24h = t?.feeds?.[rawSymbol]?.open24 || currentPrice * 0.985;
+  const currentPrice = (t?.feeds as Record<string, any>)?.[rawSymbol]?.price || selectedMarket.defaultPrice;
+  const open24h = (t?.feeds as Record<string, any>)?.[rawSymbol]?.open24 || currentPrice * 0.985;
   const currentPosition = t?.positions?.find((p) => p.market === rawSymbol) ?? null;
   const posPnl = currentPosition ? pnlOf(currentPosition, currentPrice) : 0;
   const pnlLabel = currentPosition ? fmtSigned(posPnl) : '';

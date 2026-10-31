@@ -166,8 +166,12 @@ export function ChartCanvas({
           if (i === 0) ctx.moveTo(p.x, p.y);
           else ctx.lineTo(p.x, p.y);
         });
-        ctx.lineTo(points[points.length - 1].x, plotH);
-        ctx.lineTo(points[0].x, plotH);
+        const firstPt = points[0];
+        const lastPt = points[points.length - 1];
+        if (firstPt && lastPt) {
+          ctx.lineTo(lastPt.x, plotH);
+          ctx.lineTo(firstPt.x, plotH);
+        }
         ctx.closePath();
 
         const grad = ctx.createLinearGradient(0, 0, 0, plotH);
@@ -210,7 +214,8 @@ export function ChartCanvas({
       const times = ["-24h", "-18h", "-12h", "-6h", "-1h", "NOW"];
       for (let i = 0; i < times.length; i++) {
         const x = pad + (i / (times.length - 1)) * (plotW - 20);
-        ctx.fillText(times[i], x, h - 6);
+        const label = times[i];
+        if (label) ctx.fillText(label, x, h - 6);
       }
     }
 

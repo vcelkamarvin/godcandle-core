@@ -7,6 +7,7 @@ import { fmtUsd } from '@/lib/engine';
 import { TransferDialog } from '@/components/godcandle/TransferDialog';
 import { Button } from '@/components/ui/button';
 import { useAccount, useBalance } from 'wagmi';
+import { formatUnits } from 'viem';
 
 export function Header() {
   const t = useTrading();
@@ -207,7 +208,7 @@ export function Header() {
                 <span>Available</span>
                 {hypeBalance && (
                   <span className="font-mono text-muted-foreground font-normal">
-                    · {parseFloat(hypeBalance.formatted).toFixed(2)} HYPE
+                    · {parseFloat(formatUnits(hypeBalance.value, hypeBalance.decimals)).toFixed(2)} HYPE
                   </span>
                 )}
               </p>

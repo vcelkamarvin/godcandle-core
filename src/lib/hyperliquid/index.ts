@@ -77,4 +77,5 @@ export function computeWinHaircut(
 }
 
 export * from './live-analytics';
+export type { MarketSymbol } from '@/config/markets';
 

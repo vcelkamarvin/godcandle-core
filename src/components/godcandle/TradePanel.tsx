@@ -2,6 +2,7 @@ import { Plus, TrendingDown, TrendingUp, ShieldAlert, Zap } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { getMarket, type MarketSymbol, type MarketStatus } from "@/config/markets";
+import { computeClampedPrice, computeBustDistance } from "@/lib/hyperliquid";
 import {
   LEVERAGES,
   feeUsd,
@@ -46,6 +47,10 @@ export function TradePanel(p: Props) {
   const shortLiq = liqPrice(p.price, p.leverage, "short", m.feeRate);
   const liqDist = liqDistancePct(p.leverage, m.feeRate);
   const estFee = feeUsd(p.stake, p.leverage, m.feeRate);
+  const notionalVal = p.stake * p.leverage;
+  const { bustDistanceBps } = computeBustDistance(p.leverage);
+  const corridorBps = 1.5;
+  const { execPrice } = computeClampedPrice(p.price, p.price, corridorBps);
 
   return (
     <div className="p-3.5 sm:p-4 space-y-3 font-sans text-xs">
@@ -231,24 +236,29 @@ export function TradePanel(p: Props) {
             </div>
           </section>
 
-          {/* Section 3: Summary Risk Metrics (High Density) */}
-          <div className="grid grid-cols-3 gap-1.5 rounded-xl border border-hairline bg-card p-2 text-center text-[10px]">
-            <div className="border-r border-hairline pr-1">
-              <span className="text-muted-foreground block text-[9px] uppercase">Liq Distance</span>
-              <span className="tabular font-semibold text-[#FF3B30]">
-                -{liqDist.toFixed(2)}%
+          {/* Section 3: Summary Technical Risk & Execution Box */}
+          <div className="rounded-xl border border-hairline bg-[#F8F8F7] p-2.5 space-y-1.5 font-mono text-[10px]">
+            <div className="flex justify-between items-center text-muted-foreground">
+              <span>POSITION NOTIONAL</span>
+              <span className="text-foreground font-bold tabular">${fmtUsd(notionalVal, 0)} USDC</span>
+            </div>
+            <div className="flex justify-between items-center text-muted-foreground">
+              <span>EXECUTION PRICE (BBO)</span>
+              <div className="flex items-center gap-1 font-bold text-foreground tabular">
+                <span>${fmtUsd(execPrice, m.decimals)}</span>
+                <span className="text-[9px] px-1 rounded bg-[#EFEFFC] text-[#5E5CE6]">±{corridorBps} bps</span>
+              </div>
+            </div>
+            <div className="flex justify-between items-center text-muted-foreground">
+              <span>EST. BUST DISTANCE</span>
+              <span className="text-[#FF3B30] font-semibold tabular">
+                -{bustDistanceBps.toFixed(1)} bps (-{liqDist.toFixed(2)}%)
               </span>
             </div>
-            <div className="border-r border-hairline px-1">
-              <span className="text-muted-foreground block text-[9px] uppercase">Est. Fee</span>
-              <span className="tabular font-semibold text-foreground">
-                ${fmtUsd(estFee)}
-              </span>
-            </div>
-            <div className="pl-1">
-              <span className="text-muted-foreground block text-[9px] uppercase">Max Loss</span>
-              <span className="tabular font-semibold text-foreground">
-                ${fmtUsd(p.stake)}
+            <div className="flex justify-between items-center text-muted-foreground">
+              <span>LIQUIDATION (L / S)</span>
+              <span className="tabular text-foreground">
+                ${fmtUsd(longLiq, m.decimals)} / ${fmtUsd(shortLiq, m.decimals)}
               </span>
             </div>
           </div>

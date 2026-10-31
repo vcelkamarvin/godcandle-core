@@ -56,20 +56,17 @@ export function TransferDialog({
           ))}
         </div>
         <div className="flex justify-between data-label">
-          <span>Network</span>
-          <span>USDC</span>
+          <span>Settlement Network</span>
+          <span>HyperEVM (Chain 999)</span>
         </div>
-        <div className="grid grid-cols-4 gap-1">
-          {["HyperEVM", "Arbitrum", "Base", "Ethereum"].map((n) => (
-            <Button
-              variant="terminal"
-              key={n}
-              onClick={() => setNetwork(n)}
-              className={`h-10 rounded-xl px-1 text-xs ${network === n ? "pill-ink" : "bg-secondary"}`}
-            >
-              {n}
-            </Button>
-          ))}
+        <div className="flex items-center justify-between rounded-xl bg-secondary/80 p-2.5 font-mono text-xs border border-border/60">
+          <div className="flex items-center gap-2">
+            <span className="size-2 rounded-full bg-[#00D964] animate-pulse" />
+            <span className="font-semibold text-foreground">HyperEVM Mainnet</span>
+          </div>
+          <span className="rounded bg-white px-2 py-0.5 text-[10px] text-muted-foreground border border-border/60">
+            Chain 999 · Native USDC
+          </span>
         </div>
         <div className="flex justify-between data-label">
           <label htmlFor="transfer-amount">Amount</label>

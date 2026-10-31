@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import { type MarketSymbol } from "@/config/markets";
 import { INITIAL_BALANCE } from "@/lib/mock-data";
 import { getSnap, startFeed, useFeeds } from "@/lib/price-feed";
-import { fmtSigned, isLiquidated, liquidation, openingError, pnlOf, type ClosedTrade, type Position, type Side } from "@/lib/engine";
+import { fmtSigned, fmtUsd, isLiquidated, liquidation, openingError, pnlOf, type ClosedTrade, type Position, type Side } from "@/lib/engine";
 
 function useTradingState() {
   const feeds = useFeeds();

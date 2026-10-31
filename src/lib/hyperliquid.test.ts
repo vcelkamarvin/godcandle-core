@@ -75,12 +75,12 @@ describe('Hyperliquid L1 Engine Math', () => {
       const { generateCorridorTicks } = await import('./hyperliquid');
       const btcTicks = generateCorridorTicks('BTC', 68000, 30);
       expect(btcTicks).toHaveLength(30);
-      expect(btcTicks[0].upperLimitBps).toBe(1.5);
-      expect(btcTicks[0].lowerLimitBps).toBe(-1.5);
+      expect(btcTicks[0]!.upperLimitBps).toBe(1.5);
+      expect(btcTicks[0]!.lowerLimitBps).toBe(-1.5);
 
       const dogeTicks = generateCorridorTicks('DOGE', 0.16, 30);
-      expect(dogeTicks[0].upperLimitBps).toBe(3.0);
-      expect(dogeTicks[0].lowerLimitBps).toBe(-3.0);
+      expect(dogeTicks[0]!.upperLimitBps).toBe(3.0);
+      expect(dogeTicks[0]!.lowerLimitBps).toBe(-3.0);
     });
 
     it('generates multi-metric time series data for all supported timeframes', async () => {
@@ -89,9 +89,9 @@ describe('Hyperliquid L1 Engine Math', () => {
       for (const tf of timeframes) {
         const data = generateTimeSeriesData(tf, 5000000, 1000000000);
         expect(data.length).toBeGreaterThan(15);
-        expect(data[0].tvl).toBeGreaterThan(0);
-        expect(data[0].liquidReserves).toBeGreaterThan(0);
-        expect(data[0].solvencyRatio).toBeGreaterThan(100);
+        expect(data[0]!.tvl).toBeGreaterThan(0);
+        expect(data[0]!.liquidReserves).toBeGreaterThan(0);
+        expect(data[0]!.solvencyRatio).toBeGreaterThan(100);
       }
     });
 
