@@ -137,5 +137,39 @@ describe("Trade Execution Mechanics", () => {
     expect(content).toContain("SPX-USD");
     expect(content).toContain("Reset ($10k)");
   });
+
+  it("verifies ConnectModal features sleek Quantin split-layout (#0D1117 / #161B22)", () => {
+    const fs = require("fs");
+    const path = require("path");
+    const connectModalPath = path.resolve(__dirname, "../components/wallet/ConnectModal.tsx");
+    const content = fs.readFileSync(connectModalPath, "utf-8");
+
+    expect(content).toContain("bg-[#0D1117]");
+    expect(content).toContain("bg-[#161B22]");
+    expect(content).toContain("/images/monet-etretat.jpg");
+    expect(content).toContain("The Cliffs at Étretat");
+  });
+
+  it("verifies ShareModal defaults to obsidian #0D1117 / #161B22 Quantin theme", () => {
+    const fs = require("fs");
+    const path = require("path");
+    const shareModalPath = path.resolve(__dirname, "../components/godcandle/ShareModal.tsx");
+    const content = fs.readFileSync(shareModalPath, "utf-8");
+
+    expect(content).toContain('useState<CardTheme>("obsidian")');
+    expect(content).toContain('bg: "#0D1117"');
+    expect(content).toContain('border: "#30363D"');
+    expect(content).toContain("/images/monet-etretat.jpg");
+  });
+
+  it("verifies index and trade routes synchronize active mode deterministically", () => {
+    const fs = require("fs");
+    const path = require("path");
+    const indexContent = fs.readFileSync(path.resolve(__dirname, "../routes/index.tsx"), "utf-8");
+    const tradeContent = fs.readFileSync(path.resolve(__dirname, "../routes/trade.tsx"), "utf-8");
+
+    expect(indexContent).toContain('t.setMode("perps")');
+    expect(tradeContent).toContain('t.setMode("paper1000x")');
+  });
 });
 

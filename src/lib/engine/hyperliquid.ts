@@ -238,7 +238,8 @@ export class HyperliquidEngine implements TradingEngine {
         { symbol: "ETH-USD", name: "Ethereum", index: 1, maxLeverage: 50, szDecimals: 4, corridorBps: 1.5, defaultPrice: 2540.2 },
         { symbol: "SOL-USD", name: "Solana", index: 2, maxLeverage: 20, szDecimals: 2, corridorBps: 1.5, defaultPrice: 182.4 },
         { symbol: "HYPE-USD", name: "Hyperliquid", index: 3, maxLeverage: 10, szDecimals: 2, corridorBps: 3.0, defaultPrice: 42.8 },
-        { symbol: "DOGE-USD", name: "Dogecoin", index: 4, maxLeverage: 10, szDecimals: 0, corridorBps: 3.0, defaultPrice: 0.164 },
+        { symbol: "SPX-USD", name: "S&P 500", index: 4, maxLeverage: 20, szDecimals: 2, corridorBps: 1.5, defaultPrice: 6120.0 },
+        { symbol: "DOGE-USD", name: "Dogecoin", index: 5, maxLeverage: 10, szDecimals: 0, corridorBps: 3.0, defaultPrice: 0.164 },
       ];
     }
 

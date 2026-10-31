@@ -107,7 +107,7 @@ export function ShareModal({
   initialHideDollar,
 }: ShareModalProps) {
   const [mode, setMode] = useState<CardMode>(initialMode ?? "pnl");
-  const [theme, setTheme] = useState<CardTheme>("editorial");
+  const [theme, setTheme] = useState<CardTheme>("obsidian");
   const [selectedArtId, setSelectedArtId] = useState<string>("etretat");
   const [hideDollar, setHideDollar] = useState<boolean>(initialHideDollar ?? false);
   const [showMetrics, setShowMetrics] = useState<boolean>(true);
@@ -319,17 +319,17 @@ export function ShareModal({
   const colors = useMemo(() => {
     if (theme === "obsidian") {
       return {
-        bg: "#0A0A0C",
-        border: "#26262B",
+        bg: "#0D1117",
+        border: "#30363D",
         textMain: "#FFFFFF",
-        textSecondary: "#9CA3AF",
-        divider: "#1F1F24",
+        textSecondary: "#8B949E",
+        divider: "#21262D",
         pnlPositive: "#00D964",
         pnlNegative: "#FF3B30",
         qrBg: "#FFFFFF",
         qrFg: "#0A0A0A",
-        plaqueBg: "rgba(10, 10, 12, 0.85)",
-        plaqueBorder: "rgba(255, 255, 255, 0.15)",
+        plaqueBg: "rgba(13, 17, 23, 0.85)",
+        plaqueBorder: "rgba(255, 255, 255, 0.18)",
         plaqueText: "#FFFFFF",
       };
     }
@@ -1307,7 +1307,7 @@ export function ShareModal({
               className={cn(
                 "w-full aspect-[16/10] rounded-[calc(1rem-1.5px)] sm:rounded-[calc(1.5rem-1.5px)] transition-all duration-300 relative overflow-hidden flex flex-col p-4 sm:p-6 select-none",
                 theme === "editorial" && "bg-white text-[#0A0A0A]",
-                theme === "obsidian" && "bg-[#0A0A0C] text-white",
+                theme === "obsidian" && "bg-[#0D1117] text-white",
                 theme === "aurora" && "bg-[#0B0E14] text-white"
               )}
             >

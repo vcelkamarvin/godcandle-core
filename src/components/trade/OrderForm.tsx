@@ -160,7 +160,7 @@ export function OrderForm({
           {mode === 'perps' ? (
             <span className="flex items-center gap-1 rounded bg-[#E3F8EC] border border-[#06964A]/30 px-2 py-0.5 text-[9px] font-bold text-[#06964A]">
               <span className="size-1.5 rounded-full bg-[#06964A] animate-pulse" />
-              LIVE · REAL FUNDS
+              {hyperliquidEngineInstance.getConnectedWallet() ? 'LIVE · REAL FUNDS' : 'TEST · $10K DEMO'}
             </span>
           ) : (
             <span className="flex items-center gap-1 rounded bg-[#FFF4E5] border border-[#D97706]/30 px-2 py-0.5 text-[9px] font-bold text-[#D97706]">

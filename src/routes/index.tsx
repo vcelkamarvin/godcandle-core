@@ -1,5 +1,7 @@
+import { useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { TradeTerminal } from "@/components/trade/TradeTerminal";
+import { useTrading } from "@/components/godcandle/TradingProvider";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -24,6 +26,19 @@ export const Route = createFileRoute("/")({
 });
 
 function IndexPage() {
+  const t = useTrading();
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const param = new URLSearchParams(window.location.search).get("mode");
+      if (param === "paper1000x") {
+        if (t.mode !== "paper1000x") t.setMode("paper1000x");
+      } else {
+        if (t.mode !== "perps") t.setMode("perps");
+      }
+    }
+  }, [t]);
+
   return (
     <div className="py-6 px-4 md:px-6">
       <TradeTerminal />
