@@ -68,6 +68,13 @@ describe("Header Layout & Navigation Structure", () => {
     expect(headerContent).toContain("Price Target Calculator");
     expect(headerContent).toContain("Boost Multiplier Calculator");
   });
+
+  it("removes Goal and Boost pill segment from the main desktop and mobile navigation bar", () => {
+    expect(headerContent).not.toContain("Tools Navigation Segment: Goal");
+    expect(headerContent).not.toContain("Mobile Tools Segment: Goal & Boost");
+    expect(headerContent).not.toContain('aria-label="Price Target Goal"');
+    expect(headerContent).not.toContain('aria-label="Boost Multiplier"');
+  });
 });
 
 describe("ConnectModal Light Mode & Web3 Wallets", () => {

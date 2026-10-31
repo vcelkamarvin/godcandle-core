@@ -49,6 +49,8 @@ export function Header() {
   const isMoreActive =
     pathname === "/analytics" ||
     pathname === "/leaderboard" ||
+    pathname === "/goal" ||
+    pathname === "/boost" ||
     pathname === "/docs" ||
     pathname.startsWith("/docs") ||
     pathname === "/settings" ||
@@ -179,48 +181,6 @@ export function Header() {
                 </Link>
               </div>
 
-              {/* Tools Navigation Segment: Goal (Price Target) & Boost (Multiplier) */}
-              <div className="flex items-center p-0.5 rounded-full bg-secondary/80 border border-border/80 shadow-2xs">
-                <Link
-                  to="/goal"
-                  className={
-                    isGoalActive
-                      ? "pill pill-ink h-7.5 px-3 text-xs font-semibold shadow-xs"
-                      : "pill h-7.5 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-white/60 transition-colors"
-                  }
-                  title="Price Target Calculator"
-                  aria-label="Price Target Goal"
-                >
-                  <span className="flex items-center gap-1.5">
-                    <Target
-                      className={`size-3.5 transition-colors ${
-                        isGoalActive ? "text-[#00D964]" : "text-[#06964A]"
-                      }`}
-                    />
-                    <span className="font-medium">Goal</span>
-                  </span>
-                </Link>
-                <Link
-                  to="/boost"
-                  className={
-                    isBoostActive
-                      ? "pill pill-ink h-7.5 px-3 text-xs font-semibold shadow-xs"
-                      : "pill h-7.5 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-white/60 transition-colors"
-                  }
-                  title="Boost Multiplier Calculator"
-                  aria-label="Boost Multiplier"
-                >
-                  <span className="flex items-center gap-1.5">
-                    <Zap
-                      className={`size-3.5 transition-colors ${
-                        isBoostActive ? "text-[#C084FC]" : "text-[#7C3AED]"
-                      }`}
-                    />
-                    <span className="font-medium">Boost</span>
-                  </span>
-                </Link>
-              </div>
-
               {/* Direct links on wide screens (hidden below xl to prevent horizontal overflow) */}
               <Link
                 to="/analytics"
@@ -315,6 +275,49 @@ export function Header() {
                           <p className="text-xs font-semibold text-foreground">Leaderboard</p>
                           <p className="text-[10px] text-muted-foreground">
                             Rankings &amp; Candle Cup
+                          </p>
+                        </div>
+                      </Link>
+                    </div>
+
+                    {/* Tools & Calculators */}
+                    <div className="py-1 space-y-0.5">
+                      <Link
+                        to="/goal"
+                        role="menuitem"
+                        onClick={() => setMoreOpen(false)}
+                        className={`flex items-center gap-2.5 p-2 rounded-xl transition-colors text-left ${
+                          isGoalActive ? "bg-secondary font-medium" : "hover:bg-secondary"
+                        }`}
+                        title="Price Target Calculator"
+                      >
+                        <div className="flex size-7 items-center justify-center rounded-lg bg-[#E3F8EC] text-[#06964A]">
+                          <Target className="size-3.5" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-semibold text-foreground">Goal</p>
+                          <p className="text-[10px] text-muted-foreground">
+                            Price Target Calculator
+                          </p>
+                        </div>
+                      </Link>
+
+                      <Link
+                        to="/boost"
+                        role="menuitem"
+                        onClick={() => setMoreOpen(false)}
+                        className={`flex items-center gap-2.5 p-2 rounded-xl transition-colors text-left ${
+                          isBoostActive ? "bg-secondary font-medium" : "hover:bg-secondary"
+                        }`}
+                        title="Boost Multiplier Calculator"
+                      >
+                        <div className="flex size-7 items-center justify-center rounded-lg bg-[#F3E8FF] text-[#7C3AED]">
+                          <Zap className="size-3.5" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-semibold text-foreground">Boost</p>
+                          <p className="text-[10px] text-muted-foreground">
+                            Boost Multiplier Calculator
                           </p>
                         </div>
                       </Link>
@@ -571,44 +574,6 @@ export function Header() {
             </Link>
           </div>
 
-          {/* Mobile Tools Segment: Goal & Boost */}
-          <div className="flex items-center p-0.5 rounded-full bg-secondary/80 border border-border/80 shrink-0">
-            <Link
-              to="/goal"
-              className={
-                isGoalActive
-                  ? "pill pill-ink h-7 px-2.5 text-[11px] font-semibold"
-                  : "pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-white/60 transition-colors"
-              }
-            >
-              <span className="flex items-center gap-1">
-                <Target
-                  className={`size-3 ${
-                    isGoalActive ? "text-[#00D964]" : "text-[#06964A]"
-                  }`}
-                />
-                <span>Goal</span>
-              </span>
-            </Link>
-            <Link
-              to="/boost"
-              className={
-                isBoostActive
-                  ? "pill pill-ink h-7 px-2.5 text-[11px] font-semibold"
-                  : "pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-white/60 transition-colors"
-              }
-            >
-              <span className="flex items-center gap-1">
-                <Zap
-                  className={`size-3 ${
-                    isBoostActive ? "text-[#C084FC]" : "text-[#7C3AED]"
-                  }`}
-                />
-                <span>Boost</span>
-              </span>
-            </Link>
-          </div>
-
           {/* Mobile More Menu Dropdown: Replaces the unwieldy 10-item horizontal scroll */}
           <div className="relative shrink-0" ref={mobileMoreRef}>
             <button
@@ -684,6 +649,45 @@ export function Header() {
                     <div>
                       <p className="text-xs font-semibold text-foreground">Leaderboard</p>
                       <p className="text-[10px] text-muted-foreground">Rankings &amp; Candle Cup</p>
+                    </div>
+                  </Link>
+                </div>
+
+                {/* Tools & Calculators */}
+                <div className="py-1 space-y-0.5">
+                  <Link
+                    to="/goal"
+                    role="menuitem"
+                    onClick={() => setMobileMoreOpen(false)}
+                    className={`flex items-center gap-2.5 p-2 rounded-xl transition-colors text-left ${
+                      isGoalActive ? "bg-secondary font-medium" : "hover:bg-secondary"
+                    }`}
+                    title="Price Target Calculator"
+                  >
+                    <div className="flex size-7 items-center justify-center rounded-lg bg-[#E3F8EC] text-[#06964A]">
+                      <Target className="size-3.5" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-foreground">Goal</p>
+                      <p className="text-[10px] text-muted-foreground">Price Target Calculator</p>
+                    </div>
+                  </Link>
+
+                  <Link
+                    to="/boost"
+                    role="menuitem"
+                    onClick={() => setMobileMoreOpen(false)}
+                    className={`flex items-center gap-2.5 p-2 rounded-xl transition-colors text-left ${
+                      isBoostActive ? "bg-secondary font-medium" : "hover:bg-secondary"
+                    }`}
+                    title="Boost Multiplier Calculator"
+                  >
+                    <div className="flex size-7 items-center justify-center rounded-lg bg-[#F3E8FF] text-[#7C3AED]">
+                      <Zap className="size-3.5" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-foreground">Boost</p>
+                      <p className="text-[10px] text-muted-foreground">Boost Multiplier Calculator</p>
                     </div>
                   </Link>
                 </div>
