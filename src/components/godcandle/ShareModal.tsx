@@ -102,7 +102,7 @@ export function ShareModal({
   const [mode] = useState<CardMode>(initialMode);
   const [theme] = useState<CardTheme>("obsidian");
   const [selectedArtId] = useState<string>("etretat");
-  const [hideDollar] = useState<boolean>(initialHideDollar);
+  const [hideDollar, setHideDollar] = useState<boolean>(initialHideDollar);
   const [copied, setCopied] = useState<"image" | "link" | "text" | null>(null);
   const [isExporting, setIsExporting] = useState<boolean>(false);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -843,38 +843,67 @@ export function ShareModal({
         {/* Hidden Canvas used for generating 1600 × 1000 px full-resolution PNG */}
         <canvas ref={canvasRef} className="hidden" />
 
-        {/* Action Buttons Row directly under the PnL card */}
-        <div className="flex items-center justify-center gap-2.5 sm:gap-3 flex-wrap">
-          <button
-            type="button"
-            onClick={handleCopyImage}
-            disabled={isExporting}
-            className="h-10 px-4 rounded-xl border border-[#30363D] bg-[#161B22] hover:bg-[#21262D] text-white text-xs font-mono font-medium transition-all flex items-center gap-2 cursor-pointer shadow-md disabled:opacity-50"
-          >
-            {copied === "image" ? <Check className="size-4 text-[#00D964]" /> : <Copy className="size-4 text-[#8B949E]" />}
-            <span>{copied === "image" ? "Image Copied!" : "Copy Image"}</span>
-          </button>
+        {/* Controls Row: Hide amounts toggle & Action buttons (Matching Reference Screenshots) */}
+        <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-3 px-2 pt-1">
+          {/* Hide amounts switch */}
+          <label className="flex items-center gap-2.5 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={hideDollar}
+              onChange={(e) => setHideDollar(e.target.checked)}
+              className="sr-only"
+            />
+            <div
+              className={cn(
+                "w-11 h-6 rounded-full transition-colors p-0.5 relative",
+                hideDollar ? "bg-[#30363D]" : "bg-white/20 hover:bg-white/30"
+              )}
+            >
+              <div
+                className={cn(
+                  "size-5 rounded-full bg-white transition-transform duration-200 shadow-sm",
+                  hideDollar ? "translate-x-5" : "translate-x-0"
+                )}
+              />
+            </div>
+            <span className="text-xs font-mono text-[#8B949E] hover:text-white transition-colors">
+              Hide amounts
+            </span>
+          </label>
 
-          <button
-            type="button"
-            onClick={shareToX}
-            className="h-10 px-4 rounded-xl border border-white/20 bg-white hover:bg-white/90 text-black text-xs font-mono font-bold transition-all flex items-center gap-2 cursor-pointer shadow-md"
-          >
-            <svg className="size-3.5 fill-current" viewBox="0 0 24 24">
-              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 24.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-            </svg>
-            <span>Share to X</span>
-          </button>
+          {/* Action Buttons: Copy, Share to X, Download */}
+          <div className="flex items-center gap-2.5 sm:gap-3 flex-wrap">
+            <button
+              type="button"
+              onClick={handleCopyImage}
+              disabled={isExporting}
+              className="h-10 px-4 rounded-xl border border-[#30363D] bg-[#161B22] hover:bg-[#21262D] text-white text-xs font-mono font-medium transition-all flex items-center gap-2 cursor-pointer shadow-md disabled:opacity-50"
+            >
+              {copied === "image" ? <Check className="size-4 text-[#00D964]" /> : <Copy className="size-4 text-[#8B949E]" />}
+              <span>{copied === "image" ? "Copied" : "Copy"}</span>
+            </button>
 
-          <button
-            type="button"
-            onClick={handleDownload}
-            disabled={isExporting}
-            className="h-10 px-4 rounded-xl bg-[#00D964] hover:bg-[#00BF57] text-[#080B0F] text-xs font-mono font-bold transition-all flex items-center gap-2 cursor-pointer shadow-[0_0_20px_rgba(0,217,100,0.25)] disabled:opacity-50"
-          >
-            <Download className="size-4 stroke-[2.5]" />
-            <span>Download PNG</span>
-          </button>
+            <button
+              type="button"
+              onClick={shareToX}
+              className="h-10 px-4 rounded-xl border border-white/20 bg-white hover:bg-white/90 text-black text-xs font-mono font-bold transition-all flex items-center gap-2 cursor-pointer shadow-md"
+            >
+              <svg className="size-3.5 fill-current" viewBox="0 0 24 24">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 24.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+              </svg>
+              <span>Share to X</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleDownload}
+              disabled={isExporting}
+              className="h-10 px-4 rounded-xl bg-[#00D964] hover:bg-[#00BF57] text-[#080B0F] text-xs font-mono font-bold transition-all flex items-center gap-2 cursor-pointer shadow-[0_0_20px_rgba(0,217,100,0.25)] disabled:opacity-50"
+            >
+              <Download className="size-4 stroke-[2.5]" />
+              <span>Download</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
