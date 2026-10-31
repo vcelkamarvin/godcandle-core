@@ -133,6 +133,18 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link to="/goal" className="text-[#8B949E] hover:text-white transition-colors flex items-center gap-1.5">
+                  <span>Target Goal Studio</span>
+                  <span className="text-[9px] text-[#00D964] border border-[#00D964]/30 rounded px-1">0DTE</span>
+                </Link>
+              </li>
+              <li>
+                <Link to="/boost" className="text-[#8B949E] hover:text-white transition-colors flex items-center gap-1.5">
+                  <span>Convexity Boost Multiplier</span>
+                  <span className="text-[9px] text-[#A371F7] border border-[#A371F7]/30 rounded px-1">100×</span>
+                </Link>
+              </li>
+              <li>
                 <a
                   href="https://github.com/vcelkamarvin/godcandle-core"
                   target="_blank"

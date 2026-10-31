@@ -161,7 +161,7 @@ export function Header() {
 
               {/* Roadmap Anchor Link */}
               <a
-                href="/#roadmap"
+                href="/main#roadmap"
                 className="pill h-8 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
               >
                 Roadmap
@@ -174,6 +174,19 @@ export function Header() {
               >
                 Docs
               </a>
+
+              <Link
+                to="/goal"
+                activeProps={{
+                  className: 'pill pill-ink h-8 px-3.5 text-xs font-medium shadow-xs',
+                }}
+                inactiveProps={{
+                  className:
+                    'pill h-8 px-3.5 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary',
+                }}
+              >
+                Goal &amp; Boost
+              </Link>
 
               <Link
                 to="/analytics"
@@ -396,7 +409,7 @@ export function Header() {
             <span className="size-1 rounded-full bg-[#00D964] animate-pulse" />
           </Link>
           <a
-            href="/#roadmap"
+            href="/main#roadmap"
             className={
               isLanding
                 ? 'h-7 px-2.5 rounded-md text-[11px] text-[#8B949E] hover:text-white hover:bg-[#161B22] flex items-center shrink-0'
@@ -415,6 +428,18 @@ export function Header() {
           >
             Docs
           </a>
+          <Link
+            to="/goal"
+            activeProps={{
+              className: 'pill pill-ink h-7 px-2.5 text-[11px] font-medium shrink-0',
+            }}
+            inactiveProps={{
+              className:
+                'pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary shrink-0',
+            }}
+          >
+            Goal
+          </Link>
           <Link
             to="/analytics"
             activeProps={{

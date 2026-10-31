@@ -22,6 +22,8 @@ describe("App routing", () => {
       "/leaderboard",
       "/docs",
       "/settings",
+      "/goal",
+      "/boost",
     ];
 
     for (const path of routesToTest) {
@@ -30,10 +32,10 @@ describe("App routing", () => {
     }
   });
 
-  it("does not match removed routes (/goal, /boost, /hardware, /options)", () => {
+  it("does not match removed routes (/hardware, /options)", () => {
     const router = createRouter({ routeTree, context: { queryClient: new QueryClient() } });
 
-    const removedRoutes = ["/goal", "/boost", "/hardware", "/options"];
+    const removedRoutes = ["/hardware", "/options"];
 
     for (const path of removedRoutes) {
       const matches = router.matchRoutes(path);
