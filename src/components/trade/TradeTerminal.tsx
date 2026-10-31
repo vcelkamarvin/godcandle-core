@@ -8,7 +8,7 @@ import { TradingViewWidget, type TVInterval } from '@/components/godcandle/Tradi
 import { Dock } from '@/components/godcandle/Dock';
 import { ShareModal } from '@/components/godcandle/ShareModal';
 import { fmtSigned, fmtUsd, pnlOf, type ClosedTrade } from '@/lib/engine';
-import { Shield, Layers, Zap, Database, BarChart2, RotateCcw, AlertTriangle } from 'lucide-react';
+import { Shield, Layers, Zap, Database, BarChart2, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { useSettings } from '@/lib/settings';
@@ -51,7 +51,17 @@ export function TradeTerminal() {
   const engineMarkets = t.engine.getMarkets();
   const marketsList: any[] = engineMarkets.length > 0 ? engineMarkets : MARKETS;
 
-  const [selectedMarket, setSelectedMarket] = useState<any>(marketsList[0] || MARKETS[0]!);
+  const [selectedMarket, setSelectedMarket] = useState<any>(() => {
+    if (typeof window !== "undefined") {
+      const p = new URLSearchParams(window.location.search);
+      const symbolParam = (p.get("pair") || p.get("market") || p.get("symbol") || "").toUpperCase().replace("-USD", "");
+      if (symbolParam) {
+        const found = marketsList.find((m: any) => m.symbol.replace("-USD", "") === symbolParam);
+        if (found) return found;
+      }
+    }
+    return marketsList[0] || MARKETS[0]!;
+  });
   const rawSymbol = selectedMarket.symbol.replace('-USD', '') as any;
 
   // Determine dynamic max leverage
@@ -95,6 +105,11 @@ export function TradeTerminal() {
     const asset = m.symbol.replace('-USD', '');
     const maxLev = isPerps ? t.engine.getMaxLeverage(asset) : 1000;
     setLeverage((prev) => Math.min(prev, maxLev));
+    if (typeof window !== "undefined") {
+      const url = new URL(window.location.href);
+      url.searchParams.set("pair", m.symbol);
+      window.history.replaceState({}, "", url.toString());
+    }
   };
 
   const handleTimeframeChange = (tf: (typeof TIMEFRAMES)[number]) => {
@@ -114,6 +129,7 @@ export function TradeTerminal() {
       {/* Unified L1 Market Bar with Pair Selector, Real-Time Telemetry & Search */}
       <MarketBar
         market={rawSymbol}
+        resetLabel="Reset ($10k)"
         onSelect={(s) => {
           const found = marketsList.find((m: any) => m.symbol.replace('-USD', '') === s) || {
             symbol: `${s}-USD`,
@@ -162,24 +178,6 @@ export function TradeTerminal() {
                   <span className="rounded bg-[#FFF4E5] border border-[#D97706]/30 px-2 py-0.5 text-[9px] font-bold text-[#D97706]">
                     TEST · PAPER
                   </span>
-                )}
-                {(!isPerps || !address) && (
-                  <button
-                    type="button"
-                    onClick={async () => {
-                      const res = await t.resetPaperBalance();
-                      if (res.success) {
-                        toast.success("Test balance reset to $10,000.00 USDC");
-                      } else {
-                        toast.error(res.error || "Reset cooldown active");
-                      }
-                    }}
-                    className="flex items-center gap-1 rounded bg-[#F6F6F4] hover:bg-[#EAEAE8] border border-border px-1.5 py-0.5 text-[9px] text-muted-foreground hover:text-foreground font-mono transition-colors cursor-pointer"
-                    title="Reset paper balance to $10,000 USDC"
-                  >
-                    <RotateCcw className="size-2.5" />
-                    <span>Reset ($10k)</span>
-                  </button>
                 )}
               </div>
 

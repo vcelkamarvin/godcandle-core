@@ -50,6 +50,7 @@ export interface MarketBarProps {
   open24h?: number;
   corridorBps?: number;
   showReset?: boolean;
+  resetLabel?: string;
   onReset?: () => void;
 }
 
@@ -61,15 +62,32 @@ export function MarketBar({
   open24h: propOpen24h,
   corridorBps,
   showReset = false,
+  resetLabel = "Reset ($10k)",
   onReset,
 }: MarketBarProps) {
   const { feeds } = useTrading();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<(typeof FILTERS)[number]>("All");
-  const [favorites, setFavorites] = useState<MarketSymbol[]>(["BTC", "ETH", "HYPE"]);
+  const [favorites, setFavorites] = useState<MarketSymbol[]>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const saved = localStorage.getItem("godcandle_favorite_markets");
+        if (saved) return JSON.parse(saved);
+      } catch {}
+    }
+    return ["BTC", "ETH", "HYPE"];
+  });
   const [previewSymbol, setPreviewSymbol] = useState<MarketSymbol>(market);
   const searchInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem("godcandle_favorite_markets", JSON.stringify(favorites));
+      } catch {}
+    }
+  }, [favorites]);
 
   // Global keyboard shortcut: Cmd+K / Ctrl+K
   useEffect(() => {
@@ -216,14 +234,14 @@ export function MarketBar({
             </div>
 
             {/* Inline Market Telemetry (dYdX / Hyperliquid style) */}
-            <div className="hidden lg:flex items-center gap-3.5 text-[10px] font-mono pl-3 border-l border-border/70 text-muted-foreground">
-              <div>
+            <div className="hidden md:flex items-center gap-3 sm:gap-3.5 text-[10px] font-mono pl-3 border-l border-border/70 text-muted-foreground">
+              <div className="hidden lg:block">
                 <span className="block text-[8px] uppercase tracking-wider text-muted-foreground/70">Mark</span>
                 <span className="tabular font-semibold text-foreground">
                   ${fmtUsd(markPx, getMarket(market).decimals)}
                 </span>
               </div>
-              <div>
+              <div className="hidden lg:block">
                 <span className="block text-[8px] uppercase tracking-wider text-muted-foreground/70">Index</span>
                 <span className="tabular font-semibold text-foreground">
                   ${fmtUsd(midPx, getMarket(market).decimals)}
@@ -245,7 +263,7 @@ export function MarketBar({
                 <span className="block text-[8px] uppercase tracking-wider text-muted-foreground/70">24h Volume</span>
                 <span className="tabular font-semibold text-foreground">{volume24h}</span>
               </div>
-              <div>
+              <div className="hidden xl:block">
                 <span className="block text-[8px] uppercase tracking-wider text-muted-foreground/70">1h Funding</span>
                 <span className="tabular font-semibold text-[#06964A]">{fundingRate}</span>
               </div>
@@ -274,7 +292,7 @@ export function MarketBar({
                 title="Reset paper balance to $10,000 USDC"
               >
                 <RotateCcw className="size-3" />
-                <span>Reset ($10k)</span>
+                <span>{resetLabel}</span>
               </Button>
             )}
           </div>

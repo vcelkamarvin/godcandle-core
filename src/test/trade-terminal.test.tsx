@@ -171,5 +171,31 @@ describe("Trade Execution Mechanics", () => {
     expect(indexContent).toContain('t.setMode("perps")');
     expect(tradeContent).toContain('t.setMode("paper1000x")');
   });
+
+  it("verifies single clean Reset ($10k) placement in MarketBar without duplicate in chart header", () => {
+    const fs = require("fs");
+    const path = require("path");
+    const terminalPath = path.resolve(__dirname, "../components/trade/TradeTerminal.tsx");
+    const content = fs.readFileSync(terminalPath, "utf-8");
+
+    // Only 1 occurrence of Reset ($10k) in TradeTerminal (as a prop to MarketBar)
+    const matches = content.match(/Reset \(\$10k\)/g) || [];
+    expect(matches.length).toBe(1);
+    expect(content).toContain('resetLabel="Reset ($10k)"');
+
+    // Chart header does not contain duplicate RotateCcw button
+    expect(content).not.toContain('<RotateCcw');
+  });
+
+  it("verifies Goal and Boost routes forward active asset to the trading terminal", () => {
+    const fs = require("fs");
+    const path = require("path");
+    const goalContent = fs.readFileSync(path.resolve(__dirname, "../routes/goal.tsx"), "utf-8");
+    const boostContent = fs.readFileSync(path.resolve(__dirname, "../routes/boost.tsx"), "utf-8");
+
+    expect(goalContent).toContain('search={{ pair: `${underlying}-USD` } as any}');
+    expect(boostContent).toContain('search={{ pair: `${underlying}-USD` } as any}');
+  });
 });
+
 

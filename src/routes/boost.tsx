@@ -497,7 +497,7 @@ export function BoostPage() {
                 variant="outline"
                 className="pill h-8 text-xs font-semibold border-border bg-white hover:bg-secondary text-foreground cursor-pointer"
               >
-                <Link to="/">
+                <Link to="/" search={{ pair: `${underlying}-USD` } as any}>
                   Terminal <ArrowUpRight className="ml-1 size-3" />
                 </Link>
               </Button>

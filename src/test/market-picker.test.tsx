@@ -75,4 +75,19 @@ describe("MarketBar & Market Picker Architecture", () => {
       expect(m.maxLeverage % 10).toBe(0);
     }
   });
+
+  it("verifies MarketBar uses progressive responsive telemetry disclosure", () => {
+    const fs = require("fs");
+    const path = require("path");
+    const barPath = path.resolve(__dirname, "../components/godcandle/MarketBar.tsx");
+    const content = fs.readFileSync(barPath, "utf-8");
+
+    // Progressive disclosure: md:flex for key stats, lg for mark/index, xl for funding
+    expect(content).toContain("hidden md:flex");
+    expect(content).toContain("hidden lg:block");
+    expect(content).toContain("hidden xl:block");
+    expect(content).toContain("godcandle_favorite_markets");
+    expect(content).toContain("resetLabel");
+  });
 });
+
