@@ -23,17 +23,17 @@ import type { ClosedTrade } from "@/lib/engine";
 export const Route = createFileRoute("/boost")({
   head: () => ({
     meta: [
-      { title: "godcandle — Convexity Boost Multiplier" },
+      { title: "godcandle — Boost Multiplier" },
       {
         name: "description",
         content:
-          "Model high-convexity crypto options boost with non-linear payout multipliers in signature godcandle light rainbow style.",
+          "Calculate accelerated payout returns on market moves using dynamic multipliers.",
       },
-      { property: "og:title", content: "godcandle — Convexity Boost Multiplier" },
+      { property: "og:title", content: "godcandle — Boost Multiplier" },
       {
         name: "og:description",
         content:
-          "Model non-linear payout boost curves with up to 100× asymmetric multipliers directly on HyperEVM.",
+          "Calculate accelerated payout returns on market moves using dynamic multipliers on HyperEVM.",
       },
     ],
   }),
@@ -158,26 +158,25 @@ export function BoostPage() {
 
   return (
     <main className="relative page-content max-w-7xl mx-auto space-y-5 font-sans text-xs text-foreground">
-      {/* Top Banner with Iridescent Rainbow Accent */}
+      {/* Top Banner & Tool Switcher */}
       <div className="relative overflow-hidden rounded-3xl border border-border bg-white p-5 sm:p-6 shadow-xs">
         <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-[#CDC3F0] via-[#FFDAC8] to-[#A0D4CA]" />
 
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <span className="p-1 rounded-lg bg-gradient-to-r from-[#CDC3F0]/50 to-[#FFDAC8]/50 text-foreground">
-                <Zap className="size-4 text-foreground" />
+              <span className="p-1 rounded-lg bg-[#FAF5FF] text-[#7C3AED]">
+                <Zap className="size-4 text-[#7C3AED]" />
               </span>
               <h1 className="text-xl font-bold tracking-tight text-foreground font-sans">
-                Asymmetric Convexity Multiplier
+                Boost Multiplier
               </h1>
-              <span className="rounded-full bg-gradient-to-r from-[#CDC3F0]/40 via-[#FFDAC8]/40 to-[#A0D4CA]/40 px-2.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-foreground border border-border">
-                High Convexity
+              <span className="rounded-full bg-secondary px-2.5 py-0.5 text-[10px] font-semibold text-muted-foreground border border-border">
+                Multiplier Tool
               </span>
             </div>
             <p className="text-muted-foreground text-xs font-sans">
-              Non-linear payout boost curves with up to 100× asymmetric multipliers directly on
-              HyperEVM.
+              Calculate accelerated payout returns on market moves using dynamic multipliers.
             </p>
           </div>
 
@@ -191,7 +190,7 @@ export function BoostPage() {
               >
                 <span className="flex items-center gap-1.5">
                   <Target className="size-3" />
-                  <span>Goal Studio</span>
+                  <span>Price Target</span>
                 </span>
               </Link>
               <Link
@@ -199,8 +198,8 @@ export function BoostPage() {
                 className="pill pill-ink h-7.5 px-3.5 text-xs font-semibold shadow-xs"
               >
                 <span className="flex items-center gap-1.5">
-                  <Zap className="size-3 text-[#06964A]" />
-                  <span>Convexity Boost</span>
+                  <Zap className="size-3 text-[#7C3AED]" />
+                  <span>Boost Multiplier</span>
                 </span>
               </Link>
             </div>
@@ -232,11 +231,11 @@ export function BoostPage() {
         <div className="lg:col-span-4 rounded-3xl border border-border bg-white p-5 shadow-xs space-y-4">
           <div className="flex items-center justify-between pb-3 border-b border-border">
             <span className="font-bold tracking-wider text-xs uppercase flex items-center gap-1.5">
-              <Zap className="size-3.5 text-[#06964A]" />
-              Convexity Controls
+              <Zap className="size-3.5 text-[#7C3AED]" />
+              Multiplier Settings
             </span>
-            <span className="text-[10px] font-mono font-bold text-[#06964A] bg-[#E3F8EC] px-2 py-0.5 rounded-full border border-[#06964A]/20">
-              {boostMultiplier}× Active Factor
+            <span className="text-[10px] font-mono font-bold text-[#7C3AED] bg-[#FAF5FF] px-2 py-0.5 rounded-full border border-[#7C3AED]/20">
+              {boostMultiplier}× Multiplier
             </span>
           </div>
 
@@ -273,11 +272,11 @@ export function BoostPage() {
             </div>
           </div>
 
-          {/* Current Spot Reference */}
+          {/* Current Price */}
           <div className="p-3 rounded-2xl bg-[#F6F6F4] border border-border flex justify-between items-center">
             <div>
               <span className="text-[10px] text-muted-foreground uppercase font-semibold block">
-                {underlying} Spot Reference
+                {underlying} Current Price
               </span>
               <span className="text-sm font-bold tabular text-foreground font-mono">
                 $
@@ -289,7 +288,7 @@ export function BoostPage() {
             </div>
             <span className="text-[10px] text-[#06964A] font-semibold flex items-center gap-1">
               <ShieldCheck className="size-3" />
-              Live Mark
+              Live Price
             </span>
           </div>
 
@@ -298,7 +297,7 @@ export function BoostPage() {
             <div className="flex justify-between items-center text-[11px]">
               <span className="text-muted-foreground font-semibold">BOOST MULTIPLIER</span>
               <span className="text-foreground font-bold tabular font-mono text-sm">
-                {boostMultiplier}× Factor
+                {boostMultiplier}× Multiplier
               </span>
             </div>
             <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5">
@@ -378,7 +377,7 @@ export function BoostPage() {
           {/* Quick Target Move Chips */}
           <div className="space-y-1.5 pt-2 border-t border-border">
             <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold block">
-              Quick Target Expansion ({direction})
+              Quick Target Presets ({direction})
             </span>
             <div className="grid grid-cols-4 gap-1.5">
               {[5, 10, 20, 40].map((pct) => {
@@ -412,7 +411,7 @@ export function BoostPage() {
           {/* Capital Allocation */}
           <div className="space-y-2 pt-2 border-t border-border">
             <div className="flex justify-between items-center text-[11px]">
-              <span className="text-muted-foreground font-semibold">CAPITAL ALLOCATION</span>
+              <span className="text-muted-foreground font-semibold">CAPITAL AMOUNT</span>
               <span className="text-foreground font-bold tabular font-mono text-sm">
                 ${amount.toLocaleString()}
               </span>
@@ -476,7 +475,7 @@ export function BoostPage() {
               ) : (
                 <span className="flex items-center gap-1.5">
                   <Zap className="size-3.5" />
-                  Lock In {boostMultiplier}× Convexity Boost →
+                  Set {boostMultiplier}× Boost →
                 </span>
               )}
             </Button>
@@ -517,7 +516,7 @@ export function BoostPage() {
 
                 <div className="relative z-10 size-44 rounded-full flex flex-col items-center justify-center text-center p-4 border border-border bg-white/90 backdrop-blur-md shadow-[0_8px_30px_rgb(0,0,0,0.06)]">
                   <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-semibold font-sans">
-                    Convex Return
+                    Estimated Return
                   </span>
                   <span
                     className={`font-mono tabular text-3xl font-bold tracking-tight my-1 ${
@@ -531,7 +530,7 @@ export function BoostPage() {
                     ${(amount + payout).toLocaleString()}
                   </span>
                   <span className="text-[9px] text-muted-foreground mt-1 font-sans">
-                    {boostMultiplier}× Boost Factor
+                    {boostMultiplier}× Multiplier
                   </span>
                 </div>
               </div>
@@ -540,10 +539,10 @@ export function BoostPage() {
               <div className="space-y-3 font-sans">
                 <div>
                   <h3 className="text-sm font-bold text-foreground font-sans">
-                    Asymmetric Non-Linear Payout
+                    Payout &amp; Return Summary
                   </h3>
                   <p className="text-xs text-muted-foreground mt-0.5">
-                    Modeled for outlier market moves with zero counterparty slippage.
+                    Estimated payout based on reaching the target price with your selected multiplier.
                   </p>
                 </div>
 
@@ -559,7 +558,7 @@ export function BoostPage() {
                     </span>
                   </div>
                   <div className="flex justify-between py-1.5 border-b border-border">
-                    <span className="text-muted-foreground font-sans">Spot Reference</span>
+                    <span className="text-muted-foreground font-sans">Current Price</span>
                     <span className="font-bold tabular text-foreground">
                       $
                       {spot.toLocaleString(undefined, {
@@ -586,7 +585,7 @@ export function BoostPage() {
                     </span>
                   </div>
                   <div className="flex justify-between py-1.5 border-b border-border">
-                    <span className="text-muted-foreground font-sans">Boosted Net Payout</span>
+                    <span className="text-muted-foreground font-sans">Estimated Profit</span>
                     <span
                       className={`font-bold tabular ${
                         payout >= 0 ? "text-[#06964A]" : "text-[#FF3B30]"
@@ -596,9 +595,9 @@ export function BoostPage() {
                     </span>
                   </div>
                   <div className="flex justify-between py-1.5">
-                    <span className="text-muted-foreground font-sans">FIFO Settlement</span>
+                    <span className="text-muted-foreground font-sans">Settlement</span>
                     <span className="font-bold text-[#06964A] font-sans">
-                      100% Solvent · HyperEVM
+                      HyperEVM Settlement
                     </span>
                   </div>
                 </div>
@@ -611,10 +610,10 @@ export function BoostPage() {
             <div className="flex items-center justify-between pb-2 border-b border-border">
               <span className="font-bold text-xs uppercase tracking-wider flex items-center gap-1.5">
                 <TrendingUp className="size-3.5 text-[#06964A]" />
-                Non-Linear Payoff Multiplier Curve
+                Boosted Payoff Curve
               </span>
               <span className="text-[10px] text-muted-foreground font-mono">
-                {boostMultiplier}× Convex Curve ({direction})
+                {boostMultiplier}× Target Curve ({direction})
               </span>
             </div>
             <div className="pt-1">
@@ -625,7 +624,7 @@ export function BoostPage() {
           {/* Convex Multiplier Ladder */}
           <div className="relative overflow-hidden rounded-3xl border border-border bg-white p-5 shadow-xs space-y-3">
             <h3 className="font-bold text-foreground text-xs tracking-wider uppercase">
-              Payout at Alternate Boost Multipliers ({direction} {movePct >= 0 ? "+" : ""}
+              Payout at Different Multipliers ({direction} {movePct >= 0 ? "+" : ""}
               {movePct.toFixed(1)}% Move)
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">

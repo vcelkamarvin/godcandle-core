@@ -77,4 +77,15 @@ describe("Target Goal Studio & Convexity Boost Multiplier", () => {
     expect(canvasContent).toContain('kind === "curve"');
     expect(canvasContent).toContain('["NOW", "+25%", "+50%", "+75%", "TARGET"]');
   });
+
+  it("uses clear, intuitive terminology instead of obscure jargon", () => {
+    expect(goalContent).toContain("Price Target Goal");
+    expect(goalContent).toContain("Price Target Tool");
+    expect(goalContent).not.toContain("0DTE &amp; Swing Convexity");
+    expect(goalContent).not.toContain("Target Goal Studio");
+
+    expect(boostContent).toContain("Boost Multiplier");
+    expect(boostContent).toContain("Multiplier Tool");
+    expect(boostContent).not.toContain("Asymmetric Convexity Multiplier");
+  });
 });

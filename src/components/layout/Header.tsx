@@ -144,7 +144,7 @@ export function Header() {
               </span>
             </Link>
 
-            {/* Left Nav: Products [Perps | 1000x], Studios [Goal | Boost], Analysis, Leaderboard, More */}
+            {/* Left Nav: Trading [Perps | 1000x], Tools [Goal | Boost], Analysis, Leaderboard, More */}
             <nav aria-label="Main navigation" className="hidden md:flex items-center gap-2">
               {/* Primary Trading Segment */}
               <div className="flex items-center p-0.5 rounded-full bg-secondary/80 border border-border/80 shadow-2xs">
@@ -162,15 +162,6 @@ export function Header() {
                   <span className="flex items-center gap-1.5">
                     <span className="size-1.5 rounded-full bg-[#00D964] shadow-[0_0_6px_#00D964]" />
                     <span>Perps</span>
-                    <span
-                      className={
-                        pathname === "/" && t.mode === "perps"
-                          ? "rounded bg-white/20 px-1 py-0.2 text-[8px] font-bold text-white tracking-wider"
-                          : "rounded bg-[#E3F8EC] px-1 py-0.2 text-[8px] font-bold text-[#06964A] tracking-wider"
-                      }
-                    >
-                      LIVE
-                    </span>
                   </span>
                 </Link>
                 <Link
@@ -182,54 +173,31 @@ export function Header() {
                       : "pill h-7.5 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-white/60 transition-colors"
                   }
                   title="1000x Synthetic Engine Simulation"
-                  aria-label="1000x Max Test"
+                  aria-label="1000x Trading"
                 >
-                  <span className="flex items-center gap-1.5">
-                    <span>1000x</span>
-                    <span
-                      className={
-                        pathname === "/trade" && t.mode === "paper1000x"
-                          ? "rounded bg-white/20 px-1 py-0.2 text-[8px] font-bold text-white tracking-wider"
-                          : "rounded bg-[#FFECEA] px-1 py-0.2 text-[8px] font-bold text-[#FF3B30] tracking-wider"
-                      }
-                    >
-                      MAX
-                    </span>
-                  </span>
+                  <span>1000x</span>
                 </Link>
               </div>
 
-              {/* Elevated Studios Navigation Segment: Goal (0DTE) & Boost (100×) */}
-              <div className="flex items-center p-0.5 rounded-full bg-gradient-to-r from-[#CDC3F0]/30 via-[#FFDAC8]/25 to-[#A0D4CA]/30 border border-[#CDC3F0]/70 shadow-2xs relative">
-                <span className="text-[9px] font-mono font-bold uppercase tracking-wider text-muted-foreground/75 px-2 select-none hidden 2xl:inline-flex items-center gap-1">
-                  STUDIOS
-                </span>
+              {/* Tools Navigation Segment: Goal (Price Target) & Boost (Multiplier) */}
+              <div className="flex items-center p-0.5 rounded-full bg-secondary/80 border border-border/80 shadow-2xs">
                 <Link
                   to="/goal"
                   className={
                     isGoalActive
                       ? "pill pill-ink h-7.5 px-3 text-xs font-semibold shadow-xs"
-                      : "pill h-7.5 px-3 text-xs text-foreground/80 hover:text-foreground hover:bg-white/80 transition-colors"
+                      : "pill h-7.5 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-white/60 transition-colors"
                   }
-                  title="Target Goal Studio (0DTE Binary Modeling)"
-                  aria-label="Goal Studio 0DTE"
+                  title="Price Target Calculator"
+                  aria-label="Price Target Goal"
                 >
                   <span className="flex items-center gap-1.5">
                     <Target
-                      className={`size-3 transition-colors ${
+                      className={`size-3.5 transition-colors ${
                         isGoalActive ? "text-[#00D964]" : "text-[#06964A]"
                       }`}
                     />
                     <span className="font-medium">Goal</span>
-                    <span
-                      className={
-                        isGoalActive
-                          ? "rounded bg-white/20 px-1 py-0.2 text-[8px] font-bold text-white tracking-wider"
-                          : "rounded bg-[#E3F8EC] px-1 py-0.2 text-[8px] font-bold text-[#06964A] tracking-wider"
-                      }
-                    >
-                      0DTE
-                    </span>
                   </span>
                 </Link>
                 <Link
@@ -237,27 +205,18 @@ export function Header() {
                   className={
                     isBoostActive
                       ? "pill pill-ink h-7.5 px-3 text-xs font-semibold shadow-xs"
-                      : "pill h-7.5 px-3 text-xs text-foreground/80 hover:text-foreground hover:bg-white/80 transition-colors"
+                      : "pill h-7.5 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-white/60 transition-colors"
                   }
-                  title="Convexity Boost Multiplier (100×)"
-                  aria-label="Boost Multiplier 100x"
+                  title="Boost Multiplier Calculator"
+                  aria-label="Boost Multiplier"
                 >
                   <span className="flex items-center gap-1.5">
                     <Zap
-                      className={`size-3 transition-colors ${
+                      className={`size-3.5 transition-colors ${
                         isBoostActive ? "text-[#C084FC]" : "text-[#7C3AED]"
                       }`}
                     />
                     <span className="font-medium">Boost</span>
-                    <span
-                      className={
-                        isBoostActive
-                          ? "rounded bg-white/20 px-1 py-0.2 text-[8px] font-bold text-white tracking-wider"
-                          : "rounded bg-[#FAF5FF] px-1 py-0.2 text-[8px] font-bold text-[#7C3AED] tracking-wider"
-                      }
-                    >
-                      100×
-                    </span>
                   </span>
                 </Link>
               </div>
@@ -597,15 +556,6 @@ export function Header() {
               <span className="flex items-center gap-1">
                 <span className="inline-block size-1.5 rounded-full bg-[#00D964]" />
                 <span>Perps</span>
-                <span
-                  className={
-                    pathname === "/" && t.mode === "perps"
-                      ? "rounded bg-white/20 px-1 py-0.2 text-[8px] font-bold text-white tracking-wider"
-                      : "rounded bg-[#E3F8EC] px-1 py-0.2 text-[8px] font-bold text-[#06964A] tracking-wider"
-                  }
-                >
-                  LIVE
-                </span>
               </span>
             </Link>
             <Link
@@ -617,47 +567,27 @@ export function Header() {
                   : "pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-white/60 transition-colors"
               }
             >
-              <span className="flex items-center gap-1">
-                <span>1000x</span>
-                <span
-                  className={
-                    pathname === "/trade" && t.mode === "paper1000x"
-                      ? "rounded bg-white/20 px-1 py-0.2 text-[8px] font-bold text-white tracking-wider"
-                      : "rounded bg-[#FFECEA] px-1 py-0.2 text-[8px] font-bold text-[#FF3B30] tracking-wider"
-                  }
-                >
-                  MAX
-                </span>
-              </span>
+              <span>1000x</span>
             </Link>
           </div>
 
-          {/* Mobile Studios Segment: /goal & /boost highlighted with pastel gradient */}
-          <div className="flex items-center p-0.5 rounded-full bg-gradient-to-r from-[#CDC3F0]/30 via-[#FFDAC8]/25 to-[#A0D4CA]/30 border border-[#CDC3F0]/70 shrink-0">
+          {/* Mobile Tools Segment: Goal & Boost */}
+          <div className="flex items-center p-0.5 rounded-full bg-secondary/80 border border-border/80 shrink-0">
             <Link
               to="/goal"
               className={
                 isGoalActive
                   ? "pill pill-ink h-7 px-2.5 text-[11px] font-semibold"
-                  : "pill h-7 px-2.5 text-[11px] text-foreground/80 hover:text-foreground hover:bg-white/80 transition-colors"
+                  : "pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-white/60 transition-colors"
               }
             >
               <span className="flex items-center gap-1">
                 <Target
-                  className={`size-2.5 ${
+                  className={`size-3 ${
                     isGoalActive ? "text-[#00D964]" : "text-[#06964A]"
                   }`}
                 />
                 <span>Goal</span>
-                <span
-                  className={
-                    isGoalActive
-                      ? "rounded bg-white/20 px-1 py-0.2 text-[8px] font-bold text-white tracking-wider"
-                      : "rounded bg-[#E3F8EC] px-1 py-0.2 text-[8px] font-bold text-[#06964A] tracking-wider"
-                  }
-                >
-                  0DTE
-                </span>
               </span>
             </Link>
             <Link
@@ -665,25 +595,16 @@ export function Header() {
               className={
                 isBoostActive
                   ? "pill pill-ink h-7 px-2.5 text-[11px] font-semibold"
-                  : "pill h-7 px-2.5 text-[11px] text-foreground/80 hover:text-foreground hover:bg-white/80 transition-colors"
+                  : "pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-white/60 transition-colors"
               }
             >
               <span className="flex items-center gap-1">
                 <Zap
-                  className={`size-2.5 ${
+                  className={`size-3 ${
                     isBoostActive ? "text-[#C084FC]" : "text-[#7C3AED]"
                   }`}
                 />
                 <span>Boost</span>
-                <span
-                  className={
-                    isBoostActive
-                      ? "rounded bg-white/20 px-1 py-0.2 text-[8px] font-bold text-white tracking-wider"
-                      : "rounded bg-[#FAF5FF] px-1 py-0.2 text-[8px] font-bold text-[#7C3AED] tracking-wider"
-                  }
-                >
-                  100×
-                </span>
               </span>
             </Link>
           </div>

@@ -51,6 +51,20 @@ describe("Header Layout & Navigation Structure", () => {
     expect(headerContent).toContain('to="/"');
     expect(headerContent).toContain('to="/trade"');
   });
+
+  it("removes gimmicky labels and artificial badges (STUDIOS, 0DTE, MAX, LIVE) from navigation", () => {
+    expect(headerContent).not.toContain("STUDIOS");
+    expect(headerContent).not.toContain(">0DTE<");
+    expect(headerContent).not.toContain(">MAX<");
+    expect(headerContent).not.toContain(">LIVE<");
+    expect(headerContent).not.toContain("1000x Max Test");
+    expect(headerContent).not.toContain("Goal Studio 0DTE");
+    expect(headerContent).not.toContain("Boost Multiplier 100x");
+    expect(headerContent).toContain('to="/goal"');
+    expect(headerContent).toContain('to="/boost"');
+    expect(headerContent).toContain("Price Target Calculator");
+    expect(headerContent).toContain("Boost Multiplier Calculator");
+  });
 });
 
 describe("ConnectModal Light Mode & Web3 Wallets", () => {

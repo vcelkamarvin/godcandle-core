@@ -48,7 +48,7 @@ export function Footer() {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">Phase 3: Hardware</span>
-                <span className="text-[#7C3AED] font-bold text-[10px]">FUTURE (0DTE)</span>
+                <span className="text-[#7C3AED] font-bold text-[10px]">FUTURE</span>
               </div>
             </div>
           </div>
@@ -125,14 +125,12 @@ export function Footer() {
               </li>
               <li>
                 <Link to="/goal" className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5">
-                  <span>Target Goal Studio</span>
-                  <span className="text-[9px] text-[#06964A] border border-[#06964A]/30 bg-[#E3F8EC] rounded px-1 font-mono">0DTE</span>
+                  <span>Price Target Goal</span>
                 </Link>
               </li>
               <li>
                 <Link to="/boost" className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5">
-                  <span>Convexity Boost Multiplier</span>
-                  <span className="text-[9px] text-[#7C3AED] border border-[#7C3AED]/30 bg-[#FAF5FF] rounded px-1 font-mono">100×</span>
+                  <span>Boost Multiplier</span>
                 </Link>
               </li>
               <li>
