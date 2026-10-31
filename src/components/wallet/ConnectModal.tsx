@@ -181,7 +181,7 @@ function GoogleLogo() {
 
 function AppleLogo() {
   return (
-    <svg viewBox="0 0 24 24" className="size-4.5 shrink-0 fill-current text-white">
+    <svg viewBox="0 0 24 24" className="size-4.5 shrink-0 fill-current text-foreground">
       <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.87c.65-.8 1.09-1.92.97-3.04-.95.04-2.09.64-2.77 1.43-.6.69-1.12 1.83-.98 2.93 1.06.08 2.13-.53 2.78-1.32z" />
     </svg>
   );
@@ -189,7 +189,7 @@ function AppleLogo() {
 
 export function ConnectModal({ isDark: isDarkProp }: { isDark?: boolean } = {}) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const isDark = isDarkProp ?? (pathname === '/' || pathname === '/main');
+  const isDark = isDarkProp ?? false;
 
   const { address: wagmiAddress, isConnected: wagmiConnected } = useAccount();
   const { disconnect: wagmiDisconnect } = useDisconnect();
@@ -324,11 +324,7 @@ export function ConnectModal({ isDark: isDarkProp }: { isDark?: boolean } = {}) 
         <button
           onClick={handleOpenLogin}
           type="button"
-          className={
-            isDark
-              ? "h-8 px-3.5 rounded-xl bg-[#00D964] hover:bg-[#00BF57] text-[#080B0F] font-mono font-bold text-xs flex items-center gap-1.5 transition-all shadow-[0_0_15px_rgba(0,217,100,0.25)] cursor-pointer"
-              : "pill pill-ink h-8 px-3.5 text-xs font-sans font-semibold gap-2 hover:opacity-90 transition-all shadow-xs cursor-pointer"
-          }
+          className="pill pill-ink h-8 px-3.5 text-xs font-sans font-semibold gap-2 hover:opacity-90 transition-all shadow-xs cursor-pointer"
         >
           <Zap className="size-3.5 text-current" />
           <span>Connect Wallet</span>
@@ -337,11 +333,7 @@ export function ConnectModal({ isDark: isDarkProp }: { isDark?: boolean } = {}) 
         <button
           onClick={() => setDetailsOpen(true)}
           type="button"
-          className={
-            isDark
-              ? "h-8 px-3 rounded-xl bg-[#161B22] border border-[#30363D] hover:border-[#58A6FF] text-[#E6EDF3] transition-all flex items-center gap-2 text-xs font-mono cursor-pointer"
-              : "h-8 px-3 rounded-full bg-secondary border border-border hover:border-foreground/40 transition-all flex items-center gap-2 text-xs font-sans cursor-pointer"
-          }
+          className="h-8 px-3 rounded-full bg-secondary border border-border hover:border-foreground/40 transition-all flex items-center gap-2 text-xs font-sans cursor-pointer"
         >
           <span className="size-2 rounded-full bg-[#00D964] animate-pulse" />
           <span className="font-mono font-semibold">
@@ -352,7 +344,7 @@ export function ConnectModal({ isDark: isDarkProp }: { isDark?: boolean } = {}) 
               {parseFloat(formatUnits(hypeBalance.value, hypeBalance.decimals)).toFixed(3)} HYPE
             </span>
           )}
-          <span className={`rounded px-1.5 py-0.5 text-[9px] font-mono border ${isDark ? 'bg-[#21262D] text-[#58A6FF] border-[#30363D]' : 'bg-white text-muted-foreground border-border/60'}`}>
+          <span className="rounded px-1.5 py-0.5 text-[9px] font-mono border bg-white text-muted-foreground border-border/60">
             999
           </span>
         </button>
@@ -443,9 +435,9 @@ export function ConnectModal({ isDark: isDarkProp }: { isDark?: boolean } = {}) 
                         <button
                           type="button"
                           onClick={() => setFlowState('email')}
-                          className="w-full h-[50px] rounded-full bg-[#17171A] hover:bg-[#1E1E22] border border-white/[0.08] hover:border-white/20 text-[#F5F5F6] font-medium text-[14px] flex items-center justify-center gap-2.5 transition-all cursor-pointer"
+                          className="w-full h-[50px] rounded-full bg-secondary/80 hover:bg-secondary border border-border hover:border-foreground/30 text-foreground font-medium text-[14px] flex items-center justify-center gap-2.5 transition-all cursor-pointer shadow-xs"
                         >
-                          <Mail className="size-4 text-[#8A8A96]" />
+                          <Mail className="size-4 text-muted-foreground" />
                           <span>Log in with Email</span>
                         </button>
 
@@ -467,7 +459,7 @@ export function ConnectModal({ isDark: isDarkProp }: { isDark?: boolean } = {}) 
                                 toast.success('Connected via Google SSO!');
                               }, 900);
                             }}
-                            className="h-[48px] rounded-full bg-[#17171A] hover:bg-[#1E1E22] border border-white/[0.08] hover:border-white/20 text-[#F5F5F6] font-medium text-[13px] flex items-center justify-center gap-2 transition-all cursor-pointer"
+                            className="h-[48px] rounded-full bg-secondary/80 hover:bg-secondary border border-border hover:border-foreground/30 text-foreground font-medium text-[13px] flex items-center justify-center gap-2 transition-all cursor-pointer shadow-xs"
                           >
                             <GoogleLogo />
                             <span>Google</span>
@@ -488,7 +480,7 @@ export function ConnectModal({ isDark: isDarkProp }: { isDark?: boolean } = {}) 
                                 toast.success('Connected via Apple ID!');
                               }, 900);
                             }}
-                            className="h-[48px] rounded-full bg-[#17171A] hover:bg-[#1E1E22] border border-white/[0.08] hover:border-white/20 text-[#F5F5F6] font-medium text-[13px] flex items-center justify-center gap-2 transition-all cursor-pointer"
+                            className="h-[48px] rounded-full bg-secondary/80 hover:bg-secondary border border-border hover:border-foreground/30 text-foreground font-medium text-[13px] flex items-center justify-center gap-2 transition-all cursor-pointer shadow-xs"
                           >
                             <AppleLogo />
                             <span>Apple</span>
@@ -497,8 +489,8 @@ export function ConnectModal({ isDark: isDarkProp }: { isDark?: boolean } = {}) 
 
                         {/* Trust Microcopy & Secondary Read-Only Link */}
                         <div className="text-center space-y-2 pt-1">
-                          <p className="text-[11px] text-[#8A8A96] flex items-center justify-center gap-1.5 font-mono">
-                            <ShieldCheck className="size-3.5 text-[#8A8A96]" />
+                          <p className="text-[11px] text-muted-foreground flex items-center justify-center gap-1.5 font-mono">
+                            <ShieldCheck className="size-3.5 text-muted-foreground" />
                             <span>Protected by Privy embedded wallets</span>
                           </p>
                           <div>
@@ -510,7 +502,7 @@ export function ConnectModal({ isDark: isDarkProp }: { isDark?: boolean } = {}) 
                                   description: 'You can inspect live charts, order books, and Candle Cup.',
                                 });
                               }}
-                              className="text-[12px] text-[#A8A8B3] hover:text-[#F5F5F6] underline decoration-white/20 hover:decoration-white/60 transition-colors cursor-pointer"
+                              className="text-[12px] text-muted-foreground hover:text-foreground underline decoration-border hover:decoration-foreground/60 transition-colors cursor-pointer"
                             >
                               Explore without connecting (read-only mode)
                             </button>
