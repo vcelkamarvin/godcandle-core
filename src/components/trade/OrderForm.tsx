@@ -1,14 +1,9 @@
 import React, { useState } from 'react';
-import { computeClampedPrice, computeBustDistance } from '@/lib/hyperliquid';
 import { ArrowUp, ArrowDown, AlertTriangle, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
 import type { TradingMode } from '@/lib/engine/types';
-import {
-  paperLiquidationPrice,
-  DEFAULT_MMR,
-  DEFAULT_CORRIDOR_BPS,
-} from '@/lib/engine/paper-math';
 import { hyperliquidEngineInstance } from '@/lib/engine/hyperliquid';
+import { useTrading } from '@/components/godcandle/TradingProvider';
 
 interface OrderFormProps {
   currentPrice: number;
@@ -37,6 +32,7 @@ export function OrderForm({
   mode = 'paper1000x',
   onTrade,
 }: OrderFormProps) {
+  const t = useTrading();
   const [margin, setMargin] = useState('50');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [tpMode, setTpMode] = useState<'price' | 'roi'>('roi');
@@ -46,41 +42,26 @@ export function OrderForm({
   const [pendingConfirmSide, setPendingConfirmSide] = useState<'LONG' | 'SHORT' | null>(null);
 
   const numMargin = parseFloat(margin) || 0;
-  const notional = numMargin * leverage;
 
-  // Builder Fee Configuration
-  const builderAddress = typeof process !== 'undefined' ? process.env?.['NEXT_PUBLIC_HL_BUILDER_ADDRESS'] : null;
-  const builderFeeBps = typeof process !== 'undefined' ? parseFloat(process.env?.['NEXT_PUBLIC_HL_BUILDER_FEE_BPS'] || '0') : 0;
-  const builderFeeUsd = builderAddress && builderFeeBps > 0 ? (notional * builderFeeBps) / 10000 : 0;
+  // Use active engine quote directly
+  const quote = t.engine.quote(
+    {
+      asset,
+      side: 'long',
+      margin: numMargin,
+      leverage,
+    },
+    currentPrice
+  );
 
-  // Pricing calculations
-  const { execPrice } = computeClampedPrice(currentPrice, currentPrice, corridorBps);
-
-  let longBustPrice: number;
-  let shortBustPrice: number;
-  let bustDistanceBps: number;
-  let bustDistancePct: number;
-
-  if (mode === 'perps') {
-    const imr = 1 / leverage;
-    const mmr = 0.005; // 0.5% default HL MMR
-    longBustPrice = execPrice * (1 - imr + mmr);
-    shortBustPrice = execPrice * (1 + imr - mmr);
-    bustDistancePct = Math.max(0.01, (imr - mmr) * 100);
-    bustDistanceBps = bustDistancePct * 100;
-  } else {
-    // 1000x Paper formulas
-    longBustPrice = paperLiquidationPrice(execPrice, leverage, 'long', DEFAULT_MMR);
-    shortBustPrice = paperLiquidationPrice(execPrice, leverage, 'short', DEFAULT_MMR);
-    const imr = 1 / leverage;
-    bustDistancePct = Math.max(0.001, (imr - DEFAULT_MMR) * 100);
-    bustDistanceBps = bustDistancePct * 100;
-  }
-
-  // Min notional validation error in Perps mode
-  const minNotionalError = mode === 'perps' && notional < 10
-    ? 'Order value too small: minimum $10 notional required'
-    : null;
+  const notional = quote.notional;
+  const execPrice = quote.execPrice;
+  const longBustPrice = quote.longBustPrice;
+  const shortBustPrice = quote.shortBustPrice;
+  const bustDistanceBps = quote.estBustDistanceBps;
+  const bustDistancePct = quote.estBustDistancePct;
+  const builderFeeUsd = quote.builderFeeUsd;
+  const minNotionalError = quote.error;
 
   const computeTargetPrice = (side: 'LONG' | 'SHORT', type: 'tp' | 'sl'): number | null => {
     const rawVal = type === 'tp' ? parseFloat(tpValue) : parseFloat(slValue);
@@ -252,9 +233,9 @@ export function OrderForm({
             {mode === 'perps' ? (
               <>
                 <span className="text-foreground">0.035% Taker</span>
-                {builderAddress && builderFeeBps > 0 && (
+                {builderFeeUsd > 0 && (
                   <span className="text-[#5E5CE6]">
-                    +{(builderFeeBps / 100).toFixed(2)}% Builder (${builderFeeUsd.toFixed(2)})
+                    +Builder (${builderFeeUsd.toFixed(2)})
                   </span>
                 )}
               </>

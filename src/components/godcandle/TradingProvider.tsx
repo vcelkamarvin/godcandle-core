@@ -1,8 +1,8 @@
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { toast } from "sonner";
-import { useAccount } from "wagmi";
+import { useAccount, useSignTypedData } from "wagmi";
 import { getMarket, type MarketSymbol } from "@/config/markets";
-import { getSnap, startFeed, useFeeds } from "@/lib/price-feed";
+import { getSnap, startFeed, useFeeds, updateHlPrices } from "@/lib/price-feed";
 import {
   fmtSigned,
   fmtUsd,
@@ -41,6 +41,10 @@ export interface TradingContextType {
 function useTradingState() {
   const feeds = useFeeds();
   const { address } = useAccount();
+  const { signTypedDataAsync } = useSignTypedData();
+  const [isAgentApproved, setIsAgentApproved] = useState<boolean>(() =>
+    hyperliquidEngineInstance.getAgentState()?.isApproved ?? false
+  );
 
   // Mode: 'perps' (real Hyperliquid) or 'paper1000x' (test paper trading)
   const [mode, setModeState] = useState<TradingMode>(() => {
@@ -60,9 +64,18 @@ function useTradingState() {
     }
   };
 
-  // Sync connected wallet to Hyperliquid Engine
+  // Sync connected wallet to Hyperliquid Engine and Paper Engine
   useEffect(() => {
     hyperliquidEngineInstance.setConnectedWallet(address ?? null);
+    paperEngineInstance.attachWallet(address ?? null);
+
+    if (address) {
+      hyperliquidEngineInstance.checkIsAgentApproved(address).then((approved) => {
+        setIsAgentApproved(approved);
+      });
+    } else {
+      setIsAgentApproved(false);
+    }
   }, [address]);
 
   // Paper Mode State
@@ -88,7 +101,16 @@ function useTradingState() {
       paperEngineInstance.getBalance().then((b) => setPaperBalance(b.balance));
     });
     paperEngineInstance.getBalance().then((b) => setPaperBalance(b.balance));
-    return unsub;
+
+    // Poll server-side liquidations every 10s
+    const syncInterval = setInterval(() => {
+      paperEngineInstance.syncServerState();
+    }, 10000);
+
+    return () => {
+      unsub();
+      clearInterval(syncInterval);
+    };
   }, []);
 
   // Poll Real Hyperliquid Data when in perps mode or wallet changes
@@ -126,10 +148,16 @@ function useTradingState() {
     };
   }, [address, mode]);
 
-  // Start feeds & marketStore
+  // Start feeds & marketStore, and pipe live HL ticks to price feed
   useEffect(() => {
     startFeed();
     marketStore.init();
+    const unsubMids = marketStore.subscribeMids((mids) => {
+      updateHlPrices(mids);
+    });
+    return () => {
+      unsubMids();
+    };
   }, []);
 
   const activeEngine: TradingEngine = mode === "perps" ? hyperliquidEngineInstance : paperEngineInstance;
@@ -255,12 +283,22 @@ function useTradingState() {
       toast.error("Please connect your wallet first");
       return false;
     }
-    // Agent approval logic via user signature
+    const nonce = Date.now();
     try {
-      hyperliquidEngineInstance.markAgentApproved(address);
-      toast.success("1-Click API Agent Key Approved for Session");
-      return true;
-    } catch {
+      const payload = hyperliquidEngineInstance.createApproveAgentPayload(nonce);
+      const sigHex = await signTypedDataAsync(payload as any);
+      const res = await hyperliquidEngineInstance.submitApprovedAgent(address, sigHex, nonce);
+      if (res.success) {
+        setIsAgentApproved(true);
+        toast.success("1-Click Hyperliquid Agent Approved!");
+        return true;
+      } else {
+        toast.error(res.error || "Hyperliquid rejected agent approval");
+        return false;
+      }
+    } catch (err: any) {
+      console.error("Agent approval signature failed:", err);
+      toast.error(err?.message || "Failed to sign agent approval");
       return false;
     }
   }
@@ -279,7 +317,7 @@ function useTradingState() {
     deposit,
     withdraw,
     resetPaperBalance,
-    isAgentApproved: agentState?.isApproved ?? false,
+    isAgentApproved,
     approveAgent,
   };
 }

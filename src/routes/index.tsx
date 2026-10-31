@@ -47,15 +47,18 @@ function Terminal() {
   const t = useTrading();
   const [market, setMarket] = useState<MarketSymbol>("BTC");
   const [stake, setStake] = useState(50);
-  const [leverage, setLeverage] = useState(500);
+  const currentMaxLev = t.engine.getMaxLeverage(market);
+  const [leverage, setLeverage] = useState(() => (t.mode === "perps" ? Math.min(50, currentMaxLev) : 500));
   const [chartMode, setChartMode] = useState<"reactive" | "tradingview">("reactive");
   const [windowMs, setWindow] = useState(30000);
   const [tvInterval, setTvInterval] = useState<TVInterval>("15");
   const [share, setShare] = useState<ClosedTrade | null>(null);
 
+  // Auto-clamp leverage when engine, mode or market changes
   const select = (s: MarketSymbol) => {
     setMarket(s);
-    setLeverage((l) => Math.min(l, getMarket(s).maxLeverage));
+    const max = t.engine.getMaxLeverage(s);
+    setLeverage((l) => Math.min(l, max));
   };
 
   const m = getMarket(market);
@@ -85,8 +88,18 @@ function Terminal() {
             <div>
               <p className="mb-1.5 flex items-center gap-2 text-xs font-semibold tracking-tight text-foreground">
                 <span>{market}-USD</span>
+                {t.mode === "perps" ? (
+                  <span className="flex items-center gap-1 rounded bg-[#E3F8EC] border border-[#06964A]/30 px-2 py-0.5 text-[9px] font-bold text-[#06964A]">
+                    <span className="size-1.5 rounded-full bg-[#06964A] animate-pulse" />
+                    LIVE · REAL FUNDS
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-1 rounded bg-[#FFF4E5] border border-[#D97706]/30 px-2 py-0.5 text-[9px] font-bold text-[#D97706]">
+                    TEST · PAPER
+                  </span>
+                )}
                 <span className="rounded bg-secondary border border-border px-2 py-0.5 text-[9px] font-normal text-muted-foreground">
-                  Perp · {m.maxLeverage}x max
+                  Perp · {currentMaxLev}x max
                 </span>
                 <span className="rounded bg-secondary border border-border px-2 py-0.5 text-[9px] font-mono text-muted-foreground">
                   BBO 1.5 bps Clamped
@@ -217,7 +230,7 @@ function Terminal() {
                 Max Leverage
               </p>
               <p className="tabular mt-0.5 font-semibold text-foreground">
-                {m.maxLeverage}x Isolated
+                {currentMaxLev}x Isolated
               </p>
             </div>
             <div>

@@ -101,6 +101,25 @@ serve(async (req: Request) => {
         closed_at: new Date().toISOString(),
       });
 
+      // Update paper account balance and record equity snapshot
+      const { data: acct } = await supabase
+        .from("paper_accounts")
+        .select("balance")
+        .eq("id", pos.account_id)
+        .single();
+      if (acct) {
+        const newBal = Math.max(0, parseFloat(acct.balance) - margin);
+        await supabase
+          .from("paper_accounts")
+          .update({ balance: newBal, updated_at: new Date().toISOString() })
+          .eq("id", pos.account_id);
+
+        await supabase.from("paper_equity_snapshots").insert({
+          account_id: pos.account_id,
+          equity: newBal,
+        });
+      }
+
       liquidatedIds.push(pos.id);
     }
   }

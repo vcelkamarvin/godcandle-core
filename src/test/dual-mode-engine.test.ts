@@ -192,3 +192,55 @@ describe("Engine Leverage Clamping & Validation", () => {
     expect(realBal.balance).toBe(0);
   });
 });
+
+describe("Hyperliquid ApproveAgent EIP-712 Specifications", () => {
+  it("constructs compliant EIP-712 ApproveAgent payload", () => {
+    const nonce = 1718000000000;
+    const payload = hyperliquidEngineInstance.createApproveAgentPayload(nonce);
+
+    expect(payload.domain.name).toBe("HyperliquidSignTransaction");
+    expect(payload.domain.version).toBe("1");
+    expect(payload.domain.chainId).toBe(421614); // testnet chainId
+    expect(payload.domain.verifyingContract).toBe("0x0000000000000000000000000000000000000000");
+
+    expect(payload.primaryType).toBe("HyperliquidTransaction:ApproveAgent");
+    expect(payload.types["HyperliquidTransaction:ApproveAgent"]).toEqual([
+      { name: "hyperliquidChain", type: "string" },
+      { name: "agentAddress", type: "address" },
+      { name: "agentName", type: "string" },
+      { name: "nonce", type: "uint64" },
+    ]);
+
+    expect(payload.message.hyperliquidChain).toBe("Testnet");
+    expect(payload.message.agentName).toBe("godcandle");
+    expect(payload.message.nonce).toBe(BigInt(nonce));
+  });
+});
+
+describe("Server-Side Paper Liquidation Worker Math", () => {
+  it("authoritatively computes server-side liquidation boundaries", () => {
+    const btcEntry = 68000;
+    const lev = 1000;
+    const imr = 1 / lev; // 0.001
+    const mmr = DEFAULT_MMR; // 0.0004
+
+    // Long liq = 68000 * (1 - 0.001 + 0.0004) = 67959.2
+    const longLiq = btcEntry * (1 - imr + mmr);
+    expect(longLiq).toBeCloseTo(67959.2);
+
+    // If mark price drops to 67959, position is liquidated
+    expect(isPaperLiquidated(67959.0, longLiq, "long")).toBe(true);
+    // If mark price is 67960, position remains safe
+    expect(isPaperLiquidated(67960.0, longLiq, "long")).toBe(false);
+
+    // Short liq = 68000 * (1 + 0.001 - 0.0004) = 68040.8
+    const shortLiq = btcEntry * (1 + imr - mmr);
+    expect(shortLiq).toBeCloseTo(68040.8);
+
+    // If mark rises to 68041, position is liquidated
+    expect(isPaperLiquidated(68041.0, shortLiq, "short")).toBe(true);
+    // If mark is 68040, safe
+    expect(isPaperLiquidated(68040.0, shortLiq, "short")).toBe(false);
+  });
+});
+

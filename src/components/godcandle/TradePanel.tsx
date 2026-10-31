@@ -1,24 +1,19 @@
-import { Plus, TrendingDown, TrendingUp, ShieldAlert, Zap, X } from "lucide-react";
+import { Plus, TrendingDown, TrendingUp, ShieldAlert, Zap, X, AlertTriangle, Key } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { getMarket, type MarketSymbol, type MarketStatus } from "@/config/markets";
-import { computeClampedPrice, computeBustDistance } from "@/lib/hyperliquid";
 import {
   LEVERAGES,
-  feeUsd,
-  liqPrice,
-  liqDistancePct,
   fmtSigned,
   fmtUsd,
   pnlOf,
-  liquidation,
   type Position,
   type Side,
 } from "@/lib/engine";
 import { MarginDialog } from "./MarginDialog";
-
 import { toast } from "sonner";
 import { useTrading } from "./TradingProvider";
+import { hyperliquidEngineInstance } from "@/lib/engine/hyperliquid";
 
 interface Props {
   market: MarketSymbol;
@@ -42,25 +37,34 @@ export function TradePanel(p: Props) {
   const [tpValue, setTpValue] = useState("");
   const [slMode, setSlMode] = useState<"price" | "roi">("roi");
   const [slValue, setSlValue] = useState("");
+  const [pendingConfirmSide, setPendingConfirmSide] = useState<Side | null>(null);
 
   const t = useTrading();
   const m = getMarket(p.market);
   const activePositions = p.positions ?? (p.position ? [p.position] : []);
-  const blocked = p.status !== "open" || p.limitReached;
   const stakes = [10, 25, 50, 100, 250, 500];
-  const maxAllowedLev = t?.mode === 'perps' ? t.engine.getMaxLeverage(p.market) : m.maxLeverage;
-  const availableLevs = t?.mode === 'perps'
+
+  const maxAllowedLev = t.engine.getMaxLeverage(p.market);
+  const isPerps = t.mode === "perps";
+
+  // Compute dynamic leverage choices
+  const availableLevs = isPerps
     ? [1, Math.round(maxAllowedLev * 0.1), Math.round(maxAllowedLev * 0.25), Math.round(maxAllowedLev * 0.5), maxAllowedLev]
         .filter((l, idx, arr) => l >= 1 && l <= maxAllowedLev && arr.indexOf(l) === idx)
-    : LEVERAGES.filter((l) => l <= maxAllowedLev);
+    : [50, 100, 250, 500, 1000].filter((l) => l <= maxAllowedLev);
 
-  const longLiq = liqPrice(p.price, p.leverage, "long", m.feeRate);
-  const shortLiq = liqPrice(p.price, p.leverage, "short", m.feeRate);
-  const liqDist = liqDistancePct(p.leverage, m.feeRate);
-  const notionalVal = p.stake * p.leverage;
-  const { bustDistanceBps } = computeBustDistance(p.leverage);
-  const corridorBps = 1.5;
-  const { execPrice } = computeClampedPrice(p.price, p.price, corridorBps);
+  // Compute order summary panel authoritative numbers directly from active TradingEngine
+  const quote = t.engine.quote(
+    {
+      asset: p.market,
+      side: "long",
+      margin: p.stake,
+      leverage: p.leverage,
+    },
+    p.price
+  );
+
+  const blocked = p.status !== "open" || p.limitReached || Boolean(quote.error);
 
   const computeTargetPrice = (side: Side, type: "tp" | "sl"): number | null => {
     const rawVal = type === "tp" ? parseFloat(tpValue) : parseFloat(slValue);
@@ -82,7 +86,26 @@ export function TradePanel(p: Props) {
     }
   };
 
+  const executeOrder = (side: Side) => {
+    const tpPrice = computeTargetPrice(side, "tp");
+    const slPrice = computeTargetPrice(side, "sl");
+    p.onOpen(side, tpPrice, slPrice);
+    setTpValue("");
+    setSlValue("");
+    setPendingConfirmSide(null);
+  };
+
   const handleOpen = (side: Side) => {
+    if (quote.error) {
+      toast.error(quote.error);
+      return;
+    }
+
+    if (isPerps && !t.isAgentApproved) {
+      toast.error("Please approve 1-Click Agent Key first");
+      return;
+    }
+
     const tpPrice = computeTargetPrice(side, "tp");
     const slPrice = computeTargetPrice(side, "sl");
 
@@ -106,9 +129,13 @@ export function TradePanel(p: Props) {
       }
     }
 
-    p.onOpen(side, tpPrice, slPrice);
-    setTpValue("");
-    setSlValue("");
+    // First live order of session confirmation requirement in Perps mode
+    if (isPerps && !hyperliquidEngineInstance.hasConfirmedFirstOrder()) {
+      setPendingConfirmSide(side);
+      return;
+    }
+
+    executeOrder(side);
   };
 
   return (
@@ -119,8 +146,18 @@ export function TradePanel(p: Props) {
           <h2 className="text-xs font-bold tracking-tight text-foreground font-mono">
             ORDER FORM
           </h2>
+          {isPerps ? (
+            <span className="flex items-center gap-1 rounded bg-[#E3F8EC] border border-[#06964A]/30 px-1.5 py-0.5 text-[9px] font-bold text-[#06964A]">
+              <span className="size-1.5 rounded-full bg-[#06964A] animate-pulse" />
+              LIVE · REAL FUNDS
+            </span>
+          ) : (
+            <span className="flex items-center gap-1 rounded bg-[#FFF4E5] border border-[#D97706]/30 px-1.5 py-0.5 text-[9px] font-bold text-[#D97706]">
+              TEST · PAPER
+            </span>
+          )}
           <span className="rounded-sm bg-secondary border border-border px-1.5 py-0.5 text-[10px] font-mono text-muted-foreground">
-            {p.market}-USD · {maxAllowedLev}x
+            {p.market}-USD · {maxAllowedLev}x max
           </span>
         </div>
         <span className="rounded-sm bg-foreground text-background px-2 py-0.5 text-[10px] font-mono font-semibold">
@@ -276,34 +313,77 @@ export function TradePanel(p: Props) {
         </div>
       </section>
 
-      {/* Section 3: Summary Technical Risk & Execution Box */}
+      {/* Section 3: Summary Technical Risk & Execution Box (Computed by Active Engine) */}
       <div className="rounded-md border border-hairline bg-[#F8F8F7] p-2 space-y-1 font-mono text-[10px]">
         <div className="flex justify-between items-center text-muted-foreground">
           <span>POSITION NOTIONAL</span>
-          <span className="text-foreground font-bold tabular">${fmtUsd(notionalVal, 0)} USDC</span>
+          <span className="text-foreground font-bold tabular">${fmtUsd(quote.notional, 0)} USDC</span>
         </div>
         <div className="flex justify-between items-center text-muted-foreground">
           <span>EXECUTION PRICE (BBO)</span>
           <div className="flex items-center gap-1 font-bold text-foreground tabular">
-            <span>${fmtUsd(execPrice, m.decimals)}</span>
+            <span>${fmtUsd(quote.execPrice, m.decimals)}</span>
             <span className="text-[9px] px-1 rounded-xs bg-[#EFEFFC] text-[#5E5CE6]">
-              ±{corridorBps} bps
+              ±{quote.isClamped ? "1.5 bps Clamped" : "1.5 bps"}
             </span>
           </div>
         </div>
         <div className="flex justify-between items-center text-muted-foreground">
           <span>EST. BUST DISTANCE</span>
           <span className="text-[#FF3B30] font-semibold tabular">
-            -{bustDistanceBps.toFixed(1)} bps (-{liqDist.toFixed(2)}%)
+            -{quote.estBustDistanceBps.toFixed(1)} bps (-{quote.estBustDistancePct.toFixed(2)}%)
           </span>
         </div>
         <div className="flex justify-between items-center text-muted-foreground">
           <span>LIQUIDATION (L / S)</span>
           <span className="tabular text-foreground">
-            ${fmtUsd(longLiq, m.decimals)} / ${fmtUsd(shortLiq, m.decimals)}
+            ${fmtUsd(quote.longBustPrice, m.decimals)} / ${fmtUsd(quote.shortBustPrice, m.decimals)}
           </span>
         </div>
+        {/* Fees */}
+        <div className="border-t border-border/50 pt-1 flex justify-between items-center text-muted-foreground text-[9px]">
+          <span>FEES</span>
+          <div className="flex items-center gap-1.5 font-semibold">
+            {isPerps ? (
+              <>
+                <span className="text-foreground">0.035% Taker</span>
+                {quote.builderFeeUsd > 0 && (
+                  <span className="text-[#5E5CE6]">
+                    +Builder (${fmtUsd(quote.builderFeeUsd, 2)})
+                  </span>
+                )}
+              </>
+            ) : (
+              <span className="text-[#06964A]">0% Entry · 1.5 bps Clamped</span>
+            )}
+          </div>
+        </div>
       </div>
+
+      {/* Validation Error Display */}
+      {quote.error && (
+        <div className="p-2 rounded bg-[#FFECEA] border border-[#FF3B30]/30 text-[#FF3B30] text-[10px] font-mono flex items-center gap-1.5">
+          <AlertTriangle className="size-3.5 shrink-0" />
+          <span>{quote.error}</span>
+        </div>
+      )}
+
+      {/* 1-Click Agent Approval Notice if not approved in Perps mode */}
+      {isPerps && !t.isAgentApproved && (
+        <div className="p-2 rounded bg-[#EFEFFC] border border-[#5E5CE6]/30 text-[10px] font-mono flex items-center justify-between">
+          <div className="flex items-center gap-1.5 text-foreground">
+            <Key className="size-3 text-[#5E5CE6] shrink-0" />
+            <span>Agent Key Required</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => t.approveAgent()}
+            className="px-2 py-0.5 rounded bg-foreground text-background font-bold hover:opacity-90 transition-opacity"
+          >
+            Approve Key
+          </button>
+        </div>
+      )}
 
       {/* Section 4: Compact TP & SL Inputs Row */}
       <div className="grid grid-cols-2 gap-1.5 font-mono text-[11px]">
@@ -364,7 +444,7 @@ export function TradePanel(p: Props) {
             LONG {p.leverage}×
           </span>
           <span className="tabular text-[9px] font-mono opacity-90">
-            Liq ${fmtUsd(longLiq, m.decimals)}
+            Liq ${fmtUsd(quote.longBustPrice, m.decimals)}
           </span>
         </Button>
 
@@ -380,13 +460,13 @@ export function TradePanel(p: Props) {
             SHORT {p.leverage}×
           </span>
           <span className="tabular text-[9px] font-mono opacity-90">
-            Liq ${fmtUsd(shortLiq, m.decimals)}
+            Liq ${fmtUsd(quote.shortBustPrice, m.decimals)}
           </span>
         </Button>
       </div>
 
       {/* Status Alert if blocked */}
-      {blocked && (
+      {blocked && !quote.error && (
         <div className="flex items-center justify-center gap-1.5 rounded-md bg-[#FFECEA] py-1 text-[10px] font-mono font-medium text-[#FF3B30]">
           <ShieldAlert className="size-3" />
           <span>{p.limitReached ? "Max 3 open positions reached" : `Market status: ${p.status}`}</span>
@@ -404,6 +484,64 @@ export function TradePanel(p: Props) {
           max={m.maxStake}
           onApply={p.setStake}
         />
+      )}
+
+      {/* First Live Order Confirmation Modal */}
+      {pendingConfirmSide && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs">
+          <div className="w-full max-w-sm rounded-xl border border-border bg-white p-5 shadow-xl space-y-4 font-mono text-xs">
+            <div className="flex items-center gap-2 pb-2 border-b border-border">
+              <span className="flex items-center gap-1 rounded bg-[#E3F8EC] border border-[#06964A]/30 px-2 py-0.5 text-[10px] font-bold text-[#06964A]">
+                <span className="size-1.5 rounded-full bg-[#06964A]" />
+                LIVE · REAL FUNDS
+              </span>
+              <span className="font-bold text-foreground">Confirm Live Order</span>
+            </div>
+
+            <p className="text-muted-foreground text-[11px] leading-relaxed">
+              You are about to place a <strong className="text-foreground">{pendingConfirmSide.toUpperCase()}</strong> order on{" "}
+              <strong className="text-foreground">{p.market}</strong> using real funds on Hyperliquid.
+            </p>
+
+            <div className="space-y-1.5 bg-[#F6F6F4] p-3 rounded-lg border border-border text-[11px]">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Side</span>
+                <span className={pendingConfirmSide === "long" ? "text-[#06964A] font-bold" : "text-[#FF3B30] font-bold"}>
+                  {pendingConfirmSide.toUpperCase()}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Isolated Margin</span>
+                <span className="font-bold">${p.stake} USDC</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Leverage</span>
+                <span className="font-bold">{p.leverage}×</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Notional</span>
+                <span className="font-bold">${quote.notional.toLocaleString()} USDC</span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setPendingConfirmSide(null)}
+                className="h-8 rounded-md border border-border bg-white text-muted-foreground hover:bg-[#F6F6F4] font-bold text-xs"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => executeOrder(pendingConfirmSide)}
+                className="h-8 rounded-md bg-foreground text-background hover:opacity-90 font-bold text-xs shadow-xs"
+              >
+                Confirm & Place
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

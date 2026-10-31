@@ -43,7 +43,10 @@ export function TradeTerminal() {
   const t = useTrading();
   const isPerps = t.mode === 'perps';
 
-  const [selectedMarket, setSelectedMarket] = useState<MarketDef>(MARKETS[0]!);
+  const engineMarkets = t.engine.getMarkets();
+  const marketsList: any[] = engineMarkets.length > 0 ? engineMarkets : MARKETS;
+
+  const [selectedMarket, setSelectedMarket] = useState<any>(marketsList[0] || MARKETS[0]!);
   const rawSymbol = selectedMarket.symbol.replace('-USD', '') as any;
 
   // Determine dynamic max leverage
@@ -202,7 +205,7 @@ export function TradeTerminal() {
             {/* Market Switcher */}
             <div className="flex justify-between items-center pb-4 border-b border-border">
               <div className="flex space-x-1.5 overflow-x-auto no-scrollbar">
-                {MARKETS.map((m) => {
+                {marketsList.slice(0, 15).map((m: any) => {
                   const asset = m.symbol.replace('-USD', '');
                   const assetMaxLev = isPerps ? t.engine.getMaxLeverage(asset) : 1000;
                   return (

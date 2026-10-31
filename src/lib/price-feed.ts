@@ -16,8 +16,40 @@ export const getSnap = (symbol: MarketSymbol = "BTC") => snapshots[symbol];
 export const getSimulation = () => simulation;
 export function setSimulation(next: Partial<Simulation>) { simulation = {...simulation,...next}; emit(); }
 export function setMarketStatus(symbol: MarketSymbol, status: MarketStatus) { snapshots = {...snapshots,[symbol]:{...snapshots[symbol],status}}; emit(); }
+export function updateHlPrices(mids: Record<string, number>) {
+  const now = Date.now();
+  let changed = false;
+  const next = { ...snapshots };
+  for (const m of MARKETS) {
+    const raw = m.symbol.replace("-USD", "");
+    const price = mids[raw] ?? mids[m.symbol];
+    if (price && Number.isFinite(price) && price > 0) {
+      const s = snapshots[m.symbol];
+      if (s && s.price !== price) {
+        next[m.symbol] = {
+          ...s,
+          prev: s.price,
+          price,
+          lastTick: now,
+        };
+        const list = buffers?.[m.symbol];
+        if (list) {
+          list.push({ t: now, p: price });
+          while (list[0] && list[0].t < now - 24 * 3600 * 1000 - 60000) list.shift();
+        }
+        changed = true;
+      }
+    }
+  }
+  if (changed) {
+    snapshots = next;
+    emit();
+  }
+}
+
 export function startFeed() {
  if (started) return; started=true; buffers=createBuffers(Date.now());
  const step = () => { const now=Date.now(); const next={...snapshots}; for(const m of MARKETS){ const s=snapshots[m.symbol]; const move=s.status === "open" ? (Math.random()-.5)*m.volatility*simulation.volatility*4 : 0; const price=Math.max(m.basePrice*.01,s.price*(1+move)); const tick={t:now,p:price}; const list=buffers?.[m.symbol]; if(list){list.push(tick);while(list[0] && list[0].t<now-24*3600*1000-60000)list.shift();} next[m.symbol]={...s,prev:s.price,price,lastTick:now}; } snapshots=next;emit();setTimeout(step,simulation.tickSpeed); }; step();
 }
 export function useFeeds() { return useSyncExternalStore(l=>{listeners.add(l);return()=>listeners.delete(l);},()=>snapshots,()=>initial); }
+

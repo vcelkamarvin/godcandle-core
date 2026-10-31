@@ -102,6 +102,101 @@ export class HyperliquidEngine implements TradingEngine {
     }
   }
 
+  public async checkIsAgentApproved(masterAddress: string): Promise<boolean> {
+    if (!this.agentAccount) return false;
+    try {
+      const res = await fetch(`${getHlHttpUrl()}/info`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "extraAgents",
+          user: masterAddress,
+        }),
+      });
+      if (!res.ok) return this.isAgentApproved;
+      const agents = await res.json();
+      if (Array.isArray(agents)) {
+        const myAgent = this.agentAccount.address.toLowerCase();
+        const found = agents.some((a: any) => a.address?.toLowerCase() === myAgent);
+        if (found) {
+          this.markAgentApproved(masterAddress);
+          return true;
+        }
+      }
+    } catch {}
+    return this.isAgentApproved;
+  }
+
+  public createApproveAgentPayload(nonce: number) {
+    if (!this.agentAccount) throw new Error("Agent account not ready");
+    const isTestnet = getNetwork() === "testnet";
+    return {
+      domain: {
+        name: "HyperliquidSignTransaction",
+        version: "1",
+        chainId: isTestnet ? 421614 : 42161,
+        verifyingContract: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+      },
+      types: {
+        "HyperliquidTransaction:ApproveAgent": [
+          { name: "hyperliquidChain", type: "string" },
+          { name: "agentAddress", type: "address" },
+          { name: "agentName", type: "string" },
+          { name: "nonce", type: "uint64" },
+        ],
+      },
+      primaryType: "HyperliquidTransaction:ApproveAgent" as const,
+      message: {
+        hyperliquidChain: isTestnet ? "Testnet" : "Mainnet",
+        agentAddress: this.agentAccount.address,
+        agentName: "godcandle",
+        nonce: BigInt(nonce),
+      },
+    };
+  }
+
+  public async submitApprovedAgent(
+    masterAddress: string,
+    sigHex: string,
+    nonce: number
+  ): Promise<{ success: boolean; error?: string }> {
+    if (!this.agentAccount) return { success: false, error: "Agent not initialized" };
+    const isTestnet = getNetwork() === "testnet";
+
+    const r = sigHex.slice(0, 66);
+    const s = "0x" + sigHex.slice(66, 130);
+    const v = parseInt(sigHex.slice(130, 132), 16);
+
+    try {
+      const res = await fetch(`${getHlHttpUrl()}/exchange`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: {
+            type: "approveAgent",
+            signatureChainId: isTestnet ? "0x66eee" : "0xa4b1",
+            hyperliquidChain: isTestnet ? "Testnet" : "Mainnet",
+            agentAddress: this.agentAccount.address,
+            agentName: "godcandle",
+            nonce,
+          },
+          nonce,
+          signature: { r, s, v },
+        }),
+      });
+
+      const data = await res.json();
+      if (data && data.status === "err") {
+        return { success: false, error: data.response || "Order rejected by Hyperliquid" };
+      }
+
+      this.markAgentApproved(masterAddress);
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err?.message || "Failed to submit agent approval" };
+    }
+  }
+
   public hasConfirmedFirstOrder(): boolean {
     if (typeof window === "undefined") return false;
     return sessionStorage.getItem(SESSION_CONFIRMED_KEY) === "true";

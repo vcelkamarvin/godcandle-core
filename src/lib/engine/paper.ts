@@ -35,6 +35,12 @@ import {
   DEFAULT_CORRIDOR_BPS,
 } from "./paper-math";
 import { marketStore } from "../hyperliquid/market-data";
+import {
+  syncPaperAccount,
+  persistPaperPosition,
+  persistPaperCloseTrade,
+  getSupabase,
+} from "../supabase";
 
 const STORAGE_KEY_PREFIX = "godcandle_paper_v3";
 const INITIAL_PAPER_BALANCE = 10000;
@@ -51,6 +57,8 @@ export const PAPER_MARKETS: EngineMarket[] = [
 export class PaperEngine implements TradingEngine {
   public mode: TradingMode = "paper1000x";
   private sessionId: string;
+  private accountId: string | null = null;
+  private walletAddress: string | null = null;
   private balance: number = INITIAL_PAPER_BALANCE;
   private positions: EnginePosition[] = [];
   private history: EngineClosedTrade[] = [];
@@ -60,7 +68,75 @@ export class PaperEngine implements TradingEngine {
   constructor() {
     this.sessionId = this.getOrCreateSessionId();
     this.loadState();
+    this.initSupabaseSync();
     this.startBackgroundLiquidationMonitor();
+  }
+
+  public async attachWallet(walletAddress: string | null) {
+    this.walletAddress = walletAddress;
+    if (walletAddress) {
+      const acct = await syncPaperAccount(this.sessionId, walletAddress);
+      if (acct) this.accountId = acct.id;
+    }
+  }
+
+  private async initSupabaseSync() {
+    if (typeof window === "undefined") return;
+    try {
+      const acct = await syncPaperAccount(this.sessionId, this.walletAddress);
+      if (acct) {
+        this.accountId = acct.id;
+        await this.syncServerState();
+      }
+    } catch {}
+  }
+
+  public async syncServerState() {
+    const sb = getSupabase();
+    if (!sb || !this.accountId) return;
+
+    try {
+      // 1. Fetch any newly closed server-side liquidated trades
+      const { data: serverTrades } = await sb
+        .from("paper_trades")
+        .select("*")
+        .eq("account_id", this.accountId)
+        .order("closed_at", { ascending: false })
+        .limit(30);
+
+      if (serverTrades && serverTrades.length > 0) {
+        const liquidatedTrades: EngineClosedTrade[] = serverTrades.map((t: any) => ({
+          id: t.position_id || t.id,
+          market: t.asset,
+          side: t.side,
+          stake: parseFloat(t.margin),
+          leverage: t.leverage,
+          entry: parseFloat(t.entry_price),
+          exit: parseFloat(t.exit_price),
+          size: parseFloat(t.notional) / (parseFloat(t.entry_price) || 1),
+          pnl: parseFloat(t.pnl),
+          roiPct: parseFloat(t.roi_pct),
+          durationMs: new Date(t.closed_at).getTime() - new Date(t.opened_at).getTime(),
+          liquidated: t.liquidated,
+          openedAt: new Date(t.opened_at).getTime(),
+          closedAt: new Date(t.closed_at).getTime(),
+        }));
+
+        // Merge with existing history
+        const existingIds = new Set(this.history.map((h) => h.id));
+        const newClosed = liquidatedTrades.filter((t) => !existingIds.has(t.id));
+
+        if (newClosed.length > 0) {
+          // Remove closed positions from active positions list
+          const closedMarkets = new Set(newClosed.map((c) => c.market));
+          this.positions = this.positions.filter((p) => !newClosed.some((c) => c.id === p.id));
+          this.history = [...newClosed, ...this.history];
+          this.saveState();
+        }
+      }
+    } catch (err) {
+      console.warn("Paper engine server sync failed:", err);
+    }
   }
 
   private getOrCreateSessionId(): string {
@@ -202,6 +278,10 @@ export class PaperEngine implements TradingEngine {
     this.positions = [newPos, ...this.positions];
     this.saveState();
 
+    if (this.accountId) {
+      persistPaperPosition(this.accountId, newPos);
+    }
+
     return { success: true, positionId: id };
   }
 
@@ -229,6 +309,10 @@ export class PaperEngine implements TradingEngine {
     this.balance += pnl;
     this.history = [trade, ...this.history];
     this.saveState();
+
+    if (this.accountId) {
+      persistPaperCloseTrade(this.accountId, trade);
+    }
 
     return { success: true, pnl };
   }
@@ -315,6 +399,10 @@ export class PaperEngine implements TradingEngine {
     this.balance -= pos.stake;
     this.history = [trade, ...this.history];
     this.saveState();
+
+    if (this.accountId) {
+      persistPaperCloseTrade(this.accountId, trade);
+    }
   }
 }
 

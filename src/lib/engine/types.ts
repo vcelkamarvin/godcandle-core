@@ -91,7 +91,7 @@ export interface CloseResult {
 
 export interface TradingEngine {
   mode: TradingMode;
-  getMarkets(): Promise<EngineMarket[]> | EngineMarket[];
+  getMarkets(): EngineMarket[];
   getMaxLeverage(asset: string): number;
   quote(order: OrderParams, currentPrice: number): QuoteResult;
   placeOrder(order: OrderParams, currentPrice: number): Promise<OrderResult>;
