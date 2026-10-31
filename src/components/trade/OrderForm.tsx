@@ -213,7 +213,7 @@ export function OrderForm({
   };
 
   return (
-    <div className="w-full rounded-2xl border border-border/80 bg-white p-3 space-y-2 shadow-sm font-sans text-foreground">
+    <div className="w-full rounded-2xl border border-border/80 bg-white p-2.5 sm:p-3 space-y-1.5 sm:space-y-2 shadow-sm font-sans text-foreground">
       {/* 2. Header and Order Type */}
       <div className="flex items-center justify-between pb-0.5">
         <h2 className="text-sm sm:text-base font-bold tracking-tight text-foreground font-sans">

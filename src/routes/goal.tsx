@@ -180,25 +180,25 @@ export function GoalPage() {
   );
 
   return (
-    <main className="relative page-content max-w-7xl mx-auto space-y-5 font-sans text-xs text-foreground">
+    <main className="relative page-content max-w-7xl mx-auto space-y-3 sm:space-y-5 font-sans text-xs text-foreground px-2 sm:px-4">
       {/* Top Banner & Tool Switcher */}
-      <div className="relative overflow-hidden rounded-3xl border border-border bg-white p-5 sm:p-6 shadow-xs">
+      <div className="relative overflow-hidden rounded-3xl border border-border bg-white p-3.5 sm:p-6 shadow-xs">
         <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-[#CDC3F0] via-[#FFDAC8] to-[#A0D4CA]" />
 
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="space-y-1">
+        <div className="flex flex-wrap items-center justify-between gap-3 sm:gap-4">
+          <div className="space-y-0.5 sm:space-y-1">
             <div className="flex items-center gap-2">
               <span className="p-1 rounded-lg bg-[#E3F8EC] text-[#06964A]">
                 <Target className="size-4 text-[#06964A]" />
               </span>
-              <h1 className="text-xl font-bold tracking-tight text-foreground font-sans">
+              <h1 className="text-lg sm:text-xl font-bold tracking-tight text-foreground font-sans">
                 Price Target Goal
               </h1>
               <span className="rounded-full bg-secondary px-2.5 py-0.5 text-[10px] font-semibold text-muted-foreground border border-border">
                 Price Target Tool
               </span>
             </div>
-            <p className="text-muted-foreground text-xs font-sans">
+            <p className="hidden sm:block text-muted-foreground text-xs font-sans">
               Set a price target to calculate projected returns and profit milestones.
             </p>
           </div>
@@ -249,9 +249,9 @@ export function GoalPage() {
       </div>
 
       {/* Main Grid: Left Controls (4 Cols) | Right Visual Trajectory & Return Orb (8 Cols) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-5 items-start">
         {/* Left Column: Interactive Modeling Controls */}
-        <div className="lg:col-span-4 rounded-3xl border border-border bg-white p-5 shadow-xs space-y-4">
+        <div className="lg:col-span-4 rounded-3xl border border-border bg-white p-3.5 sm:p-5 shadow-xs space-y-3 sm:space-y-4">
           <div className="flex items-center justify-between pb-3 border-b border-border">
             <span className="font-bold tracking-wider text-xs uppercase flex items-center gap-1.5">
               <Target className="size-3.5 text-[#06964A]" />
@@ -498,23 +498,23 @@ export function GoalPage() {
         </div>
 
         {/* Center / Right: Holographic Showcase, Orb & Payoff Trajectory */}
-        <div className="lg:col-span-8 space-y-5">
+        <div className="lg:col-span-8 space-y-3 sm:space-y-5">
           {/* Holographic Expected Return Showcase Card */}
-          <div className="relative overflow-hidden rounded-3xl border border-border bg-white p-5 sm:p-6 shadow-xs">
+          <div className="relative overflow-hidden rounded-3xl border border-border bg-white p-3.5 sm:p-6 shadow-xs">
             <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-[#CDC3F0] via-[#FFDAC8] to-[#A0D4CA]" />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 items-center">
               {/* Iridescent Glowing Return Orb */}
-              <div className="flex flex-col items-center justify-center p-6 rounded-2xl bg-[#FAFAF8] border border-border relative overflow-hidden shadow-2xs">
+              <div className="flex flex-col items-center justify-center p-4 sm:p-6 rounded-2xl bg-[#FAFAF8] border border-border relative overflow-hidden shadow-2xs">
                 {/* Iridescent background glow aura */}
                 <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[#CDC3F0]/40 via-[#FFDAC8]/30 to-[#A0D4CA]/35 blur-2xl opacity-80" />
 
-                <div className="relative z-10 size-44 rounded-full flex flex-col items-center justify-center text-center p-4 border border-border bg-white/90 backdrop-blur-md shadow-[0_8px_30px_rgb(0,0,0,0.06)]">
+                <div className="relative z-10 size-36 sm:size-44 rounded-full flex flex-col items-center justify-center text-center p-3 sm:p-4 border border-border bg-white/90 backdrop-blur-md shadow-[0_8px_30px_rgb(0,0,0,0.06)]">
                   <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-semibold font-sans">
                     Estimated Return
                   </span>
                   <span
-                    className={`font-mono tabular text-3xl font-bold tracking-tight my-1 ${
+                    className={`font-mono tabular text-2xl sm:text-3xl font-bold tracking-tight my-0.5 sm:my-1 ${
                       roiPct >= 0 ? "text-[#06964A]" : "text-[#FF3B30]"
                     }`}
                   >
@@ -524,7 +524,7 @@ export function GoalPage() {
                   <span className="font-mono tabular text-xs font-semibold text-foreground">
                     ${(amount + payout).toLocaleString()}
                   </span>
-                  <span className="text-[9px] text-muted-foreground mt-1 font-sans">
+                  <span className="text-[9px] text-muted-foreground mt-0.5 sm:mt-1 font-sans">
                     {boostMultiplier}× Multiplier
                   </span>
                 </div>
@@ -601,7 +601,7 @@ export function GoalPage() {
           </div>
 
           {/* Modeled Trajectory Chart Canvas */}
-          <div className="relative overflow-hidden rounded-3xl border border-border bg-white p-5 shadow-xs space-y-3">
+          <div className="relative overflow-hidden rounded-3xl border border-border bg-white p-3.5 sm:p-5 shadow-xs space-y-2 sm:space-y-3">
             <div className="flex items-center justify-between pb-2 border-b border-border">
               <span className="font-bold text-xs uppercase tracking-wider flex items-center gap-1.5">
                 <TrendingUp className="size-3.5 text-[#06964A]" />
@@ -612,16 +612,16 @@ export function GoalPage() {
               </span>
             </div>
             <div className="pt-1">
-              <ChartCanvas height={140} kind="curve" values={trajectoryValues} />
+              <ChartCanvas height={130} kind="curve" values={trajectoryValues} />
             </div>
           </div>
 
           {/* Modeled Milestones Ladder */}
-          <div className="relative overflow-hidden rounded-3xl border border-border bg-white p-5 shadow-xs space-y-3">
+          <div className="relative overflow-hidden rounded-3xl border border-border bg-white p-3.5 sm:p-5 shadow-xs space-y-2.5 sm:space-y-3">
             <h3 className="font-bold text-foreground text-xs tracking-wider uppercase">
               Payout at Price Milestones (${amount.toLocaleString()} Principal · {direction})
             </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
               {(direction === "LONG" ? [1.05, 1.15, 1.3, 1.5] : [0.95, 0.85, 0.7, 0.5]).map(
                 (mult) => {
                   const p = Math.round(spot * mult);
@@ -632,17 +632,17 @@ export function GoalPage() {
                   return (
                     <div
                       key={mult}
-                      className="p-3 rounded-2xl border border-border bg-[#F6F6F4] space-y-1 transition-all hover:bg-white hover:border-foreground/30 shadow-2xs"
+                      className="p-2 sm:p-3 rounded-2xl border border-border bg-[#F6F6F4] space-y-0.5 sm:space-y-1 transition-all hover:bg-white hover:border-foreground/30 shadow-2xs"
                     >
-                      <div className="text-[10px] text-muted-foreground font-semibold font-sans">
+                      <div className="text-[9.5px] sm:text-[10px] text-muted-foreground font-semibold font-sans">
                         {direction === "LONG"
                           ? `+${move.toFixed(0)}% Target Move`
                           : `-${move.toFixed(0)}% Target Move`}
                       </div>
-                      <div className="text-sm font-bold text-foreground font-mono tabular">
+                      <div className="text-xs sm:text-sm font-bold text-foreground font-mono tabular">
                         ${p.toLocaleString()}
                       </div>
-                      <div className="text-[11px] font-bold text-[#06964A] font-mono tabular">
+                      <div className="text-[10px] sm:text-[11px] font-bold text-[#06964A] font-mono tabular">
                         +${g.toLocaleString()} (+{r.toFixed(0)}%)
                       </div>
                     </div>
