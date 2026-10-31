@@ -32,7 +32,7 @@ interface WalletOption {
 const WALLET_OPTIONS: WalletOption[] = [
   { id: 'metamask', name: 'MetaMask', desc: 'Browser Extension', badge: 'Detected' },
   { id: 'rabby', name: 'Rabby Wallet', desc: 'Fast EVM execution', recommended: true },
-  { id: 'rainbow', name: 'Rainbow', desc: 'Optimized for HyperEVM', recommended: true },
+  { id: 'rainbow', name: 'Rainbow', desc: 'Fast EVM & multi-chain', recommended: true },
   { id: 'coinbase', name: 'Coinbase Wallet', desc: 'Mobile & Extension' },
   { id: 'walletconnect', name: 'WalletConnect', desc: 'Connect 400+ wallets' },
   { id: 'phantom', name: 'Phantom', desc: 'Multi-chain EVM' },
@@ -66,54 +66,83 @@ function WalletIcon({ id }: { id: string }) {
   switch (id) {
     case 'metamask':
       return (
-        <div className="flex size-9 items-center justify-center rounded-xl bg-[#E2761B]/15 border border-[#E2761B]/30 text-[#E2761B] shrink-0">
-          <svg viewBox="0 0 32 32" className="size-5 fill-current">
-            <path d="M28.3 4.2L17.7 12l2-4.6 8.6-3.2zM3.7 4.2l10.6 7.8-2-4.6-8.6-3.2zM24.7 21.8l-2.7 4.2 5.6 1.5 1.6-5.5-4.5-.2zM7.3 21.8l2.7 4.2-5.6 1.5-1.6-5.5 4.5-.2z" />
-            <path d="M11.6 14.3l-2.4 3.7 4.5.2-.2-4.3-1.9.4zm8.8 0l2.4 3.7-4.5.2.2-4.3 1.9.4zM12.4 27.5l3.6 2.3 3.6-2.3-1.3-4.1h-4.6l-1.3 4.1z" />
+        <div className="flex size-9 items-center justify-center rounded-xl bg-[#E2761B]/12 border border-[#E2761B]/30 shrink-0">
+          <svg viewBox="0 0 32 32" className="size-5.5">
+            <path fill="#E17726" d="M27.2 4.3l-8.9 6.4 1.7-3.8z" />
+            <path fill="#E27625" d="M4.8 4.3l8.8 6.5-1.6-3.9z" />
+            <path fill="#D56926" d="M23.5 21.6l-2.3 3.4 4.7 1.3 1.3-4.6z" />
+            <path fill="#D56926" d="M8.5 21.6l-3.7.1 1.3 4.6 4.7-1.3z" />
+            <path fill="#E4761B" d="M9.8 14.5l-2 3.1 3.8.2-.1-3.6z" />
+            <path fill="#E4761B" d="M22.2 14.5l-1.7-.3-.1 3.6 3.8-.2z" />
+            <path fill="#F78C1E" d="M10.4 25l3 2 3-2-1-3.4h-4z" />
+            <path fill="#F78C1E" d="M14.6 17.5l-3-2.9 3.7.2 2.3 2.7z" />
+            <path fill="#F78C1E" d="M17.4 17.5l-3 0 2.3-2.7 3.7-.2z" />
+            <path fill="#161616" d="M10.2 17.6l2.1-1.3-1.8-1.5z" />
+            <path fill="#161616" d="M21.8 17.6l-2.1-1.3 1.8-1.5z" />
+            <path fill="#F6851B" d="M18.3 10.7l-2.3-2.7-2.3 2.7.4 3.7 1.9 1.1 1.9-1.1z" />
           </svg>
         </div>
       );
     case 'rabby':
       return (
-        <div className="flex size-9 items-center justify-center rounded-xl bg-[#8B5CF6]/15 border border-[#8B5CF6]/30 text-[#7C3AED] shrink-0">
-          <svg viewBox="0 0 32 32" className="size-5 fill-current">
-            <path d="M16 4C9.37 4 4 9.37 4 16c0 4.2 2.16 7.9 5.46 10.05.42.27.97.16 1.25-.26.27-.42.16-.97-.26-1.25A10.3 10.3 0 0 1 5.8 16c0-5.63 4.57-10.2 10.2-10.2 5.63 0 10.2 4.57 10.2 10.2 0 3.2-1.48 6.07-3.8 7.96-.39.31-.46.88-.14 1.27.31.39.88.46 1.27.14C26.54 23.03 28.2 19.7 28.2 16c0-6.63-5.37-12-12-12z" />
-            <circle cx="16" cy="16" r="4.5" />
+        <div className="flex size-9 items-center justify-center rounded-xl bg-[#8B5CF6]/15 border border-[#8B5CF6]/30 shrink-0">
+          <svg viewBox="0 0 32 32" className="size-5.5" fill="none">
+            <circle cx="16" cy="16" r="14" fill="#8B5CF6" />
+            <path d="M12 6.8c-1.4 0-2.3 1.8-2.3 4.2 0 1.9 1 3.2 2.3 3.2s2.3-1.3 2.3-3.2c0-2.4-.9-4.2-2.3-4.2z" fill="white" />
+            <path d="M20 6.8c-1.4 0-2.3 1.8-2.3 4.2 0 1.9 1 3.2 2.3 3.2s2.3-1.3 2.3-3.2c0-2.4-.9-4.2-2.3-4.2z" fill="white" />
+            <circle cx="16" cy="18.5" r="6.2" fill="white" />
+            <circle cx="13.5" cy="18" r="2" stroke="#8B5CF6" strokeWidth="1.2" fill="#8B5CF6" fillOpacity="0.1" />
+            <circle cx="18.5" cy="18" r="2" stroke="#8B5CF6" strokeWidth="1.2" fill="#8B5CF6" fillOpacity="0.1" />
+            <path d="M15.5 18h1" stroke="#8B5CF6" strokeWidth="1.2" strokeLinecap="round" />
           </svg>
         </div>
       );
     case 'rainbow':
       return (
-        <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-tr from-[#CDC3F0]/40 via-[#FFDAC8]/40 to-[#A0D4CA]/40 border border-[#CDC3F0] text-[#0A0A0A] shrink-0">
-          <Zap className="size-4.5 text-[#0A0A0A]" />
+        <div className="flex size-9 items-center justify-center rounded-xl bg-[#0E76FD]/10 border border-[#0E76FD]/25 shrink-0">
+          <svg viewBox="0 0 32 32" className="size-5.5" fill="none">
+            <path d="M6.5 22.5c0-5.247 4.253-9.5 9.5-9.5s9.5 4.253 9.5 9.5" stroke="#FF4343" strokeWidth="2.3" strokeLinecap="round" />
+            <path d="M9 22.5c0-3.866 3.134-7 7-7s7 3.134 7 7" stroke="#FFAE00" strokeWidth="2.3" strokeLinecap="round" />
+            <path d="M11.5 22.5c0-2.485 2.015-4.5 4.5-4.5s4.5 2.015 4.5 4.5" stroke="#00E599" strokeWidth="2.3" strokeLinecap="round" />
+            <path d="M14 22.5c0-1.105.895-2 2-2s2 .895 2 2" stroke="#0075FF" strokeWidth="2.3" strokeLinecap="round" />
+          </svg>
         </div>
       );
     case 'coinbase':
       return (
-        <div className="flex size-9 items-center justify-center rounded-xl bg-[#0052FF]/15 border border-[#0052FF]/30 text-[#0052FF] shrink-0">
-          <svg viewBox="0 0 32 32" className="size-5 fill-current">
-            <rect x="6" y="6" width="20" height="20" rx="4" />
-            <rect x="12" y="12" width="8" height="8" rx="2" fill="white" />
+        <div className="flex size-9 items-center justify-center rounded-xl bg-[#0052FF] shrink-0 shadow-2xs">
+          <svg viewBox="0 0 32 32" className="size-5" fill="none">
+            <rect x="6.5" y="6.5" width="19" height="19" rx="4" fill="white" />
+            <rect x="11.5" y="11.5" width="9" height="9" rx="2" fill="#0052FF" />
           </svg>
         </div>
       );
     case 'walletconnect':
       return (
-        <div className="flex size-9 items-center justify-center rounded-xl bg-[#3B99FC]/15 border border-[#3B99FC]/30 text-[#3B99FC] shrink-0">
-          <svg viewBox="0 0 32 32" className="size-5 fill-none stroke-current" strokeWidth="2.5">
-            <path d="M6 14a14 14 0 0120 0M10 18a8 8 0 0112 0m-8 4a2 2 0 014 0" />
+        <div className="flex size-9 items-center justify-center rounded-xl bg-[#3B99FC] shrink-0 shadow-2xs">
+          <svg viewBox="0 0 32 32" className="size-5" fill="none">
+            <path
+              d="M9.5 12.5a9.2 9.2 0 0 1 13 0l.4.4a.6.6 0 0 1 0 .8l-1.5 1.5a.4.4 0 0 1-.6 0l-.6-.6a6.5 6.5 0 0 0-9.2 0l-.7.7a.4.4 0 0 1-.6 0L8.2 13.8a.6.6 0 0 1 0-.8l1.3-1.3zm13.9 4.3l1.3 1.3a.6.6 0 0 1 0 .8l-5.8 5.8a.6.6 0 0 1-.8 0l-4.1-4.1a.2.2 0 0 0-.3 0l-4.1 4.1a.6.6 0 0 1-.8 0L3 18.9a.6.6 0 0 1 0-.8l1.3-1.3a.4.4 0 0 1 .6 0l4.1 4.1a.2.2 0 0 0 .3 0l4.1-4.1a.6.6 0 0 1 .8 0l4.1 4.1a.2.2 0 0 0 .3 0l4.1-4.1a.4.4 0 0 1 .6 0z"
+              fill="white"
+            />
           </svg>
         </div>
       );
     case 'phantom':
       return (
-        <div className="flex size-9 items-center justify-center rounded-xl bg-[#AB9FF2]/20 border border-[#AB9FF2]/40 text-[#7962E8] shrink-0">
-          <svg viewBox="0 0 128 128" className="size-5 fill-current">
+        <div className="flex size-9 items-center justify-center rounded-xl bg-[#AB9FF2] shrink-0 shadow-2xs">
+          <svg viewBox="0 0 32 32" className="size-5" fill="none">
             <path
-              d="M110.5 64c0 25.7-20.8 46.5-46.5 46.5-12.8 0-24.4-5.2-32.9-13.6L14.7 80.5c-2.4-2.4-2.4-6.3 0-8.7l16.4-16.4C39.6 47 51.2 41.8 64 41.8c25.7 0 46.5 20.8 46.5 46.5z"
-              opacity="0.3"
+              d="M23.5 16c0 4.1-3.4 7.5-7.5 7.5-2.1 0-4-.8-5.3-2.1L8.5 19.2c-.4-.4-.4-1 0-1.4l2.6-2.6C12.3 14 13.9 13.5 16 13.5c4.1 0 7.5 3.4 7.5 7.5z"
+              fill="white"
+              opacity="0.35"
             />
-            <path d="M110.5 48.5c0-25.7-20.8-46.5-46.5-46.5-12.8 0-24.4 5.2-32.9 13.6L14.7 32c-2.4 2.4-2.4 6.3 0 8.7l16.4 16.4C39.6 65.5 51.2 70.7 64 70.7c25.7 0 46.5-20.8 46.5-46.5z" />
+            <path
+              d="M23.5 13.5c0-4.1-3.4-7.5-7.5-7.5-2.1 0-4 .8-5.3 2.1L8.5 10.3c-.4.4-.4 1 0 1.4l2.6 2.6c1.2 1.2 2.8 1.7 4.9 1.7 4.1 0 7.5-3.4 7.5-7.5z"
+              fill="white"
+            />
+            <circle cx="18" cy="13.5" r="1.2" fill="#AB9FF2" />
+            <circle cx="21" cy="13.5" r="1.2" fill="#AB9FF2" />
           </svg>
         </div>
       );
@@ -220,7 +249,7 @@ export function ConnectModal() {
       setFlowState('default');
 
       toast.success(`${wallet.name} Connected`, {
-        description: `Active on HyperEVM (Chain ID 999) · Instant FIFO Liquid Settlement.`,
+        description: 'Session active. Ready to trade.',
       });
     }, 1100);
   };
@@ -237,7 +266,7 @@ export function ConnectModal() {
       setFlowState('default');
 
       toast.success('Demo Trader Connected', {
-        description: 'Funded with $1,000 testnet balance on HyperEVM.',
+        description: 'Funded with $1,000 demo trading balance.',
       });
     }, 800);
   };
@@ -254,7 +283,7 @@ export function ConnectModal() {
       setFlowState('default');
 
       toast.success(`Logged in with ${provider}`, {
-        description: 'Privy embedded HyperEVM wallet active.',
+        description: 'Embedded wallet active and ready.',
       });
     }, 900);
   };
@@ -288,7 +317,7 @@ export function ConnectModal() {
       setFlowState('default');
 
       toast.success('Email Verified & Connected', {
-        description: `Welcome! Embedded HyperEVM wallet ready.`,
+        description: 'Welcome! Embedded wallet ready.',
       });
     }, 800);
   };
@@ -365,7 +394,7 @@ export function ConnectModal() {
                 <button
                   type="button"
                   onClick={handleCloseLogin}
-                  className="absolute top-4 right-4 sm:top-4 sm:right-auto sm:left-[calc(50%-44px)] z-30 size-8 flex items-center justify-center rounded-full bg-white/90 hover:bg-white text-[#0A0A0A] shadow-md border border-border hover:border-foreground/30 transition-all cursor-pointer"
+                  className="absolute top-3.5 right-3.5 sm:top-4 sm:right-4 z-30 size-8 flex items-center justify-center rounded-full bg-white/90 hover:bg-white text-[#0A0A0A] shadow-md border border-border hover:border-foreground/30 transition-all cursor-pointer"
                   aria-label="Close modal"
                 >
                   <X className="size-4" />
@@ -384,7 +413,7 @@ export function ConnectModal() {
                               <Zap className="size-4 text-[#06964A]" />
                             </span>
                             <span className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground font-semibold">
-                              HyperEVM (Chain 999)
+                              Web3 Secure Auth
                             </span>
                           </div>
                           <h2
@@ -604,7 +633,7 @@ export function ConnectModal() {
                             Connecting to {selectedWallet?.name || 'Wallet'}...
                           </h3>
                           <p className="text-xs text-[#737373] mt-1">
-                            Performing HyperEVM (999) node handshake &amp; session key delegation.
+                            Establishing session key handshake with zero gas overhead.
                           </p>
                         </div>
                         <button
@@ -622,52 +651,58 @@ export function ConnectModal() {
                   <div className="pt-3 border-t border-border text-center shrink-0">
                     <p className="text-[10px] text-muted-foreground flex items-center justify-center gap-1.5">
                       <ShieldCheck className="size-3 text-[#06964A]" />
-                      <span>Non-custodial · HyperEVM Chain 999 · Instant FIFO Settlement</span>
+                      <span>Non-custodial · Instant Settlement · Zero Gas Overhead</span>
                     </p>
                   </div>
                 </div>
 
                 {/* RIGHT HALF: CLAUDE MONET'S "IMPRESSION, SUNRISE" (1872) ART PANEL */}
-                <div className="relative hidden sm:block sm:w-1/2 h-full overflow-hidden select-none bg-[#1E293B]">
+                <div className="relative hidden sm:block sm:w-1/2 h-full overflow-hidden select-none bg-[#F6F6F4]">
                   <img
                     src="/images/monet-sunrise.jpg"
                     alt="Claude Monet - Impression, Sunrise (1872)"
-                    className="absolute inset-0 w-full h-full object-cover object-center filter saturate-[1.1] contrast-[1.03]"
+                    className="absolute inset-0 w-full h-full object-cover object-center filter saturate-[1.08] contrast-[1.02]"
                   />
 
-                  {/* Atmospheric overlay with subtle rainbow sheen */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/55 pointer-events-none" />
+                  {/* Delicate rainbow sheen & impressionist atmosphere overlay (not darkmode) */}
+                  <div className="absolute inset-0 bg-gradient-to-tr from-[#CDC3F0]/25 via-[#FFDAC8]/20 to-[#A0D4CA]/25 pointer-events-none" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-black/10 pointer-events-none" />
 
                   {/* Content overlay */}
-                  <div className="relative z-10 h-full w-full p-6 sm:p-8 flex flex-col justify-between text-white">
-                    <div className="flex justify-end items-center gap-2">
-                      <div className="rounded-full bg-black/40 backdrop-blur-md border border-white/25 px-2.5 py-1 flex items-center gap-1.5 text-[10px] font-mono">
+                  <div className="relative z-10 h-full w-full p-6 sm:p-7 flex flex-col justify-between">
+                    {/* Top Row: Network Badge (left-aligned so top-right is clear for close button) */}
+                    <div className="flex justify-start items-center gap-2 pr-12">
+                      <div className="rounded-full bg-white/85 backdrop-blur-md border border-white/70 px-2.5 py-1 flex items-center gap-1.5 text-[10px] font-mono text-[#0A0A0A] shadow-xs">
                         <span className="size-1.5 rounded-full bg-[#00D964] animate-pulse" />
-                        <span>HyperEVM 999</span>
+                        <span>Mainnet Live</span>
                       </div>
                     </div>
 
                     {flowState === 'connecting' && (
-                      <div className="my-auto flex flex-col items-center justify-center">
-                        <DotRingLoader dotColor="#FFFFFF" className="scale-125" />
-                        <span className="text-[11px] font-mono font-medium text-white/90 drop-shadow-md mt-4 tracking-wider uppercase">
-                          HyperEVM Desk Handshake
+                      <div className="my-auto flex flex-col items-center justify-center rounded-2xl bg-white/90 backdrop-blur-md p-4 border border-white/80 shadow-lg text-[#0A0A0A] text-center animate-in fade-in-0 duration-200">
+                        <DotRingLoader dotColor="#0A0A0A" className="scale-110" />
+                        <span className="text-[11px] font-mono font-semibold text-[#0A0A0A] mt-3 tracking-wider uppercase">
+                          Session Handshake
+                        </span>
+                        <span className="text-[10px] text-muted-foreground mt-0.5">
+                          Delegating session keys with zero gas overhead
                         </span>
                       </div>
                     )}
 
-                    <div className="max-w-[320px]">
-                      <p className="font-sans text-xl sm:text-2xl font-bold leading-tight drop-shadow-lg">
+                    {/* Bottom Floating Plaque */}
+                    <div className="rounded-2xl bg-white/85 backdrop-blur-md p-4 border border-white/70 shadow-lg text-[#0A0A0A]">
+                      <p className="font-sans text-lg sm:text-xl font-bold leading-tight text-[#0A0A0A]">
                         Perps. Options. Up to 1000x.
                       </p>
-                      <p className="text-xs font-medium text-white/90 mt-1 drop-shadow-md">
-                        One terminal. Powered by HyperEVM liquidity.
+                      <p className="text-xs font-medium text-[#0A0A0A]/75 mt-0.5">
+                        One terminal. Institutional-grade liquidity.
                       </p>
-                      <div className="mt-3 flex items-center gap-2 text-[10px] text-white/80 font-mono">
-                        <span className="rounded bg-black/40 backdrop-blur-sm px-2 py-0.5 border border-white/20">
+                      <div className="mt-2.5 flex items-center justify-between text-[10px] text-[#0A0A0A]/70 font-mono">
+                        <span className="rounded-full bg-gradient-to-r from-[#CDC3F0]/70 via-[#FFDAC8]/70 to-[#A0D4CA]/70 px-2 py-0.5 font-semibold text-[#0A0A0A] border border-border/50">
                           Claude Monet, 1872
                         </span>
-                        <span>Impression, Sunrise</span>
+                        <span className="italic font-sans">Impression, Sunrise</span>
                       </div>
                     </div>
                   </div>
@@ -728,13 +763,13 @@ export function ConnectModal() {
                     <span className="text-muted-foreground text-[10px] uppercase font-mono block">
                       Network
                     </span>
-                    <span className="font-semibold text-foreground">HyperEVM (999)</span>
+                    <span className="font-semibold text-foreground">Mainnet</span>
                   </div>
                   <div className="p-3 bg-secondary/50 border border-border/60 rounded-xl">
                     <span className="text-muted-foreground text-[10px] uppercase font-mono block">
                       Settlement
                     </span>
-                    <span className="font-semibold text-[#06964A]">Pure FIFO Liquid</span>
+                    <span className="font-semibold text-[#06964A]">Instant Settlement</span>
                   </div>
                 </div>
 

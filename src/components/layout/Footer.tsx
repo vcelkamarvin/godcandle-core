@@ -97,6 +97,11 @@ export function Footer() {
             </span>
             <ul className="space-y-1.5 text-[11px]">
               <li>
+                <Link to="/cup" className="text-foreground font-semibold hover:underline transition-colors flex items-center gap-1">
+                  <span>The Candle Cup ($53.5k Live)</span>
+                </Link>
+              </li>
+              <li>
                 <Link to="/docs" className="text-muted-foreground hover:text-foreground transition-colors">
                   Documentation Overview
                 </Link>
@@ -122,12 +127,12 @@ export function Footer() {
 
         <div className="pt-6 flex flex-wrap items-center justify-between text-muted-foreground text-[10px] gap-2">
           <div>
-            godcandle protocol © 2026 · HyperEVM Chain ID 999 · Mainnet Alpha
+            godcandle protocol © 2026 · Non-Custodial Trading Desk
           </div>
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1">
               <Activity className="w-3 h-3 text-[#06964A]" />
-              Precompile Sync: 48ms
+              Execution Engine: Active
             </span>
             <span>Zero Slippage · Zero Entry Fee</span>
           </div>

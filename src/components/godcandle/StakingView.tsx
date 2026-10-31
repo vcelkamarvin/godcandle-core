@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { ChartCanvas } from "./ChartCanvas";
@@ -172,7 +173,16 @@ export function StakingView({ full = false }: { full?: boolean }) {
           </div>
 
           <section className="mt-3 border-t border-border pt-4">
-            <h2 className="text-base font-semibold">CANDLE Architecture</h2>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <h2 className="text-base font-semibold">CANDLE Architecture</h2>
+              <Link
+                to="/docs"
+                className="text-xs font-semibold text-foreground hover:underline flex items-center gap-1"
+              >
+                <span>Read Protocol Specs &amp; Tokenomics</span>
+                <span className="font-mono">→</span>
+              </Link>
+            </div>
             <div className="mt-3 grid gap-4 sm:grid-cols-3">
               {[
                 ["Stake", "Share in continuous FIFO staking distributions."],

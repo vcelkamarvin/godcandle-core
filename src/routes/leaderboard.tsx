@@ -39,7 +39,16 @@ function Leaderboard() {
             <h1 className="text-xl font-semibold">Leaderboard</h1>
             <p className="mt-0.5 text-xs text-muted-foreground">Top traders on godcandle · weekly season</p>
           </div>
-          <div className="flex gap-1.5">
+          <div className="flex flex-wrap items-center gap-1.5">
+            <Link
+              to="/cup"
+              className="pill h-8 px-3 text-xs font-semibold bg-white border border-border hover:border-foreground/30 hover:bg-secondary/40 inline-flex items-center gap-1.5 transition-all shadow-2xs"
+            >
+              <span>The Candle Cup</span>
+              <span className="rounded bg-[#E3F8EC] px-1.5 py-0.2 text-[9px] font-bold text-[#06964A]">
+                $53.5k Live
+              </span>
+            </Link>
             <Segments items={["Trades", "Traders"]} value={mode} onChange={setMode} />
             <Segments items={["24h", "7d", "30d", "All"]} value={period} onChange={setPeriod} />
           </div>
@@ -132,9 +141,14 @@ function Leaderboard() {
           <div className="mt-1.5 h-1.5 rounded-full bg-card">
             <div className="h-full w-[35%] rounded-full bg-foreground" />
           </div>
-          <Link to="/" className="pill pill-ink mt-3 h-9 w-full text-xs">
-            Trade to climb →
-          </Link>
+          <div className="mt-3 flex flex-col gap-1.5">
+            <Link to="/cup" className="pill pill-ink h-8 w-full text-xs flex items-center justify-center gap-1.5 shadow-xs">
+              View Cup Standings &amp; Trophies →
+            </Link>
+            <Link to="/" className="pill pill-ghost h-7 w-full text-[11px] text-muted-foreground hover:text-foreground text-center">
+              Trade to climb rank
+            </Link>
+          </div>
         </section>
 
         <section className="rounded-2xl border p-3 bg-white">

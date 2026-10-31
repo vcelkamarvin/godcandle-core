@@ -15,10 +15,7 @@ export function Header() {
 
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const isCandleActive =
-    pathname.startsWith('/candle') ||
-    pathname.startsWith('/staking') ||
-    pathname.startsWith('/cup') ||
-    pathname.startsWith('/docs');
+    pathname.startsWith('/candle') || pathname.startsWith('/staking');
 
   // Close dropdown on click outside
   useEffect(() => {
@@ -55,21 +52,42 @@ export function Header() {
               </span>
             </Link>
 
-            {/* Left Nav: Trade, Analysis, Leaderboard */}
-            <nav aria-label="Main navigation" className="hidden md:flex items-center gap-1">
-              <Link
-                to="/"
-                activeOptions={{ exact: true }}
-                activeProps={{
-                  className: 'pill pill-ink h-8 px-3.5 text-xs font-medium shadow-xs',
-                }}
-                inactiveProps={{
-                  className:
-                    'pill h-8 px-3.5 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary',
-                }}
-              >
-                Trade
-              </Link>
+            {/* Left Nav: Products [Perps | 1000x], Analysis, Leaderboard */}
+            <nav aria-label="Main navigation" className="hidden md:flex items-center gap-2">
+              {/* Product Switch Segment: Perps | 1000x */}
+              <div className="flex items-center p-0.5 rounded-full bg-secondary border border-border/80 shadow-2xs">
+                <Link
+                  to="/"
+                  activeOptions={{ exact: true }}
+                  activeProps={{
+                    className: 'pill pill-ink h-8 px-3.5 text-xs font-semibold shadow-xs',
+                  }}
+                  inactiveProps={{
+                    className:
+                      'pill h-8 px-3.5 text-xs text-muted-foreground hover:text-foreground hover:bg-white/60 transition-colors',
+                  }}
+                >
+                  Perps
+                </Link>
+                <Link
+                  to="/trade"
+                  activeProps={{
+                    className: 'pill pill-ink h-8 px-3.5 text-xs font-semibold shadow-xs',
+                  }}
+                  inactiveProps={{
+                    className:
+                      'pill h-8 px-3.5 text-xs text-muted-foreground hover:text-foreground hover:bg-white/60 transition-colors',
+                  }}
+                >
+                  <span className="flex items-center gap-1.5">
+                    <span>1000x</span>
+                    <span className="rounded bg-[#FFECEA] px-1.5 py-0.2 text-[9px] font-bold text-[#FF3B30]">
+                      MAX
+                    </span>
+                  </span>
+                </Link>
+              </div>
+
               <Link
                 to="/analytics"
                 activeProps={{
@@ -114,7 +132,7 @@ export function Header() {
               Portfolio
             </Link>
 
-            {/* CANDLE Dropdown Menu (Platform Analysis & Staking) */}
+            {/* CANDLE Dropdown Menu (Strictly Platform Analysis & Staking) */}
             <div className="relative hidden md:block" ref={candleRef}>
               <button
                 type="button"
@@ -171,38 +189,6 @@ export function Header() {
                       <p className="text-[10px] text-muted-foreground">USDC revenue distributions</p>
                     </div>
                   </Link>
-
-                  <div className="my-1 h-[1px] bg-border/60" />
-
-                  <Link
-                    to="/cup"
-                    role="menuitem"
-                    onClick={() => setCandleOpen(false)}
-                    className="flex items-center gap-2.5 p-2 rounded-xl hover:bg-secondary transition-colors text-left"
-                  >
-                    <div className="flex size-7 items-center justify-center rounded-lg bg-[#FFFBEA] text-[#FFD60A]">
-                      <Trophy className="size-3.5" />
-                    </div>
-                    <div>
-                      <p className="text-xs font-semibold text-foreground">Candle Cup</p>
-                      <p className="text-[10px] text-muted-foreground">Weekly $50,000 tournament</p>
-                    </div>
-                  </Link>
-
-                  <Link
-                    to="/docs"
-                    role="menuitem"
-                    onClick={() => setCandleOpen(false)}
-                    className="flex items-center gap-2.5 p-2 rounded-xl hover:bg-secondary transition-colors text-left"
-                  >
-                    <div className="flex size-7 items-center justify-center rounded-lg bg-secondary text-muted-foreground">
-                      <BookOpen className="size-3.5" />
-                    </div>
-                    <div>
-                      <p className="text-xs font-semibold text-foreground">Docs &amp; Specs</p>
-                      <p className="text-[10px] text-muted-foreground">Rules, pool, tokenomics</p>
-                    </div>
-                  </Link>
                 </div>
               )}
             </div>
@@ -237,14 +223,26 @@ export function Header() {
             to="/"
             activeOptions={{ exact: true }}
             activeProps={{
-              className: 'pill pill-ink h-7 px-2.5 text-[11px] font-medium shrink-0',
+              className: 'pill pill-ink h-7 px-2.5 text-[11px] font-semibold shrink-0',
             }}
             inactiveProps={{
               className:
                 'pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary shrink-0',
             }}
           >
-            Trade
+            Perps
+          </Link>
+          <Link
+            to="/trade"
+            activeProps={{
+              className: 'pill pill-ink h-7 px-2.5 text-[11px] font-semibold shrink-0',
+            }}
+            inactiveProps={{
+              className:
+                'pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary shrink-0',
+            }}
+          >
+            1000x
           </Link>
           <Link
             to="/analytics"
@@ -305,30 +303,6 @@ export function Header() {
             }}
           >
             Staking
-          </Link>
-          <Link
-            to="/cup"
-            activeProps={{
-              className: 'pill pill-ink h-7 px-2.5 text-[11px] font-medium shrink-0',
-            }}
-            inactiveProps={{
-              className:
-                'pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary shrink-0',
-            }}
-          >
-            Cup
-          </Link>
-          <Link
-            to="/docs"
-            activeProps={{
-              className: 'pill pill-ink h-7 px-2.5 text-[11px] font-medium shrink-0',
-            }}
-            inactiveProps={{
-              className:
-                'pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary shrink-0',
-            }}
-          >
-            Docs
           </Link>
         </div>
       </header>
