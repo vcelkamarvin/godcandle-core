@@ -49,18 +49,11 @@ describe("PnL Share Card Structure & Specification", () => {
     expect(modalContent).toContain("from-[#CDC3F0]/25 via-[#FFDAC8]/20 to-[#A0D4CA]/25");
   });
 
-  it("supports /goal, /boost, and /teamwork modes", () => {
-    expect(modalContent).toContain('setMode("pnl")');
-    expect(modalContent).toContain('setMode("goal")');
-    expect(modalContent).toContain('setMode("boost")');
-    expect(modalContent).toContain('setMode("teamwork")');
-    expect(modalContent).toContain("Target Goal Price:");
-    expect(modalContent).toContain("TARGET GOAL ROI");
-    expect(modalContent).toContain("Convex Boost Multiplier:");
-    expect(modalContent).toContain("CONVEX BOOST ROI");
-    expect(modalContent).toContain("Syndicate Desk:");
-    expect(modalContent).toContain("Alpha Syndicate");
-    expect(modalContent).toContain("SYNDICATE DESK POOL ROI");
+  it("removes noisy editing sub-bars, preset chips, and bloat from the modal", () => {
+    expect(modalContent).not.toContain("Target Goal Price:");
+    expect(modalContent).not.toContain("Convex Boost Multiplier:");
+    expect(modalContent).toContain("Perps. Options. Up to 1000x.");
+    expect(modalContent).toContain("One terminal. Institutional-grade liquidity.");
   });
 
   it("provides export parity with high-resolution 1600x1000 canvas generator", () => {
@@ -113,6 +106,9 @@ describe("PnL Share Card Interactive Component (DOM & State)", () => {
     expect(container.textContent).toContain("REALIZED ROI");
     expect(container.textContent).toContain("TRADE SMARTER TOGETHER · ZERO FEES");
     expect(container.textContent).toContain("Claude Monet, 1885");
+    expect(container.textContent).toContain("The Cliffs at Étretat");
+    expect(container.textContent).toContain("Perps. Options. Up to 1000x.");
+    expect(container.textContent).toContain("One terminal. Institutional-grade liquidity.");
 
     await act(async () => {
       root.unmount();
@@ -120,33 +116,14 @@ describe("PnL Share Card Interactive Component (DOM & State)", () => {
     container.remove();
   });
 
-  it("switches to /goal mode and updates target prices with presets", async () => {
+  it("renders programmatic /goal mode with calculated target goal ROI", async () => {
     const root = createRoot(container);
     await act(async () => {
-      root.render(<ShareModal trade={sampleTrade} onOpenChange={onOpenChangeMock} />);
-    });
-
-    const buttons = Array.from(container.querySelectorAll("button"));
-    const goalBtn = buttons.find((b) => b.textContent?.includes("Goal Hit"))!;
-    expect(goalBtn).toBeDefined();
-
-    await act(async () => {
-      goalBtn.click();
+      root.render(<ShareModal trade={sampleTrade} onOpenChange={onOpenChangeMock} initialMode="goal" />);
     });
 
     expect(container.textContent).toContain("TARGET GOAL ROI");
-    expect(container.textContent).toContain("Target Goal Price:");
-
-    const updatedButtons = Array.from(container.querySelectorAll("button"));
-    const preset25Btn = updatedButtons.find((b) => b.textContent?.trim() === "+25%")!;
-    expect(preset25Btn).toBeDefined();
-
-    await act(async () => {
-      preset25Btn.click();
-    });
-
-    const input = container.querySelector("input[placeholder='Target Price']") as HTMLInputElement;
-    expect(Number(input.value)).toBe(Math.round(64000 * 1.25));
+    expect(container.textContent).toContain("TARGET GOAL");
 
     await act(async () => {
       root.unmount();
@@ -154,33 +131,14 @@ describe("PnL Share Card Interactive Component (DOM & State)", () => {
     container.remove();
   });
 
-  it("switches to /boost mode and scales ROI with multipliers", async () => {
+  it("renders programmatic /boost mode with calculated convex boosted ROI", async () => {
     const root = createRoot(container);
     await act(async () => {
-      root.render(<ShareModal trade={sampleTrade} onOpenChange={onOpenChangeMock} />);
-    });
-
-    const buttons = Array.from(container.querySelectorAll("button"));
-    const boostBtn = buttons.find((b) => b.textContent?.includes("Convex Boost"))!;
-    expect(boostBtn).toBeDefined();
-
-    await act(async () => {
-      boostBtn.click();
+      root.render(<ShareModal trade={sampleTrade} onOpenChange={onOpenChangeMock} initialMode="boost" />);
     });
 
     expect(container.textContent).toContain("CONVEX BOOST ROI");
-    expect(container.textContent).toContain("Convex Boost Multiplier:");
-
-    const updatedButtons = Array.from(container.querySelectorAll("button"));
-    const mult10Btn = updatedButtons.find((b) => b.textContent?.trim() === "10x")!;
-    expect(mult10Btn).toBeDefined();
-
-    await act(async () => {
-      mult10Btn.click();
-    });
-
-    const input = container.querySelector("input[placeholder='5.0']") as HTMLInputElement;
-    expect(Number(input.value)).toBe(10);
+    expect(container.textContent).toContain("BOOSTED LEV");
 
     await act(async () => {
       root.unmount();
@@ -188,32 +146,14 @@ describe("PnL Share Card Interactive Component (DOM & State)", () => {
     container.remove();
   });
 
-  it("switches to /teamwork mode and updates syndicate desk pool", async () => {
+  it("renders programmatic /teamwork mode with syndicate pool ROI", async () => {
     const root = createRoot(container);
     await act(async () => {
-      root.render(<ShareModal trade={sampleTrade} onOpenChange={onOpenChangeMock} />);
-    });
-
-    const buttons = Array.from(container.querySelectorAll("button"));
-    const teamworkBtn = buttons.find((b) => b.textContent?.includes("Syndicate Desk"))!;
-    expect(teamworkBtn).toBeDefined();
-
-    await act(async () => {
-      teamworkBtn.click();
+      root.render(<ShareModal trade={sampleTrade} onOpenChange={onOpenChangeMock} initialMode="teamwork" />);
     });
 
     expect(container.textContent).toContain("SYNDICATE DESK POOL ROI");
-    expect(container.textContent).toContain("Syndicate Desk:");
-
-    const updatedButtons = Array.from(container.querySelectorAll("button"));
-    const cupDeskBtn = updatedButtons.find((b) => b.textContent?.includes("Candle Cup Desk"))!;
-    expect(cupDeskBtn).toBeDefined();
-
-    await act(async () => {
-      cupDeskBtn.click();
-    });
-
-    expect(container.textContent).toContain("Candle Cup Desk");
+    expect(container.textContent).toContain("SYNDICATE DESK");
 
     await act(async () => {
       root.unmount();
@@ -221,58 +161,35 @@ describe("PnL Share Card Interactive Component (DOM & State)", () => {
     container.remove();
   });
 
-  it("toggles Hide Dollar amount and Metrics display", async () => {
+  it("toggles Hide Dollar amount via initialHideDollar prop", async () => {
     const root = createRoot(container);
     await act(async () => {
-      root.render(<ShareModal trade={sampleTrade} onOpenChange={onOpenChangeMock} />);
+      root.render(<ShareModal trade={sampleTrade} onOpenChange={onOpenChangeMock} initialHideDollar={true} />);
     });
 
-    const checkboxes = Array.from(container.querySelectorAll("input[type='checkbox']")) as HTMLInputElement[];
-    const hideDollarCheck = checkboxes[0]!;
-    const metricsCheck = checkboxes[1]!;
-
-    expect(container.textContent).toContain("USDC");
+    expect(container.textContent).not.toContain("USDC");
     expect(container.textContent).toContain("ENTRY PRICE");
 
     await act(async () => {
-      hideDollarCheck.click();
-    });
-    expect(container.textContent).not.toContain("USDC");
-
-    await act(async () => {
-      metricsCheck.click();
-    });
-    expect(container.textContent).not.toContain("ENTRY PRICE");
-
-    await act(async () => {
       root.unmount();
     });
     container.remove();
   });
 
-  it("switches theme and Monet artwork cleanly", async () => {
+  it("renders clean action buttons under the PnL card", async () => {
     const root = createRoot(container);
     await act(async () => {
       root.render(<ShareModal trade={sampleTrade} onOpenChange={onOpenChangeMock} />);
     });
 
     const buttons = Array.from(container.querySelectorAll("button"));
-    const obsidianBtn = buttons.find((b) => b.textContent?.trim() === "Obsidian")!;
-    const auroraBtn = buttons.find((b) => b.textContent?.trim() === "Aurora")!;
-    const sunriseBtn = buttons.find((b) => b.textContent?.includes("Sunrise"))!;
+    const copyBtn = buttons.find((b) => b.textContent?.includes("Copy Image"));
+    const xBtn = buttons.find((b) => b.textContent?.includes("Share to X"));
+    const dlBtn = buttons.find((b) => b.textContent?.includes("Download PNG"));
 
-    await act(async () => {
-      obsidianBtn.click();
-    });
-    await act(async () => {
-      auroraBtn.click();
-    });
-    await act(async () => {
-      sunriseBtn.click();
-    });
-
-    expect(container.textContent).toContain("Claude Monet, 1872");
-    expect(container.textContent).toContain("Impression, Sunrise");
+    expect(copyBtn).toBeDefined();
+    expect(xBtn).toBeDefined();
+    expect(dlBtn).toBeDefined();
 
     await act(async () => {
       root.unmount();

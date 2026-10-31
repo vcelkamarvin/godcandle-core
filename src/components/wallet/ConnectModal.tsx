@@ -27,10 +27,10 @@ interface WalletOption {
 
 const WALLET_OPTIONS: WalletOption[] = [
   { id: 'metamask', name: 'MetaMask', desc: 'Browser Extension', badge: 'Detected' },
-  { id: 'rabby', name: 'Rabby Wallet', desc: 'Fast EVM execution', recommended: true },
-  { id: 'rainbow', name: 'Rainbow', desc: 'Fast EVM & multi-chain', recommended: true },
   { id: 'coinbase', name: 'Coinbase Wallet', desc: 'Mobile & Extension' },
   { id: 'walletconnect', name: 'WalletConnect', desc: 'Connect 400+ wallets' },
+  { id: 'rainbow', name: 'Rainbow', desc: 'Fast EVM & multi-chain', recommended: true },
+  { id: 'rabby', name: 'Rabby Wallet', desc: 'Fast EVM execution' },
   { id: 'phantom', name: 'Phantom', desc: 'Multi-chain EVM' },
 ];
 
@@ -358,24 +358,27 @@ export function ConnectModal({ isDark: isDarkProp }: { isDark?: boolean } = {}) 
                     {flowState === 'default' && (
                       <div className="space-y-4 my-auto w-full">
                         {/* Header */}
-                        <div className="space-y-1">
+                        <div className="space-y-1.5">
                           <div className="flex items-center gap-2">
-                            <span className="flex size-7 items-center justify-center rounded-xl bg-[#161B22] border border-[#30363D]">
-                              <Zap className="size-4 text-[#00D964]" />
-                            </span>
-                            <span className="text-[11px] font-mono uppercase tracking-wider text-[#8B949E] font-semibold">
+                            <div className="flex items-center gap-1.5 font-bold tracking-tight text-white font-mono text-sm">
+                              <span className="inline-block w-1.5 h-3.5 bg-[#00D964] rounded-xs" />
+                              <span className="font-bold text-[16px] tracking-tight font-sans text-white">godcandle</span>
+                            </div>
+                            <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] font-mono text-[#8B949E]">
                               Web3 Secure Auth
                             </span>
                           </div>
-                          <h2
-                            id="login-modal-title"
-                            className="font-sans text-xl sm:text-[22px] font-bold tracking-tight text-white"
-                          >
-                            Connect Web3 Wallet
-                          </h2>
-                          <p className="text-xs text-[#8B949E]">
-                            Connect Web3 wallet.
-                          </p>
+                          <div>
+                            <h2
+                              id="login-modal-title"
+                              className="font-sans text-xl sm:text-[22px] font-bold tracking-tight text-white"
+                            >
+                              Connect Web3 Wallet
+                            </h2>
+                            <p className="text-xs text-[#8B949E] mt-0.5">
+                              Connect Web3 wallet.
+                            </p>
+                          </div>
                         </div>
 
                         {/* Prominent Web3 Wallets (2 columns on sm, 1 col on xs) */}
@@ -509,7 +512,7 @@ export function ConnectModal({ isDark: isDarkProp }: { isDark?: boolean } = {}) 
                       aria-label="Claude Monet, 1885 · The Cliffs at Étretat"
                     >
                       <p className="font-sans text-lg sm:text-xl font-bold leading-tight text-white">
-                        1000x Synthetic Perps.
+                        Perps. Options. Up to 1000x.
                       </p>
                       <p className="text-xs font-medium text-white/80 mt-0.5">
                         One terminal. Institutional-grade liquidity.
