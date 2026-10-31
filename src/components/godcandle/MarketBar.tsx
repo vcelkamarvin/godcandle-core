@@ -210,7 +210,7 @@ export function MarketBar({
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent
           hideClose
-          className="relative w-[calc(100vw-32px)] sm:max-w-[890px] h-[90vh] sm:h-[600px] rounded-3xl bg-white border border-border shadow-2xl p-0 flex flex-col sm:flex-row overflow-hidden outline-none"
+          className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-[calc(100vw-32px)] sm:max-w-[890px] h-[90vh] sm:h-[600px] rounded-3xl bg-white border border-border shadow-2xl p-0 gap-0 flex flex-col sm:flex-row overflow-hidden outline-none m-0"
           onKeyDown={handleKeyDown}
         >
           {/* Signature Delicate Rainbow Iridescent Top Bar */}

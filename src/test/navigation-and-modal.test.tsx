@@ -86,10 +86,10 @@ describe("ConnectModal Light Mode & Web3 Wallets", () => {
     expect(footerContent).not.toContain("Precompile Sync: 48ms");
   });
 
-  it("features Claude Monet's Impression Sunrise art on the right half with subtle rainbow sheen and light mode styling", () => {
-    expect(modalContent).toContain("/images/monet-sunrise.jpg");
-    expect(modalContent).toContain("Claude Monet, 1872");
-    expect(modalContent).toContain("Impression, Sunrise");
+  it("features Claude Monet's The Cliffs at Étretat art on the right half with subtle rainbow sheen and light mode styling", () => {
+    expect(modalContent).toContain("/images/monet-etretat.jpg");
+    expect(modalContent).toContain("Claude Monet, 1885");
+    expect(modalContent).toContain("The Cliffs at Étretat");
     expect(modalContent).toContain("bg-gradient-to-tr from-[#CDC3F0]/25 via-[#FFDAC8]/20 to-[#A0D4CA]/25");
   });
 
@@ -100,9 +100,14 @@ describe("ConnectModal Light Mode & Web3 Wallets", () => {
   });
 });
 
-describe("MarketBar Rich Detail Preview", () => {
+describe("MarketBar Rich Detail Preview and Centering", () => {
   const marketBarPath = path.resolve(__dirname, "../components/godcandle/MarketBar.tsx");
   const marketBarContent = fs.readFileSync(marketBarPath, "utf-8");
+
+  it("strictly centers the ticker picking dialog horizontally and vertically with fixed coordinates", () => {
+    expect(marketBarContent).toContain("fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2");
+    expect(marketBarContent).not.toMatch(/DialogContent[^>]*\brelative\b/);
+  });
 
   it("includes rich detail preview with 24h range, volume, funding rate, and execution metrics", () => {
     expect(marketBarContent).toContain("24h Low");

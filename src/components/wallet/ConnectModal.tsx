@@ -656,12 +656,16 @@ export function ConnectModal() {
                   </div>
                 </div>
 
-                {/* RIGHT HALF: CLAUDE MONET'S "IMPRESSION, SUNRISE" (1872) ART PANEL */}
-                <div className="relative hidden sm:block sm:w-1/2 h-full overflow-hidden select-none bg-[#F6F6F4]">
+                {/* RIGHT HALF: CLAUDE MONET'S "THE CLIFFS AT ÉTRETAT" (1885) ART PANEL */}
+                <div
+                  className="relative hidden sm:block sm:w-1/2 h-full overflow-hidden select-none bg-[#F6F6F4]"
+                  aria-label="Claude Monet, 1885 · The Cliffs at Étretat"
+                  title="Claude Monet, 1885 · The Cliffs at Étretat"
+                >
                   <img
-                    src="/images/monet-sunrise.jpg"
-                    alt="Claude Monet - Impression, Sunrise (1872)"
-                    className="absolute inset-0 w-full h-full object-cover object-center filter saturate-[1.08] contrast-[1.02]"
+                    src="/images/monet-etretat.jpg"
+                    alt="Claude Monet - The Cliffs at Étretat (1885)"
+                    className="absolute inset-0 w-full h-full object-cover object-center filter saturate-[1.05] contrast-[1.02]"
                   />
 
                   {/* Delicate rainbow sheen & impressionist atmosphere overlay (not darkmode) */}
@@ -691,7 +695,10 @@ export function ConnectModal() {
                     )}
 
                     {/* Bottom Floating Plaque */}
-                    <div className="rounded-2xl bg-white/85 backdrop-blur-md p-4 border border-white/70 shadow-lg text-[#0A0A0A]">
+                    <div
+                      className="rounded-2xl bg-white/85 backdrop-blur-md p-4 border border-white/70 shadow-lg text-[#0A0A0A]"
+                      aria-label="Claude Monet, 1885 · The Cliffs at Étretat"
+                    >
                       <p className="font-sans text-lg sm:text-xl font-bold leading-tight text-[#0A0A0A]">
                         Perps. Options. Up to 1000x.
                       </p>
@@ -700,9 +707,9 @@ export function ConnectModal() {
                       </p>
                       <div className="mt-2.5 flex items-center justify-between text-[10px] text-[#0A0A0A]/70 font-mono">
                         <span className="rounded-full bg-gradient-to-r from-[#CDC3F0]/70 via-[#FFDAC8]/70 to-[#A0D4CA]/70 px-2 py-0.5 font-semibold text-[#0A0A0A] border border-border/50">
-                          Claude Monet, 1872
+                          Claude Monet, 1885
                         </span>
-                        <span className="italic font-sans">Impression, Sunrise</span>
+                        <span className="italic font-sans">The Cliffs at Étretat</span>
                       </div>
                     </div>
                   </div>
