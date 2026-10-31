@@ -13,6 +13,7 @@ import {
   Target,
   Zap,
   Milestone,
+  PieChart,
 } from "lucide-react";
 import { SettingsModal } from "@/components/settings/SettingsModal";
 import { useTrading } from "@/components/godcandle/TradingProvider";
@@ -20,7 +21,6 @@ import { fmtUsd } from "@/lib/engine";
 import { TransferDialog } from "@/components/godcandle/TransferDialog";
 import { Button } from "@/components/ui/button";
 import { useAccount, useBalance } from "wagmi";
-import { formatUnits } from "viem";
 import { toast } from "sonner";
 
 export function Header() {
@@ -29,23 +29,30 @@ export function Header() {
   const localAddr =
     typeof window !== "undefined" ? localStorage.getItem("godcandle_wallet_address") : null;
   const activeAddr = wagmiAddress || localAddr;
-  const { data: hypeBalance } = useBalance({
+  useBalance({
     address: activeAddr as `0x${string}` | undefined,
     chainId: 999,
   });
   const [transfer, setTransfer] = useState<"Deposit" | "Withdraw" | null>(null);
   const [candleOpen, setCandleOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
+  const [mobileMoreOpen, setMobileMoreOpen] = useState(false);
   const [settingsModalOpen, setSettingsModalOpen] = useState(false);
   const candleRef = useRef<HTMLDivElement>(null);
   const moreRef = useRef<HTMLDivElement>(null);
+  const mobileMoreRef = useRef<HTMLDivElement>(null);
 
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const isLanding = pathname === "/main" || pathname === "/settings";
   const isCandleActive = pathname.startsWith("/candle") || pathname.startsWith("/staking");
-  const isGoalOrBoost = pathname === "/goal" || pathname === "/boost";
+  const isGoalActive = pathname === "/goal";
+  const isBoostActive = pathname === "/boost";
   const isMoreActive =
-    pathname === "/docs" || pathname.startsWith("/docs") || pathname === "/settings" || pathname === "/main";
+    pathname === "/analytics" ||
+    pathname === "/leaderboard" ||
+    pathname === "/docs" ||
+    pathname.startsWith("/docs") ||
+    pathname === "/settings" ||
+    pathname === "/main";
 
   // Sync mode with pathname
   useEffect(() => {
@@ -65,15 +72,32 @@ export function Header() {
       if (moreRef.current && !moreRef.current.contains(e.target as Node)) {
         setMoreOpen(false);
       }
+      if (mobileMoreRef.current && !mobileMoreRef.current.contains(e.target as Node)) {
+        setMobileMoreOpen(false);
+      }
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Keyboard accessibility: Escape key closes menus
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        setCandleOpen(false);
+        setMoreOpen(false);
+        setMobileMoreOpen(false);
+      }
+    }
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
   }, []);
 
   // Close menus on route change
   useEffect(() => {
     setCandleOpen(false);
     setMoreOpen(false);
+    setMobileMoreOpen(false);
   }, [pathname]);
 
   return (
@@ -103,15 +127,15 @@ export function Header() {
         <div className="h-[2px] w-full rainbow-bar" />
 
         {/* Main Navbar */}
-        <div className="flex h-14 items-center justify-between gap-4 px-4 sm:px-6">
+        <div className="flex h-14 items-center justify-between gap-3 sm:gap-4 px-4 sm:px-6">
           {/* Left Cluster: Logo & Primary Left Navigation */}
-          <div className="flex items-center gap-5 lg:gap-6">
+          <div className="flex items-center gap-3 sm:gap-5 lg:gap-6">
             <Link
               to="/"
               className="group flex shrink-0 items-center gap-2 font-sans"
               aria-label="godcandle home"
             >
-              <span className="text-[20px] font-bold tracking-tight text-foreground transition-opacity group-hover:opacity-85">
+              <span className="text-[19px] sm:text-[20px] font-bold tracking-tight text-foreground transition-opacity group-hover:opacity-85">
                 godcandle
               </span>
               <span className="hidden rounded-full border border-border bg-gradient-to-r from-[#CDC3F0]/40 via-[#FFDAC8]/40 to-[#A0D4CA]/40 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-foreground sm:inline-flex items-center gap-1 font-mono">
@@ -175,14 +199,17 @@ export function Header() {
                 </Link>
               </div>
 
-              {/* Studios Navigation Segment: Goal (0DTE) & Boost (100×) */}
-              <div className="flex items-center p-0.5 rounded-full bg-secondary/80 border border-border/80 shadow-2xs relative">
+              {/* Elevated Studios Navigation Segment: Goal (0DTE) & Boost (100×) */}
+              <div className="flex items-center p-0.5 rounded-full bg-gradient-to-r from-[#CDC3F0]/30 via-[#FFDAC8]/25 to-[#A0D4CA]/30 border border-[#CDC3F0]/70 shadow-2xs relative">
+                <span className="text-[9px] font-mono font-bold uppercase tracking-wider text-muted-foreground/75 px-2 select-none hidden 2xl:inline-flex items-center gap-1">
+                  STUDIOS
+                </span>
                 <Link
                   to="/goal"
                   className={
-                    pathname === "/goal"
+                    isGoalActive
                       ? "pill pill-ink h-7.5 px-3 text-xs font-semibold shadow-xs"
-                      : "pill h-7.5 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-white/60 transition-colors"
+                      : "pill h-7.5 px-3 text-xs text-foreground/80 hover:text-foreground hover:bg-white/80 transition-colors"
                   }
                   title="Target Goal Studio (0DTE Binary Modeling)"
                   aria-label="Goal Studio 0DTE"
@@ -190,13 +217,13 @@ export function Header() {
                   <span className="flex items-center gap-1.5">
                     <Target
                       className={`size-3 transition-colors ${
-                        pathname === "/goal" ? "text-[#00D964]" : "text-[#06964A]"
+                        isGoalActive ? "text-[#00D964]" : "text-[#06964A]"
                       }`}
                     />
-                    <span>Goal</span>
+                    <span className="font-medium">Goal</span>
                     <span
                       className={
-                        pathname === "/goal"
+                        isGoalActive
                           ? "rounded bg-white/20 px-1 py-0.2 text-[8px] font-bold text-white tracking-wider"
                           : "rounded bg-[#E3F8EC] px-1 py-0.2 text-[8px] font-bold text-[#06964A] tracking-wider"
                       }
@@ -208,9 +235,9 @@ export function Header() {
                 <Link
                   to="/boost"
                   className={
-                    pathname === "/boost"
+                    isBoostActive
                       ? "pill pill-ink h-7.5 px-3 text-xs font-semibold shadow-xs"
-                      : "pill h-7.5 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-white/60 transition-colors"
+                      : "pill h-7.5 px-3 text-xs text-foreground/80 hover:text-foreground hover:bg-white/80 transition-colors"
                   }
                   title="Convexity Boost Multiplier (100×)"
                   aria-label="Boost Multiplier 100x"
@@ -218,13 +245,13 @@ export function Header() {
                   <span className="flex items-center gap-1.5">
                     <Zap
                       className={`size-3 transition-colors ${
-                        pathname === "/boost" ? "text-[#C084FC]" : "text-[#7C3AED]"
+                        isBoostActive ? "text-[#C084FC]" : "text-[#7C3AED]"
                       }`}
                     />
-                    <span>Boost</span>
+                    <span className="font-medium">Boost</span>
                     <span
                       className={
-                        pathname === "/boost"
+                        isBoostActive
                           ? "rounded bg-white/20 px-1 py-0.2 text-[8px] font-bold text-white tracking-wider"
                           : "rounded bg-[#FAF5FF] px-1 py-0.2 text-[8px] font-bold text-[#7C3AED] tracking-wider"
                       }
@@ -235,65 +262,114 @@ export function Header() {
                 </Link>
               </div>
 
-              {/* Tools & Analytics Navigation */}
-              <div className="flex items-center gap-1 pl-1">
-                <Link
-                  to="/analytics"
-                  activeProps={{
-                    className: "pill pill-ink h-7.5 px-3 text-xs font-medium shadow-xs",
-                  }}
-                  inactiveProps={{
-                    className:
-                      "pill h-7.5 px-2.5 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary/70 transition-colors",
-                  }}
-                >
-                  Analysis
-                </Link>
+              {/* Direct links on wide screens (hidden below xl to prevent horizontal overflow) */}
+              <Link
+                to="/analytics"
+                activeProps={{
+                  className:
+                    "hidden xl:inline-flex pill pill-ink h-7.5 px-3 text-xs font-medium shadow-xs",
+                }}
+                inactiveProps={{
+                  className:
+                    "hidden xl:inline-flex pill h-7.5 px-2.5 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary/70 transition-colors",
+                }}
+              >
+                Analysis
+              </Link>
 
-                <Link
-                  to="/leaderboard"
-                  activeProps={{
-                    className: "pill pill-ink h-7.5 px-3 text-xs font-medium shadow-xs",
-                  }}
-                  inactiveProps={{
-                    className:
-                      "pill h-7.5 px-2.5 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary/70 transition-colors",
-                  }}
-                >
-                  Leaderboard
-                </Link>
+              <Link
+                to="/leaderboard"
+                activeProps={{
+                  className:
+                    "hidden xl:inline-flex pill pill-ink h-7.5 px-3 text-xs font-medium shadow-xs",
+                }}
+                inactiveProps={{
+                  className:
+                    "hidden xl:inline-flex pill h-7.5 px-2.5 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary/70 transition-colors",
+                }}
+              >
+                Leaderboard
+              </Link>
 
-                {/* Clean More Menu for secondary links (Docs, Roadmap, Settings) */}
-                <div className="relative" ref={moreRef}>
-                  <button
-                    type="button"
-                    onClick={() => setMoreOpen((v) => !v)}
-                    className={`pill h-7.5 px-2.5 text-xs font-medium gap-1 transition-colors cursor-pointer ${
-                      moreOpen || isMoreActive
-                        ? "pill-ink shadow-xs"
-                        : "text-muted-foreground hover:text-foreground hover:bg-secondary/70"
+              {/* Clean More Menu for secondary links (Analysis, Leaderboard, Docs, Roadmap, Settings) */}
+              <div className="relative" ref={moreRef}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMoreOpen((v) => !v);
+                    setCandleOpen(false);
+                  }}
+                  className={`pill h-7.5 px-2.5 text-xs font-medium gap-1 transition-colors cursor-pointer ${
+                    moreOpen || isMoreActive
+                      ? "pill-ink shadow-xs"
+                      : "text-muted-foreground hover:text-foreground hover:bg-secondary/70"
+                  }`}
+                  aria-expanded={moreOpen}
+                  aria-haspopup="menu"
+                >
+                  <span>More</span>
+                  <ChevronDown
+                    className={`size-3 text-muted-foreground transition-transform duration-200 ${
+                      moreOpen ? "rotate-180" : ""
                     }`}
-                    aria-expanded={moreOpen}
-                    aria-haspopup="menu"
-                  >
-                    <span>More</span>
-                    <ChevronDown
-                      className={`size-3 text-muted-foreground transition-transform duration-200 ${
-                        moreOpen ? "rotate-180" : ""
-                      }`}
-                    />
-                  </button>
+                  />
+                </button>
 
-                  {moreOpen && (
-                    <div
-                      role="menu"
-                      className="absolute left-0 top-full mt-2 w-52 rounded-2xl border border-border bg-white p-1.5 shadow-xl animate-in zoom-in-95 fade-in-0 duration-150 z-50"
-                    >
+                {moreOpen && (
+                  <div
+                    role="menu"
+                    className="absolute left-0 top-full mt-2 w-56 rounded-2xl border border-border bg-white p-1.5 shadow-xl animate-in zoom-in-95 fade-in-0 duration-150 z-50 divide-y divide-border/50"
+                  >
+                    {/* Insights & Community */}
+                    <div className="pb-1 space-y-0.5">
+                      <Link
+                        to="/analytics"
+                        role="menuitem"
+                        onClick={() => setMoreOpen(false)}
+                        className={`flex items-center gap-2.5 p-2 rounded-xl transition-colors text-left ${
+                          pathname === "/analytics" ? "bg-secondary font-medium" : "hover:bg-secondary"
+                        }`}
+                      >
+                        <div className="flex size-7 items-center justify-center rounded-lg bg-secondary text-foreground">
+                          <BarChart2 className="size-3.5" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-semibold text-foreground">Analysis</p>
+                          <p className="text-[10px] text-muted-foreground">
+                            Volume &amp; L1 market depth
+                          </p>
+                        </div>
+                      </Link>
+
+                      <Link
+                        to="/leaderboard"
+                        role="menuitem"
+                        onClick={() => setMoreOpen(false)}
+                        className={`flex items-center gap-2.5 p-2 rounded-xl transition-colors text-left ${
+                          pathname === "/leaderboard" ? "bg-secondary font-medium" : "hover:bg-secondary"
+                        }`}
+                      >
+                        <div className="flex size-7 items-center justify-center rounded-lg bg-[#FFF8EB] text-[#D97706]">
+                          <Trophy className="size-3.5" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-semibold text-foreground">Leaderboard</p>
+                          <p className="text-[10px] text-muted-foreground">
+                            Rankings &amp; Candle Cup
+                          </p>
+                        </div>
+                      </Link>
+                    </div>
+
+                    {/* Resources & Preferences */}
+                    <div className="pt-1 space-y-0.5">
                       <a
                         href="/docs"
                         role="menuitem"
                         onClick={() => setMoreOpen(false)}
-                        className="flex items-center gap-2.5 p-2 rounded-xl hover:bg-secondary transition-colors text-left"
+                        className={`flex items-center gap-2.5 p-2 rounded-xl transition-colors text-left ${
+                          pathname.startsWith("/docs") ? "bg-secondary font-medium" : "hover:bg-secondary"
+                        }`}
                       >
                         <div className="flex size-7 items-center justify-center rounded-lg bg-secondary text-foreground">
                           <BookOpen className="size-3.5" />
@@ -327,7 +403,9 @@ export function Header() {
                         to="/settings"
                         role="menuitem"
                         onClick={() => setMoreOpen(false)}
-                        className="flex items-center gap-2.5 p-2 rounded-xl hover:bg-secondary transition-colors text-left"
+                        className={`flex items-center gap-2.5 p-2 rounded-xl transition-colors text-left ${
+                          pathname === "/settings" ? "bg-secondary font-medium" : "hover:bg-secondary"
+                        }`}
                       >
                         <div className="flex size-7 items-center justify-center rounded-lg bg-secondary text-foreground">
                           <SettingsIcon className="size-3.5" />
@@ -340,24 +418,24 @@ export function Header() {
                         </div>
                       </Link>
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
             </nav>
           </div>
 
           {/* Right Cluster: Portfolio, CANDLE Dropdown, Balance, Deposit, Connect Wallet */}
-          <div className="flex shrink-0 items-center gap-2.5 sm:gap-3">
+          <div className="flex shrink-0 items-center gap-2 sm:gap-2.5">
             {/* Portfolio Link */}
             <Link
               to="/portfolio"
-              className="hidden md:inline-flex"
+              className="hidden lg:inline-flex"
               activeProps={{
-                className: "pill pill-ink h-8 px-3.5 text-xs font-medium shadow-xs",
+                className: "pill pill-ink h-8 px-3 text-xs font-medium shadow-xs",
               }}
               inactiveProps={{
                 className:
-                  "pill h-8 px-3.5 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary",
+                  "pill h-8 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary",
               }}
             >
               Portfolio
@@ -367,7 +445,10 @@ export function Header() {
             <div className="relative hidden md:block" ref={candleRef}>
               <button
                 type="button"
-                onClick={() => setCandleOpen((v) => !v)}
+                onClick={() => {
+                  setCandleOpen((v) => !v);
+                  setMoreOpen(false);
+                }}
                 className={`pill h-8 px-3 text-xs font-semibold gap-1.5 transition-all cursor-pointer ${
                   isCandleActive
                     ? "pill-ink shadow-xs"
@@ -429,7 +510,7 @@ export function Header() {
             </div>
 
             {/* Available Balance */}
-            <div className="hidden lg:block text-right pr-1">
+            <div className="hidden xl:block text-right pr-1">
               <p className="data-label text-[9px] flex items-center justify-end gap-1">
                 <span>{t.mode === "perps" ? "Real Withdrawable" : "Paper Available"}</span>
                 {t.mode === "perps" && (
@@ -482,7 +563,7 @@ export function Header() {
                 to="/settings"
                 title="Settings Page"
                 aria-label="Settings"
-                className="flex size-8 items-center justify-center rounded-full bg-[#00D964] text-black shadow-xs font-bold transition-all cursor-pointer shrink-0"
+                className="hidden sm:flex size-8 items-center justify-center rounded-full bg-[#00D964] text-black shadow-xs font-bold transition-all cursor-pointer shrink-0"
               >
                 <SettingsIcon className="size-3.5" />
               </Link>
@@ -492,7 +573,7 @@ export function Header() {
                 onClick={() => setSettingsModalOpen(true)}
                 title="Settings (Cmd+,)"
                 aria-label="Settings"
-                className="flex size-8 items-center justify-center rounded-full border border-border/80 bg-secondary/70 text-muted-foreground hover:text-foreground hover:bg-secondary transition-all cursor-pointer shrink-0"
+                className="hidden sm:flex size-8 items-center justify-center rounded-full border border-border/80 bg-secondary/70 text-muted-foreground hover:text-foreground hover:bg-secondary transition-all cursor-pointer shrink-0"
               >
                 <SettingsIcon className="size-3.5" />
               </button>
@@ -500,8 +581,8 @@ export function Header() {
           </div>
         </div>
 
-        {/* Mobile Nav Sub-row: Clean Light Mode */}
-        <div className="flex md:hidden items-center gap-2 overflow-x-auto border-t border-border bg-white/95 px-3 py-1.5 no-scrollbar text-xs">
+        {/* Mobile Navigation Sub-row: Minimalist, intuitive, and uncluttered */}
+        <div className="flex md:hidden items-center justify-between gap-1.5 border-t border-border bg-white/95 px-3 py-1.5 text-xs">
           {/* Mobile Trading Segment */}
           <div className="flex items-center p-0.5 rounded-full bg-secondary/80 border border-border/80 shrink-0">
             <Link
@@ -551,26 +632,26 @@ export function Header() {
             </Link>
           </div>
 
-          {/* Mobile Studios Segment: /goal & /boost */}
-          <div className="flex items-center p-0.5 rounded-full bg-secondary/80 border border-border/80 shrink-0">
+          {/* Mobile Studios Segment: /goal & /boost highlighted with pastel gradient */}
+          <div className="flex items-center p-0.5 rounded-full bg-gradient-to-r from-[#CDC3F0]/30 via-[#FFDAC8]/25 to-[#A0D4CA]/30 border border-[#CDC3F0]/70 shrink-0">
             <Link
               to="/goal"
               className={
-                pathname === "/goal"
+                isGoalActive
                   ? "pill pill-ink h-7 px-2.5 text-[11px] font-semibold"
-                  : "pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-white/60 transition-colors"
+                  : "pill h-7 px-2.5 text-[11px] text-foreground/80 hover:text-foreground hover:bg-white/80 transition-colors"
               }
             >
               <span className="flex items-center gap-1">
                 <Target
                   className={`size-2.5 ${
-                    pathname === "/goal" ? "text-[#00D964]" : "text-[#06964A]"
+                    isGoalActive ? "text-[#00D964]" : "text-[#06964A]"
                   }`}
                 />
                 <span>Goal</span>
                 <span
                   className={
-                    pathname === "/goal"
+                    isGoalActive
                       ? "rounded bg-white/20 px-1 py-0.2 text-[8px] font-bold text-white tracking-wider"
                       : "rounded bg-[#E3F8EC] px-1 py-0.2 text-[8px] font-bold text-[#06964A] tracking-wider"
                   }
@@ -582,21 +663,21 @@ export function Header() {
             <Link
               to="/boost"
               className={
-                pathname === "/boost"
+                isBoostActive
                   ? "pill pill-ink h-7 px-2.5 text-[11px] font-semibold"
-                  : "pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-white/60 transition-colors"
+                  : "pill h-7 px-2.5 text-[11px] text-foreground/80 hover:text-foreground hover:bg-white/80 transition-colors"
               }
             >
               <span className="flex items-center gap-1">
                 <Zap
                   className={`size-2.5 ${
-                    pathname === "/boost" ? "text-[#C084FC]" : "text-[#7C3AED]"
+                    isBoostActive ? "text-[#C084FC]" : "text-[#7C3AED]"
                   }`}
                 />
                 <span>Boost</span>
                 <span
                   className={
-                    pathname === "/boost"
+                    isBoostActive
                       ? "rounded bg-white/20 px-1 py-0.2 text-[8px] font-bold text-white tracking-wider"
                       : "rounded bg-[#FAF5FF] px-1 py-0.2 text-[8px] font-bold text-[#7C3AED] tracking-wider"
                   }
@@ -607,91 +688,172 @@ export function Header() {
             </Link>
           </div>
 
-          {/* Mobile Tools & Features */}
-          <Link
-            to="/analytics"
-            activeProps={{
-              className: "pill pill-ink h-7 px-2.5 text-[11px] font-medium shrink-0",
-            }}
-            inactiveProps={{
-              className:
-                "pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary shrink-0",
-            }}
-          >
-            Analysis
-          </Link>
-          <Link
-            to="/leaderboard"
-            activeProps={{
-              className: "pill pill-ink h-7 px-2.5 text-[11px] font-medium shrink-0",
-            }}
-            inactiveProps={{
-              className:
-                "pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary shrink-0",
-            }}
-          >
-            Leaderboard
-          </Link>
-          <Link
-            to="/portfolio"
-            activeProps={{
-              className: "pill pill-ink h-7 px-2.5 text-[11px] font-medium shrink-0",
-            }}
-            inactiveProps={{
-              className:
-                "pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary shrink-0",
-            }}
-          >
-            Portfolio
-          </Link>
-          <Link
-            to="/candle"
-            activeProps={{
-              className: "pill pill-ink h-7 px-2.5 text-[11px] font-medium shrink-0",
-            }}
-            inactiveProps={{
-              className:
-                "pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary shrink-0",
-            }}
-          >
-            CANDLE
-          </Link>
-          <Link
-            to="/staking"
-            activeProps={{
-              className: "pill pill-ink h-7 px-2.5 text-[11px] font-medium shrink-0",
-            }}
-            inactiveProps={{
-              className:
-                "pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary shrink-0",
-            }}
-          >
-            Staking
-          </Link>
-          <a
-            href="/docs"
-            className="pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary shrink-0"
-          >
-            Docs
-          </a>
-          <a
-            href="/main#roadmap"
-            className="pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary shrink-0"
-          >
-            Roadmap
-          </a>
-          <Link
-            to="/settings"
-            activeProps={{
-              className: "pill pill-ink h-7 px-2.5 text-[11px] font-medium shrink-0",
-            }}
-            inactiveProps={{
-              className: "pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary shrink-0",
-            }}
-          >
-            <SettingsIcon className="size-3" />
-            <span>Settings</span>
-          </Link>
+          {/* Mobile More Menu Dropdown: Replaces the unwieldy 10-item horizontal scroll */}
+          <div className="relative shrink-0" ref={mobileMoreRef}>
+            <button
+              type="button"
+              onClick={() => setMobileMoreOpen((v) => !v)}
+              className={`pill h-7 px-2.5 text-[11px] font-medium gap-1 transition-colors cursor-pointer ${
+                mobileMoreOpen || isMoreActive || isCandleActive || pathname === "/portfolio"
+                  ? "pill-ink shadow-xs"
+                  : "bg-secondary/80 text-muted-foreground hover:text-foreground border border-border/80"
+              }`}
+              aria-expanded={mobileMoreOpen}
+              aria-haspopup="menu"
+            >
+              <span>More</span>
+              <ChevronDown
+                className={`size-3 transition-transform duration-200 ${
+                  mobileMoreOpen ? "rotate-180" : ""
+                }`}
+              />
+            </button>
+
+            {mobileMoreOpen && (
+              <div
+                role="menu"
+                className="absolute right-0 top-full mt-2 w-56 rounded-2xl border border-border bg-white p-1.5 shadow-xl animate-in zoom-in-95 fade-in-0 duration-150 z-50 divide-y divide-border/50 max-h-[75vh] overflow-y-auto"
+              >
+                <div className="pb-1 space-y-0.5">
+                  <Link
+                    to="/portfolio"
+                    role="menuitem"
+                    onClick={() => setMobileMoreOpen(false)}
+                    className={`flex items-center gap-2.5 p-2 rounded-xl transition-colors text-left ${
+                      pathname === "/portfolio" ? "bg-secondary font-medium" : "hover:bg-secondary"
+                    }`}
+                  >
+                    <div className="flex size-7 items-center justify-center rounded-lg bg-secondary text-foreground">
+                      <PieChart className="size-3.5" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-foreground">Portfolio</p>
+                      <p className="text-[10px] text-muted-foreground">Balances &amp; open PnL</p>
+                    </div>
+                  </Link>
+
+                  <Link
+                    to="/analytics"
+                    role="menuitem"
+                    onClick={() => setMobileMoreOpen(false)}
+                    className={`flex items-center gap-2.5 p-2 rounded-xl transition-colors text-left ${
+                      pathname === "/analytics" ? "bg-secondary font-medium" : "hover:bg-secondary"
+                    }`}
+                  >
+                    <div className="flex size-7 items-center justify-center rounded-lg bg-secondary text-foreground">
+                      <BarChart2 className="size-3.5" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-foreground">Analysis</p>
+                      <p className="text-[10px] text-muted-foreground">Market depth &amp; volume</p>
+                    </div>
+                  </Link>
+
+                  <Link
+                    to="/leaderboard"
+                    role="menuitem"
+                    onClick={() => setMobileMoreOpen(false)}
+                    className={`flex items-center gap-2.5 p-2 rounded-xl transition-colors text-left ${
+                      pathname === "/leaderboard" ? "bg-secondary font-medium" : "hover:bg-secondary"
+                    }`}
+                  >
+                    <div className="flex size-7 items-center justify-center rounded-lg bg-[#FFF8EB] text-[#D97706]">
+                      <Trophy className="size-3.5" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-foreground">Leaderboard</p>
+                      <p className="text-[10px] text-muted-foreground">Rankings &amp; Candle Cup</p>
+                    </div>
+                  </Link>
+                </div>
+
+                <div className="py-1 space-y-0.5">
+                  <Link
+                    to="/candle"
+                    role="menuitem"
+                    onClick={() => setMobileMoreOpen(false)}
+                    className={`flex items-center gap-2.5 p-2 rounded-xl transition-colors text-left ${
+                      pathname === "/candle" ? "bg-secondary font-medium" : "hover:bg-secondary"
+                    }`}
+                  >
+                    <div className="flex size-7 items-center justify-center rounded-lg bg-secondary text-foreground">
+                      <BarChart2 className="size-3.5" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-foreground">CANDLE Analytics</p>
+                      <p className="text-[10px] text-muted-foreground">Platform tokenomics</p>
+                    </div>
+                  </Link>
+
+                  <Link
+                    to="/staking"
+                    role="menuitem"
+                    onClick={() => setMobileMoreOpen(false)}
+                    className={`flex items-center gap-2.5 p-2 rounded-xl transition-colors text-left ${
+                      pathname === "/staking" ? "bg-secondary font-medium" : "hover:bg-secondary"
+                    }`}
+                  >
+                    <div className="flex size-7 items-center justify-center rounded-lg bg-[#E3F8EC] text-[#06964A]">
+                      <Coins className="size-3.5" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-foreground">Staking</p>
+                      <p className="text-[10px] text-muted-foreground">USDC revenue share</p>
+                    </div>
+                  </Link>
+                </div>
+
+                <div className="pt-1 space-y-0.5">
+                  <a
+                    href="/docs"
+                    role="menuitem"
+                    onClick={() => setMobileMoreOpen(false)}
+                    className="flex items-center gap-2.5 p-2 rounded-xl hover:bg-secondary transition-colors text-left"
+                  >
+                    <div className="flex size-7 items-center justify-center rounded-lg bg-secondary text-foreground">
+                      <BookOpen className="size-3.5" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-foreground">Docs</p>
+                      <p className="text-[10px] text-muted-foreground">API &amp; terminal guides</p>
+                    </div>
+                  </a>
+
+                  <a
+                    href="/main#roadmap"
+                    role="menuitem"
+                    onClick={() => setMobileMoreOpen(false)}
+                    className="flex items-center gap-2.5 p-2 rounded-xl hover:bg-secondary transition-colors text-left"
+                  >
+                    <div className="flex size-7 items-center justify-center rounded-lg bg-[#FFF4E5] text-[#D97706]">
+                      <Milestone className="size-3.5" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-foreground">Roadmap</p>
+                      <p className="text-[10px] text-muted-foreground">Masterplan phases 0–3</p>
+                    </div>
+                  </a>
+
+                  <Link
+                    to="/settings"
+                    role="menuitem"
+                    onClick={() => setMobileMoreOpen(false)}
+                    className={`flex items-center gap-2.5 p-2 rounded-xl transition-colors text-left ${
+                      pathname === "/settings" ? "bg-secondary font-medium" : "hover:bg-secondary"
+                    }`}
+                  >
+                    <div className="flex size-7 items-center justify-center rounded-lg bg-secondary text-foreground">
+                      <SettingsIcon className="size-3.5" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-foreground">Settings</p>
+                      <p className="text-[10px] text-muted-foreground">Preferences &amp; RPC</p>
+                    </div>
+                  </Link>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </header>
 
