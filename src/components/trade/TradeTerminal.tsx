@@ -47,7 +47,7 @@ export function TradeTerminal() {
   };
 
   return (
-    <div className="space-y-4 max-w-5xl mx-auto font-mono text-xs text-foreground">
+    <div className="space-y-4 max-w-5xl mx-auto font-sans text-xs text-foreground">
       {/* Dynamic L1 Price Header */}
       <LivePriceHeader
         symbol={selectedMarket.symbol}

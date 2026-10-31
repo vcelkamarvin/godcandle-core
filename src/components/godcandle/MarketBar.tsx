@@ -123,8 +123,10 @@ export function MarketBar({
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent
           hideClose
-          className="w-[calc(100vw-32px)] sm:max-w-[660px] max-h-[85vh] rounded-3xl bg-card border border-border shadow-2xl p-4 sm:p-5 gap-3.5 flex flex-col overflow-hidden outline-none"
+          className="relative w-[calc(100vw-32px)] sm:max-w-[660px] max-h-[85vh] rounded-3xl bg-card border border-border shadow-2xl p-4 sm:p-5 gap-3.5 flex flex-col overflow-hidden outline-none"
         >
+          {/* Delicate Rainbow Top Bar */}
+          <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-[#CDC3F0] via-[#FFDAC8] to-[#A0D4CA]" />
           <DialogTitle className="sr-only">Choose a market</DialogTitle>
           <DialogDescription className="sr-only">
             Search and select a trading market

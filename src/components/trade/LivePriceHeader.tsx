@@ -27,7 +27,7 @@ export function LivePriceHeader({
   const isPositive = change24h >= 0;
 
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-border bg-white p-5 font-mono text-xs shadow-sm">
+    <div className="relative overflow-hidden rounded-2xl border border-border bg-white p-5 font-sans text-xs shadow-sm">
       {/* Subtle iridescent top highlight */}
       <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-[#CDC3F0] via-[#FFDAC8] to-[#A0D4CA] opacity-80" />
 

@@ -26,7 +26,7 @@ export function LeaderboardTable() {
   const [filterPeriod, setFilterPeriod] = useState<'Current Season' | 'Previous Season'>('Current Season');
 
   return (
-    <div className="space-y-6 font-mono text-xs text-foreground">
+    <div className="space-y-6 font-sans text-xs text-foreground">
       {/* Top Banner: Weekly Candle Cup Showcase */}
       <div className="relative overflow-hidden rounded-3xl border border-border bg-white p-6 shadow-sm">
         {/* Subtle Iridescent Top Bar */}

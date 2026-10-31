@@ -15,7 +15,7 @@ const DOCS_NAV = [
 
 function DocsLayout() {
   return (
-    <div className="min-h-screen bg-background text-accent flex flex-col md:flex-row font-mono text-xs">
+    <div className="min-h-screen bg-background text-foreground flex flex-col md:flex-row font-sans text-xs">
       <aside className="w-full md:w-64 border-r border-border p-6 shrink-0 bg-surface">
         <div className="text-[11px] tracking-wider uppercase text-subtle mb-6 font-bold flex items-center gap-2">
           <BookOpen className="w-4 h-4 text-accent" />

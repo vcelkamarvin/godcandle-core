@@ -5,7 +5,7 @@ import { CONTRACT_ADDRESSES } from '@/lib/contracts';
 
 export function Footer() {
   return (
-    <footer className="border-t border-border bg-white text-foreground font-mono text-xs mt-16 relative">
+    <footer className="border-t border-border bg-white text-foreground font-sans text-xs mt-16 relative">
       {/* Delicate Rainbow Accent Bar */}
       <div className="h-[1px] w-full rainbow-bar opacity-70" />
       <div className="max-w-7xl mx-auto px-6 py-8">
