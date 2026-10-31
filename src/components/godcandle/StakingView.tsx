@@ -5,12 +5,14 @@ import { Button } from "@/components/ui/button";
 import { ChartCanvas } from "./ChartCanvas";
 import { Metric, Segments } from "./Metric";
 import { revenueSeries, supplySeries, rewardCurve } from "@/lib/design-data";
+import { useHyperliquidAnalytics } from "@/lib/hyperliquid";
 
 export function StakingView({ full = false }: { full?: boolean }) {
   const [mode, setMode] = useState("Stake");
   const [amount, setAmount] = useState("");
   const [period, setPeriod] = useState("4h");
   const [supplyPeriod, setSupplyPeriod] = useState("1m");
+  const { solvency } = useHyperliquidAnalytics();
 
   return (
     <main className="page-content">
@@ -133,7 +135,7 @@ export function StakingView({ full = false }: { full?: boolean }) {
           <p className="mt-0.5 data-label">Minted per $1 realized loss</p>
           <div className="mt-2 grid grid-cols-2 gap-2">
             <Metric label="Your rate" value="10.0 / $1" />
-            <Metric label="House LP" value="$4.96M" />
+            <Metric label="House LP" value={`$${(solvency.tvlUsd / 1000000).toFixed(2)}M`} />
           </div>
           <div className="mt-2">
             <ChartCanvas height={130} kind="curve" values={rewardCurve} />

@@ -75,3 +75,6 @@ export function computeWinHaircut(
     pnlNet,
   };
 }
+
+export * from './live-analytics';
+

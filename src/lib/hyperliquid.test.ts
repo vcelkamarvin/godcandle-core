@@ -69,4 +69,29 @@ describe('Hyperliquid L1 Engine Math', () => {
       expect(res.pnlNet).toBe(0);
     });
   });
+
+  describe('Corridor Telemetry & Analytics Generators', () => {
+    it('generates corridor telemetry ticks with ±1.5 bps bounds for BTC', async () => {
+      const { generateCorridorTicks } = await import('./hyperliquid');
+      const ticks = generateCorridorTicks('BTC', 68000, 30);
+      expect(ticks).toHaveLength(30);
+      expect(ticks[0].upperLimitBps).toBe(1.5);
+      expect(ticks[0].lowerLimitBps).toBe(-1.5);
+      expect(ticks[0].markPx).toBeGreaterThan(0);
+      expect(ticks[0].midPx).toBeGreaterThan(0);
+    });
+
+    it('generates multi-metric time series data for all supported timeframes', async () => {
+      const { generateTimeSeriesData } = await import('./hyperliquid');
+      const timeframes = ['24H', '7D', '30D', '1Y', 'ALL'] as const;
+      for (const tf of timeframes) {
+        const data = generateTimeSeriesData(tf, 5000000, 1000000000);
+        expect(data.length).toBeGreaterThan(15);
+        expect(data[0].tvl).toBeGreaterThan(0);
+        expect(data[0].liquidReserves).toBeGreaterThan(0);
+        expect(data[0].solvencyRatio).toBeGreaterThan(100);
+      }
+    });
+  });
 });
+
