@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { LivePriceHeader } from './LivePriceHeader';
 import { LeverageSlider } from './LeverageSlider';
 import { OrderForm } from './OrderForm';
 import { SessionKeyPrompt } from '@/components/wallet/SessionKeyPrompt';
@@ -112,31 +111,32 @@ export function TradeTerminal() {
     <div className={`mx-auto font-sans text-foreground transition-all ${
       isProMode ? 'space-y-1.5 max-w-7xl text-[11px]' : 'space-y-2.5 max-w-6xl text-xs'
     }`}>
-      {/* Dynamic L1 Market Bar with Search and Filters */}
-      <div className="rounded-2xl overflow-hidden border border-border bg-white shadow-xs">
-        <MarketBar
-          market={rawSymbol}
-          onSelect={(s) => {
-            const found = marketsList.find((m: any) => m.symbol.replace('-USD', '') === s) || {
-              symbol: `${s}-USD`,
-              name: s,
-              index: 0,
-              maxLev: isPerps ? t.engine.getMaxLeverage(s) : 1000,
-              corridorBps: 1.5,
-              defaultPrice: (t?.feeds as any)?.[s]?.price || 100,
-            };
-            handleMarketSelect(found);
-          }}
-          compact
-        />
-      </div>
-
-      {/* Dynamic L1 Price Header */}
-      <LivePriceHeader
-        symbol={selectedMarket.symbol}
+      {/* Unified L1 Market Bar with Pair Selector, Real-Time Telemetry & Search */}
+      <MarketBar
+        market={rawSymbol}
+        onSelect={(s) => {
+          const found = marketsList.find((m: any) => m.symbol.replace('-USD', '') === s) || {
+            symbol: `${s}-USD`,
+            name: s,
+            index: 0,
+            maxLev: isPerps ? t.engine.getMaxLeverage(s) : 1000,
+            corridorBps: 1.5,
+            defaultPrice: (t?.feeds as any)?.[s]?.price || 100,
+          };
+          handleMarketSelect(found);
+        }}
         price={currentPrice}
         open24h={open24h}
         corridorBps={selectedMarket.corridorBps}
+        showReset={!isPerps || !address}
+        onReset={async () => {
+          const res = await t.resetPaperBalance();
+          if (res.success) {
+            toast.success("Test balance reset to $10,000.00 USDC");
+          } else {
+            toast.error(res.error || "Reset cooldown active");
+          }
+        }}
       />
 
       <div className={`grid grid-cols-1 lg:grid-cols-12 ${isProMode ? 'gap-2' : 'gap-3'} items-start`}>
@@ -162,6 +162,24 @@ export function TradeTerminal() {
                   <span className="rounded bg-[#FFF4E5] border border-[#D97706]/30 px-2 py-0.5 text-[9px] font-bold text-[#D97706]">
                     TEST · PAPER
                   </span>
+                )}
+                {(!isPerps || !address) && (
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      const res = await t.resetPaperBalance();
+                      if (res.success) {
+                        toast.success("Test balance reset to $10,000.00 USDC");
+                      } else {
+                        toast.error(res.error || "Reset cooldown active");
+                      }
+                    }}
+                    className="flex items-center gap-1 rounded bg-[#F6F6F4] hover:bg-[#EAEAE8] border border-border px-1.5 py-0.5 text-[9px] text-muted-foreground hover:text-foreground font-mono transition-colors cursor-pointer"
+                    title="Reset paper balance to $10,000 USDC"
+                  >
+                    <RotateCcw className="size-2.5" />
+                    <span>Reset ($10k)</span>
+                  </button>
                 )}
               </div>
 
@@ -232,52 +250,6 @@ export function TradeTerminal() {
                   height="100%"
                 />
               )}
-            </div>
-          </div>
-
-          {/* Market Switcher & Test Reset */}
-          <div className="rounded-2xl border border-border bg-white p-3.5 shadow-xs">
-            <div className="flex justify-between items-center">
-              <div className="flex space-x-1.5 overflow-x-auto no-scrollbar">
-                {marketsList.slice(0, 15).map((m: any) => {
-                  const asset = m.symbol.replace('-USD', '');
-                  const assetMaxLev = isPerps ? t.engine.getMaxLeverage(asset) : 1000;
-                  return (
-                    <button
-                      key={m.symbol}
-                      type="button"
-                      onClick={() => handleMarketSelect(m)}
-                      className={`h-7 px-2.5 rounded-sm text-xs font-mono transition-all ${
-                        selectedMarket.symbol === m.symbol
-                          ? 'bg-foreground text-background font-bold shadow-xs'
-                          : 'border border-border bg-[#F6F6F4] text-muted-foreground hover:text-foreground hover:bg-[#F0F0EE]'
-                      }`}
-                    >
-                      <span>{m.symbol}</span>
-                      <span className="ml-1 text-[9px] opacity-75">{assetMaxLev}×</span>
-                    </button>
-                  );
-                })}
-              </div>
-              <div className="flex items-center gap-2">
-                {(!isPerps || !address) && (
-                  <button
-                    type="button"
-                    onClick={async () => {
-                      const res = await t.resetPaperBalance();
-                      if (res.success) {
-                        toast.success("Test balance reset to $10,000.00 USDC");
-                      } else {
-                        toast.error(res.error || "Reset cooldown active");
-                      }
-                    }}
-                    className="flex items-center gap-1 text-[10px] text-muted-foreground hover:text-foreground font-mono transition-colors"
-                  >
-                    <RotateCcw className="size-3" />
-                    <span>Reset ($10k)</span>
-                  </button>
-                )}
-              </div>
             </div>
           </div>
 

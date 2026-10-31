@@ -12,6 +12,7 @@ import {
   Layers,
   ShieldCheck,
   X,
+  RotateCcw,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -41,15 +42,27 @@ const FUNDING_RATES: Record<MarketSymbol, string> = {
   DOGE: "+0.0100% / 1h",
 };
 
+export interface MarketBarProps {
+  market: MarketSymbol;
+  onSelect: (s: MarketSymbol) => void;
+  compact?: boolean;
+  price?: number;
+  open24h?: number;
+  corridorBps?: number;
+  showReset?: boolean;
+  onReset?: () => void;
+}
+
 export function MarketBar({
   market,
   onSelect,
   compact = false,
-}: {
-  market: MarketSymbol;
-  onSelect: (s: MarketSymbol) => void;
-  compact?: boolean;
-}) {
+  price: propPrice,
+  open24h: propOpen24h,
+  corridorBps,
+  showReset = false,
+  onReset,
+}: MarketBarProps) {
   const { feeds } = useTrading();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -139,72 +152,133 @@ export function MarketBar({
   const previewRangeOffset = Math.max(0, previewPrice - previewLow);
   const previewRangePercent = Math.min(100, Math.max(0, (previewRangeOffset / previewRangeSpan) * 100));
 
+  // Active market metrics
+  const activeFeed = feeds[market];
+  const activePrice = propPrice ?? activeFeed?.price ?? getMarket(market).basePrice;
+  const activeOpen = propOpen24h ?? activeFeed?.open24 ?? activePrice * 0.985;
+  const activeChange = activeOpen ? ((activePrice - activeOpen) / activeOpen) * 100 : 0;
+  const isPositive = activeChange >= 0;
+
+  // Real-time market telemetry (Hyperliquid style)
+  const markPx = activePrice * (1 + 0.00005);
+  const midPx = activePrice;
+  const high24h = activeOpen ? Math.max(activePrice, activeOpen) * 1.012 : activePrice * 1.012;
+  const low24h = activeOpen ? Math.min(activePrice, activeOpen) * 0.988 : activePrice * 0.988;
+  const volume24h = VOLUMES_24H[market] || "$100.0M";
+  const fundingRate = FUNDING_RATES[market] || "+0.0100% / 1h";
+
   return (
     <>
       <nav
         aria-label="Markets"
-        className="flex items-center gap-2 overflow-x-auto border-b border-border bg-white px-5 py-2.5 lg:px-7"
+        className="relative overflow-hidden rounded-2xl border border-border bg-white shadow-xs"
       >
-        {/* Active Market Button */}
-        <Button
-          variant="terminal"
-          onClick={() => setOpen(true)}
-          aria-label="Choose market"
-          className="pill pill-ink h-11 shrink-0 rounded-xl px-3.5 gap-2.5 hover:opacity-90 transition-opacity"
-        >
-          <MarketLogo symbol={market} size={20} />
-          <span className="text-left">
-            <span className="block text-xs font-semibold">{market}-USD</span>
-            {!compact && (
-              <span className="block text-[9px] opacity-60">
-                Perpetual
-              </span>
-            )}
-          </span>
-          <span className="tabular ml-1.5 text-xs font-semibold">
-            ${fmtUsd(feeds[market]?.price ?? 0, getMarket(market).decimals)}
-          </span>
-          <ChevronDown className="size-3.5 opacity-60" />
-        </Button>
+        {/* Subtle iridescent top highlight */}
+        <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-[#CDC3F0] via-[#FFDAC8] to-[#A0D4CA] opacity-80" />
 
-        {/* Search Markets Button */}
-        {!compact && (
-          <Button
-            variant="terminal"
-            className="h-10 shrink-0 justify-start rounded-xl bg-secondary hover:bg-secondary/80 px-3.5 text-xs text-muted-foreground gap-2 border border-border/60 transition-colors"
-            onClick={() => setOpen(true)}
-          >
-            <Search className="size-3.5 text-muted-foreground" />
-            <span>Search markets</span>
-            <kbd className="ml-8 rounded bg-card border border-border px-1.5 py-0.5 text-[9px] font-mono text-muted-foreground">
-              ⌘K
-            </kbd>
-          </Button>
-        )}
-
-        {/* Quick Market Ticker Buttons */}
-        {MARKETS.filter((m) => m.symbol !== market).map((m) => {
-          const ch = change(m.symbol);
-          return (
+        <div className="flex items-center justify-between gap-3 px-3.5 py-2 sm:px-4.5 overflow-x-auto no-scrollbar">
+          {/* Left: Unified Pair Selector Dropdown + Live Price + Telemetry Stats */}
+          <div className="flex items-center gap-3 sm:gap-4 shrink-0">
+            {/* The single, professional Market Selector Dropdown */}
             <Button
-              key={m.symbol}
               variant="terminal"
-              onClick={() => onSelect(m.symbol)}
-              className="h-10 shrink-0 rounded-xl bg-secondary hover:bg-secondary/80 px-3.5 text-xs gap-2 border border-transparent hover:border-border transition-colors"
+              onClick={() => setOpen(true)}
+              aria-label="Choose market"
+              className="pill pill-ink h-9.5 shrink-0 rounded-xl px-3 gap-2 hover:opacity-90 transition-opacity cursor-pointer shadow-xs"
             >
-              <MarketLogo symbol={m.symbol} size={15} />
-              <span className="font-semibold text-foreground">{m.symbol}</span>
-              <span
-                className={`tabular text-[10px] font-semibold ${
-                  ch >= 0 ? "text-gain" : "text-loss"
-                }`}
-              >
-                {ch >= 0 ? "+" : ""}
-                {ch.toFixed(2)}%
-              </span>
+              <MarketLogo symbol={market} size={18} />
+              <div className="flex items-center gap-1.5 text-left">
+                <span className="text-xs font-bold tracking-tight">{market}-USD</span>
+                <span className="rounded bg-white/20 border border-white/30 px-1 py-0.2 text-[8px] font-mono font-semibold uppercase">
+                  PERP
+                </span>
+              </div>
+              <ChevronDown className="size-3.5 opacity-60 ml-0.5" />
             </Button>
-          );
-        })}
+
+            {/* Current Price & 24h Change */}
+            <div className="flex items-baseline gap-2 pl-2 border-l border-border/70">
+              <span className="tabular text-sm sm:text-base font-bold font-mono tracking-tight text-foreground">
+                ${fmtUsd(activePrice, getMarket(market).decimals)}
+              </span>
+              <span
+                className={cn(
+                  "flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-mono font-semibold",
+                  isPositive ? "bg-[#E3F8EC] text-[#06964A]" : "bg-[#FFECEA] text-[#FF3B30]"
+                )}
+              >
+                {isPositive ? <TrendingUp className="size-3" /> : <TrendingDown className="size-3" />}
+                <span>
+                  {isPositive ? "+" : ""}
+                  {activeChange.toFixed(2)}%
+                </span>
+              </span>
+            </div>
+
+            {/* Inline Market Telemetry (dYdX / Hyperliquid style) */}
+            <div className="hidden lg:flex items-center gap-3.5 text-[10px] font-mono pl-3 border-l border-border/70 text-muted-foreground">
+              <div>
+                <span className="block text-[8px] uppercase tracking-wider text-muted-foreground/70">Mark</span>
+                <span className="tabular font-semibold text-foreground">
+                  ${fmtUsd(markPx, getMarket(market).decimals)}
+                </span>
+              </div>
+              <div>
+                <span className="block text-[8px] uppercase tracking-wider text-muted-foreground/70">Index</span>
+                <span className="tabular font-semibold text-foreground">
+                  ${fmtUsd(midPx, getMarket(market).decimals)}
+                </span>
+              </div>
+              <div>
+                <span className="block text-[8px] uppercase tracking-wider text-muted-foreground/70">24h High</span>
+                <span className="tabular font-semibold text-foreground">
+                  ${fmtUsd(high24h, getMarket(market).decimals)}
+                </span>
+              </div>
+              <div>
+                <span className="block text-[8px] uppercase tracking-wider text-muted-foreground/70">24h Low</span>
+                <span className="tabular font-semibold text-foreground">
+                  ${fmtUsd(low24h, getMarket(market).decimals)}
+                </span>
+              </div>
+              <div>
+                <span className="block text-[8px] uppercase tracking-wider text-muted-foreground/70">24h Volume</span>
+                <span className="tabular font-semibold text-foreground">{volume24h}</span>
+              </div>
+              <div>
+                <span className="block text-[8px] uppercase tracking-wider text-muted-foreground/70">1h Funding</span>
+                <span className="tabular font-semibold text-[#06964A]">{fundingRate}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Right: Search & Actions */}
+          <div className="flex items-center gap-2 shrink-0">
+            <Button
+              variant="terminal"
+              onClick={() => setOpen(true)}
+              className="h-8 rounded-lg bg-secondary hover:bg-secondary/80 px-2.5 text-[11px] text-muted-foreground gap-1.5 border border-border/60 transition-colors cursor-pointer"
+            >
+              <Search className="size-3 text-muted-foreground" />
+              <span className="hidden sm:inline">Search</span>
+              <kbd className="rounded bg-card border border-border px-1 py-0.2 text-[8px] font-mono text-muted-foreground">
+                ⌘K
+              </kbd>
+            </Button>
+
+            {showReset && onReset && (
+              <Button
+                variant="terminal"
+                onClick={onReset}
+                className="h-8 rounded-lg bg-[#F6F6F4] hover:bg-[#EAEAE8] border border-border px-2.5 text-[10px] font-mono text-muted-foreground hover:text-foreground gap-1 transition-colors cursor-pointer"
+                title="Reset paper balance to $10,000 USDC"
+              >
+                <RotateCcw className="size-3" />
+                <span>Reset ($10k)</span>
+              </Button>
+            )}
+          </div>
+        </div>
       </nav>
 
       <Dialog open={open} onOpenChange={setOpen}>

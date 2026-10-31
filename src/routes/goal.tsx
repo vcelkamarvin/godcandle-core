@@ -40,7 +40,7 @@ export const Route = createFileRoute("/goal")({
   component: GoalPage,
 });
 
-type Underlying = "BTC" | "ETH" | "SOL" | "HYPE";
+type Underlying = "BTC" | "ETH" | "SOL" | "HYPE" | "SPX" | "DOGE";
 type Direction = "LONG" | "SHORT";
 
 const DEFAULT_SPOTS: Record<Underlying, number> = {
@@ -48,6 +48,8 @@ const DEFAULT_SPOTS: Record<Underlying, number> = {
   ETH: 2540.2,
   SOL: 182.4,
   HYPE: 42.8,
+  SPX: 6120.0,
+  DOGE: 0.164,
 };
 
 export function GoalPage() {
@@ -227,7 +229,7 @@ export function GoalPage() {
 
             {/* Asset Selector */}
             <div className="flex items-center gap-1 rounded-full bg-[#F6F6F4] p-1 border border-border">
-              {(["BTC", "ETH", "SOL", "HYPE"] as const).map((asset) => (
+              {(["BTC", "ETH", "SOL", "HYPE", "SPX", "DOGE"] as const).map((asset) => (
                 <button
                   key={asset}
                   type="button"
