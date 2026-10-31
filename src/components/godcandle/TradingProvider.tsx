@@ -35,8 +35,26 @@ function useTradingState() {
     positionsRef.current = [...positionsRef.current, p];
     setPositions(positionsRef.current);
   }
+  function deposit(amount: number) {
+    if (amount <= 0 || !Number.isFinite(amount)) return;
+    setBalance((b) => b + amount);
+    toast.success(`Deposit credited`, {
+      description: `$${fmtUsd(amount)} USDC added to available margin on HyperEVM.`,
+    });
+  }
+  function withdraw(amount: number) {
+    if (amount <= 0 || !Number.isFinite(amount)) return;
+    if (amount > available) {
+      toast.error("Insufficient available margin");
+      return;
+    }
+    setBalance((b) => b - amount);
+    toast.success(`Withdrawal processed`, {
+      description: `$${fmtUsd(amount)} USDC dispatched via FIFO settlement.`,
+    });
+  }
   const available = balance - positions.reduce((s, p) => s + p.stake, 0);
-  return { feeds, positions, history, balance, available, open, close };
+  return { feeds, positions, history, balance, available, open, close, deposit, withdraw };
 }
 const TradingContext = createContext<ReturnType<typeof useTradingState> | null>(null);
 export function TradingProvider({ children }: { children: ReactNode }) {

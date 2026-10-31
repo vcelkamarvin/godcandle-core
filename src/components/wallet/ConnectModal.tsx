@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
-import { useAccount, useDisconnect, useConnect } from 'wagmi';
+import { useAccount, useDisconnect, useConnect, useBalance } from 'wagmi';
+import { useConnectModal } from '@rainbow-me/rainbowkit';
 import {
   X,
   Search,
@@ -189,6 +190,8 @@ function AppleLogo() {
 export function ConnectModal() {
   const { address: wagmiAddress, isConnected: wagmiConnected } = useAccount();
   const { disconnect: wagmiDisconnect } = useDisconnect();
+  const { connectors, connect } = useConnect();
+  const { openConnectModal } = useConnectModal();
 
   const [localAddress, setLocalAddress] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -211,9 +214,18 @@ export function ConnectModal() {
   const activeAddress = wagmiAddress || localAddress;
   const isConnected = wagmiConnected || !!localAddress;
 
+  const { data: hypeBalance } = useBalance({
+    address: activeAddress as `0x${string}` | undefined,
+    chainId: 999,
+  });
+
   const handleOpenLogin = () => {
-    setFlowState('default');
-    setIsModalOpen(true);
+    if (openConnectModal) {
+      openConnectModal();
+    } else {
+      setFlowState('default');
+      setIsModalOpen(true);
+    }
   };
 
   const handleCloseLogin = () => {
@@ -233,10 +245,7 @@ export function ConnectModal() {
     });
   };
 
-  const handleSelectWallet = (wallet: WalletOption) => {
-    setSelectedWallet(wallet);
-    setFlowState('connecting');
-
+  const fallbackConnect = (wallet: WalletOption) => {
     setTimeout(() => {
       const mockAddr =
         wallet.id === 'demo'
@@ -251,7 +260,49 @@ export function ConnectModal() {
       toast.success(`${wallet.name} Connected`, {
         description: 'Session active. Ready to trade.',
       });
-    }, 1100);
+    }, 800);
+  };
+
+  const handleSelectWallet = (wallet: WalletOption) => {
+    setSelectedWallet(wallet);
+    setFlowState('connecting');
+
+    const matchedConnector = connectors.find((c) => {
+      const name = c.name.toLowerCase();
+      const id = c.id.toLowerCase();
+      const target = wallet.id.toLowerCase();
+      if (target === 'metamask') return name.includes('meta') || id.includes('meta') || id.includes('injected');
+      if (target === 'rabby') return name.includes('rabby') || id.includes('rabby');
+      if (target === 'rainbow') return name.includes('rainbow') || id.includes('rainbow');
+      if (target === 'coinbase') return name.includes('coinbase') || id.includes('coinbase');
+      if (target === 'walletconnect') return id.includes('walletconnect');
+      if (target === 'phantom') return name.includes('phantom') || id.includes('phantom');
+      return name.includes(target) || id.includes(target);
+    });
+
+    if (matchedConnector) {
+      connect(
+        { connector: matchedConnector, chainId: 999 },
+        {
+          onSuccess: () => {
+            setIsModalOpen(false);
+            setFlowState('default');
+            toast.success(`${wallet.name} Connected`, {
+              description: 'Connected to HyperEVM Mainnet (999).',
+            });
+          },
+          onError: () => {
+            fallbackConnect(wallet);
+          },
+        }
+      );
+    } else if (openConnectModal) {
+      setIsModalOpen(false);
+      setFlowState('default');
+      openConnectModal();
+    } else {
+      fallbackConnect(wallet);
+    }
   };
 
   const handleDemoLogin = () => {
@@ -363,8 +414,13 @@ export function ConnectModal() {
         >
           <span className="size-2 rounded-full bg-[#00D964] animate-pulse" />
           <span className="font-mono font-semibold text-foreground">
-            {activeAddress?.slice(0, 6)}…{activeAddress?.slice(-4)}
+            {activeAddress ? `${activeAddress.slice(0, 6)}...${activeAddress.slice(-4)}` : ''}
           </span>
+          {hypeBalance && (
+            <span className="tabular text-[11px] font-semibold text-foreground hidden sm:inline">
+              {parseFloat(hypeBalance.formatted).toFixed(3)} HYPE
+            </span>
+          )}
           <span className="rounded bg-white px-1.5 py-0.5 text-[9px] font-mono text-muted-foreground border border-border/60">
             999
           </span>
@@ -700,7 +756,7 @@ export function ConnectModal() {
                       aria-label="Claude Monet, 1885 · The Cliffs at Étretat"
                     >
                       <p className="font-sans text-lg sm:text-xl font-bold leading-tight text-[#0A0A0A]">
-                        Perps. Options. Up to 1000x.
+                        1000x Synthetic Perps.
                       </p>
                       <p className="text-xs font-medium text-[#0A0A0A]/75 mt-0.5">
                         One terminal. Institutional-grade liquidity.
@@ -768,9 +824,11 @@ export function ConnectModal() {
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   <div className="p-3 bg-secondary/50 border border-border/60 rounded-xl">
                     <span className="text-muted-foreground text-[10px] uppercase font-mono block">
-                      Network
+                      Native Balance
                     </span>
-                    <span className="font-semibold text-foreground">Mainnet</span>
+                    <span className="font-semibold text-foreground tabular">
+                      {hypeBalance ? `${parseFloat(hypeBalance.formatted).toFixed(4)} HYPE` : '0.0000 HYPE'}
+                    </span>
                   </div>
                   <div className="p-3 bg-secondary/50 border border-border/60 rounded-xl">
                     <span className="text-muted-foreground text-[10px] uppercase font-mono block">

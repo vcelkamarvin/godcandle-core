@@ -6,9 +6,17 @@ import { useTrading } from '@/components/godcandle/TradingProvider';
 import { fmtUsd } from '@/lib/engine';
 import { TransferDialog } from '@/components/godcandle/TransferDialog';
 import { Button } from '@/components/ui/button';
+import { useAccount, useBalance } from 'wagmi';
 
 export function Header() {
   const t = useTrading();
+  const { address: wagmiAddress } = useAccount();
+  const localAddr = typeof window !== 'undefined' ? localStorage.getItem('godcandle_wallet_address') : null;
+  const activeAddr = wagmiAddress || localAddr;
+  const { data: hypeBalance } = useBalance({
+    address: activeAddr as `0x${string}` | undefined,
+    chainId: 999,
+  });
   const [transfer, setTransfer] = useState<'Deposit' | 'Withdraw' | null>(null);
   const [candleOpen, setCandleOpen] = useState(false);
   const candleRef = useRef<HTMLDivElement>(null);
@@ -195,7 +203,14 @@ export function Header() {
 
             {/* Available Balance */}
             <div className="hidden lg:block text-right pr-1">
-              <p className="data-label text-[9px]">Available</p>
+              <p className="data-label text-[9px] flex items-center justify-end gap-1">
+                <span>Available</span>
+                {hypeBalance && (
+                  <span className="font-mono text-muted-foreground font-normal">
+                    · {parseFloat(hypeBalance.formatted).toFixed(2)} HYPE
+                  </span>
+                )}
+              </p>
               <p className="tabular text-xs font-semibold text-foreground">
                 ${fmtUsd(t.available)}
               </p>

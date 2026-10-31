@@ -6,12 +6,20 @@ import { toast } from 'sonner';
 interface OrderFormProps {
   currentPrice: number;
   leverage: number;
+  corridorBps?: number;
+  availableBalance?: number;
   onTrade?: (side: 'LONG' | 'SHORT', margin: number, leverage: number) => void;
 }
 
 const MARGIN_CHIPS = ['10', '25', '50', '100', '250', '500'];
 
-export function OrderForm({ currentPrice, leverage, onTrade }: OrderFormProps) {
+export function OrderForm({
+  currentPrice,
+  leverage,
+  corridorBps = 1.5,
+  availableBalance = 1000,
+  onTrade,
+}: OrderFormProps) {
   const [margin, setMargin] = useState('50');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -19,7 +27,10 @@ export function OrderForm({ currentPrice, leverage, onTrade }: OrderFormProps) {
   const notional = numMargin * leverage;
   const { bustDistanceBps, bustDistancePct } = computeBustDistance(leverage);
 
-  // Liquidation prices
+  // Mark-Clamped BBO Execution Price
+  const { execPrice, isClamped } = computeClampedPrice(currentPrice, currentPrice, corridorBps);
+
+  // Liquidation prices calculated from markPx
   const longBustPrice = currentPrice * (1 - bustDistancePct / 100);
   const shortBustPrice = currentPrice * (1 + bustDistancePct / 100);
 
@@ -43,7 +54,7 @@ export function OrderForm({ currentPrice, leverage, onTrade }: OrderFormProps) {
       <div>
         <div className="flex justify-between text-muted-foreground mb-1.5 text-[11px]">
           <span>ISOLATED MARGIN (USDC)</span>
-          <span>AVAILABLE: $1,000.00</span>
+          <span>AVAILABLE: ${availableBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
         </div>
         <div className="grid grid-cols-6 gap-1.5">
           {MARGIN_CHIPS.map((chip) => (
@@ -67,13 +78,23 @@ export function OrderForm({ currentPrice, leverage, onTrade }: OrderFormProps) {
       <div className="bg-[#F6F6F4] border border-border rounded-xl p-3.5 space-y-2 text-[11px]">
         <div className="flex justify-between items-center text-muted-foreground">
           <span>POSITION NOTIONAL</span>
-          <span className="text-foreground font-bold tabular">${notional.toLocaleString()}</span>
+          <span className="text-foreground font-bold tabular">${notional.toLocaleString()} USDC</span>
+        </div>
+
+        <div className="flex justify-between items-center text-muted-foreground">
+          <span>EXECUTION PRICE (MARK-CLAMPED BBO)</span>
+          <div className="flex items-center gap-1.5 font-bold tabular text-foreground">
+            <span>${execPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+            <span className="text-[9px] px-1 py-0.2 rounded bg-[#EFEFFC] text-[#5E5CE6] font-mono">
+              ±{corridorBps} bps
+            </span>
+          </div>
         </div>
 
         <div className="flex justify-between items-center text-muted-foreground">
           <span>EST. BUST DISTANCE</span>
           <span className="text-[#FF3B30] font-semibold tabular">
-            -{bustDistancePct.toFixed(3)}% ({bustDistanceBps.toFixed(1)} bps)
+            -{bustDistanceBps.toFixed(1)} bps (-{bustDistancePct.toFixed(3)}%)
           </span>
         </div>
 
@@ -93,7 +114,7 @@ export function OrderForm({ currentPrice, leverage, onTrade }: OrderFormProps) {
 
         <div className="border-t border-border pt-2 flex justify-between items-center text-muted-foreground text-[10px]">
           <span>PROTOCOL FEES</span>
-          <span className="text-[#06964A] font-semibold">0% Entry · 2% Net Win Fee</span>
+          <span className="text-[#06964A] font-semibold">0% Entry · 2.0% Net Win Fee</span>
         </div>
 
         <div className="flex justify-between items-center text-muted-foreground text-[10px]">

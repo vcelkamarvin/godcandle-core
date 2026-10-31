@@ -210,6 +210,67 @@ function AnalyticsPage() {
           </div>
         </section>
 
+        {/* Hard Protocol Solvency & Settlement Telemetry Table */}
+        <section aria-label="Protocol Quant Telemetry Matrix" className="rounded-2xl border border-hairline bg-white p-4 shadow-2xs font-mono">
+          <div className="flex items-center justify-between pb-2.5 border-b border-border">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold text-foreground uppercase tracking-wider">
+                Protocol Solvency &amp; L1 Settlement Matrix
+              </span>
+              <span className="rounded bg-[#E3F8EC] text-[#06964A] px-2 py-0.5 text-[9px] font-bold">
+                Deterministic Cash FIFO
+              </span>
+            </div>
+            <span className="text-[10px] text-muted-foreground">
+              Precompiles: 0x0806 (MarkPx) · 0x080e (BBO Mid)
+            </span>
+          </div>
+
+          <div className="overflow-x-auto no-scrollbar pt-2">
+            <table className="w-full text-left text-xs">
+              <thead>
+                <tr className="border-b border-border/60 text-[10px] uppercase text-muted-foreground">
+                  <th className="py-2 pr-4 font-semibold">Protocol Metric</th>
+                  <th className="py-2 pr-4 font-semibold">Current Value</th>
+                  <th className="py-2 pr-4 font-semibold">Contractual Bound</th>
+                  <th className="py-2 pr-4 font-semibold">Settlement Standard</th>
+                  <th className="py-2 text-right font-semibold">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border/40 text-[11px]">
+                <tr>
+                  <td className="py-2.5 pr-4 font-semibold text-foreground">House Pool Liquid Reserve</td>
+                  <td className="py-2.5 pr-4 tabular font-bold text-foreground">$10,000.00 base / $12,177,196 pool</td>
+                  <td className="py-2.5 pr-4 text-muted-foreground">≥ $10,000 baseline vault</td>
+                  <td className="py-2.5 pr-4 text-muted-foreground">100% immediate liquid cash</td>
+                  <td className="py-2.5 text-right font-semibold text-[#06964A]">Solvent (342%)</td>
+                </tr>
+                <tr>
+                  <td className="py-2.5 pr-4 font-semibold text-foreground">FIFO Payout Queue Depth</td>
+                  <td className="py-2.5 pr-4 tabular font-bold text-[#06964A]">$0.00 (Zero Backlog)</td>
+                  <td className="py-2.5 pr-4 text-muted-foreground">0 pending tickets</td>
+                  <td className="py-2.5 pr-4 text-muted-foreground">Atomic block-level payout</td>
+                  <td className="py-2.5 text-right font-semibold text-[#06964A]">Active (0 delay)</td>
+                </tr>
+                <tr>
+                  <td className="py-2.5 pr-4 font-semibold text-foreground">Net Open Interest (Long vs Short)</td>
+                  <td className="py-2.5 pr-4 tabular font-bold text-foreground">Long $1.84M (54.2%) / Short $1.40M (45.8%)</td>
+                  <td className="py-2.5 pr-4 text-muted-foreground">Max aggregate: $44.5M</td>
+                  <td className="py-2.5 pr-4 text-muted-foreground">Net Long +$440,300 nominal</td>
+                  <td className="py-2.5 text-right font-semibold text-foreground">Balanced</td>
+                </tr>
+                <tr>
+                  <td className="py-2.5 pr-4 font-semibold text-foreground">1.5 bps Mark-Clamp Corridor Status</td>
+                  <td className="py-2.5 pr-4 tabular font-bold text-[#5E5CE6]">±1.5 bps active (99.98% compliance)</td>
+                  <td className="py-2.5 pr-4 text-muted-foreground">Max delta: 0.015% from L1 Mark</td>
+                  <td className="py-2.5 pr-4 text-muted-foreground">Hard execution clamp on mid</td>
+                  <td className="py-2.5 text-right font-semibold text-[#5E5CE6]">Enforced</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
         {/* Tab Controls Bar */}
         <div className="flex flex-wrap items-center justify-between gap-2.5 rounded-2xl border border-hairline bg-white p-2 shadow-2xs">
           <div className="flex flex-wrap gap-1">
@@ -378,7 +439,7 @@ function AnalyticsPage() {
             <div className="rounded-2xl border border-hairline bg-white p-3.5 shadow-2xs space-y-2.5">
               <div className="flex items-center justify-between border-b border-hairline pb-2">
                 <span className="text-[10px] font-mono font-semibold uppercase text-muted-foreground">
-                  {selectedMarket} Spot/Perp Parity
+                  {selectedMarket} L1 Mark/Mid Parity
                 </span>
                 <span className="rounded bg-secondary px-1.5 py-0.2 text-[10px] font-mono font-bold text-foreground">
                   {currentMarket.maxLeverage}x MAX

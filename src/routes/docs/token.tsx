@@ -46,9 +46,9 @@ function DocsToken() {
           </div>
 
           <div className="p-3 bg-background border border-border">
-            <span className="text-subtle text-[10px] block">HYPERCORE SPOT LIQUIDITY (10%)</span>
+            <span className="text-subtle text-[10px] block">HYPERCORE PROTOCOL LIQUIDITY (10%)</span>
             <span className="font-bold text-accent text-sm">100,000,000 CANDLE</span>
-            <p className="text-[10px] text-subtle mt-1">Paired against native USDC in official HyperCore spot order books.</p>
+            <p className="text-[10px] text-subtle mt-1">Paired against native USDC in official HyperCore order books.</p>
           </div>
         </div>
       </section>
