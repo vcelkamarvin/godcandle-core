@@ -122,7 +122,8 @@ export function MarketBar({
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent
-          className="w-[calc(100vw-32px)] sm:max-w-[660px] max-h-[85vh] rounded-3xl bg-card border border-border shadow-2xl p-5 gap-3.5 flex flex-col overflow-hidden outline-none"
+          hideClose
+          className="w-[calc(100vw-32px)] sm:max-w-[660px] max-h-[85vh] rounded-3xl bg-card border border-border shadow-2xl p-4 sm:p-5 gap-3.5 flex flex-col overflow-hidden outline-none"
         >
           <DialogTitle className="sr-only">Choose a market</DialogTitle>
           <DialogDescription className="sr-only">
@@ -130,19 +131,25 @@ export function MarketBar({
           </DialogDescription>
 
           {/* Top Search Input Box (matching 01b Desktop — Market picker.svg) */}
-          <div className="flex items-center gap-2.5 rounded-2xl border-2 border-foreground/90 bg-white px-3.5 py-1 focus-within:ring-2 focus-within:ring-foreground/10 transition-all">
+          <div className="flex items-center gap-2.5 rounded-2xl border-2 border-foreground bg-white px-3.5 py-1 focus-within:ring-2 focus-within:ring-foreground/10 transition-all">
             <Search className="size-4 shrink-0 text-foreground" />
             <input
               autoFocus
               aria-label="Search markets"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="h-11 w-full min-w-0 bg-transparent text-sm font-sans placeholder:text-muted-foreground outline-none"
+              className="h-10 sm:h-11 w-full min-w-0 bg-transparent text-sm font-sans placeholder:text-muted-foreground outline-none"
               placeholder="Search markets"
             />
-            <span className="rounded-md bg-secondary border border-border px-2 py-0.5 text-[10px] font-mono font-medium text-muted-foreground shrink-0">
+            <button
+              type="button"
+              onClick={() => setOpen(false)}
+              aria-label="Close dialog"
+              className="rounded-md bg-secondary border border-border px-2 py-0.5 text-[10px] font-mono font-medium text-muted-foreground shrink-0 hover:bg-secondary/80 hover:text-foreground cursor-pointer transition-colors"
+              title="Close (Esc)"
+            >
               Esc
-            </span>
+            </button>
           </div>
 
           {/* Category Filter Pills */}
@@ -171,12 +178,12 @@ export function MarketBar({
           </div>
 
           {/* Table Column Labels */}
-          <div className="grid grid-cols-[36px_1fr_110px_80px_55px] items-center px-3 text-[10px] uppercase font-mono tracking-wider text-muted-foreground">
+          <div className="grid grid-cols-[32px_1fr_80px_70px] sm:grid-cols-[36px_1fr_110px_80px_55px] items-center px-2 sm:px-3 text-[10px] uppercase font-mono tracking-wider text-muted-foreground">
             <span />
             <span>Market</span>
             <span className="text-right">Price</span>
             <span className="text-right">24h</span>
-            <span className="text-right">Max</span>
+            <span className="hidden sm:inline text-right">Max</span>
           </div>
 
           {/* Scrollable Market Rows */}
@@ -194,10 +201,10 @@ export function MarketBar({
                     setOpen(false);
                   }}
                   className={cn(
-                    "grid grid-cols-[36px_1fr_110px_80px_55px] items-center h-14 px-2 rounded-xl border transition-all cursor-pointer group",
+                    "grid grid-cols-[32px_1fr_80px_70px] sm:grid-cols-[36px_1fr_110px_80px_55px] items-center h-[52px] px-2 rounded-2xl border transition-all cursor-pointer group",
                     isSelected
-                      ? "border-foreground bg-secondary/80 font-medium shadow-xs"
-                      : "border-transparent hover:border-border hover:bg-secondary/50"
+                      ? "border-foreground bg-secondary font-medium shadow-xs"
+                      : "border-transparent hover:border-border hover:bg-secondary/60"
                   )}
                 >
                   {/* Star Favorite Button */}
@@ -227,7 +234,7 @@ export function MarketBar({
                   </Button>
 
                   {/* Market logo, symbol and name */}
-                  <div className="flex items-center gap-2.5 min-w-0 pr-2">
+                  <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 pr-1 sm:pr-2">
                     <div className="size-7 rounded-full bg-secondary flex items-center justify-center shrink-0 border border-border/40">
                       <MarketLogo symbol={m.symbol} />
                     </div>
@@ -237,7 +244,7 @@ export function MarketBar({
                           {m.symbol}
                         </span>
                         {isSelected && (
-                          <Check className="size-3 text-[#06964A]" />
+                          <Check className="size-3 text-[#06964A] shrink-0" />
                         )}
                       </div>
                       <span className="block text-[10px] text-muted-foreground leading-tight truncate">
@@ -268,9 +275,16 @@ export function MarketBar({
                     </span>
                   </div>
 
-                  {/* Max Leverage */}
-                  <div className="text-right pr-2">
-                    <span className="tabular text-[10px] font-mono text-muted-foreground font-medium">
+                  {/* Max Leverage (pill badge matching SVG) */}
+                  <div className="hidden sm:flex justify-end pr-1">
+                    <span
+                      className={cn(
+                        "tabular text-[10px] font-mono px-2 py-0.5 rounded-md font-semibold",
+                        isSelected
+                          ? "bg-foreground text-background"
+                          : "bg-secondary text-foreground/80 font-medium"
+                      )}
+                    >
                       {m.maxLeverage}x
                     </span>
                   </div>
@@ -284,8 +298,18 @@ export function MarketBar({
                   No markets found
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  No markets match &ldquo;{query}&rdquo; in category &ldquo;{filter}&rdquo;
+                  No markets match &ldquo;{query}&rdquo; {filter !== "All" && `in ${filter}`}
                 </p>
+                {filter !== "All" && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setFilter("All")}
+                    className="mt-3 text-xs underline text-muted-foreground hover:text-foreground"
+                  >
+                    View all markets
+                  </Button>
+                )}
               </div>
             )}
           </div>

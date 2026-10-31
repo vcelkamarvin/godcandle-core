@@ -66,4 +66,13 @@ describe("MarketBar & Market Picker Architecture", () => {
     const rEmpty = MARKETS.filter((m) => `${m.symbol} ${m.name}`.toLowerCase().includes(qEmpty.toLowerCase()));
     expect(rEmpty.length).toBe(0);
   });
+
+  it("provides valid leverage badge values for all markets matching SVG specifications", () => {
+    for (const m of MARKETS) {
+      expect(m.maxLeverage).toBeGreaterThanOrEqual(50);
+      expect(m.maxLeverage).toBeLessThanOrEqual(1000);
+      // All leverage values are cleanly formatted as integer multiples
+      expect(m.maxLeverage % 10).toBe(0);
+    }
+  });
 });
