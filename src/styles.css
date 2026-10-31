@@ -264,5 +264,5 @@
 .page-content { padding: 24px 28px; }
 .metric-value { font-family: var(--font-mono); font-size: 22px; font-weight: 600; line-height: 1.25; }
 .chart-surface { min-height: 160px; width: 100%; }
-.market-dialog { top: 128px; left: 28px; transform: none; width: min(560px, calc(100vw - 32px)); max-height: calc(100dvh - 150px); overflow: auto; }
-@media (max-width: 640px) { .page-content { padding: 20px 16px; } .market-dialog { left: 16px; top: 100px; } .metric-value { font-size: 18px; } }
+@media (max-width: 640px) { .page-content { padding: 20px 16px; } .metric-value { font-size: 18px; } }
+

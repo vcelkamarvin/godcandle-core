@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import '@rainbow-me/rainbowkit/styles.css';
-import { getDefaultConfig, RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+import { getDefaultConfig, RainbowKitProvider, lightTheme } from '@rainbow-me/rainbowkit';
 import { WagmiProvider } from 'wagmi';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { hyperEVM } from '@/lib/chains';
 
 export const wagmiConfig = getDefaultConfig({
@@ -16,10 +15,10 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
   return (
     <WagmiProvider config={wagmiConfig}>
       <RainbowKitProvider
-        theme={darkTheme({
-          accentColor: '#FFFFFF',
-          accentColorForeground: '#000000',
-          borderRadius: 'small',
+        theme={lightTheme({
+          accentColor: '#0A0A0A',
+          accentColorForeground: '#FFFFFF',
+          borderRadius: 'medium',
           fontStack: 'system',
         })}
       >
