@@ -56,7 +56,7 @@ export function SettingsModal({
           onClick={() => setOpen(true)}
           className={
             triggerClassName ||
-            'flex size-8 items-center justify-center rounded-lg border border-[#30363D] bg-[#161B22] text-[#8B949E] hover:text-white hover:bg-[#21262D] transition-colors cursor-pointer'
+            'flex size-8 items-center justify-center rounded-lg border border-border bg-white text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer'
           }
           title="Settings (Cmd+,)"
           aria-label="Settings"
@@ -67,26 +67,26 @@ export function SettingsModal({
 
       <Dialog open={isOpen} onOpenChange={setOpen}>
         <DialogContent
-          className="max-w-4xl border border-[#21262D] bg-[#080B0F] p-5 text-[#E6EDF3] font-mono shadow-2xl overflow-y-auto max-h-[90vh] rounded-xl"
+          className="max-w-4xl border border-border bg-white p-5 text-foreground font-sans shadow-2xl overflow-y-auto max-h-[90vh] rounded-2xl"
           hideClose
         >
-          <div className="flex items-center justify-between pb-2 border-b border-[#21262D] text-xs text-[#8B949E]">
-            <DialogTitle className="flex items-center gap-1.5 font-semibold text-white text-xs">
-              <SettingsIcon className="size-3.5 text-[#00D964]" />
+          <div className="flex items-center justify-between pb-2 border-b border-border text-xs text-muted-foreground">
+            <DialogTitle className="flex items-center gap-1.5 font-semibold text-foreground text-xs font-mono">
+              <SettingsIcon className="size-3.5 text-[#06964A]" />
               QUICK SETTINGS DRAWER · DIALOG
             </DialogTitle>
             <div className="flex items-center gap-3">
               <Link
                 to="/settings"
                 onClick={() => setOpen(false)}
-                className="text-[10px] text-[#58A6FF] hover:underline flex items-center gap-1"
+                className="text-[10px] text-[#2563EB] hover:underline flex items-center gap-1 font-mono font-medium"
               >
                 Open Full Page ↗
               </Link>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="text-white hover:text-[#FF3B30] text-sm px-1 font-bold cursor-pointer"
+                className="text-muted-foreground hover:text-foreground text-sm px-1 font-bold cursor-pointer"
               >
                 ✕
               </button>

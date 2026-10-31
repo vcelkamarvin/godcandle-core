@@ -19,7 +19,6 @@ import {
   ChevronRight,
   Terminal,
   Database,
-  BarChart2,
   Award,
   Box,
 } from 'lucide-react';
@@ -91,18 +90,19 @@ export function LandingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#080B0F] text-[#E6EDF3] font-mono selection:bg-[#00D964]/30 selection:text-[#00D964]">
+    <div className="min-h-screen bg-background text-foreground font-sans selection:bg-[#00D964]/20 selection:text-[#06964A]">
       {/* 1. TOP LIVE TICKER TELEMETRY BAR */}
-      <div className="border-b border-[#21262D] bg-[#0D1117] px-4 sm:px-6 py-2 text-xs flex flex-wrap items-center justify-between gap-3 text-[#8B949E]">
+      <div className="border-b border-border bg-secondary/50 px-4 sm:px-6 py-2 text-xs flex flex-wrap items-center justify-between gap-3 text-muted-foreground font-mono">
         <div className="flex items-center gap-3 overflow-x-auto no-scrollbar">
           <div className="flex items-center gap-1.5 shrink-0">
             <span className="size-2 rounded-full bg-[#00D964] animate-pulse" />
-            <span className="text-[#00D964] font-semibold text-[11px]">HYPERLIQUID L1</span>
+            <span className="text-[#06964A] font-semibold text-[11px]">HYPERLIQUID L1</span>
           </div>
-          <span className="text-[#30363D]">/</span>
+          <span className="text-border">/</span>
           {MARKETS.slice(0, 4).map((m) => {
             const mFeed = t.feeds[m.symbol] ?? { price: m.basePrice, open24: m.basePrice };
             const mChange = ((mFeed.price / mFeed.open24) - 1) * 100;
+            const isSelected = selectedAsset === m.symbol;
             return (
               <button
                 key={m.symbol}
@@ -111,15 +111,15 @@ export function LandingPage() {
                   setSelectedAsset(m.symbol);
                   setLeverage((l) => Math.min(l, m.symbol === 'BTC' || m.symbol === 'ETH' ? 50 : 20));
                 }}
-                className={`flex items-center gap-1.5 px-2 py-0.5 rounded transition-colors text-[11px] shrink-0 cursor-pointer ${
-                  selectedAsset === m.symbol
-                    ? 'bg-[#21262D] text-white border border-[#30363D]'
-                    : 'hover:bg-[#161B22] text-[#8B949E]'
+                className={`flex items-center gap-1.5 px-2.5 py-0.5 rounded-full transition-colors text-[11px] shrink-0 cursor-pointer ${
+                  isSelected
+                    ? 'bg-foreground text-background font-semibold shadow-xs'
+                    : 'bg-white hover:bg-secondary text-muted-foreground border border-border/80'
                 }`}
               >
-                <span className="font-semibold text-white">{m.symbol}</span>
+                <span className={isSelected ? 'text-background font-bold' : 'text-foreground font-semibold'}>{m.symbol}</span>
                 <span className="tabular-nums">${fmtUsd(mFeed.price, m.decimals)}</span>
-                <span className={mChange >= 0 ? 'text-[#00D964]' : 'text-[#FF3B30]'}>
+                <span className={mChange >= 0 ? 'text-[#06964A] font-medium' : 'text-[#FF3B30] font-medium'}>
                   {mChange >= 0 ? '+' : ''}
                   {mChange.toFixed(1)}%
                 </span>
@@ -128,81 +128,75 @@ export function LandingPage() {
           })}
         </div>
 
-        <div className="hidden lg:flex items-center gap-4 text-[10px] text-[#8B949E]">
-          <span>BUILDER_CODE: <span className="text-[#58A6FF] font-semibold">GODCANDLE</span></span>
-          <span>LATENCY: <span className="text-[#00D964] font-semibold">18ms RPC</span></span>
-          <span>EXECUTION: <span className="text-white font-semibold">DIRECT L1 ORDERBOOK</span></span>
+        <div className="hidden lg:flex items-center gap-4 text-[10px] text-muted-foreground">
+          <span>BUILDER_CODE: <span className="text-[#2563EB] font-semibold">GODCANDLE</span></span>
+          <span>LATENCY: <span className="text-[#06964A] font-semibold">18ms RPC</span></span>
+          <span>EXECUTION: <span className="text-foreground font-semibold">DIRECT L1 ORDERBOOK</span></span>
         </div>
       </div>
 
       {/* 2. HERO SECTION (THE CURRENT LIVE CLIENT) */}
-      <section className="relative border-b border-[#21262D] px-4 sm:px-6 lg:px-12 py-10 sm:py-16 overflow-hidden">
-        {/* Subtle grid pattern background */}
-        <div
-          className="absolute inset-0 pointer-events-none opacity-[0.035]"
-          style={{
-            backgroundImage: `linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)`,
-            backgroundSize: '40px 40px',
-          }}
-        />
+      <section className="relative border-b border-border px-4 sm:px-6 lg:px-12 py-10 sm:py-16 overflow-hidden">
+        {/* Subtle holographic rainbow atmospheric aura */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-[400px] rainbow-aura -z-10 opacity-70" />
 
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center relative z-10">
           {/* LEFT COLUMN: VALUE PROP */}
           <div className="lg:col-span-7 space-y-6">
-            <div className="inline-flex items-center gap-2 rounded-full border border-[#30363D] bg-[#161B22] px-3 py-1 text-xs text-[#8B949E]">
+            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-white px-3 py-1 text-xs text-muted-foreground shadow-2xs font-mono">
               <span className="size-2 rounded-full bg-[#00D964] animate-pulse" />
-              <span className="text-white font-semibold">Day Zero Live Product</span>
-              <span className="text-[#484F58]">·</span>
-              <span className="text-[#58A6FF]">Hyperliquid L1 Client</span>
+              <span className="text-foreground font-semibold">Day Zero Live Product</span>
+              <span className="text-border">·</span>
+              <span className="text-[#2563EB]">Hyperliquid L1 Client</span>
             </div>
 
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white leading-[1.12]">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-foreground leading-[1.15]">
               Pro Trading Terminal for Hyperliquid.
             </h1>
 
-            <p className="text-sm sm:text-base text-[#8B949E] leading-relaxed max-w-2xl">
+            <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-2xl">
               Trade directly on Hyperliquid L1 order books with zero added latency. Support the godcandle ecosystem by executing through our native Builder Code.
             </p>
 
             {/* Value Proposition Highlights */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-              <div className="p-3.5 rounded-xl border border-[#21262D] bg-[#0D1117]/80 space-y-1">
-                <div className="flex items-center gap-2 text-white text-xs font-semibold">
-                  <Zap className="size-3.5 text-[#00D964]" />
+              <div className="p-4 rounded-2xl border border-border bg-white shadow-2xs space-y-1">
+                <div className="flex items-center gap-2 text-foreground text-xs font-semibold">
+                  <Zap className="size-4 text-[#06964A]" />
                   <span>Zero Latency L1 Routing</span>
                 </div>
-                <p className="text-[11px] text-[#8B949E] leading-normal">
+                <p className="text-[11px] text-muted-foreground leading-normal">
                   Direct WebSocket subscription to Hyperliquid validator state. Zero browser hops, zero proxy lag.
                 </p>
               </div>
 
-              <div className="p-3.5 rounded-xl border border-[#21262D] bg-[#0D1117]/80 space-y-1">
-                <div className="flex items-center gap-2 text-white text-xs font-semibold">
-                  <Shield className="size-3.5 text-[#58A6FF]" />
+              <div className="p-4 rounded-2xl border border-border bg-white shadow-2xs space-y-1">
+                <div className="flex items-center gap-2 text-foreground text-xs font-semibold">
+                  <Shield className="size-4 text-[#2563EB]" />
                   <span>Native Builder Code</span>
                 </div>
-                <p className="text-[11px] text-[#8B949E] leading-normal">
-                  Trades pass <code className="text-[#58A6FF]">GODCANDLE</code> builder code. Generates protocol cashflow with zero added fee to you.
+                <p className="text-[11px] text-muted-foreground leading-normal">
+                  Trades pass <code className="text-[#2563EB] font-semibold font-mono">GODCANDLE</code> builder code. Generates protocol cashflow with zero added fee to you.
                 </p>
               </div>
 
-              <div className="p-3.5 rounded-xl border border-[#21262D] bg-[#0D1117]/80 space-y-1">
-                <div className="flex items-center gap-2 text-white text-xs font-semibold">
-                  <Sliders className="size-3.5 text-[#E3B341]" />
+              <div className="p-4 rounded-2xl border border-border bg-white shadow-2xs space-y-1">
+                <div className="flex items-center gap-2 text-foreground text-xs font-semibold">
+                  <Sliders className="size-4 text-[#D97706]" />
                   <span>Institutional 1x–50x Limits</span>
                 </div>
-                <p className="text-[11px] text-[#8B949E] leading-normal">
+                <p className="text-[11px] text-muted-foreground leading-normal">
                   Clean execution parameters reflecting real Hyperliquid isolated leverage and exact liquidation boundaries.
                 </p>
               </div>
 
-              <div className="p-3.5 rounded-xl border border-[#21262D] bg-[#0D1117]/80 space-y-1">
-                <div className="flex items-center gap-2 text-white text-xs font-semibold">
-                  <Terminal className="size-3.5 text-[#A371F7]" />
+              <div className="p-4 rounded-2xl border border-border bg-white shadow-2xs space-y-1">
+                <div className="flex items-center gap-2 text-foreground text-xs font-semibold">
+                  <Terminal className="size-4 text-[#7C3AED]" />
                   <span>Pure Quant UX</span>
                 </div>
-                <p className="text-[11px] text-[#8B949E] leading-normal">
-                  Dark, monospace, clutter-free terminal designed for serious derivatives execution and risk telemetry.
+                <p className="text-[11px] text-muted-foreground leading-normal">
+                  Crisp, clean, clutter-free terminal designed for serious derivatives execution and risk telemetry.
                 </p>
               </div>
             </div>
@@ -211,7 +205,7 @@ export function LandingPage() {
             <div className="flex flex-wrap items-center gap-3 pt-2">
               <Link
                 to="/trade"
-                className="inline-flex items-center gap-2 rounded-xl bg-[#00D964] hover:bg-[#00BF57] px-5 py-3 text-xs font-bold text-[#080B0F] transition-all shadow-[0_0_20px_rgba(0,217,100,0.25)] hover:shadow-[0_0_25px_rgba(0,217,100,0.4)] cursor-pointer"
+                className="inline-flex items-center gap-2 rounded-full bg-foreground text-background hover:opacity-90 px-6 py-3 text-xs font-bold transition-all shadow-sm cursor-pointer"
               >
                 <span>Launch Pro Terminal</span>
                 <ArrowUpRight className="size-4" />
@@ -219,33 +213,33 @@ export function LandingPage() {
 
               <a
                 href="#roadmap"
-                className="inline-flex items-center gap-2 rounded-xl border border-[#30363D] bg-[#161B22] hover:bg-[#21262D] px-5 py-3 text-xs font-semibold text-white transition-all cursor-pointer"
+                className="inline-flex items-center gap-2 rounded-full border border-border bg-white hover:bg-secondary px-5 py-3 text-xs font-semibold text-foreground transition-all cursor-pointer shadow-2xs"
               >
                 <span>Explore Masterplan Roadmap</span>
-                <ChevronRight className="size-4 text-[#8B949E]" />
+                <ChevronRight className="size-4 text-muted-foreground" />
               </a>
             </div>
           </div>
 
           {/* RIGHT COLUMN: LIVE ORDER FORM PREVIEW */}
           <div className="lg:col-span-5">
-            <div className="rounded-2xl border border-[#30363D] bg-[#0D1117] p-5 shadow-2xl space-y-4">
+            <div className="rounded-2xl border border-border bg-white p-5 shadow-xl space-y-4 font-mono">
               {/* Order Header */}
-              <div className="flex items-center justify-between border-b border-[#21262D] pb-3 text-xs">
+              <div className="flex items-center justify-between border-b border-border pb-3 text-xs">
                 <div className="flex items-center gap-2">
                   <span className="size-2 rounded-full bg-[#00D964] animate-pulse" />
-                  <span className="font-bold text-white tracking-wider">LIVE ORDER FORM</span>
-                  <span className="rounded bg-[#21262D] px-1.5 py-0.5 text-[9px] text-[#58A6FF] font-semibold">
+                  <span className="font-bold text-foreground tracking-wider">LIVE ORDER FORM</span>
+                  <span className="rounded bg-secondary px-1.5 py-0.5 text-[9px] text-[#2563EB] font-semibold border border-border/80">
                     1x–50x
                   </span>
                 </div>
-                <div className="text-[10px] text-[#8B949E]">
+                <div className="text-[10px] text-muted-foreground">
                   HL L1 ROUTED
                 </div>
               </div>
 
               {/* Asset Selector Tabs */}
-              <div className="grid grid-cols-4 gap-1 p-1 bg-[#161B22] rounded-xl border border-[#21262D] text-xs">
+              <div className="grid grid-cols-4 gap-1 p-1 bg-secondary/60 rounded-xl border border-border text-xs">
                 {(['BTC', 'ETH', 'SOL', 'HYPE'] as MarketSymbol[]).map((sym) => {
                   const isSelected = selectedAsset === sym;
                   const symMax = sym === 'BTC' || sym === 'ETH' ? 50 : 20;
@@ -259,30 +253,30 @@ export function LandingPage() {
                       }}
                       className={`py-1.5 px-2 rounded-lg font-bold transition-all text-center cursor-pointer ${
                         isSelected
-                          ? 'bg-[#21262D] text-[#00D964] shadow-xs border border-[#30363D]'
-                          : 'text-[#8B949E] hover:text-white'
+                          ? 'bg-white text-foreground shadow-xs border border-border'
+                          : 'text-muted-foreground hover:text-foreground'
                       }`}
                     >
                       <div>{sym}</div>
-                      <div className="text-[9px] font-normal text-[#8B949E]">{symMax}x</div>
+                      <div className="text-[9px] font-normal text-muted-foreground">{symMax}x</div>
                     </button>
                   );
                 })}
               </div>
 
               {/* Live Price Readout */}
-              <div className="flex items-baseline justify-between p-3 rounded-xl bg-[#161B22]/70 border border-[#21262D]">
+              <div className="flex items-baseline justify-between p-3.5 rounded-xl bg-secondary/40 border border-border">
                 <div>
-                  <div className="text-[10px] text-[#8B949E] uppercase tracking-wider">
+                  <div className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">
                     {selectedAsset}-USD Mark Price
                   </div>
-                  <div className="text-xl font-bold text-white tabular-nums mt-0.5">
+                  <div className="text-xl font-bold text-foreground tabular-nums mt-0.5">
                     ${fmtUsd(currentPrice, currentMarket.decimals)}
                   </div>
                 </div>
                 <div
-                  className={`text-xs font-semibold px-2 py-0.5 rounded tabular-nums ${
-                    change24 >= 0 ? 'bg-[#00D964]/10 text-[#00D964]' : 'bg-[#FF3B30]/10 text-[#FF3B30]'
+                  className={`text-xs font-semibold px-2 py-0.5 rounded-full tabular-nums border ${
+                    change24 >= 0 ? 'bg-[#E3F8EC] text-[#06964A] border-[#06964A]/30' : 'bg-[#FFECEA] text-[#FF3B30] border-[#FF3B30]/30'
                   }`}
                 >
                   {change24 >= 0 ? '+' : ''}
@@ -292,9 +286,9 @@ export function LandingPage() {
 
               {/* Margin Preset Chips & Input */}
               <div className="space-y-1.5">
-                <div className="flex items-center justify-between text-[11px] text-[#8B949E]">
+                <div className="flex items-center justify-between text-[11px] text-muted-foreground font-sans">
                   <span>Margin (USDC)</span>
-                  <span className="text-white font-semibold">${stake} USDC</span>
+                  <span className="text-foreground font-semibold font-mono">${stake} USDC</span>
                 </div>
                 <div className="grid grid-cols-5 gap-1.5">
                   {[25, 50, 100, 250, 500].map((amt) => (
@@ -304,8 +298,8 @@ export function LandingPage() {
                       onClick={() => setStake(amt)}
                       className={`py-1 text-[11px] rounded-lg border font-semibold transition-all cursor-pointer ${
                         stake === amt
-                          ? 'border-[#00D964] bg-[#00D964]/10 text-[#00D964]'
-                          : 'border-[#21262D] bg-[#161B22] text-[#8B949E] hover:text-white hover:border-[#30363D]'
+                          ? 'border-[#00D964] bg-[#E3F8EC] text-[#06964A]'
+                          : 'border-border bg-white text-muted-foreground hover:text-foreground hover:bg-secondary'
                       }`}
                     >
                       ${amt}
@@ -317,9 +311,9 @@ export function LandingPage() {
               {/* LEVERAGE SLIDER: 1x to 50x (STRICTLY HYPERLIQUID LIMITS) */}
               <div className="space-y-1.5 pt-1">
                 <div className="flex items-center justify-between text-[11px]">
-                  <span className="text-[#8B949E]">Leverage (Hyperliquid L1 Limit)</span>
-                  <span className="text-[#00D964] font-bold tabular-nums">
-                    {leverage}x <span className="text-[#8B949E] font-normal">/ {maxLeverage}x max</span>
+                  <span className="text-muted-foreground font-sans">Leverage (Hyperliquid L1 Limit)</span>
+                  <span className="text-[#06964A] font-bold tabular-nums">
+                    {leverage}x <span className="text-muted-foreground font-normal">/ {maxLeverage}x max</span>
                   </span>
                 </div>
                 <input
@@ -329,9 +323,9 @@ export function LandingPage() {
                   step={1}
                   value={leverage}
                   onChange={(e) => setLeverage(Number(e.target.value))}
-                  className="w-full h-1.5 bg-[#21262D] rounded-lg appearance-none cursor-pointer accent-[#00D964]"
+                  className="w-full h-1.5 bg-secondary rounded-lg appearance-none cursor-pointer accent-foreground"
                 />
-                <div className="flex justify-between text-[9px] text-[#8B949E] font-mono">
+                <div className="flex justify-between text-[9px] text-muted-foreground font-mono">
                   <span>1x (Spot equivalent)</span>
                   <span>10x</span>
                   <span>25x</span>
@@ -340,28 +334,28 @@ export function LandingPage() {
               </div>
 
               {/* STANDARD REQUIRED DATA ROWS */}
-              <div className="space-y-2 rounded-xl bg-[#161B22] p-3 border border-[#21262D] text-xs">
-                <div className="flex items-center justify-between text-[#8B949E]">
-                  <span>Position Notional</span>
-                  <span className="font-semibold text-white tabular-nums">
+              <div className="space-y-2 rounded-xl bg-secondary/40 p-3 border border-border text-xs">
+                <div className="flex items-center justify-between text-muted-foreground">
+                  <span className="font-sans">Position Notional</span>
+                  <span className="font-semibold text-foreground tabular-nums">
                     ${positionNotional.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USDC
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between text-[#8B949E]">
-                  <span className="flex items-center gap-1">
+                <div className="flex items-center justify-between text-muted-foreground">
+                  <span className="flex items-center gap-1 font-sans">
                     <span>Liquidation Price</span>
-                    <span className="text-[10px] text-[#E3B341]">(-{liqDistancePct.toFixed(2)}%)</span>
+                    <span className="text-[10px] text-[#D97706]">(-{liqDistancePct.toFixed(2)}%)</span>
                   </span>
                   <span className="font-semibold text-[#FF3B30] tabular-nums">
                     ${fmtUsd(liqPrice, currentMarket.decimals)}
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between text-[#8B949E]">
-                  <span>Est. Fee</span>
-                  <span className="font-semibold text-white tabular-nums">
-                    ${estFee.toFixed(3)} USDC <span className="text-[10px] text-[#8B949E]">(0.035%)</span>
+                <div className="flex items-center justify-between text-muted-foreground">
+                  <span className="font-sans">Est. Fee</span>
+                  <span className="font-semibold text-foreground tabular-nums">
+                    ${estFee.toFixed(3)} USDC <span className="text-[10px] text-muted-foreground">(0.035%)</span>
                   </span>
                 </div>
               </div>
@@ -371,7 +365,7 @@ export function LandingPage() {
                 <button
                   type="button"
                   onClick={() => handleExecute('long')}
-                  className="flex items-center justify-center gap-2 rounded-xl bg-[#00D964] hover:bg-[#00BF57] text-[#080B0F] py-3 text-xs font-bold transition-all shadow-[0_0_15px_rgba(0,217,100,0.2)] hover:shadow-[0_0_20px_rgba(0,217,100,0.35)] cursor-pointer"
+                  className="flex items-center justify-center gap-2 rounded-xl bg-[#00D964] hover:bg-[#00BF57] text-black py-3 text-xs font-bold transition-all shadow-xs cursor-pointer active:scale-[0.99]"
                 >
                   <TrendingUp className="size-4" />
                   <span>LONG / BUY</span>
@@ -380,16 +374,16 @@ export function LandingPage() {
                 <button
                   type="button"
                   onClick={() => handleExecute('short')}
-                  className="flex items-center justify-center gap-2 rounded-xl bg-[#FF3B30] hover:bg-[#E0342A] text-white py-3 text-xs font-bold transition-all shadow-[0_0_15px_rgba(255,59,48,0.2)] hover:shadow-[0_0_20px_rgba(255,59,48,0.35)] cursor-pointer"
+                  className="flex items-center justify-center gap-2 rounded-xl bg-[#FF3B30] hover:bg-[#E0342A] text-white py-3 text-xs font-bold transition-all shadow-xs cursor-pointer active:scale-[0.99]"
                 >
                   <TrendingDown className="size-4" />
                   <span>SHORT / SELL</span>
                 </button>
               </div>
 
-              <div className="text-center pt-1">
-                <p className="text-[10px] text-[#8B949E]">
-                  Order execution tagged with Builder Code: <span className="text-[#58A6FF] font-semibold">GODCANDLE</span>
+              <div className="text-center pt-1 font-sans">
+                <p className="text-[10px] text-muted-foreground">
+                  Order execution tagged with Builder Code: <span className="text-[#2563EB] font-semibold font-mono">GODCANDLE</span>
                 </p>
               </div>
             </div>
@@ -398,65 +392,65 @@ export function LandingPage() {
       </section>
 
       {/* 3. DETAILED ROADMAP SECTION (THE "BUILD IN PUBLIC" VISION) */}
-      <section id="roadmap" className="px-4 sm:px-6 lg:px-12 py-16 sm:py-24 border-b border-[#21262D] relative">
+      <section id="roadmap" className="px-4 sm:px-6 lg:px-12 py-16 sm:py-24 border-b border-border relative bg-secondary/20">
         <div className="max-w-7xl mx-auto space-y-12">
           {/* Section Header */}
           <div className="space-y-3">
-            <div className="inline-flex items-center gap-2 rounded-full border border-[#30363D] bg-[#161B22] px-3 py-1 text-xs text-[#8B949E]">
-              <Activity className="size-3 text-[#58A6FF]" />
+            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-white px-3 py-1 text-xs text-muted-foreground shadow-2xs font-mono">
+              <Activity className="size-3 text-[#2563EB]" />
               <span>BUILD IN PUBLIC</span>
-              <span className="text-[#484F58]">·</span>
-              <span className="text-white font-semibold">TRANSPARENT RELEASES</span>
+              <span className="text-border">·</span>
+              <span className="text-foreground font-semibold">TRANSPARENT RELEASES</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white uppercase">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-foreground uppercase">
               The godcandle Masterplan
             </h2>
-            <p className="text-sm text-[#8B949E] max-w-2xl leading-relaxed">
+            <p className="text-sm text-muted-foreground max-w-2xl leading-relaxed">
               From our live high-performance Hyperliquid L1 client to our sovereign 1000x synthetic House Pool, weekly automated Candle Cup tournaments, and custom physical trading hardware.
             </p>
           </div>
 
           {/* Masterplan 4-Phase Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 font-mono">
             {/* PHASE 0: LIVE NOW */}
-            <div className="rounded-2xl border-2 border-[#00D964]/40 bg-[#0D1117] p-6 space-y-4 relative overflow-hidden group hover:border-[#00D964] transition-all shadow-[0_0_30px_rgba(0,217,100,0.08)]">
+            <div className="rounded-2xl border-2 border-[#00D964]/60 bg-white p-6 space-y-4 relative overflow-hidden group shadow-sm hover:shadow-md transition-all">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-bold text-[#00D964] tracking-wider">
+                <span className="font-bold text-[#06964A] tracking-wider">
                   [PHASE_00 // STATUS: LIVE_NOW]
                 </span>
-                <span className="flex items-center gap-1.5 rounded-full bg-[#00D964]/10 border border-[#00D964]/30 px-2.5 py-0.5 text-[10px] font-bold text-[#00D964]">
-                  <span className="size-1.5 rounded-full bg-[#00D964] animate-pulse" />
+                <span className="flex items-center gap-1.5 rounded-full bg-[#E3F8EC] border border-[#06964A]/30 px-2.5 py-0.5 text-[10px] font-bold text-[#06964A]">
+                  <span className="size-1.5 rounded-full bg-[#06964A] animate-pulse" />
                   PRODUCTION
                 </span>
               </div>
 
               <div>
-                <h3 className="text-xl font-bold text-white group-hover:text-[#00D964] transition-colors">
+                <h3 className="text-xl font-bold text-foreground group-hover:text-[#06964A] transition-colors font-sans">
                   Native Hyperliquid Client
                 </h3>
-                <p className="text-xs text-[#8B949E] mt-2 leading-relaxed">
+                <p className="text-xs text-muted-foreground mt-2 leading-relaxed font-sans">
                   Direct order book routing, UI/UX optimized for power users, generating protocol cashflow via Builder Codes.
                 </p>
               </div>
 
-              <div className="space-y-2 border-t border-[#21262D] pt-4 text-xs">
-                <div className="flex items-start gap-2 text-[#E6EDF3]">
-                  <CheckCircle2 className="size-4 text-[#00D964] shrink-0 mt-0.5" />
+              <div className="space-y-2 border-t border-border pt-4 text-xs font-sans">
+                <div className="flex items-start gap-2 text-foreground">
+                  <CheckCircle2 className="size-4 text-[#06964A] shrink-0 mt-0.5" />
                   <span>Direct order book routing straight to Hyperliquid L1 validator consensus.</span>
                 </div>
-                <div className="flex items-start gap-2 text-[#E6EDF3]">
-                  <CheckCircle2 className="size-4 text-[#00D964] shrink-0 mt-0.5" />
+                <div className="flex items-start gap-2 text-foreground">
+                  <CheckCircle2 className="size-4 text-[#06964A] shrink-0 mt-0.5" />
                   <span>UI/UX optimized for power users: fast hotkeys, responsive depth chart, and discrete dock.</span>
                 </div>
-                <div className="flex items-start gap-2 text-[#E6EDF3]">
-                  <CheckCircle2 className="size-4 text-[#00D964] shrink-0 mt-0.5" />
+                <div className="flex items-start gap-2 text-foreground">
+                  <CheckCircle2 className="size-4 text-[#06964A] shrink-0 mt-0.5" />
                   <span>Sustainable protocol cashflow generated transparently via builder code fee rebates.</span>
                 </div>
               </div>
 
-              <div className="p-3 rounded-xl bg-[#161B22] border border-[#21262D] text-[11px] text-[#8B949E] flex items-center justify-between">
-                <span>Current Leverage Limit: <strong className="text-white">1x–50x Perps</strong></span>
-                <Link to="/trade" className="text-[#00D964] font-semibold hover:underline flex items-center gap-1">
+              <div className="p-3 rounded-xl bg-secondary/50 border border-border text-[11px] text-muted-foreground flex items-center justify-between">
+                <span>Current Leverage Limit: <strong className="text-foreground">1x–50x Perps</strong></span>
+                <Link to="/trade" className="text-[#06964A] font-semibold hover:underline flex items-center gap-1">
                   <span>Enter Terminal</span>
                   <ArrowUpRight className="size-3" />
                 </Link>
@@ -464,53 +458,53 @@ export function LandingPage() {
             </div>
 
             {/* PHASE 1: IN DEVELOPMENT (The Synthetic Engine) */}
-            <div className="rounded-2xl border border-[#E3B341]/40 bg-[#0D1117] p-6 space-y-4 relative overflow-hidden group hover:border-[#E3B341] transition-all">
+            <div className="rounded-2xl border border-[#D97706]/40 bg-white p-6 space-y-4 relative overflow-hidden group shadow-sm hover:shadow-md transition-all">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-bold text-[#E3B341] tracking-wider">
+                <span className="font-bold text-[#D97706] tracking-wider">
                   [PHASE_01 // THE SYNTHETIC ENGINE]
                 </span>
-                <span className="flex items-center gap-1.5 rounded-full bg-[#E3B341]/10 border border-[#E3B341]/30 px-2.5 py-0.5 text-[10px] font-bold text-[#E3B341]">
-                  <span className="size-1.5 rounded-full bg-[#E3B341] animate-ping" />
+                <span className="flex items-center gap-1.5 rounded-full bg-[#FFFBEA] border border-[#D97706]/30 px-2.5 py-0.5 text-[10px] font-bold text-[#D97706]">
+                  <span className="size-1.5 rounded-full bg-[#D97706] animate-ping" />
                   IN DEVELOPMENT
                 </span>
               </div>
 
               <div>
-                <h3 className="text-xl font-bold text-white group-hover:text-[#E3B341] transition-colors">
+                <h3 className="text-xl font-bold text-foreground group-hover:text-[#D97706] transition-colors font-sans">
                   {"1000x Synthetic Perps & The House Pool"}
                 </h3>
-                <p className="text-xs text-[#8B949E] mt-2 leading-relaxed">
+                <p className="text-xs text-muted-foreground mt-2 leading-relaxed font-sans">
                   Sovereign high-leverage synthetic derivative engine with automated FIFO solvency guarantees on HyperEVM.
                 </p>
               </div>
 
-              <div className="space-y-2.5 border-t border-[#21262D] pt-4 text-xs">
-                <div className="p-2.5 rounded-lg bg-[#161B22] border border-[#21262D] space-y-1">
-                  <div className="text-white font-semibold flex items-center gap-1.5">
-                    <Database className="size-3.5 text-[#E3B341]" />
+              <div className="space-y-2.5 border-t border-border pt-4 text-xs font-sans">
+                <div className="p-3 rounded-xl bg-secondary/40 border border-border/80 space-y-1">
+                  <div className="text-foreground font-semibold flex items-center gap-1.5">
+                    <Database className="size-3.5 text-[#D97706]" />
                     <span>Initial $10k-$25k Bootstrap Pool</span>
                   </div>
-                  <p className="text-[11px] text-[#8B949E] leading-normal">
+                  <p className="text-[11px] text-muted-foreground leading-normal">
                     Initial $10k-$25k Bootstrap Pool providing instant house liquidity for 1000x synthetic perps.
                   </p>
                 </div>
 
-                <div className="p-2.5 rounded-lg bg-[#161B22] border border-[#21262D] space-y-1">
-                  <div className="text-white font-semibold flex items-center gap-1.5">
-                    <Layers className="size-3.5 text-[#E3B341]" />
+                <div className="p-3 rounded-xl bg-secondary/40 border border-border/80 space-y-1">
+                  <div className="text-foreground font-semibold flex items-center gap-1.5">
+                    <Layers className="size-3.5 text-[#D97706]" />
                     <span>Hyperliquid L1 Mid Execution</span>
                   </div>
-                  <p className="text-[11px] text-[#8B949E] leading-normal">
+                  <p className="text-[11px] text-muted-foreground leading-normal">
                     Direct L1 market telemetry feeds to ensure authentic pricing and prevent oracle manipulation.
                   </p>
                 </div>
 
-                <div className="p-2.5 rounded-lg bg-[#161B22] border border-[#21262D] space-y-1">
-                  <div className="text-white font-semibold flex items-center gap-1.5">
-                    <Clock className="size-3.5 text-[#E3B341]" />
+                <div className="p-3 rounded-xl bg-secondary/40 border border-border/80 space-y-1">
+                  <div className="text-foreground font-semibold flex items-center gap-1.5">
+                    <Clock className="size-3.5 text-[#D97706]" />
                     <span>Pure FIFO Settlement</span>
                   </div>
-                  <p className="text-[11px] text-[#8B949E] leading-normal">
+                  <p className="text-[11px] text-muted-foreground leading-normal">
                     Margin returned instantly, extreme net profits handled by an on-chain queue.
                   </p>
                 </div>
@@ -518,52 +512,52 @@ export function LandingPage() {
             </div>
 
             {/* PHASE 2: UPCOMING */}
-            <div className="rounded-2xl border border-[#58A6FF]/40 bg-[#0D1117] p-6 space-y-4 relative overflow-hidden group hover:border-[#58A6FF] transition-all">
+            <div className="rounded-2xl border border-[#2563EB]/40 bg-white p-6 space-y-4 relative overflow-hidden group shadow-sm hover:shadow-md transition-all">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-bold text-[#58A6FF] tracking-wider">
+                <span className="font-bold text-[#2563EB] tracking-wider">
                   [PHASE_02 // TOURNAMENTS]
                 </span>
-                <span className="flex items-center gap-1.5 rounded-full bg-[#58A6FF]/10 border border-[#58A6FF]/30 px-2.5 py-0.5 text-[10px] font-bold text-[#58A6FF]">
+                <span className="flex items-center gap-1.5 rounded-full bg-[#EFF6FF] border border-[#2563EB]/30 px-2.5 py-0.5 text-[10px] font-bold text-[#2563EB]">
                   UPCOMING
                 </span>
               </div>
 
               <div>
-                <h3 className="text-xl font-bold text-white group-hover:text-[#58A6FF] transition-colors">
+                <h3 className="text-xl font-bold text-foreground group-hover:text-[#2563EB] transition-colors font-sans">
                   The Candle Cup
                 </h3>
-                <p className="text-xs text-[#8B949E] mt-2 leading-relaxed">
+                <p className="text-xs text-muted-foreground mt-2 leading-relaxed font-sans">
                   Automated weekly high-ROI arena rewarding top traders with direct native USDC distributions funded by House Pool yield.
                 </p>
               </div>
 
-              <div className="space-y-2.5 border-t border-[#21262D] pt-4 text-xs">
-                <div className="p-2.5 rounded-lg bg-[#161B22] border border-[#21262D] space-y-1">
-                  <div className="text-white font-semibold flex items-center gap-1.5">
-                    <Award className="size-3.5 text-[#58A6FF]" />
+              <div className="space-y-2.5 border-t border-border pt-4 text-xs font-sans">
+                <div className="p-3 rounded-xl bg-secondary/40 border border-border/80 space-y-1">
+                  <div className="text-foreground font-semibold flex items-center gap-1.5">
+                    <Award className="size-3.5 text-[#2563EB]" />
                     <span>Weekly automated ROI leaderboards</span>
                   </div>
-                  <p className="text-[11px] text-[#8B949E] leading-normal">
+                  <p className="text-[11px] text-muted-foreground leading-normal">
                     Weekly automated ROI leaderboards with continuous scoring across every trading session.
                   </p>
                 </div>
 
-                <div className="p-2.5 rounded-lg bg-[#161B22] border border-[#21262D] space-y-1">
-                  <div className="text-white font-semibold flex items-center gap-1.5">
-                    <Zap className="size-3.5 text-[#58A6FF]" />
+                <div className="p-3 rounded-xl bg-secondary/40 border border-border/80 space-y-1">
+                  <div className="text-foreground font-semibold flex items-center gap-1.5">
+                    <Zap className="size-3.5 text-[#2563EB]" />
                     <span>Every real trade automatically qualifies</span>
                   </div>
-                  <p className="text-[11px] text-[#8B949E] leading-normal">
+                  <p className="text-[11px] text-muted-foreground leading-normal">
                     Every real trade automatically qualifies. Zero signup barriers or opt-in forms.
                   </p>
                 </div>
 
-                <div className="p-2.5 rounded-lg bg-[#161B22] border border-[#21262D] space-y-1">
-                  <div className="text-white font-semibold flex items-center gap-1.5">
-                    <Shield className="size-3.5 text-[#58A6FF]" />
+                <div className="p-3 rounded-xl bg-secondary/40 border border-border/80 space-y-1">
+                  <div className="text-foreground font-semibold flex items-center gap-1.5">
+                    <Shield className="size-3.5 text-[#2563EB]" />
                     <span>Native USDC Prize Pools</span>
                   </div>
-                  <p className="text-[11px] text-[#8B949E] leading-normal">
+                  <p className="text-[11px] text-muted-foreground leading-normal">
                     Prize pools paid out entirely in native USDC from House Pool revenues.
                   </p>
                 </div>
@@ -571,52 +565,52 @@ export function LandingPage() {
             </div>
 
             {/* PHASE 3: FUTURE EXPANSION */}
-            <div className="rounded-2xl border border-[#A371F7]/40 bg-[#0D1117] p-6 space-y-4 relative overflow-hidden group hover:border-[#A371F7] transition-all">
+            <div className="rounded-2xl border border-[#7C3AED]/40 bg-white p-6 space-y-4 relative overflow-hidden group shadow-sm hover:shadow-md transition-all">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-bold text-[#A371F7] tracking-wider">
+                <span className="font-bold text-[#7C3AED] tracking-wider">
                   [PHASE_03 // HARDWARE & OPTIONS]
                 </span>
-                <span className="flex items-center gap-1.5 rounded-full bg-[#A371F7]/10 border border-[#A371F7]/30 px-2.5 py-0.5 text-[10px] font-bold text-[#A371F7]">
+                <span className="flex items-center gap-1.5 rounded-full bg-[#FAF5FF] border border-[#7C3AED]/30 px-2.5 py-0.5 text-[10px] font-bold text-[#7C3AED]">
                   FUTURE EXPANSION
                 </span>
               </div>
 
               <div>
-                <h3 className="text-xl font-bold text-white group-hover:text-[#A371F7] transition-colors">
+                <h3 className="text-xl font-bold text-foreground group-hover:text-[#7C3AED] transition-colors font-sans">
                   {"0DTE Options & Godcandle Hardware"}
                 </h3>
-                <p className="text-xs text-[#8B949E] mt-2 leading-relaxed">
+                <p className="text-xs text-muted-foreground mt-2 leading-relaxed font-sans">
                   Ultra-short dated outcome options paired with custom physical CNC milled trading hardware for elite high-frequency operators.
                 </p>
               </div>
 
-              <div className="space-y-2.5 border-t border-[#21262D] pt-4 text-xs">
-                <div className="p-2.5 rounded-lg bg-[#161B22] border border-[#21262D] space-y-1">
-                  <div className="text-white font-semibold flex items-center gap-1.5">
-                    <Clock className="size-3.5 text-[#A371F7]" />
+              <div className="space-y-2.5 border-t border-border pt-4 text-xs font-sans">
+                <div className="p-3 rounded-xl bg-secondary/40 border border-border/80 space-y-1">
+                  <div className="text-foreground font-semibold flex items-center gap-1.5">
+                    <Clock className="size-3.5 text-[#7C3AED]" />
                     <span>Outcome-map time barriers (5m - 60m)</span>
                   </div>
-                  <p className="text-[11px] text-[#8B949E] leading-normal">
+                  <p className="text-[11px] text-muted-foreground leading-normal">
                     Outcome-map time barriers (5m - 60m) with defined risk and instant automated settlement upon expiry.
                   </p>
                 </div>
 
-                <div className="p-2.5 rounded-lg bg-[#161B22] border border-[#21262D] space-y-1">
-                  <div className="text-white font-semibold flex items-center gap-1.5">
-                    <Cpu className="size-3.5 text-[#A371F7]" />
+                <div className="p-3 rounded-xl bg-secondary/40 border border-border/80 space-y-1">
+                  <div className="text-foreground font-semibold flex items-center gap-1.5">
+                    <Cpu className="size-3.5 text-[#7C3AED]" />
                     <span>Physical milled-aluminum Godcandle Terminal</span>
                   </div>
-                  <p className="text-[11px] text-[#8B949E] leading-normal">
+                  <p className="text-[11px] text-muted-foreground leading-normal">
                     Delivery of the physical milled-aluminum Godcandle Terminal with mechanical switches and direct WebSocket RPC execution for VIP traders.
                   </p>
                 </div>
 
-                <div className="p-2.5 rounded-lg bg-[#161B22] border border-[#21262D] space-y-1">
-                  <div className="text-white font-semibold flex items-center gap-1.5">
-                    <Box className="size-3.5 text-[#A371F7]" />
+                <div className="p-3 rounded-xl bg-secondary/40 border border-border/80 space-y-1">
+                  <div className="text-foreground font-semibold flex items-center gap-1.5">
+                    <Box className="size-3.5 text-[#7C3AED]" />
                     <span>Direct WebSocket RPC execution</span>
                   </div>
-                  <p className="text-[11px] text-[#8B949E] leading-normal">
+                  <p className="text-[11px] text-muted-foreground leading-normal">
                     Hardware RPC microcontroller for VIP traders bypassing browsers and executing directly with Hyperliquid validators.
                   </p>
                 </div>
@@ -627,18 +621,18 @@ export function LandingPage() {
       </section>
 
       {/* 4. TECHNICAL BOTTOM CALL TO ACTION */}
-      <section className="px-4 sm:px-6 lg:px-12 py-12 bg-[#0D1117] border-b border-[#21262D]">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 p-6 rounded-2xl border border-[#21262D] bg-[#161B22]">
+      <section className="px-4 sm:px-6 lg:px-12 py-12 bg-white border-b border-border">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 p-6 rounded-2xl border border-border bg-secondary/30">
           <div className="space-y-1 text-center md:text-left">
-            <h3 className="text-lg font-bold text-white">Ready to trade directly on Hyperliquid L1?</h3>
-            <p className="text-xs text-[#8B949E]">
+            <h3 className="text-lg font-bold text-foreground">Ready to trade directly on Hyperliquid L1?</h3>
+            <p className="text-xs text-muted-foreground">
               Connect your Web3 wallet and execute 1x–50x perpetuals with native Builder Code routing.
             </p>
           </div>
           <div className="flex items-center gap-3">
             <Link
               to="/trade"
-              className="inline-flex items-center gap-2 rounded-xl bg-[#00D964] hover:bg-[#00BF57] px-5 py-2.5 text-xs font-bold text-[#080B0F] transition-all cursor-pointer"
+              className="inline-flex items-center gap-2 rounded-full bg-foreground text-background hover:opacity-90 px-6 py-2.5 text-xs font-bold transition-all cursor-pointer shadow-sm"
             >
               <span>Launch Terminal</span>
               <ArrowUpRight className="size-4" />
@@ -647,10 +641,10 @@ export function LandingPage() {
               href="https://github.com/vcelkamarvin/godcandle-core"
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-2 rounded-xl border border-[#30363D] bg-[#21262D] hover:bg-[#30363D] px-4 py-2.5 text-xs text-white transition-all cursor-pointer"
+              className="inline-flex items-center gap-2 rounded-full border border-border bg-white hover:bg-secondary px-5 py-2.5 text-xs text-foreground transition-all cursor-pointer font-medium shadow-2xs"
             >
               <span>GitHub</span>
-              <ExternalLink className="size-3.5 text-[#8B949E]" />
+              <ExternalLink className="size-3.5 text-muted-foreground" />
             </a>
           </div>
         </div>

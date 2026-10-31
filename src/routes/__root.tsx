@@ -147,11 +147,7 @@ function TradingShell() {
   const isDark = false;
 
   return (
-    <div
-      className={`relative mx-auto min-h-screen max-w-[1800px] flex flex-col justify-between overflow-x-hidden ${
-        isDark ? 'bg-[#080B0F] text-[#E6EDF3]' : 'bg-background text-foreground'
-      }`}
-    >
+    <div className="relative mx-auto min-h-screen max-w-[1800px] flex flex-col justify-between overflow-x-hidden bg-background text-foreground">
       {/* Subtle holographic rainbow atmospheric aura on all pages */}
       <div className="pointer-events-none fixed inset-x-0 top-0 h-[480px] rainbow-aura -z-10 opacity-90" />
       <div>

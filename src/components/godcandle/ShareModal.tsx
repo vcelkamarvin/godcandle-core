@@ -678,33 +678,33 @@ export function ShareModal({
         <span className="sr-only">1600 × 1000 px</span>
 
         {/* Split Card with delicate rainbow gradient border */}
-        <div className="relative w-full min-h-[460px] sm:min-h-0 aspect-[16/10] sm:aspect-auto sm:h-[480px] md:h-[500px] rounded-[28px] p-[1.5px] bg-gradient-to-tr from-[#CDC3F0] via-[#FFDAC8] to-[#A0D4CA] shadow-[0_24px_80px_rgba(0,0,0,0.55)] flex overflow-hidden">
-          <div className="w-full h-full bg-[#0D1117] rounded-[26.5px] flex flex-col sm:flex-row overflow-hidden relative">
+        <div className="relative w-full min-h-[460px] sm:min-h-0 aspect-[16/10] sm:aspect-auto sm:h-[480px] md:h-[500px] rounded-[28px] p-[1.5px] bg-gradient-to-tr from-[#CDC3F0] via-[#FFDAC8] to-[#A0D4CA] shadow-[0_24px_80px_rgba(0,0,0,0.18)] flex overflow-hidden">
+          <div className="w-full h-full bg-white rounded-[26.5px] flex flex-col sm:flex-row overflow-hidden relative shadow-2xl">
             {/* Close Button */}
             <button
               type="button"
               onClick={() => onOpenChange(false)}
-              className="absolute top-3.5 right-3.5 sm:top-4 sm:right-4 z-30 size-8 flex items-center justify-center rounded-full bg-[#161B22]/90 hover:bg-[#21262D] text-[#E6EDF3] shadow-md border border-[#30363D] hover:border-[#58A6FF] transition-all cursor-pointer"
+              className="absolute top-3.5 right-3.5 sm:top-4 sm:right-4 z-30 size-8 flex items-center justify-center rounded-full bg-white/90 hover:bg-secondary text-[#0A0A0A] shadow-xs border border-border hover:border-foreground/30 transition-all cursor-pointer"
               aria-label="Close modal"
             >
               <X className="size-4" />
             </button>
 
-            {/* LEFT HALF (50%): Deep Solid Dark Surface (#0D1117 / #161B22) */}
-            <div className="relative flex-1 sm:w-1/2 h-full bg-[#0D1117] p-5 sm:p-7 flex flex-col justify-between overflow-y-auto no-scrollbar z-10 text-[#E6EDF3]">
+            {/* LEFT HALF (50%): Crisp Light Mode Surface */}
+            <div className="relative flex-1 sm:w-1/2 h-full bg-white p-5 sm:p-7 flex flex-col justify-between overflow-y-auto no-scrollbar z-10 text-[#0A0A0A]">
               {/* Top Row: godcandle logo + HyperEVM Live */}
               <div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <div className="flex items-center gap-1.5 font-bold tracking-tight text-white font-mono text-sm">
+                    <div className="flex items-center gap-1.5 font-bold tracking-tight text-[#0A0A0A] font-mono text-sm">
                       <span className="inline-block w-1.5 h-3.5 bg-[#00D964] rounded-xs" />
-                      <span className="font-bold text-[18px] tracking-tight font-sans text-white">godcandle</span>
+                      <span className="font-bold text-[18px] tracking-tight font-sans text-[#0A0A0A]">godcandle</span>
                     </div>
-                    <span className="rounded-full border border-white/10 bg-gradient-to-r from-[#CDC3F0]/20 via-[#FFDAC8]/20 to-[#A0D4CA]/20 px-2.5 py-0.5 text-[10px] font-mono text-white/90">
+                    <span className="rounded-full border border-border bg-gradient-to-r from-[#CDC3F0]/20 via-[#FFDAC8]/20 to-[#A0D4CA]/20 px-2.5 py-0.5 text-[10px] font-mono text-foreground font-semibold">
                       HyperEVM Live
                     </span>
                   </div>
-                  <span className="hidden md:inline-block text-[9px] uppercase tracking-[1.5px] font-mono text-[#8B949E]">
+                  <span className="hidden md:inline-block text-[9px] uppercase tracking-[1.5px] font-mono text-muted-foreground">
                     TRADE SMARTER TOGETHER · ZERO FEES
                   </span>
                 </div>
@@ -714,7 +714,7 @@ export function ShareModal({
                   <MarketLogo symbol={market.symbol} size={28} />
                   <span
                     id="pnl-modal-title"
-                    className="font-bold text-2xl sm:text-[28px] tracking-tight text-white font-sans"
+                    className="font-bold text-2xl sm:text-[28px] tracking-tight text-[#0A0A0A] font-sans"
                   >
                     {symbolFormatted}
                   </span>
@@ -726,7 +726,7 @@ export function ShareModal({
                   >
                     {sideLabel}
                   </span>
-                  <span className="text-sm font-semibold font-mono text-[#8B949E]">
+                  <span className="text-sm font-semibold font-mono text-muted-foreground">
                     {rawLeverage}×
                   </span>
                 </div>
@@ -734,54 +734,54 @@ export function ShareModal({
 
               {/* Middle Section: Massive Bold ROI % and Dollar Amount */}
               <div className="my-auto py-2 sm:py-3">
-                <p className="text-[10px] sm:text-[11px] uppercase tracking-wider font-mono font-semibold text-[#8B949E]">
+                <p className="text-[10px] sm:text-[11px] uppercase tracking-wider font-mono font-semibold text-muted-foreground">
                   {pnlHeadingLabel}
                 </p>
                 <div
                   className={cn(
                     "font-sans text-[48px] sm:text-[62px] md:text-[68px] font-extrabold tracking-[-2px] leading-none my-1",
-                    isProfit ? "text-[#00D964]" : "text-[#FF3B30]"
+                    isProfit ? "text-[#06964A]" : "text-[#FF3B30]"
                   )}
                 >
                   {pnlPctFormatted}
                 </div>
                 {!hideDollar && (
-                  <p className="text-sm sm:text-base font-semibold font-mono text-[#8B949E] mt-1">
+                  <p className="text-sm sm:text-base font-semibold font-mono text-muted-foreground mt-1">
                     {dollarFormatted}
                   </p>
                 )}
               </div>
 
               {/* Bottom Section: Clean 3-Column Stats Row & Domain */}
-              <div className="space-y-3 pt-3 border-t border-[#21262D]">
+              <div className="space-y-3 pt-3 border-t border-border">
                 <div className="grid grid-cols-3 gap-2">
                   <div>
-                    <p className="text-[9px] sm:text-[10px] font-mono uppercase text-[#8B949E] tracking-wider truncate">
+                    <p className="text-[9px] sm:text-[10px] font-mono uppercase text-muted-foreground tracking-wider truncate">
                       {statCols[0]?.label}
                     </p>
-                    <p className="text-xs sm:text-sm font-bold font-mono text-white mt-0.5 truncate">
+                    <p className="text-xs sm:text-sm font-bold font-mono text-[#0A0A0A] mt-0.5 truncate">
                       {statCols[0]?.value}
                     </p>
                   </div>
-                  <div className="border-l border-[#21262D] pl-2.5">
-                    <p className="text-[9px] sm:text-[10px] font-mono uppercase text-[#8B949E] tracking-wider truncate">
+                  <div className="border-l border-border pl-2.5">
+                    <p className="text-[9px] sm:text-[10px] font-mono uppercase text-muted-foreground tracking-wider truncate">
                       {statCols[1]?.label}
                     </p>
-                    <p className="text-xs sm:text-sm font-bold font-mono text-white mt-0.5 truncate">
+                    <p className="text-xs sm:text-sm font-bold font-mono text-[#0A0A0A] mt-0.5 truncate">
                       {statCols[1]?.value}
                     </p>
                   </div>
-                  <div className="border-l border-[#21262D] pl-2.5">
-                    <p className="text-[9px] sm:text-[10px] font-mono uppercase text-[#8B949E] tracking-wider truncate">
+                  <div className="border-l border-border pl-2.5">
+                    <p className="text-[9px] sm:text-[10px] font-mono uppercase text-muted-foreground tracking-wider truncate">
                       {statCols[2]?.label}
                     </p>
-                    <p className="text-xs sm:text-sm font-bold font-mono text-white mt-0.5 truncate">
+                    <p className="text-xs sm:text-sm font-bold font-mono text-[#0A0A0A] mt-0.5 truncate">
                       {statCols[2]?.value}
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between pt-2 border-t border-[#21262D]/60 text-[10px] text-[#8B949E] font-mono">
+                <div className="flex items-center justify-between pt-2 border-t border-border/60 text-[10px] text-muted-foreground font-mono">
                   <span>godcandle.trade</span>
                   <span>Ref: {referralCode}</span>
                 </div>
@@ -790,7 +790,7 @@ export function ShareModal({
 
             {/* RIGHT HALF (50%): Dedicated Claude Monet Art Panel */}
             <div
-              className="relative hidden sm:block sm:w-1/2 h-full overflow-hidden select-none bg-[#0D1117]"
+              className="relative hidden sm:block sm:w-1/2 h-full overflow-hidden select-none bg-white"
               aria-label="Claude Monet, 1885 · The Cliffs at Étretat"
               title="Claude Monet, 1885 · The Cliffs at Étretat"
             >
@@ -805,34 +805,34 @@ export function ShareModal({
               <div className="absolute inset-0 bg-gradient-to-tr from-[#CDC3F0]/25 via-[#FFDAC8]/20 to-[#A0D4CA]/25 pointer-events-none" />
 
               {/* Subtle Edge Vignette */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-black/20 pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10 pointer-events-none" />
 
               {/* Content Overlay */}
               <div className="relative z-10 h-full w-full p-6 sm:p-7 flex flex-col justify-between">
                 {/* Top Row: Network Badge */}
                 <div className="flex justify-start items-center gap-2 pr-12">
-                  <div className="rounded-full bg-[#0D1117]/80 backdrop-blur-md border border-white/20 px-2.5 py-1 flex items-center gap-1.5 text-[10px] font-mono text-white shadow-xs">
+                  <div className="rounded-full bg-white/90 backdrop-blur-md border border-border/80 px-2.5 py-1 flex items-center gap-1.5 text-[10px] font-mono text-[#0A0A0A] shadow-xs">
                     <span className="size-1.5 rounded-full bg-[#00D964] animate-pulse" />
-                    <span>Mainnet Live</span>
+                    <span className="font-semibold">Mainnet Live</span>
                   </div>
                 </div>
 
-                {/* Bottom Floating Plaque (Quantin dark glass aesthetic) */}
+                {/* Bottom Floating Plaque */}
                 <div
-                  className="rounded-2xl bg-[#0D1117]/85 backdrop-blur-md p-4 border border-white/20 shadow-lg text-white"
+                  className="rounded-2xl bg-white/90 backdrop-blur-md p-4 border border-border shadow-lg text-[#0A0A0A]"
                   aria-label="Claude Monet, 1885 · The Cliffs at Étretat"
                 >
-                  <p className="font-sans text-lg sm:text-xl font-bold leading-tight text-white">
+                  <p className="font-sans text-lg sm:text-xl font-bold leading-tight text-[#0A0A0A]">
                     Perps. Options. Up to 1000x.
                   </p>
-                  <p className="text-xs font-medium text-white/80 mt-0.5">
+                  <p className="text-xs font-medium text-muted-foreground mt-0.5">
                     One terminal. Institutional-grade liquidity.
                   </p>
-                  <div className="mt-2.5 flex items-center justify-between text-[10px] text-white/70 font-mono">
-                    <span className="rounded-full bg-gradient-to-r from-[#CDC3F0]/30 via-[#FFDAC8]/30 to-[#A0D4CA]/30 px-2 py-0.5 font-semibold text-white border border-white/20">
+                  <div className="mt-2.5 flex items-center justify-between text-[10px] text-muted-foreground font-mono">
+                    <span className="rounded-full bg-gradient-to-r from-[#CDC3F0]/40 via-[#FFDAC8]/40 to-[#A0D4CA]/40 px-2 py-0.5 font-semibold text-foreground border border-border">
                       Claude Monet, 1885
                     </span>
-                    <span className="italic font-sans text-white/90">The Cliffs at Étretat</span>
+                    <span className="italic font-sans text-foreground">The Cliffs at Étretat</span>
                   </div>
                 </div>
               </div>
@@ -856,17 +856,17 @@ export function ShareModal({
             <div
               className={cn(
                 "w-11 h-6 rounded-full transition-colors p-0.5 relative",
-                hideDollar ? "bg-[#30363D]" : "bg-white/20 hover:bg-white/30"
+                hideDollar ? "bg-muted-foreground" : "bg-secondary border border-border"
               )}
             >
               <div
                 className={cn(
-                  "size-5 rounded-full bg-white transition-transform duration-200 shadow-sm",
-                  hideDollar ? "translate-x-5" : "translate-x-0"
+                  "size-5 rounded-full bg-foreground transition-transform duration-200 shadow-xs",
+                  hideDollar ? "translate-x-5 bg-white" : "translate-x-0"
                 )}
               />
             </div>
-            <span className="text-xs font-mono text-[#8B949E] hover:text-white transition-colors">
+            <span className="text-xs font-mono text-muted-foreground hover:text-foreground transition-colors">
               Hide amounts
             </span>
           </label>
@@ -877,16 +877,16 @@ export function ShareModal({
               type="button"
               onClick={handleCopyImage}
               disabled={isExporting}
-              className="h-10 px-4 rounded-xl border border-[#30363D] bg-[#161B22] hover:bg-[#21262D] text-white text-xs font-mono font-medium transition-all flex items-center gap-2 cursor-pointer shadow-md disabled:opacity-50"
+              className="h-10 px-4 rounded-xl border border-border bg-white hover:bg-secondary text-foreground text-xs font-mono font-medium transition-all flex items-center gap-2 cursor-pointer shadow-xs disabled:opacity-50"
             >
-              {copied === "image" ? <Check className="size-4 text-[#00D964]" /> : <Copy className="size-4 text-[#8B949E]" />}
+              {copied === "image" ? <Check className="size-4 text-[#06964A]" /> : <Copy className="size-4 text-muted-foreground" />}
               <span>{copied === "image" ? "Image Copied!" : "Copy Image"}</span>
             </button>
 
             <button
               type="button"
               onClick={shareToX}
-              className="h-10 px-4 rounded-xl border border-white/20 bg-white hover:bg-white/90 text-black text-xs font-mono font-bold transition-all flex items-center gap-2 cursor-pointer shadow-md"
+              className="h-10 px-4 rounded-xl border border-border bg-white hover:bg-secondary text-foreground text-xs font-mono font-medium transition-all flex items-center gap-2 cursor-pointer shadow-xs"
             >
               <svg className="size-3.5 fill-current" viewBox="0 0 24 24">
                 <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 24.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
@@ -898,10 +898,10 @@ export function ShareModal({
               type="button"
               onClick={handleDownload}
               disabled={isExporting}
-              className="h-10 px-4 rounded-xl bg-[#00D964] hover:bg-[#00BF57] text-[#080B0F] text-xs font-mono font-bold transition-all flex items-center gap-2 cursor-pointer shadow-[0_0_20px_rgba(0,217,100,0.25)] disabled:opacity-50"
+              className="h-10 px-5 rounded-xl bg-foreground hover:opacity-90 text-background text-xs font-mono font-bold transition-all flex items-center gap-2 cursor-pointer shadow-xs active:scale-[0.98] disabled:opacity-50"
             >
-              <Download className="size-4 stroke-[2.5]" />
-              <span>Download PNG</span>
+              <Download className="size-4 text-background" />
+              <span>{isExporting ? "Rendering PNG..." : "Download PNG"}</span>
             </button>
           </div>
         </div>

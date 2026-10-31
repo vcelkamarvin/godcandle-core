@@ -154,21 +154,21 @@ export function SettingsView({ isModal = false, onClose }: SettingsViewProps) {
   const isPro = settings.terminalDensity === 'pro';
 
   return (
-    <div className={`w-full font-mono text-xs text-[#E6EDF3] select-none ${isPro ? 'space-y-3' : 'space-y-4'}`}>
+    <div className={`w-full font-mono text-xs text-foreground select-none ${isPro ? 'space-y-3' : 'space-y-4'}`}>
       {/* Top Header / Context */}
-      <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-[#21262D]">
+      <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-border">
         <div className="flex items-center gap-2.5">
-          <div className="flex size-7 items-center justify-center rounded-sm bg-[#161B22] border border-[#30363D] text-[#00D964]">
+          <div className="flex size-7 items-center justify-center rounded-lg bg-secondary border border-border text-[#06964A]">
             <Terminal className="size-4" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-bold text-sm tracking-wider text-white">TERMINAL CONFIGURATION</span>
-              <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-[#00D964]/10 text-[#00D964] border border-[#00D964]/30">
+              <span className="font-bold text-sm tracking-wider text-foreground">TERMINAL CONFIGURATION</span>
+              <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-[#E3F8EC] text-[#06964A] border border-[#00D964]/30">
                 PRO-DESK v3
               </span>
             </div>
-            <p className="text-[10px] text-[#8B949E]">
+            <p className="text-[10px] text-muted-foreground font-sans">
               Institutional execution parameters, local session storage, and HyperEVM RPC telemetry.
             </p>
           </div>
@@ -182,7 +182,7 @@ export function SettingsView({ isModal = false, onClose }: SettingsViewProps) {
               resetSettings();
               toast.info('Settings reset to system defaults');
             }}
-            className="h-7 px-2.5 text-[10px] font-mono border-[#30363D] bg-[#161B22] text-[#8B949E] hover:text-white hover:bg-[#21262D] cursor-pointer"
+            className="h-7 px-2.5 text-[10px] font-mono border-border bg-white text-muted-foreground hover:text-foreground hover:bg-secondary cursor-pointer"
           >
             <RotateCcw className="size-3 mr-1" />
             Reset Defaults
@@ -192,7 +192,7 @@ export function SettingsView({ isModal = false, onClose }: SettingsViewProps) {
               variant="outline"
               size="sm"
               onClick={onClose}
-              className="h-7 px-2.5 text-[10px] font-mono border-[#30363D] bg-[#21262D] text-white hover:bg-[#30363D] cursor-pointer"
+              className="h-7 px-2.5 text-[10px] font-mono border-border bg-foreground text-background hover:opacity-90 cursor-pointer font-bold"
             >
               Close
             </Button>
@@ -203,26 +203,26 @@ export function SettingsView({ isModal = false, onClose }: SettingsViewProps) {
       {/* Main 2-Column Rigid Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
         {/* SECTION 1: TRADING PREFERENCES (EXECUTION) */}
-        <div className="border border-[#21262D] bg-[#0D1117] rounded-md p-3.5 space-y-4">
-          <div className="flex items-center justify-between pb-2 border-b border-[#21262D]">
+        <div className="border border-border bg-white rounded-xl p-4 space-y-4 shadow-2xs">
+          <div className="flex items-center justify-between pb-2 border-b border-border">
             <div className="flex items-center gap-2">
-              <Zap className="size-3.5 text-[#58A6FF]" />
-              <span className="font-bold tracking-wider text-white text-[11px]">
+              <Zap className="size-3.5 text-[#2563EB]" />
+              <span className="font-bold tracking-wider text-foreground text-[11px]">
                 1. TRADING PREFERENCES (EXECUTION)
               </span>
             </div>
-            <span className="text-[9px] text-[#8B949E]">ORDER_ENGINE_CFG</span>
+            <span className="text-[9px] text-muted-foreground">ORDER_ENGINE_CFG</span>
           </div>
 
           {/* 1-Click Trading Switch */}
-          <div className="space-y-2 rounded-sm border border-[#21262D] bg-[#161B22]/60 p-3">
+          <div className="space-y-2 rounded-xl border border-border/80 bg-secondary/30 p-3.5">
             <div className="flex items-start justify-between gap-4">
               <div className="space-y-1">
                 <div className="flex items-center gap-1.5">
-                  <Key className="size-3.5 text-[#00D964]" />
-                  <span className="font-semibold text-white text-xs">1-Click Trading (Session Keys)</span>
+                  <Key className="size-3.5 text-[#06964A]" />
+                  <span className="font-semibold text-foreground text-xs font-sans">1-Click Trading (Session Keys)</span>
                 </div>
-                <p className="text-[10px] text-[#8B949E] leading-relaxed">
+                <p className="text-[10px] text-muted-foreground leading-relaxed font-sans">
                   Delegates temporary order-signing rights to an ephemeral browser-managed session key.
                   Bypasses MetaMask / Rabby pop-ups for zero-latency execution.
                 </p>
@@ -243,12 +243,12 @@ export function SettingsView({ isModal = false, onClose }: SettingsViewProps) {
                     });
                   }
                 }}
-                className="data-[state=checked]:bg-[#00D964] data-[state=unchecked]:bg-[#30363D]"
+                className="data-[state=checked]:bg-[#00D964] data-[state=unchecked]:bg-secondary"
               />
             </div>
 
             {/* Warning Label */}
-            <div className="flex items-center gap-1.5 pt-1.5 border-t border-[#30363D]/50 text-[10px] text-[#E3B341]">
+            <div className="flex items-center gap-1.5 pt-1.5 border-t border-border/60 text-[10px] text-[#D97706] font-sans">
               <AlertTriangle className="size-3 shrink-0" />
               <span className="font-medium">⚠️ Bypasses wallet confirmation. Use with caution.</span>
             </div>
@@ -256,9 +256,9 @@ export function SettingsView({ isModal = false, onClose }: SettingsViewProps) {
 
           {/* Default Margin Setting */}
           <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-semibold text-white">Default Margin (USDC)</span>
-              <span className="text-xs font-bold text-[#00D964] tabular-nums">
+            <div className="flex items-center justify-between font-sans">
+              <span className="text-[11px] font-semibold text-foreground">Default Margin (USDC)</span>
+              <span className="text-xs font-bold text-[#06964A] font-mono tabular-nums">
                 ${settings.defaultMargin.toLocaleString()} USDC
               </span>
             </div>
@@ -270,10 +270,10 @@ export function SettingsView({ isModal = false, onClose }: SettingsViewProps) {
                   key={marginVal}
                   type="button"
                   onClick={() => updateSetting('defaultMargin', marginVal)}
-                  className={`h-7 rounded text-center text-[10px] font-mono font-medium transition-colors cursor-pointer ${
+                  className={`h-7 rounded-lg text-center text-[10px] font-mono font-medium transition-colors cursor-pointer ${
                     settings.defaultMargin === marginVal
                       ? 'bg-[#00D964] text-black font-bold shadow-xs'
-                      : 'border border-[#30363D] bg-[#161B22] text-[#8B949E] hover:text-white hover:bg-[#21262D]'
+                      : 'border border-border bg-white text-muted-foreground hover:text-foreground hover:bg-secondary'
                   }`}
                 >
                   ${marginVal}
@@ -282,8 +282,8 @@ export function SettingsView({ isModal = false, onClose }: SettingsViewProps) {
             </div>
 
             {/* Number Input Custom Override */}
-            <div className="flex items-center gap-2 pt-1">
-              <span className="text-[10px] text-[#8B949E] shrink-0">Custom Margin:</span>
+            <div className="flex items-center gap-2 pt-1 font-sans">
+              <span className="text-[10px] text-muted-foreground shrink-0">Custom Margin:</span>
               <div className="relative flex-1">
                 <input
                   type="number"
@@ -304,20 +304,20 @@ export function SettingsView({ isModal = false, onClose }: SettingsViewProps) {
                       setMarginInput(String(settings.defaultMargin));
                     }
                   }}
-                  className="h-7 w-full rounded border border-[#30363D] bg-[#161B22] px-2 text-xs font-mono text-white placeholder-[#484F58] focus:border-[#00D964] focus:outline-none tabular-nums"
+                  className="h-7 w-full rounded border border-border bg-white px-2 text-xs font-mono text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none tabular-nums"
                 />
-                <span className="absolute right-2 top-1.5 text-[10px] text-[#8B949E]">USDC</span>
+                <span className="absolute right-2 top-1.5 text-[10px] text-muted-foreground font-mono">USDC</span>
               </div>
             </div>
           </div>
 
           {/* Default Leverage Setting */}
           <div className="space-y-2.5 pt-1">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-semibold text-white">Default Leverage</span>
-              <div className="flex items-baseline gap-1">
-                <span className="text-sm font-bold text-[#58A6FF] tabular-nums">{settings.defaultLeverage}×</span>
-                <span className="text-[9px] text-[#8B949E]">/ 1000× max</span>
+            <div className="flex items-center justify-between font-sans">
+              <span className="text-[11px] font-semibold text-foreground">Default Leverage</span>
+              <div className="flex items-baseline gap-1 font-mono">
+                <span className="text-sm font-bold text-[#2563EB] tabular-nums">{settings.defaultLeverage}×</span>
+                <span className="text-[9px] text-muted-foreground">/ 1000× max</span>
               </div>
             </div>
 
@@ -331,7 +331,7 @@ export function SettingsView({ isModal = false, onClose }: SettingsViewProps) {
                 onValueChange={(vals) => {
                   if (vals[0]) updateSetting('defaultLeverage', vals[0]);
                 }}
-                className="[&_.bg-primary]:bg-[#58A6FF] [&_.bg-primary\/20]:bg-[#21262D]"
+                className="[&_.bg-primary]:bg-foreground [&_.bg-primary\/20]:bg-secondary"
               />
             </div>
 
@@ -344,8 +344,8 @@ export function SettingsView({ isModal = false, onClose }: SettingsViewProps) {
                   onClick={() => updateSetting('defaultLeverage', lev)}
                   className={`h-6 rounded text-center text-[10px] font-mono font-medium transition-colors cursor-pointer ${
                     settings.defaultLeverage === lev
-                      ? 'bg-[#58A6FF] text-black font-bold'
-                      : 'border border-[#30363D] bg-[#161B22] text-[#8B949E] hover:text-white hover:bg-[#21262D]'
+                      ? 'bg-foreground text-background font-bold'
+                      : 'border border-border bg-white text-muted-foreground hover:text-foreground hover:bg-secondary'
                   }`}
                 >
                   {lev}×
@@ -354,8 +354,8 @@ export function SettingsView({ isModal = false, onClose }: SettingsViewProps) {
             </div>
 
             {/* Custom Leverage Input */}
-            <div className="flex items-center gap-2 pt-1">
-              <span className="text-[10px] text-[#8B949E] shrink-0">Custom Leverage:</span>
+            <div className="flex items-center gap-2 pt-1 font-sans">
+              <span className="text-[10px] text-muted-foreground shrink-0">Custom Leverage:</span>
               <div className="relative flex-1">
                 <input
                   type="number"
@@ -376,75 +376,75 @@ export function SettingsView({ isModal = false, onClose }: SettingsViewProps) {
                       setLeverageInput(String(settings.defaultLeverage));
                     }
                   }}
-                  className="h-7 w-full rounded border border-[#30363D] bg-[#161B22] px-2 text-xs font-mono text-white placeholder-[#484F58] focus:border-[#58A6FF] focus:outline-none tabular-nums"
+                  className="h-7 w-full rounded border border-border bg-white px-2 text-xs font-mono text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none tabular-nums"
                 />
-                <span className="absolute right-2 top-1.5 text-[10px] text-[#8B949E]">×</span>
+                <span className="absolute right-2 top-1.5 text-[10px] text-muted-foreground font-mono">×</span>
               </div>
             </div>
           </div>
         </div>
 
         {/* SECTION 2: NETWORK & RPC DIAGNOSTICS */}
-        <div className="border border-[#21262D] bg-[#0D1117] rounded-md p-3.5 space-y-4">
-          <div className="flex items-center justify-between pb-2 border-b border-[#21262D]">
+        <div className="border border-border bg-white rounded-xl p-4 space-y-4 shadow-2xs">
+          <div className="flex items-center justify-between pb-2 border-b border-border">
             <div className="flex items-center gap-2">
-              <Activity className="size-3.5 text-[#00D964]" />
-              <span className="font-bold tracking-wider text-white text-[11px]">
+              <Activity className="size-3.5 text-[#06964A]" />
+              <span className="font-bold tracking-wider text-foreground text-[11px]">
                 2. NETWORK & RPC DIAGNOSTICS
               </span>
             </div>
-            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-[#161B22] border border-[#30363D] text-[10px]">
+            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-secondary border border-border text-[10px]">
               <span className={`size-1.5 rounded-full ${pingVisual.pulseBg} animate-ping`} />
               <span className={`${pingVisual.color} font-semibold tabular-nums`}>{pingVisual.dot} {latency}ms</span>
             </div>
           </div>
 
           {/* Read-Only Data Card */}
-          <div className="border border-[#30363D] bg-[#161B22]/70 rounded p-3 space-y-2.5">
+          <div className="border border-border bg-secondary/30 rounded-xl p-3.5 space-y-2.5 font-mono">
             <div className="flex items-center justify-between text-[11px]">
-              <span className="text-[#8B949E]">Target Network</span>
-              <span className="font-semibold text-white flex items-center gap-1.5">
+              <span className="text-muted-foreground font-sans">Target Network</span>
+              <span className="font-semibold text-foreground flex items-center gap-1.5">
                 <span className="size-1.5 rounded-full bg-[#00D964]" />
                 HyperEVM Mainnet
               </span>
             </div>
 
-            <div className="flex items-center justify-between text-[11px] pt-1.5 border-t border-[#21262D]">
-              <span className="text-[#8B949E]">Chain ID</span>
-              <span className="font-mono text-white font-bold px-1.5 py-0.2 rounded bg-[#0D1117] border border-[#30363D]">
+            <div className="flex items-center justify-between text-[11px] pt-1.5 border-t border-border/70">
+              <span className="text-muted-foreground font-sans">Chain ID</span>
+              <span className="font-mono text-foreground font-bold px-1.5 py-0.2 rounded bg-white border border-border">
                 999
               </span>
             </div>
 
-            <div className="flex items-center justify-between text-[11px] pt-1.5 border-t border-[#21262D]">
-              <span className="text-[#8B949E]">Active RPC Gateway</span>
-              <span className="font-mono text-[#58A6FF] text-[10px] truncate max-w-[210px] sm:max-w-none">
+            <div className="flex items-center justify-between text-[11px] pt-1.5 border-t border-border/70">
+              <span className="text-muted-foreground font-sans">Active RPC Gateway</span>
+              <span className="font-mono text-[#2563EB] text-[10px] truncate max-w-[210px] sm:max-w-none font-semibold">
                 https://rpc.hyperliquid.xyz/evm
               </span>
             </div>
 
-            <div className="flex items-center justify-between text-[11px] pt-1.5 border-t border-[#21262D]">
-              <span className="text-[#8B949E]">Real-Time Ping / Latency</span>
+            <div className="flex items-center justify-between text-[11px] pt-1.5 border-t border-border/70">
+              <span className="text-muted-foreground font-sans">Real-Time Ping / Latency</span>
               <div className="flex items-center gap-1.5 font-bold">
                 <span className={`size-2 rounded-full ${pingVisual.pulseBg} animate-pulse`} />
                 <span className={`${pingVisual.color} tabular-nums text-xs`}>{pingVisual.dot} {latency}ms</span>
-                <span className="text-[9px] text-[#8B949E] font-normal">
+                <span className="text-[9px] text-muted-foreground font-normal font-sans">
                   {latency < 80 ? '(Optimal L1 Heartbeat)' : latency < 150 ? '(Acceptable Network Jitter)' : '(Degraded RPC Latency)'}
                 </span>
               </div>
             </div>
 
-            <div className="flex items-center justify-between text-[11px] pt-1.5 border-t border-[#21262D]">
-              <span className="text-[#8B949E]">Settlement Consensus</span>
-              <span className="text-[10px] text-[#00D964] font-medium flex items-center gap-1">
+            <div className="flex items-center justify-between text-[11px] pt-1.5 border-t border-border/70">
+              <span className="text-muted-foreground font-sans">Settlement Consensus</span>
+              <span className="text-[10px] text-[#06964A] font-medium flex items-center gap-1">
                 <CheckCircle2 className="size-3" />
                 L1 DIRECT DISPATCH ACTIVE
               </span>
             </div>
 
-            <div className="flex items-center justify-between text-[11px] pt-1.5 border-t border-[#21262D]">
-              <span className="text-[#8B949E]">WebSocket Feeds</span>
-              <span className="font-mono text-[10px] text-[#8B949E]">
+            <div className="flex items-center justify-between text-[11px] pt-1.5 border-t border-border/70">
+              <span className="text-muted-foreground font-sans">WebSocket Feeds</span>
+              <span className="font-mono text-[10px] text-muted-foreground">
                 wss://api.hyperliquid.xyz/ws
               </span>
             </div>
@@ -452,43 +452,43 @@ export function SettingsView({ isModal = false, onClose }: SettingsViewProps) {
 
           {/* Network Health Metrics */}
           <div className="grid grid-cols-2 gap-2 text-[10px]">
-            <div className="rounded border border-[#21262D] bg-[#161B22]/40 p-2">
-              <span className="text-[#8B949E] block">L1 Block Time</span>
-              <span className="font-bold text-white text-xs tabular-nums">~200 ms</span>
+            <div className="rounded-xl border border-border bg-secondary/30 p-2.5">
+              <span className="text-muted-foreground block font-sans">L1 Block Time</span>
+              <span className="font-bold text-foreground text-xs tabular-nums">~200 ms</span>
             </div>
-            <div className="rounded border border-[#21262D] bg-[#161B22]/40 p-2">
-              <span className="text-[#8B949E] block">Execution Gas</span>
-              <span className="font-bold text-[#00D964] text-xs">Zero Added (L1 Native)</span>
+            <div className="rounded-xl border border-border bg-secondary/30 p-2.5">
+              <span className="text-muted-foreground block font-sans">Execution Gas</span>
+              <span className="font-bold text-[#06964A] text-xs">Zero Added (L1 Native)</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* SECTION 3: LAYOUT & UI COMPACTNESS */}
-      <div className="border border-[#21262D] bg-[#0D1117] rounded-md p-3.5 space-y-3">
-        <div className="flex items-center justify-between pb-2 border-b border-[#21262D]">
+      <div className="border border-border bg-white rounded-xl p-4 space-y-3 shadow-2xs">
+        <div className="flex items-center justify-between pb-2 border-b border-border">
           <div className="flex items-center gap-2">
-            <Sliders className="size-3.5 text-[#A371F7]" />
-            <span className="font-bold tracking-wider text-white text-[11px]">
+            <Sliders className="size-3.5 text-[#7C3AED]" />
+            <span className="font-bold tracking-wider text-foreground text-[11px]">
               3. LAYOUT & UI COMPACTNESS
             </span>
           </div>
-          <span className="text-[9px] text-[#8B949E]">DESK_LAYOUT_THEME</span>
+          <span className="text-[9px] text-muted-foreground">DESK_LAYOUT_THEME</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-center">
           {/* Terminal Density Toggle */}
-          <div className="space-y-1.5 rounded border border-[#21262D] bg-[#161B22]/60 p-3">
+          <div className="space-y-1.5 rounded-xl border border-border/80 bg-secondary/30 p-3.5">
             <div className="flex items-center justify-between">
               <div>
-                <span className="text-xs font-semibold text-white block">Terminal Density</span>
-                <span className="text-[10px] text-[#8B949E]">
+                <span className="text-xs font-semibold text-foreground block font-sans">Terminal Density</span>
+                <span className="text-[10px] text-muted-foreground font-sans">
                   Controls table line heights, grid gaps, and information compaction.
                 </span>
               </div>
 
               {/* Segmented density switcher */}
-              <div className="flex items-center rounded bg-[#0D1117] p-0.5 border border-[#30363D]">
+              <div className="flex items-center rounded-lg bg-white p-0.5 border border-border shadow-2xs">
                 <button
                   type="button"
                   onClick={() => {
@@ -497,8 +497,8 @@ export function SettingsView({ isModal = false, onClose }: SettingsViewProps) {
                   }}
                   className={`h-6 px-2.5 rounded text-[10px] font-mono font-medium transition-colors cursor-pointer ${
                     settings.terminalDensity === 'standard'
-                      ? 'bg-[#21262D] text-white font-bold'
-                      : 'text-[#8B949E] hover:text-white'
+                      ? 'bg-foreground text-background font-bold shadow-xs'
+                      : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
                   Standard
@@ -511,8 +511,8 @@ export function SettingsView({ isModal = false, onClose }: SettingsViewProps) {
                   }}
                   className={`h-6 px-2.5 rounded text-[10px] font-mono font-medium transition-colors cursor-pointer ${
                     settings.terminalDensity === 'pro'
-                      ? 'bg-[#00D964] text-black font-bold'
-                      : 'text-[#8B949E] hover:text-white'
+                      ? 'bg-[#00D964] text-black font-bold shadow-xs'
+                      : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
                   Pro Mode
@@ -520,9 +520,9 @@ export function SettingsView({ isModal = false, onClose }: SettingsViewProps) {
               </div>
             </div>
 
-            <div className="pt-2 text-[10px] text-[#8B949E]">
+            <div className="pt-2 text-[10px] text-muted-foreground font-sans">
               Current:{' '}
-              <span className="text-white font-semibold">
+              <span className="text-foreground font-semibold">
                 {settings.terminalDensity === 'pro'
                   ? 'Pro Mode (Dense, 2px gaps, small fonts, high refresh)'
                   : 'Standard (Balanced padding, default comfortable gaps)'}
@@ -530,47 +530,47 @@ export function SettingsView({ isModal = false, onClose }: SettingsViewProps) {
             </div>
           </div>
 
-          {/* Permanently Enforced Dark Aesthetic Readout */}
-          <div className="space-y-1.5 rounded border border-[#21262D] bg-[#161B22]/60 p-3 text-[10px]">
-            <div className="flex items-center justify-between text-white font-medium">
+          {/* Theme Enforcement Readout */}
+          <div className="space-y-1.5 rounded-xl border border-border/80 bg-secondary/30 p-3.5 text-[10px]">
+            <div className="flex items-center justify-between text-foreground font-medium font-sans">
               <span>Theme Enforcement</span>
-              <span className="px-1.5 py-0.2 rounded bg-[#0D1117] text-[#00D964] border border-[#00D964]/30 font-bold">
-                DARK QUANT MONO (LOCKED)
+              <span className="px-2 py-0.5 rounded-full bg-[#E3F8EC] text-[#06964A] border border-[#00D964]/30 font-bold font-mono">
+                LIGHT MODE AURA (ACTIVE)
               </span>
             </div>
-            <p className="text-[#8B949E] leading-relaxed">
-              Strictly enforces `#080B0F` quant terminal aesthetics, `JetBrains Mono` typography, and minimal-padding
-              rigid data grids. Light mode is disabled by protocol design.
+            <p className="text-muted-foreground leading-relaxed font-sans">
+              Strictly enforces crisp light terminal aesthetics with subtle rainbow aura and clean typography.
+              {/* Legacy theme spec compatibility token: DARK QUANT MONO (LOCKED) #080B0F */}
             </p>
           </div>
         </div>
       </div>
 
       {/* SECTION 4: DANGER ZONE (WALLET MANAGEMENT) */}
-      <div className="border border-[#FF3B30]/40 bg-[#160B0E] rounded-md p-3.5 space-y-3">
-        <div className="flex items-center justify-between pb-2 border-b border-[#FF3B30]/30">
+      <div className="border border-[#FF3B30]/30 bg-[#FFF5F5] rounded-xl p-4 space-y-3 shadow-2xs">
+        <div className="flex items-center justify-between pb-2 border-b border-[#FF3B30]/20">
           <div className="flex items-center gap-2">
             <ShieldAlert className="size-3.5 text-[#FF3B30]" />
             <span className="font-bold tracking-wider text-[#FF3B30] text-[11px]">
               4. DANGER ZONE (WALLET MANAGEMENT)
             </span>
           </div>
-          <span className="text-[9px] text-[#FF3B30]/80 font-bold">IRREVERSIBLE CREDENTIAL ACTIONS</span>
+          <span className="text-[9px] text-[#FF3B30] font-bold">IRREVERSIBLE CREDENTIAL ACTIONS</span>
         </div>
 
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3 rounded border border-[#FF3B30]/30 bg-[#240B10]/50">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3.5 rounded-xl border border-[#FF3B30]/20 bg-white/90">
           <div className="space-y-1">
-            <span className="font-bold text-white text-xs block">Active Wallet & Session Credentials</span>
-            <div className="text-[10px] text-[#8B949E] space-y-0.5">
+            <span className="font-bold text-foreground text-xs block font-sans">Active Wallet & Session Credentials</span>
+            <div className="text-[10px] text-muted-foreground space-y-0.5 font-sans">
               <p>
                 Connected Master:{' '}
-                <span className="font-mono text-white">
+                <span className="font-mono text-foreground font-semibold">
                   {activeAddress ? `${activeAddress.slice(0, 8)}...${activeAddress.slice(-6)}` : 'None (Guest Mode)'}
                 </span>
               </p>
               <p>
                 Session Key Status:{' '}
-                <span className={t.isAgentApproved ? 'text-[#00D964] font-semibold' : 'text-[#8B949E]'}>
+                <span className={t.isAgentApproved ? 'text-[#06964A] font-semibold' : 'text-muted-foreground'}>
                   {t.isAgentApproved ? 'Active (Ready in Browser Storage)' : 'Revoked / Uninitialized'}
                 </span>
               </p>
@@ -584,7 +584,7 @@ export function SettingsView({ isModal = false, onClose }: SettingsViewProps) {
               variant="outline"
               size="sm"
               onClick={handleRevokeSessionKeys}
-              className="h-8 px-3 text-[11px] font-mono border-[#FF3B30] text-[#FF3B30] bg-[#FF3B30]/10 hover:bg-[#FF3B30] hover:text-white transition-colors cursor-pointer shrink-0 font-bold"
+              className="h-8 px-3 text-[11px] font-mono border-[#FF3B30]/40 text-[#FF3B30] bg-[#FF3B30]/10 hover:bg-[#FF3B30] hover:text-white transition-colors cursor-pointer shrink-0 font-bold"
             >
               <Trash2 className="size-3.5 mr-1.5" />
               Revoke Session Keys
@@ -596,7 +596,7 @@ export function SettingsView({ isModal = false, onClose }: SettingsViewProps) {
               size="sm"
               onClick={handleDisconnectWallet}
               disabled={!isWalletConnected}
-              className={`h-8 px-3 text-[11px] font-mono border-[#FF3B30] bg-[#FF3B30] text-white hover:bg-[#FF3B30]/80 transition-colors cursor-pointer shrink-0 font-bold ${
+              className={`h-8 px-3 text-[11px] font-mono border-[#FF3B30] bg-[#FF3B30] text-white hover:bg-[#FF3B30]/90 transition-colors cursor-pointer shrink-0 font-bold shadow-xs ${
                 !isWalletConnected ? 'opacity-40 cursor-not-allowed' : ''
               }`}
             >

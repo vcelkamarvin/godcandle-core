@@ -89,46 +89,37 @@ export function Header() {
         {/* Main Navbar */}
         <div className="flex h-14 items-center justify-between gap-4 px-4 sm:px-6">
           {/* Left Cluster: Logo & Primary Left Navigation */}
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-5 lg:gap-6">
             <Link
               to="/"
-              className={`group flex shrink-0 items-center gap-2 ${isLanding ? "font-mono" : "font-sans"}`}
+              className="group flex shrink-0 items-center gap-2 font-sans"
               aria-label="godcandle home"
             >
-              <span
-                className={`text-[22px] font-bold tracking-tight transition-colors ${isLanding ? "text-white group-hover:text-[#00D964]" : "text-foreground font-normal group-hover:opacity-85"}`}
-              >
+              <span className="text-[20px] font-bold tracking-tight text-foreground transition-opacity group-hover:opacity-85">
                 godcandle
               </span>
-              {isLanding ? (
-                <span className="hidden rounded-full border border-[#30363D] bg-[#161B22] px-2 py-0.5 text-[9px] font-semibold text-[#58A6FF] sm:inline-flex items-center gap-1 font-mono">
-                  <Sparkles className="size-2.5 text-[#00D964]" />
-                  BUILDER CODE: GODCANDLE
-                </span>
-              ) : (
-                <span className="hidden rounded-full border border-border bg-gradient-to-r from-[#CDC3F0]/40 via-[#FFDAC8]/40 to-[#A0D4CA]/40 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-foreground sm:inline-flex items-center gap-1">
-                  <Sparkles className="size-2.5 text-[#0A0A0A]/70" />
-                  v3 Light
-                </span>
-              )}
+              <span className="hidden rounded-full border border-border bg-gradient-to-r from-[#CDC3F0]/40 via-[#FFDAC8]/40 to-[#A0D4CA]/40 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-foreground sm:inline-flex items-center gap-1 font-mono">
+                <Sparkles className="size-2.5 text-[#0A0A0A]/70" />
+                Light
+              </span>
             </Link>
 
-            {/* Left Nav: Products [Perps | 1000x], Trade (Live), Roadmap, Docs, Analysis, Leaderboard */}
-            <nav aria-label="Main navigation" className="hidden md:flex items-center gap-2">
+            {/* Left Nav: Products [Perps | 1000x], Trade (Live), Studios [Goal | Boost], Analysis, Leaderboard, Docs */}
+            <nav aria-label="Main navigation" className="hidden md:flex items-center gap-1.5">
               {/* Product Switch Segment: Perps | 1000x */}
-              <div className="flex items-center p-0.5 rounded-full bg-secondary border border-border/80 shadow-2xs">
+              <div className="flex items-center p-0.5 rounded-full bg-secondary/80 border border-border/80 shadow-2xs">
                 <Link
                   to="/"
                   onClick={() => t.setMode("perps")}
                   className={
-                    t.mode === "perps"
-                      ? "pill pill-ink h-8 px-3.5 text-xs font-semibold shadow-xs"
-                      : "pill h-8 px-3.5 text-xs text-muted-foreground hover:text-foreground hover:bg-white/60 transition-colors"
+                    pathname === "/" && t.mode === "perps"
+                      ? "pill pill-ink h-7.5 px-3 text-xs font-semibold shadow-xs"
+                      : "pill h-7.5 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-white/60 transition-colors"
                   }
                 >
                   <span className="flex items-center gap-1.5">
                     <span>Perps</span>
-                    <span className="rounded bg-[#E3F8EC] px-1.5 py-0.2 text-[8px] font-bold text-[#06964A]">
+                    <span className="rounded bg-[#E3F8EC] px-1 py-0.2 text-[8px] font-bold text-[#06964A]">
                       LIVE
                     </span>
                   </span>
@@ -137,18 +128,18 @@ export function Header() {
                   to="/trade"
                   onClick={() => t.setMode("paper1000x")}
                   className={
-                    t.mode === "paper1000x"
-                      ? "pill pill-ink h-8 px-3.5 text-xs font-semibold shadow-xs"
-                      : "pill h-8 px-3.5 text-xs text-muted-foreground hover:text-foreground hover:bg-white/60 transition-colors"
+                    pathname === "/trade" && t.mode === "paper1000x"
+                      ? "pill pill-ink h-7.5 px-3 text-xs font-semibold shadow-xs"
+                      : "pill h-7.5 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-white/60 transition-colors"
                   }
                 >
                   <span className="flex items-center gap-1.5">
                     <span>1000x</span>
-                    <span className="rounded bg-[#FFECEA] px-1.5 py-0.2 text-[9px] font-bold text-[#FF3B30]">
+                    <span className="rounded bg-[#FFECEA] px-1 py-0.2 text-[8px] font-bold text-[#FF3B30]">
                       MAX
                     </span>
-                    <span className="rounded bg-[#FFF4E5] px-1.5 py-0.2 text-[8px] font-bold text-[#D97706]">
-                      TEST · PAPER
+                    <span className="rounded bg-[#FFF4E5] px-1 py-0.2 text-[8px] font-bold text-[#D97706]">
+                      TEST
                     </span>
                   </span>
                 </Link>
@@ -158,11 +149,11 @@ export function Header() {
               <Link
                 to="/trade"
                 activeProps={{
-                  className: "pill pill-ink h-8 px-3 text-xs font-semibold shadow-xs",
+                  className: "pill pill-ink h-7.5 px-3 text-xs font-semibold shadow-xs",
                 }}
                 inactiveProps={{
                   className:
-                    "pill h-8 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors",
+                    "pill h-7.5 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors",
                 }}
               >
                 <span className="flex items-center gap-1.5">
@@ -171,71 +162,97 @@ export function Header() {
                 </span>
               </Link>
 
-              {/* Roadmap Anchor Link */}
-              <a
-                href="/main#roadmap"
-                className="pill h-8 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
-              >
-                Roadmap
-              </a>
+              {/* Studios Navigation Segment: Goal (0DTE) & Boost (100×) */}
+              <div className="flex items-center p-0.5 rounded-full bg-secondary/80 border border-border/80 shadow-2xs">
+                <Link
+                  to="/goal"
+                  className={
+                    pathname === "/goal"
+                      ? "pill pill-ink h-7.5 px-3 text-xs font-semibold shadow-xs"
+                      : "pill h-7.5 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-white/60 transition-colors"
+                  }
+                  title="Target Goal Studio (0DTE Modeling)"
+                >
+                  <span className="flex items-center gap-1.5">
+                    <span>Goal</span>
+                    <span className="rounded bg-[#E3F8EC] px-1 py-0.2 text-[8px] font-bold text-[#06964A]">
+                      0DTE
+                    </span>
+                  </span>
+                </Link>
+                <Link
+                  to="/boost"
+                  className={
+                    pathname === "/boost"
+                      ? "pill pill-ink h-7.5 px-3 text-xs font-semibold shadow-xs"
+                      : "pill h-7.5 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-white/60 transition-colors"
+                  }
+                  title="Convexity Boost Multiplier (100×)"
+                >
+                  <span className="flex items-center gap-1.5">
+                    <span>Boost</span>
+                    <span className="rounded bg-[#FAF5FF] px-1 py-0.2 text-[8px] font-bold text-[#7C3AED]">
+                      100×
+                    </span>
+                  </span>
+                </Link>
+              </div>
 
-              {/* Docs Link */}
-              <a
-                href="/docs"
-                className="pill h-8 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
-              >
-                Docs
-              </a>
-
-              <Link
-                to="/goal"
-                className={
-                  isGoalOrBoost
-                    ? "pill pill-ink h-8 px-3.5 text-xs font-medium shadow-xs"
-                    : "pill h-8 px-3.5 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
-                }
-              >
-                Goal &amp; Boost
-              </Link>
-
+              {/* Analytics */}
               <Link
                 to="/analytics"
                 activeProps={{
-                  className: "pill pill-ink h-8 px-3.5 text-xs font-medium shadow-xs",
+                  className: "pill pill-ink h-7.5 px-3 text-xs font-medium shadow-xs",
                 }}
                 inactiveProps={{
                   className:
-                    "pill h-8 px-3.5 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary",
+                    "pill h-7.5 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors",
                 }}
               >
                 Analysis
               </Link>
+
+              {/* Leaderboard */}
               <Link
                 to="/leaderboard"
                 activeProps={{
-                  className: "pill pill-ink h-8 px-3.5 text-xs font-medium shadow-xs",
+                  className: "pill pill-ink h-7.5 px-3 text-xs font-medium shadow-xs",
                 }}
                 inactiveProps={{
                   className:
-                    "pill h-8 px-3.5 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary",
+                    "pill h-7.5 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors",
                 }}
               >
                 Leaderboard
               </Link>
+
+              {/* Docs Link */}
+              <a
+                href="/docs"
+                className="pill h-7.5 px-2.5 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+              >
+                Docs
+              </a>
+
+              {/* Roadmap Anchor Link */}
+              <a
+                href="/main#roadmap"
+                className="pill h-7.5 px-2.5 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+              >
+                Roadmap
+              </a>
+
+              {/* Settings Link */}
               <Link
                 to="/settings"
                 activeProps={{
-                  className: isLanding
-                    ? "h-8 px-3 rounded-md bg-[#21262D] border border-[#30363D] text-xs font-semibold text-white shadow-xs inline-flex items-center gap-1.5"
-                    : "pill pill-ink h-8 px-3.5 text-xs font-medium shadow-xs inline-flex items-center gap-1.5",
+                  className: "pill pill-ink h-7.5 px-2.5 text-xs font-medium shadow-xs inline-flex items-center gap-1.5",
                 }}
                 inactiveProps={{
-                  className: isLanding
-                    ? "h-8 px-3 rounded-md text-xs text-[#8B949E] hover:text-white hover:bg-[#161B22] transition-colors inline-flex items-center gap-1.5"
-                    : "pill h-8 px-3.5 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary inline-flex items-center gap-1.5",
+                  className: "pill h-7.5 px-2.5 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary inline-flex items-center gap-1.5 transition-colors",
                 }}
               >
-                <SettingsIcon className="size-3.5" />
+                <SettingsIcon className="size-3" />
                 <span>Settings</span>
               </Link>
             </nav>
@@ -387,11 +404,7 @@ export function Header() {
                 onClick={() => setSettingsModalOpen(true)}
                 title="Settings (Cmd+,)"
                 aria-label="Settings"
-                className={`flex size-8 items-center justify-center rounded-full transition-all cursor-pointer shrink-0 ${
-                  isLanding
-                    ? "border border-[#30363D] bg-[#161B22] text-[#8B949E] hover:text-white hover:bg-[#21262D]"
-                    : "border border-border/80 bg-secondary/70 text-muted-foreground hover:text-foreground hover:bg-secondary"
-                }`}
+                className="flex size-8 items-center justify-center rounded-full border border-border/80 bg-secondary/70 text-muted-foreground hover:text-foreground hover:bg-secondary transition-all cursor-pointer shrink-0"
               >
                 <SettingsIcon className="size-3.5" />
               </button>
@@ -399,54 +412,61 @@ export function Header() {
           </div>
         </div>
 
-        {/* Mobile Nav Sub-row */}
-        <div
-          className={`flex md:hidden items-center gap-1 overflow-x-auto border-t px-3 py-1.5 no-scrollbar ${
-            isLanding
-              ? "border-[#21262D] bg-[#0D1117] text-xs font-mono"
-              : "border-border bg-[#F6F6F4]/60"
-          }`}
-        >
+        {/* Mobile Nav Sub-row: Clean Light Mode */}
+        <div className="flex md:hidden items-center gap-1.5 overflow-x-auto border-t border-border bg-white/95 px-3 py-1.5 no-scrollbar text-xs">
+          <Link
+            to="/"
+            onClick={() => t.setMode("perps")}
+            className={
+              pathname === "/"
+                ? "pill pill-ink h-7 px-2.5 text-[11px] font-semibold shrink-0"
+                : "pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary shrink-0"
+            }
+          >
+            <span>Perps</span>
+            <span className="rounded bg-[#E3F8EC] px-1 py-0.2 text-[8px] font-bold text-[#06964A] ml-1">
+              LIVE
+            </span>
+          </Link>
           <Link
             to="/trade"
+            onClick={() => t.setMode("paper1000x")}
             className={
-              isLanding
-                ? "h-7 px-2.5 rounded-md bg-[#00D964]/10 border border-[#00D964]/30 text-[11px] font-bold text-[#00D964] flex items-center gap-1 shrink-0"
-                : "pill pill-ink h-7 px-2.5 text-[11px] font-semibold shrink-0"
+              pathname === "/trade"
+                ? "pill pill-ink h-7 px-2.5 text-[11px] font-semibold shrink-0"
+                : "pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary shrink-0"
             }
           >
-            <span>Trade (Live)</span>
-            <span className="size-1 rounded-full bg-[#00D964] animate-pulse" />
+            <span>1000x</span>
+            <span className="rounded bg-[#FFECEA] px-1 py-0.2 text-[8px] font-bold text-[#FF3B30] ml-1">
+              MAX
+            </span>
           </Link>
-          <a
-            href="/main#roadmap"
-            className={
-              isLanding
-                ? "h-7 px-2.5 rounded-md text-[11px] text-[#8B949E] hover:text-white hover:bg-[#161B22] flex items-center shrink-0"
-                : "pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary shrink-0"
-            }
-          >
-            Roadmap
-          </a>
-          <a
-            href="/docs"
-            className={
-              isLanding
-                ? "h-7 px-2.5 rounded-md text-[11px] text-[#8B949E] hover:text-white hover:bg-[#161B22] flex items-center shrink-0"
-                : "pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary shrink-0"
-            }
-          >
-            Docs
-          </a>
           <Link
             to="/goal"
             className={
-              isGoalOrBoost
-                ? "pill pill-ink h-7 px-2.5 text-[11px] font-medium shrink-0"
+              pathname === "/goal"
+                ? "pill pill-ink h-7 px-2.5 text-[11px] font-semibold shrink-0"
                 : "pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary shrink-0"
             }
           >
-            Goal &amp; Boost
+            <span>Goal</span>
+            <span className="rounded bg-[#E3F8EC] px-1 py-0.2 text-[8px] font-bold text-[#06964A] ml-1">
+              0DTE
+            </span>
+          </Link>
+          <Link
+            to="/boost"
+            className={
+              pathname === "/boost"
+                ? "pill pill-ink h-7 px-2.5 text-[11px] font-semibold shrink-0"
+                : "pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary shrink-0"
+            }
+          >
+            <span>Boost</span>
+            <span className="rounded bg-[#FAF5FF] px-1 py-0.2 text-[8px] font-bold text-[#7C3AED] ml-1">
+              100×
+            </span>
           </Link>
           <Link
             to="/analytics"
@@ -508,17 +528,25 @@ export function Header() {
           >
             Staking
           </Link>
+          <a
+            href="/docs"
+            className="pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary shrink-0"
+          >
+            Docs
+          </a>
+          <a
+            href="/main#roadmap"
+            className="pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary shrink-0"
+          >
+            Roadmap
+          </a>
           <Link
             to="/settings"
             activeProps={{
-              className: isLanding
-                ? "h-7 px-2.5 rounded-md bg-[#21262D] border border-[#30363D] text-[11px] font-bold text-white flex items-center gap-1 shrink-0"
-                : "pill pill-ink h-7 px-2.5 text-[11px] font-medium shrink-0",
+              className: "pill pill-ink h-7 px-2.5 text-[11px] font-medium shrink-0",
             }}
             inactiveProps={{
-              className: isLanding
-                ? "h-7 px-2.5 rounded-md text-[11px] text-[#8B949E] hover:text-white hover:bg-[#161B22] flex items-center gap-1 shrink-0"
-                : "pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary shrink-0",
+              className: "pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary shrink-0",
             }}
           >
             <SettingsIcon className="size-3" />
