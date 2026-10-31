@@ -178,11 +178,11 @@ export function ShareModal({
       return {
         displayRoiPct: boostedRoi,
         displayDollar: boostedPnl,
-        pnlHeadingLabel: "CONVEX BOOST ROI",
+        pnlHeadingLabel: "BOOST MULTIPLIER ROI",
         statCols: [
           { label: "BASE ENTRY", value: `$${fmtUsd(rawEntry, market.decimals)}` },
           { label: isClosed ? "EXIT PRICE" : "MARK PRICE", value: `$${fmtUsd(rawExit, market.decimals)}` },
-          { label: "BOOSTED LEV", value: `${effectiveLev}×` },
+          { label: "BOOSTED LEVERAGE", value: `${effectiveLev}×` },
         ],
       };
     }

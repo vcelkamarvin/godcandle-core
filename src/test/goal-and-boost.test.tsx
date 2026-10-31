@@ -24,8 +24,8 @@ describe("Target Goal Studio & Convexity Boost Multiplier", () => {
   it("supports bidirectional market direction (LONG & SHORT) in Target Goal Studio", () => {
     expect(goalContent).toContain('type Direction = "LONG" | "SHORT"');
     expect(goalContent).toContain('direction === "LONG"');
-    expect(goalContent).toContain("Long ↗ (Expansion)");
-    expect(goalContent).toContain("Short ↘ (Pullback)");
+    expect(goalContent).toContain("Long ↗ (Upside)");
+    expect(goalContent).toContain("Short ↘ (Downside)");
     expect(goalContent).toContain('direction === "LONG" ? 1.15 : 0.85');
   });
 
@@ -83,9 +83,14 @@ describe("Target Goal Studio & Convexity Boost Multiplier", () => {
     expect(goalContent).toContain("Price Target Tool");
     expect(goalContent).not.toContain("0DTE &amp; Swing Convexity");
     expect(goalContent).not.toContain("Target Goal Studio");
+    expect(goalContent).not.toContain("Expansion");
+    expect(goalContent).not.toContain("Pullback");
+    expect(goalContent).not.toContain("Near Pivot");
 
     expect(boostContent).toContain("Boost Multiplier");
     expect(boostContent).toContain("Multiplier Tool");
     expect(boostContent).not.toContain("Asymmetric Convexity Multiplier");
+    expect(boostContent).not.toContain("Convexity Boost Active!");
+    expect(boostContent).not.toContain("Convexity Stats");
   });
 });

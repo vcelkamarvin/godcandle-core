@@ -132,7 +132,7 @@ export function BoostPage() {
       t.open(underlying, direction, Math.min(amount, 500), Math.min(boostMultiplier * 10, 50));
     }
     setBoostLocked(true);
-    toast.success(`${boostMultiplier}× Convexity Boost Active!`, {
+    toast.success(`${boostMultiplier}× Boost Active!`, {
       description: `${underlying} ${direction} ${boostMultiplier}× Boost · Target $${targetPrice.toLocaleString()} (${movePct >= 0 ? "+" : ""}${movePct.toFixed(1)}%). Modeled Payout: $${(amount + payout).toLocaleString()}`,
     });
     setTimeout(() => setBoostLocked(false), 2400);
@@ -535,7 +535,7 @@ export function BoostPage() {
                 </div>
               </div>
 
-              {/* Convexity Stats */}
+              {/* Multiplier Stats */}
               <div className="space-y-3 font-sans">
                 <div>
                   <h3 className="text-sm font-bold text-foreground font-sans">

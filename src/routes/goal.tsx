@@ -121,17 +121,17 @@ export function GoalPage() {
   const milestones = useMemo(() => {
     if (direction === "LONG") {
       return [
-        { id: "1", label: "+5% Near Pivot", price: Math.round(spot * 1.05), pct: 5 },
-        { id: "2", label: "+15% Structural Move", price: Math.round(spot * 1.15), pct: 15 },
-        { id: "3", label: "+30% Godcandle Run", price: Math.round(spot * 1.3), pct: 30 },
-        { id: "4", label: "+50% Macro Expansion", price: Math.round(spot * 1.5), pct: 50 },
+        { id: "1", label: "+5% Target", price: Math.round(spot * 1.05), pct: 5 },
+        { id: "2", label: "+15% Target", price: Math.round(spot * 1.15), pct: 15 },
+        { id: "3", label: "+30% Target", price: Math.round(spot * 1.3), pct: 30 },
+        { id: "4", label: "+50% Target", price: Math.round(spot * 1.5), pct: 50 },
       ];
     } else {
       return [
-        { id: "1", label: "-5% Local Pullback", price: Math.round(spot * 0.95), pct: -5 },
-        { id: "2", label: "-15% Support Retest", price: Math.round(spot * 0.85), pct: -15 },
-        { id: "3", label: "-30% Liquidation Flush", price: Math.round(spot * 0.7), pct: -30 },
-        { id: "4", label: "-50% Macro Capitulation", price: Math.round(spot * 0.5), pct: -50 },
+        { id: "1", label: "-5% Target", price: Math.round(spot * 0.95), pct: -5 },
+        { id: "2", label: "-15% Target", price: Math.round(spot * 0.85), pct: -15 },
+        { id: "3", label: "-30% Target", price: Math.round(spot * 0.7), pct: -30 },
+        { id: "4", label: "-50% Target", price: Math.round(spot * 0.5), pct: -50 },
       ];
     }
   }, [spot, direction]);
@@ -256,7 +256,7 @@ export function GoalPage() {
               Target Parameters
             </span>
             <span className="text-[10px] font-mono font-bold text-[#06964A] bg-[#E3F8EC] px-2 py-0.5 rounded-full border border-[#06964A]/20">
-              {boostMultiplier}× Payout Factor
+              {boostMultiplier}× Multiplier
             </span>
           </div>
 
@@ -276,7 +276,7 @@ export function GoalPage() {
                 }`}
               >
                 <TrendingUp className="size-3.5 text-[#06964A]" />
-                Long ↗ (Expansion)
+                Long ↗ (Upside)
               </button>
               <button
                 type="button"
@@ -288,7 +288,7 @@ export function GoalPage() {
                 }`}
               >
                 <TrendingDown className="size-3.5 text-[#FF3B30]" />
-                Short ↘ (Pullback)
+                Short ↘ (Downside)
               </button>
             </div>
           </div>
@@ -523,7 +523,7 @@ export function GoalPage() {
                     ${(amount + payout).toLocaleString()}
                   </span>
                   <span className="text-[9px] text-muted-foreground mt-1 font-sans">
-                    {boostMultiplier}× Payout Multiplier
+                    {boostMultiplier}× Multiplier
                   </span>
                 </div>
               </div>
@@ -634,8 +634,8 @@ export function GoalPage() {
                     >
                       <div className="text-[10px] text-muted-foreground font-semibold font-sans">
                         {direction === "LONG"
-                          ? `+${move.toFixed(0)}% Expansion`
-                          : `-${move.toFixed(0)}% Pullback`}
+                          ? `+${move.toFixed(0)}% Target Move`
+                          : `-${move.toFixed(0)}% Target Move`}
                       </div>
                       <div className="text-sm font-bold text-foreground font-mono tabular">
                         ${p.toLocaleString()}

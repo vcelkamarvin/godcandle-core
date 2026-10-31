@@ -52,6 +52,8 @@ describe("PnL Share Card Structure & Specification", () => {
   it("removes noisy editing sub-bars, preset chips, and bloat from the modal", () => {
     expect(modalContent).not.toContain("Target Goal Price:");
     expect(modalContent).not.toContain("Convex Boost Multiplier:");
+    expect(modalContent).not.toContain("CONVEX BOOST ROI");
+    expect(modalContent).toContain("BOOST MULTIPLIER ROI");
     expect(modalContent).toContain("Perps. Options. Up to 1000x.");
     expect(modalContent).toContain("One terminal. Institutional-grade liquidity.");
   });
@@ -137,8 +139,8 @@ describe("PnL Share Card Interactive Component (DOM & State)", () => {
       root.render(<ShareModal trade={sampleTrade} onOpenChange={onOpenChangeMock} initialMode="boost" />);
     });
 
-    expect(container.textContent).toContain("CONVEX BOOST ROI");
-    expect(container.textContent).toContain("BOOSTED LEV");
+    expect(container.textContent).toContain("BOOST MULTIPLIER ROI");
+    expect(container.textContent).toContain("BOOSTED LEVERAGE");
 
     await act(async () => {
       root.unmount();

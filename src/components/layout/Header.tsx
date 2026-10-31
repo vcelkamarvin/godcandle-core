@@ -172,7 +172,7 @@ export function Header() {
                       ? "pill pill-ink h-7.5 px-3 text-xs font-semibold shadow-xs"
                       : "pill h-7.5 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-white/60 transition-colors"
                   }
-                  title="1000x Synthetic Engine Simulation"
+                  title="1000x Trading Simulation"
                   aria-label="1000x Trading"
                 >
                   <span>1000x</span>

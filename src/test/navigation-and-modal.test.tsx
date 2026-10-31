@@ -60,6 +60,9 @@ describe("Header Layout & Navigation Structure", () => {
     expect(headerContent).not.toContain("1000x Max Test");
     expect(headerContent).not.toContain("Goal Studio 0DTE");
     expect(headerContent).not.toContain("Boost Multiplier 100x");
+    expect(headerContent).toContain("HYPERLIQUID L1 CONNECTED");
+    expect(headerContent).not.toContain("Synthetic Engine Simulation");
+    expect(headerContent).toContain("1000x Trading Simulation");
     expect(headerContent).toContain('to="/goal"');
     expect(headerContent).toContain('to="/boost"');
     expect(headerContent).toContain("Price Target Calculator");
