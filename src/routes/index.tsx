@@ -258,8 +258,8 @@ function Terminal() {
             leverage={leverage}
             setLeverage={setLeverage}
             position={pos}
-            onOpen={(side) => t.open(market, side, stake, leverage)}
-            onClose={() => t.close(market)}
+            onOpen={(side, tp, sl) => t.open(market, side, stake, leverage, tp, sl)}
+            onClose={(target) => t.close(target || market)}
             limitReached={t.positions.length >= 3}
             available={t.available}
           />

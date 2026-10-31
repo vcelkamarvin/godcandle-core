@@ -13,25 +13,47 @@ function useTradingState() {
   const positionsRef = useRef(positions);
   positionsRef.current = positions;
   useEffect(() => startFeed(), []);
-  function close(market: MarketSymbol, liquidated = false) {
-    const position = positionsRef.current.find(p => p.market === market);
+  function close(target: string, liquidated = false) {
+    const position = positionsRef.current.find(p => p.id === target || p.market === target);
     if (!position) return;
-    const exit = liquidated ? liquidation(position) : getSnap(market).price;
+    const exit = liquidated ? liquidation(position) : getSnap(position.market).price;
     const pnl = pnlOf(position, exit);
     const trade = { ...position, exit, pnl, liquidated, closedAt: Date.now(), durationMs: Date.now() - position.openedAt };
     positionsRef.current = positionsRef.current.filter(p => p.id !== position.id);
     setPositions(positionsRef.current);
     setHistory(h => [trade, ...h]);
     setBalance(b => b + pnl);
-    toast(liquidated ? `${market} liquidated` : `Closed ${market} ${fmtSigned(pnl)}`);
+    toast(liquidated ? `${position.market} liquidated` : `Closed ${position.market} ${fmtSigned(pnl)}`);
   }
   useEffect(() => {
-    for (const p of positionsRef.current) if (isLiquidated(p, feeds[p.market].price)) close(p.market, true);
+    for (const p of positionsRef.current) {
+      const price = feeds[p.market].price;
+      if (isLiquidated(p, price)) {
+        close(p.id, true);
+      } else if (p.tp != null && (p.side === "long" ? price >= p.tp : price <= p.tp)) {
+        close(p.id, false);
+      } else if (p.sl != null && (p.side === "long" ? price <= p.sl : price >= p.sl)) {
+        close(p.id, false);
+      }
+    }
   }, [feeds]);
-  function open(market: MarketSymbol, side: Side, stake: number, leverage: number) {
+  function open(market: MarketSymbol, side: Side, stake: number, leverage: number, tp?: number | null, sl?: number | null) {
     const error = openingError(market, stake, leverage, balance, positionsRef.current, getSnap(market).status);
     if (error) { toast.error(error); return; }
-    const p: Position = { id: crypto.randomUUID(), market, side, stake, leverage, entry: getSnap(market).price, openedAt: Date.now() };
+    const uniqueId = typeof crypto !== "undefined" && crypto.randomUUID
+      ? `pos-${crypto.randomUUID().slice(0, 8)}`
+      : `pos-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+    const p: Position = {
+      id: uniqueId,
+      market,
+      side,
+      stake,
+      leverage,
+      entry: getSnap(market).price,
+      openedAt: Date.now(),
+      tp: tp ?? null,
+      sl: sl ?? null,
+    };
     positionsRef.current = [...positionsRef.current, p];
     setPositions(positionsRef.current);
   }

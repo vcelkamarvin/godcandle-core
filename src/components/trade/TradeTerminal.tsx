@@ -52,9 +52,9 @@ export function TradeTerminal() {
   const posPnl = currentPosition ? pnlOf(currentPosition, currentPrice) : 0;
   const pnlLabel = currentPosition ? fmtSigned(posPnl) : '';
 
-  const handleOrder = (side: 'LONG' | 'SHORT', margin: number, lev: number) => {
+  const handleOrder = (side: 'LONG' | 'SHORT', margin: number, lev: number, tp?: number | null, sl?: number | null) => {
     if (t?.open) {
-      t.open(rawSymbol, side.toLowerCase() as 'long' | 'short', margin, lev);
+      t.open(rawSymbol, side.toLowerCase() as 'long' | 'short', margin, lev, tp, sl);
       toast.success(`${side} 1000x Perp Placed!`, {
         description: `$${margin} margin at ${lev}× leverage on ${selectedMarket.symbol}. Instant FIFO block settlement.`,
       });

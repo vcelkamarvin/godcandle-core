@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { computeClampedPrice, computeBustDistance } from '@/lib/hyperliquid';
-import { ArrowUp, ArrowDown, Shield, Zap, CheckCircle2 } from 'lucide-react';
+import { ArrowUp, ArrowDown } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface OrderFormProps {
@@ -8,7 +8,13 @@ interface OrderFormProps {
   leverage: number;
   corridorBps?: number;
   availableBalance?: number;
-  onTrade?: (side: 'LONG' | 'SHORT', margin: number, leverage: number) => void;
+  onTrade?: (
+    side: 'LONG' | 'SHORT',
+    margin: number,
+    leverage: number,
+    tp?: number | null,
+    sl?: number | null
+  ) => void;
 }
 
 const MARGIN_CHIPS = ['10', '25', '50', '100', '250', '500'];
@@ -22,24 +28,49 @@ export function OrderForm({
 }: OrderFormProps) {
   const [margin, setMargin] = useState('50');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [tpMode, setTpMode] = useState<'price' | 'roi'>('roi');
+  const [tpValue, setTpValue] = useState('');
+  const [slMode, setSlMode] = useState<'price' | 'roi'>('roi');
+  const [slValue, setSlValue] = useState('');
 
   const numMargin = parseFloat(margin) || 0;
   const notional = numMargin * leverage;
   const { bustDistanceBps, bustDistancePct } = computeBustDistance(leverage);
 
   // Mark-Clamped BBO Execution Price
-  const { execPrice, isClamped } = computeClampedPrice(currentPrice, currentPrice, corridorBps);
+  const { execPrice } = computeClampedPrice(currentPrice, currentPrice, corridorBps);
 
   // Liquidation prices calculated from markPx
   const longBustPrice = currentPrice * (1 - bustDistancePct / 100);
   const shortBustPrice = currentPrice * (1 + bustDistancePct / 100);
 
+  const computeTargetPrice = (side: 'LONG' | 'SHORT', type: 'tp' | 'sl'): number | null => {
+    const val = type === 'tp' ? parseFloat(tpValue) : parseFloat(slValue);
+    if (!val || val <= 0 || isNaN(val)) return null;
+
+    const mode = type === 'tp' ? tpMode : slMode;
+    if (mode === 'price') return val;
+
+    const roiFraction = val / 100;
+    if (side === 'LONG') {
+      return type === 'tp'
+        ? currentPrice * (1 + roiFraction / leverage)
+        : currentPrice * (1 - roiFraction / leverage);
+    } else {
+      return type === 'tp'
+        ? currentPrice * (1 - roiFraction / leverage)
+        : currentPrice * (1 + roiFraction / leverage);
+    }
+  };
+
   const handleOrder = (side: 'LONG' | 'SHORT') => {
     setIsSubmitting(true);
+    const tpPrice = computeTargetPrice(side, 'tp');
+    const slPrice = computeTargetPrice(side, 'sl');
     setTimeout(() => {
       setIsSubmitting(false);
       if (onTrade) {
-        onTrade(side, numMargin, leverage);
+        onTrade(side, numMargin, leverage, tpPrice, slPrice);
       } else {
         toast.success(`${side} order executed`, {
           description: `$${numMargin} @ ${leverage}x ($${notional.toLocaleString()} notional) against House Pool`,
@@ -49,23 +80,25 @@ export function OrderForm({
   };
 
   return (
-    <div className="space-y-4 font-mono text-xs">
+    <div className="space-y-2 font-mono text-xs">
       {/* Margin Chip Picker */}
       <div>
-        <div className="flex justify-between text-muted-foreground mb-1.5 text-[11px]">
-          <span>ISOLATED MARGIN (USDC)</span>
-          <span>AVAILABLE: ${availableBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+        <div className="flex justify-between text-muted-foreground mb-1 text-[10px]">
+          <span className="font-semibold uppercase tracking-wider">ISOLATED MARGIN (USDC)</span>
+          <span className="tabular">
+            AVAILABLE: ${availableBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          </span>
         </div>
-        <div className="grid grid-cols-6 gap-1.5">
+        <div className="grid grid-cols-6 gap-1">
           {MARGIN_CHIPS.map((chip) => (
             <button
               key={chip}
               type="button"
               onClick={() => setMargin(chip)}
-              className={`pill h-8 text-xs transition-all ${
+              className={`h-7 rounded-sm text-xs font-mono font-medium transition-all ${
                 margin === chip
-                  ? 'pill-ink font-bold shadow-sm'
-                  : 'border border-border bg-[#F6F6F4] text-muted-foreground hover:text-foreground hover:bg-[#F0F0EE]'
+                  ? 'bg-foreground text-background font-bold shadow-xs'
+                  : 'border border-border/60 bg-[#F6F6F4] text-muted-foreground hover:text-foreground hover:bg-[#F0F0EE]'
               }`}
             >
               ${chip}
@@ -75,17 +108,17 @@ export function OrderForm({
       </div>
 
       {/* Position Metrics Box */}
-      <div className="bg-[#F6F6F4] border border-border rounded-xl p-3.5 space-y-2 text-[11px]">
+      <div className="bg-[#F6F6F4] border border-border/80 rounded-md p-2 space-y-1 text-[10px] font-mono">
         <div className="flex justify-between items-center text-muted-foreground">
           <span>POSITION NOTIONAL</span>
           <span className="text-foreground font-bold tabular">${notional.toLocaleString()} USDC</span>
         </div>
 
         <div className="flex justify-between items-center text-muted-foreground">
-          <span>EXECUTION PRICE (MARK-CLAMPED BBO)</span>
-          <div className="flex items-center gap-1.5 font-bold tabular text-foreground">
+          <span>EXECUTION PRICE (BBO)</span>
+          <div className="flex items-center gap-1 font-bold tabular text-foreground">
             <span>${execPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-            <span className="text-[9px] px-1 py-0.2 rounded bg-[#EFEFFC] text-[#5E5CE6] font-mono">
+            <span className="text-[9px] px-1 py-0.2 rounded-xs bg-[#EFEFFC] text-[#5E5CE6] font-mono">
               ±{corridorBps} bps
             </span>
           </div>
@@ -112,26 +145,66 @@ export function OrderForm({
           </span>
         </div>
 
-        <div className="border-t border-border pt-2 flex justify-between items-center text-muted-foreground text-[10px]">
+        <div className="border-t border-border/50 pt-1 flex justify-between items-center text-muted-foreground text-[9px]">
           <span>PROTOCOL FEES</span>
           <span className="text-[#06964A] font-semibold">0% Entry · 2.0% Net Win Fee</span>
         </div>
+      </div>
 
-        <div className="flex justify-between items-center text-muted-foreground text-[10px]">
-          <span>SETTLEMENT MODEL</span>
-          <span className="text-foreground font-medium">Atomic Cash FIFO</span>
+      {/* TP & SL Compact Row */}
+      <div className="grid grid-cols-2 gap-1.5 font-mono text-[11px]">
+        {/* Take Profit */}
+        <div className="flex items-center gap-1 rounded-md border border-border/60 bg-secondary/50 px-2 py-1">
+          <span className="text-[10px] font-bold text-[#00D964]">TP</span>
+          <input
+            type="number"
+            step="any"
+            placeholder={tpMode === 'roi' ? '+% ROI' : 'Price'}
+            value={tpValue}
+            onChange={(e) => setTpValue(e.target.value)}
+            className="w-full bg-transparent font-mono text-[11px] text-foreground focus:outline-none placeholder:text-muted-foreground/60"
+          />
+          <button
+            type="button"
+            onClick={() => setTpMode((prev) => (prev === 'roi' ? 'price' : 'roi'))}
+            title={tpMode === 'roi' ? 'Switch to target Price' : 'Switch to target ROI %'}
+            className="rounded-sm bg-background px-1 py-0.5 text-[9px] font-bold text-muted-foreground hover:text-foreground border border-border/40"
+          >
+            {tpMode === 'roi' ? '%' : '$'}
+          </button>
+        </div>
+
+        {/* Stop Loss */}
+        <div className="flex items-center gap-1 rounded-md border border-border/60 bg-secondary/50 px-2 py-1">
+          <span className="text-[10px] font-bold text-[#FF3B30]">SL</span>
+          <input
+            type="number"
+            step="any"
+            placeholder={slMode === 'roi' ? '-% ROI' : 'Price'}
+            value={slValue}
+            onChange={(e) => setSlValue(e.target.value)}
+            className="w-full bg-transparent font-mono text-[11px] text-foreground focus:outline-none placeholder:text-muted-foreground/60"
+          />
+          <button
+            type="button"
+            onClick={() => setSlMode((prev) => (prev === 'roi' ? 'price' : 'roi'))}
+            title={slMode === 'roi' ? 'Switch to target Price' : 'Switch to target ROI %'}
+            className="rounded-sm bg-background px-1 py-0.5 text-[9px] font-bold text-muted-foreground hover:text-foreground border border-border/40"
+          >
+            {slMode === 'roi' ? '%' : '$'}
+          </button>
         </div>
       </div>
 
       {/* Action Buttons */}
-      <div className="grid grid-cols-2 gap-3 pt-1">
+      <div className="grid grid-cols-2 gap-1.5 pt-0.5">
         <button
           type="button"
           onClick={() => handleOrder('LONG')}
           disabled={isSubmitting || numMargin <= 0}
-          className="rounded-xl bg-[#00D964] text-white py-3.5 text-center font-bold tracking-wider hover:bg-[#06964A] transition-all flex items-center justify-center gap-1.5 disabled:opacity-50 shadow-sm"
+          className="rounded-md bg-[#00D964] text-white h-10 text-center font-mono text-xs font-bold hover:bg-[#06964A] transition-all flex items-center justify-center gap-1.5 disabled:opacity-50 shadow-xs"
         >
-          <ArrowUp className="w-4 h-4" />
+          <ArrowUp className="w-3.5 h-3.5 stroke-[2.5]" />
           <span>LONG {leverage}×</span>
         </button>
 
@@ -139,9 +212,9 @@ export function OrderForm({
           type="button"
           onClick={() => handleOrder('SHORT')}
           disabled={isSubmitting || numMargin <= 0}
-          className="rounded-xl bg-[#FF3B30] text-white py-3.5 text-center font-bold tracking-wider hover:bg-[#d62e24] transition-all flex items-center justify-center gap-1.5 disabled:opacity-50 shadow-sm"
+          className="rounded-md bg-[#FF3B30] text-white h-10 text-center font-mono text-xs font-bold hover:bg-[#d62e24] transition-all flex items-center justify-center gap-1.5 disabled:opacity-50 shadow-xs"
         >
-          <ArrowDown className="w-4 h-4" />
+          <ArrowDown className="w-3.5 h-3.5 stroke-[2.5]" />
           <span>SHORT {leverage}×</span>
         </button>
       </div>

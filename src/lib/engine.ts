@@ -3,7 +3,7 @@ export type Side = "long" | "short";
 export const FEE_RATE = .0004;
 export const STAKES = [10,25,50,100,250,500];
 export const LEVERAGES = [50,100,250,500,1000];
-export interface Position { id: string; market: MarketSymbol; side: Side; stake: number; leverage: number; entry: number; openedAt: number }
+export interface Position { id: string; market: MarketSymbol; side: Side; stake: number; leverage: number; entry: number; openedAt: number; tp?: number | null; sl?: number | null }
 export interface ClosedTrade extends Position { exit: number; pnl: number; durationMs: number; liquidated: boolean; closedAt: number }
 export const notional = (stake: number, lev: number) => stake * lev;
 export const feeUsd = (stake: number, lev: number, feeRate = FEE_RATE) => notional(stake,lev) * feeRate;
@@ -20,7 +20,6 @@ export const liqHealth = (p: Position, mark: number) => Math.min(1,Math.max(0,(m
 export function openingError(market: MarketSymbol, stake: number, leverage: number, balance: number, open: Position[], status: MarketStatus): string | null {
  const m = getMarket(market);
  if (status !== "open") return status === "closed" ? "Market closed" : "Market paused";
- if (open.some(p => p.market === market)) return "Position already open";
  if (open.length >= 3) return "Maximum 3 open positions";
  if (!Number.isFinite(stake) || stake < m.minStake || stake > m.maxStake) return `Stake must be $${m.minStake}–$${m.maxStake}`;
  if (!LEVERAGES.includes(leverage) || leverage > m.maxLeverage) return "Invalid leverage";
