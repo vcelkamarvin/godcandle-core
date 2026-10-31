@@ -10,6 +10,9 @@ import {
   Trophy,
   BookOpen,
   Settings as SettingsIcon,
+  Target,
+  Zap,
+  Milestone,
 } from "lucide-react";
 import { SettingsModal } from "@/components/settings/SettingsModal";
 import { useTrading } from "@/components/godcandle/TradingProvider";
@@ -32,13 +35,17 @@ export function Header() {
   });
   const [transfer, setTransfer] = useState<"Deposit" | "Withdraw" | null>(null);
   const [candleOpen, setCandleOpen] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
   const [settingsModalOpen, setSettingsModalOpen] = useState(false);
   const candleRef = useRef<HTMLDivElement>(null);
+  const moreRef = useRef<HTMLDivElement>(null);
 
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const isLanding = pathname === "/main" || pathname === "/settings";
   const isCandleActive = pathname.startsWith("/candle") || pathname.startsWith("/staking");
   const isGoalOrBoost = pathname === "/goal" || pathname === "/boost";
+  const isMoreActive =
+    pathname === "/docs" || pathname.startsWith("/docs") || pathname === "/settings" || pathname === "/main";
 
   // Sync mode with pathname
   useEffect(() => {
@@ -55,10 +62,19 @@ export function Header() {
       if (candleRef.current && !candleRef.current.contains(e.target as Node)) {
         setCandleOpen(false);
       }
+      if (moreRef.current && !moreRef.current.contains(e.target as Node)) {
+        setMoreOpen(false);
+      }
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // Close menus on route change
+  useEffect(() => {
+    setCandleOpen(false);
+    setMoreOpen(false);
+  }, [pathname]);
 
   return (
     <>
@@ -104,7 +120,7 @@ export function Header() {
               </span>
             </Link>
 
-            {/* Left Nav: Products [Perps | 1000x], Studios [Goal | Boost], Analysis, Leaderboard, Docs */}
+            {/* Left Nav: Products [Perps | 1000x], Studios [Goal | Boost], Analysis, Leaderboard, More */}
             <nav aria-label="Main navigation" className="hidden md:flex items-center gap-2">
               {/* Primary Trading Segment */}
               <div className="flex items-center p-0.5 rounded-full bg-secondary/80 border border-border/80 shadow-2xs">
@@ -116,12 +132,20 @@ export function Header() {
                       ? "pill pill-ink h-7.5 px-3 text-xs font-semibold shadow-xs"
                       : "pill h-7.5 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-white/60 transition-colors"
                   }
-                  title="Hyperliquid L1 1x-50x Live Perps"
+                  title="Trade (Live) · Hyperliquid L1 Perps"
+                  aria-label="Trade (Live) Perps"
                 >
                   <span className="flex items-center gap-1.5">
-                    <span>Trade (Live)</span>
-                    <span className="rounded bg-[#E3F8EC] px-1 py-0.2 text-[8px] font-bold text-[#06964A]">
-                      Perps
+                    <span className="size-1.5 rounded-full bg-[#00D964] shadow-[0_0_6px_#00D964]" />
+                    <span>Perps</span>
+                    <span
+                      className={
+                        pathname === "/" && t.mode === "perps"
+                          ? "rounded bg-white/20 px-1 py-0.2 text-[8px] font-bold text-white tracking-wider"
+                          : "rounded bg-[#E3F8EC] px-1 py-0.2 text-[8px] font-bold text-[#06964A] tracking-wider"
+                      }
+                    >
+                      LIVE
                     </span>
                   </span>
                 </Link>
@@ -134,21 +158,25 @@ export function Header() {
                       : "pill h-7.5 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-white/60 transition-colors"
                   }
                   title="1000x Synthetic Engine Simulation"
+                  aria-label="1000x Max Test"
                 >
                   <span className="flex items-center gap-1.5">
                     <span>1000x</span>
-                    <span className="rounded bg-[#FFECEA] px-1 py-0.2 text-[8px] font-bold text-[#FF3B30]">
+                    <span
+                      className={
+                        pathname === "/trade" && t.mode === "paper1000x"
+                          ? "rounded bg-white/20 px-1 py-0.2 text-[8px] font-bold text-white tracking-wider"
+                          : "rounded bg-[#FFECEA] px-1 py-0.2 text-[8px] font-bold text-[#FF3B30] tracking-wider"
+                      }
+                    >
                       MAX
-                    </span>
-                    <span className="rounded bg-[#FFF4E5] px-1 py-0.2 text-[8px] font-bold text-[#D97706]">
-                      TEST
                     </span>
                   </span>
                 </Link>
               </div>
 
               {/* Studios Navigation Segment: Goal (0DTE) & Boost (100×) */}
-              <div className="flex items-center p-0.5 rounded-full bg-secondary/80 border border-border/80 shadow-2xs">
+              <div className="flex items-center p-0.5 rounded-full bg-secondary/80 border border-border/80 shadow-2xs relative">
                 <Link
                   to="/goal"
                   className={
@@ -156,11 +184,23 @@ export function Header() {
                       ? "pill pill-ink h-7.5 px-3 text-xs font-semibold shadow-xs"
                       : "pill h-7.5 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-white/60 transition-colors"
                   }
-                  title="Target Goal Studio (0DTE Modeling)"
+                  title="Target Goal Studio (0DTE Binary Modeling)"
+                  aria-label="Goal Studio 0DTE"
                 >
                   <span className="flex items-center gap-1.5">
+                    <Target
+                      className={`size-3 transition-colors ${
+                        pathname === "/goal" ? "text-[#00D964]" : "text-[#06964A]"
+                      }`}
+                    />
                     <span>Goal</span>
-                    <span className="rounded bg-[#E3F8EC] px-1 py-0.2 text-[8px] font-bold text-[#06964A]">
+                    <span
+                      className={
+                        pathname === "/goal"
+                          ? "rounded bg-white/20 px-1 py-0.2 text-[8px] font-bold text-white tracking-wider"
+                          : "rounded bg-[#E3F8EC] px-1 py-0.2 text-[8px] font-bold text-[#06964A] tracking-wider"
+                      }
+                    >
                       0DTE
                     </span>
                   </span>
@@ -173,10 +213,22 @@ export function Header() {
                       : "pill h-7.5 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-white/60 transition-colors"
                   }
                   title="Convexity Boost Multiplier (100×)"
+                  aria-label="Boost Multiplier 100x"
                 >
                   <span className="flex items-center gap-1.5">
+                    <Zap
+                      className={`size-3 transition-colors ${
+                        pathname === "/boost" ? "text-[#C084FC]" : "text-[#7C3AED]"
+                      }`}
+                    />
                     <span>Boost</span>
-                    <span className="rounded bg-[#FAF5FF] px-1 py-0.2 text-[8px] font-bold text-[#7C3AED]">
+                    <span
+                      className={
+                        pathname === "/boost"
+                          ? "rounded bg-white/20 px-1 py-0.2 text-[8px] font-bold text-white tracking-wider"
+                          : "rounded bg-[#FAF5FF] px-1 py-0.2 text-[8px] font-bold text-[#7C3AED] tracking-wider"
+                      }
+                    >
                       100×
                     </span>
                   </span>
@@ -192,7 +244,7 @@ export function Header() {
                   }}
                   inactiveProps={{
                     className:
-                      "pill h-7.5 px-2.5 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors",
+                      "pill h-7.5 px-2.5 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary/70 transition-colors",
                   }}
                 >
                   Analysis
@@ -205,38 +257,91 @@ export function Header() {
                   }}
                   inactiveProps={{
                     className:
-                      "pill h-7.5 px-2.5 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors",
+                      "pill h-7.5 px-2.5 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary/70 transition-colors",
                   }}
                 >
                   Leaderboard
                 </Link>
 
-                <a
-                  href="/docs"
-                  className="pill h-7.5 px-2.5 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
-                >
-                  Docs
-                </a>
+                {/* Clean More Menu for secondary links (Docs, Roadmap, Settings) */}
+                <div className="relative" ref={moreRef}>
+                  <button
+                    type="button"
+                    onClick={() => setMoreOpen((v) => !v)}
+                    className={`pill h-7.5 px-2.5 text-xs font-medium gap-1 transition-colors cursor-pointer ${
+                      moreOpen || isMoreActive
+                        ? "pill-ink shadow-xs"
+                        : "text-muted-foreground hover:text-foreground hover:bg-secondary/70"
+                    }`}
+                    aria-expanded={moreOpen}
+                    aria-haspopup="menu"
+                  >
+                    <span>More</span>
+                    <ChevronDown
+                      className={`size-3 text-muted-foreground transition-transform duration-200 ${
+                        moreOpen ? "rotate-180" : ""
+                      }`}
+                    />
+                  </button>
 
-                <a
-                  href="/main#roadmap"
-                  className="pill h-7.5 px-2.5 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
-                >
-                  Roadmap
-                </a>
+                  {moreOpen && (
+                    <div
+                      role="menu"
+                      className="absolute left-0 top-full mt-2 w-52 rounded-2xl border border-border bg-white p-1.5 shadow-xl animate-in zoom-in-95 fade-in-0 duration-150 z-50"
+                    >
+                      <a
+                        href="/docs"
+                        role="menuitem"
+                        onClick={() => setMoreOpen(false)}
+                        className="flex items-center gap-2.5 p-2 rounded-xl hover:bg-secondary transition-colors text-left"
+                      >
+                        <div className="flex size-7 items-center justify-center rounded-lg bg-secondary text-foreground">
+                          <BookOpen className="size-3.5" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-semibold text-foreground">Docs</p>
+                          <p className="text-[10px] text-muted-foreground">
+                            API &amp; terminal guides
+                          </p>
+                        </div>
+                      </a>
 
-                <Link
-                  to="/settings"
-                  activeProps={{
-                    className: "pill pill-ink h-7.5 px-2.5 text-xs font-medium shadow-xs inline-flex items-center gap-1.5",
-                  }}
-                  inactiveProps={{
-                    className: "pill h-7.5 px-2.5 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary inline-flex items-center gap-1.5 transition-colors",
-                  }}
-                >
-                  <SettingsIcon className="size-3" />
-                  <span>Settings</span>
-                </Link>
+                      <a
+                        href="/main#roadmap"
+                        role="menuitem"
+                        onClick={() => setMoreOpen(false)}
+                        className="flex items-center gap-2.5 p-2 rounded-xl hover:bg-secondary transition-colors text-left"
+                      >
+                        <div className="flex size-7 items-center justify-center rounded-lg bg-[#FFF4E5] text-[#D97706]">
+                          <Milestone className="size-3.5" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-semibold text-foreground">Roadmap</p>
+                          <p className="text-[10px] text-muted-foreground">
+                            Masterplan phases 0–3
+                          </p>
+                        </div>
+                      </a>
+
+                      <Link
+                        to="/settings"
+                        role="menuitem"
+                        onClick={() => setMoreOpen(false)}
+                        className="flex items-center gap-2.5 p-2 rounded-xl hover:bg-secondary transition-colors text-left"
+                      >
+                        <div className="flex size-7 items-center justify-center rounded-lg bg-secondary text-foreground">
+                          <SettingsIcon className="size-3.5" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-semibold text-foreground">Settings</p>
+                          <p className="text-[10px] text-muted-foreground">
+                            Trading preferences &amp; RPC
+                          </p>
+                        </div>
+                      </Link>
+                    </div>
+                  )}
+                </div>
               </div>
             </nav>
           </div>
@@ -408,9 +513,18 @@ export function Header() {
                   : "pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-white/60 transition-colors"
               }
             >
-              <span>Perps</span>
-              <span className="rounded bg-[#E3F8EC] px-1 py-0.2 text-[8px] font-bold text-[#06964A] ml-1">
-                LIVE
+              <span className="flex items-center gap-1">
+                <span className="inline-block size-1.5 rounded-full bg-[#00D964]" />
+                <span>Perps</span>
+                <span
+                  className={
+                    pathname === "/" && t.mode === "perps"
+                      ? "rounded bg-white/20 px-1 py-0.2 text-[8px] font-bold text-white tracking-wider"
+                      : "rounded bg-[#E3F8EC] px-1 py-0.2 text-[8px] font-bold text-[#06964A] tracking-wider"
+                  }
+                >
+                  LIVE
+                </span>
               </span>
             </Link>
             <Link
@@ -422,9 +536,17 @@ export function Header() {
                   : "pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-white/60 transition-colors"
               }
             >
-              <span>1000x</span>
-              <span className="rounded bg-[#FFECEA] px-1 py-0.2 text-[8px] font-bold text-[#FF3B30] ml-1">
-                MAX
+              <span className="flex items-center gap-1">
+                <span>1000x</span>
+                <span
+                  className={
+                    pathname === "/trade" && t.mode === "paper1000x"
+                      ? "rounded bg-white/20 px-1 py-0.2 text-[8px] font-bold text-white tracking-wider"
+                      : "rounded bg-[#FFECEA] px-1 py-0.2 text-[8px] font-bold text-[#FF3B30] tracking-wider"
+                  }
+                >
+                  MAX
+                </span>
               </span>
             </Link>
           </div>
@@ -439,9 +561,22 @@ export function Header() {
                   : "pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-white/60 transition-colors"
               }
             >
-              <span>Goal</span>
-              <span className="rounded bg-[#E3F8EC] px-1 py-0.2 text-[8px] font-bold text-[#06964A] ml-1">
-                0DTE
+              <span className="flex items-center gap-1">
+                <Target
+                  className={`size-2.5 ${
+                    pathname === "/goal" ? "text-[#00D964]" : "text-[#06964A]"
+                  }`}
+                />
+                <span>Goal</span>
+                <span
+                  className={
+                    pathname === "/goal"
+                      ? "rounded bg-white/20 px-1 py-0.2 text-[8px] font-bold text-white tracking-wider"
+                      : "rounded bg-[#E3F8EC] px-1 py-0.2 text-[8px] font-bold text-[#06964A] tracking-wider"
+                  }
+                >
+                  0DTE
+                </span>
               </span>
             </Link>
             <Link
@@ -452,9 +587,22 @@ export function Header() {
                   : "pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-white/60 transition-colors"
               }
             >
-              <span>Boost</span>
-              <span className="rounded bg-[#FAF5FF] px-1 py-0.2 text-[8px] font-bold text-[#7C3AED] ml-1">
-                100×
+              <span className="flex items-center gap-1">
+                <Zap
+                  className={`size-2.5 ${
+                    pathname === "/boost" ? "text-[#C084FC]" : "text-[#7C3AED]"
+                  }`}
+                />
+                <span>Boost</span>
+                <span
+                  className={
+                    pathname === "/boost"
+                      ? "rounded bg-white/20 px-1 py-0.2 text-[8px] font-bold text-white tracking-wider"
+                      : "rounded bg-[#FAF5FF] px-1 py-0.2 text-[8px] font-bold text-[#7C3AED] tracking-wider"
+                  }
+                >
+                  100×
+                </span>
               </span>
             </Link>
           </div>
