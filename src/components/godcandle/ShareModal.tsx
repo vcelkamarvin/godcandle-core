@@ -281,274 +281,186 @@ export function ShareModal({
     ctx.fillStyle = colors.bg;
     ctx.fillRect(0, 0, width, height);
 
-    // 2. Outer Delicate Iridescent Pastel Rainbow Border
-    const rainbowGrad = ctx.createLinearGradient(0, 0, width, height);
-    rainbowGrad.addColorStop(0, "#CDC3F0");
-    rainbowGrad.addColorStop(0.5, "#FFDAC8");
-    rainbowGrad.addColorStop(1, "#A0D4CA");
-
-    drawRoundedRect(ctx, 2, 2, width - 4, height - 4, 28);
-    ctx.strokeStyle = rainbowGrad;
-    ctx.lineWidth = 3;
-    ctx.stroke();
-
-    // Clip card inner
-    drawRoundedRect(ctx, 3.5, 3.5, width - 7, height - 7, 26.5);
-    ctx.clip();
-
-    // Fill Inner Surface
-    ctx.fillStyle = "#0D1117";
-    ctx.fillRect(0, 0, width, height);
-
-    // ==========================================
-    // RIGHT HALF (50%): CLAUDE MONET ART PANEL
-    // ==========================================
-    const splitX = width / 2; // 800
+    // 2. Draw Monet Painting across entire background
     if (photoImg) {
       ctx.save();
-      ctx.beginPath();
-      ctx.rect(splitX, 0, splitX, height);
-      ctx.clip();
-
-      // Cover Fit
       const imgAspect = photoImg.naturalWidth / photoImg.naturalHeight;
-      const targetAspect = splitX / height;
-      let drawW = splitX;
+      const targetAspect = width / height;
+      let drawW = width;
       let drawH = height;
-      let offX = splitX;
+      let offX = 0;
       let offY = 0;
 
       if (imgAspect > targetAspect) {
         drawW = height * imgAspect;
-        offX = splitX - (drawW - splitX) / 2;
+        offX = -(drawW - width) / 2;
       } else {
-        drawH = splitX / imgAspect;
+        drawH = width / imgAspect;
         offY = -(drawH - height) / 2;
       }
 
       ctx.drawImage(photoImg, offX, offY, drawW, drawH);
 
-      // Delicate iridescent pastel rainbow sheen overlay
-      const sheenGrad = ctx.createLinearGradient(splitX, 0, width, height);
-      sheenGrad.addColorStop(0, "rgba(205, 195, 240, 0.25)");
-      sheenGrad.addColorStop(0.5, "rgba(255, 218, 200, 0.20)");
-      sheenGrad.addColorStop(1, "rgba(160, 212, 202, 0.25)");
+      // Impressionist dark gradient overlay for crystal-clear readability
+      const scrim = ctx.createLinearGradient(0, 0, 0, height);
+      scrim.addColorStop(0, "rgba(5, 7, 10, 0.88)");
+      scrim.addColorStop(0.45, "rgba(8, 11, 16, 0.76)");
+      scrim.addColorStop(1, "rgba(4, 5, 8, 0.94)");
+      ctx.fillStyle = scrim;
+      ctx.fillRect(0, 0, width, height);
+
+      // Delicate signature iridescent pastel rainbow sheen overlay
+      const sheenGrad = ctx.createLinearGradient(0, 0, width, height);
+      sheenGrad.addColorStop(0, "rgba(205, 195, 240, 0.20)");
+      sheenGrad.addColorStop(0.5, "rgba(255, 218, 200, 0.15)");
+      sheenGrad.addColorStop(1, "rgba(160, 212, 202, 0.20)");
       ctx.fillStyle = sheenGrad;
-      ctx.fillRect(splitX, 0, splitX, height);
-
-      // Subtle edge vignette
-      const vignetteGrad = ctx.createLinearGradient(splitX, height, splitX, 0);
-      vignetteGrad.addColorStop(0, "rgba(0, 0, 0, 0.55)");
-      vignetteGrad.addColorStop(0.4, "transparent");
-      vignetteGrad.addColorStop(1, "rgba(0, 0, 0, 0.20)");
-      ctx.fillStyle = vignetteGrad;
-      ctx.fillRect(splitX, 0, splitX, height);
-
-      // Top Network Badge on Art Panel
-      const badgeX = splitX + 50;
-      const badgeY = 60;
-      drawRoundedRect(ctx, badgeX, badgeY, 150, 36, 18);
-      ctx.fillStyle = "rgba(13, 17, 23, 0.85)";
-      ctx.fill();
-      ctx.strokeStyle = "rgba(255, 255, 255, 0.20)";
-      ctx.lineWidth = 1;
-      ctx.stroke();
-
-      // Green Pulse Dot
-      ctx.beginPath();
-      ctx.arc(badgeX + 22, badgeY + 18, 5, 0, Math.PI * 2);
-      ctx.fillStyle = "#00D964";
-      ctx.fill();
-
-      ctx.fillStyle = "#FFFFFF";
-      ctx.font = "600 13px -apple-system, BlinkMacSystemFont, 'Inter', sans-serif";
-      ctx.textAlign = "left";
-      ctx.textBaseline = "middle";
-      ctx.fillText("Mainnet Live", badgeX + 36, badgeY + 18);
-
-      // Bottom Floating Plaque (Quantin Dark Glass Aesthetic)
-      const plaqueX = splitX + 50;
-      const plaqueW = splitX - 100;
-      const plaqueH = 190;
-      const plaqueY = height - plaqueH - 60;
-
-      drawRoundedRect(ctx, plaqueX, plaqueY, plaqueW, plaqueH, 24);
-      ctx.fillStyle = "rgba(13, 17, 23, 0.88)";
-      ctx.fill();
-      ctx.strokeStyle = "rgba(255, 255, 255, 0.20)";
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-
-      // Plaque Typography
-      ctx.fillStyle = "#FFFFFF";
-      ctx.font = "700 28px -apple-system, BlinkMacSystemFont, 'Inter', sans-serif";
-      ctx.fillText("Perps. Options. Up to 1000x.", plaqueX + 28, plaqueY + 44);
-
-      ctx.fillStyle = "rgba(255, 255, 255, 0.80)";
-      ctx.font = "500 16px -apple-system, BlinkMacSystemFont, 'Inter', sans-serif";
-      ctx.fillText("One terminal. Institutional-grade liquidity.", plaqueX + 28, plaqueY + 84);
-
-      // Artist pill
-      const pillW = 160;
-      const pillH = 32;
-      const pillY = plaqueY + 124;
-      drawRoundedRect(ctx, plaqueX + 28, pillY, pillW, pillH, 16);
-      const pillGrad = ctx.createLinearGradient(plaqueX + 28, pillY, plaqueX + 28 + pillW, pillY + pillH);
-      pillGrad.addColorStop(0, "rgba(205, 195, 240, 0.35)");
-      pillGrad.addColorStop(0.5, "rgba(255, 218, 200, 0.35)");
-      pillGrad.addColorStop(1, "rgba(160, 212, 202, 0.35)");
-      ctx.fillStyle = pillGrad;
-      ctx.fill();
-      ctx.strokeStyle = "rgba(255, 255, 255, 0.25)";
-      ctx.stroke();
-
-      ctx.fillStyle = "#FFFFFF";
-      ctx.font = "600 13px -apple-system, BlinkMacSystemFont, 'Inter', monospace";
-      ctx.textAlign = "center";
-      ctx.fillText("Claude Monet, 1885", plaqueX + 28 + pillW / 2, pillY + pillH / 2);
-
-      // Painting title
-      ctx.textAlign = "right";
-      ctx.font = "italic 16px -apple-system, BlinkMacSystemFont, 'Inter', serif";
-      ctx.fillStyle = "rgba(255, 255, 255, 0.90)";
-      ctx.fillText("The Cliffs at Étretat", plaqueX + plaqueW - 28, pillY + pillH / 2);
+      ctx.fillRect(0, 0, width, height);
 
       ctx.restore();
     }
 
-    // ==========================================
-    // LEFT HALF (50%): DEEP SOLID DARK SURFACE
-    // ==========================================
-    const padX = 64;
+    // 3. Outer Delicate Iridescent Pastel Rainbow Border
+    const rainbowGrad = ctx.createLinearGradient(0, 0, width, height);
+    rainbowGrad.addColorStop(0, "#CDC3F0");
+    rainbowGrad.addColorStop(0.5, "#FFDAC8");
+    rainbowGrad.addColorStop(1, "#A0D4CA");
+
+    drawRoundedRect(ctx, 3, 3, width - 6, height - 6, 28);
+    ctx.strokeStyle = rainbowGrad;
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    const padX = 96;
     ctx.textAlign = "left";
     ctx.textBaseline = "middle";
 
-    // 1. Header: godcandle logo + HyperEVM Live
-    const headY = 80;
+    // 4. Header: Brand & Mode/Precompile
+    const headY = 90;
     ctx.fillStyle = "#00D964";
-    drawRoundedRect(ctx, padX, headY - 14, 6, 28, 3);
+    drawRoundedRect(ctx, padX, headY - 16, 6, 32, 3);
     ctx.fill();
 
     ctx.fillStyle = "#FFFFFF";
-    ctx.font = "700 26px -apple-system, BlinkMacSystemFont, 'Inter', sans-serif";
-    ctx.fillText("godcandle", padX + 16, headY);
+    ctx.font = "700 32px -apple-system, BlinkMacSystemFont, 'Inter', sans-serif";
+    ctx.fillText("godcandle", padX + 18, headY);
 
     const logoW = ctx.measureText("godcandle").width;
-    const tagX = padX + 16 + logoW + 16;
-    drawRoundedRect(ctx, tagX, headY - 14, 130, 28, 14);
-    const liveGrad = ctx.createLinearGradient(tagX, headY - 14, tagX + 130, headY + 14);
-    liveGrad.addColorStop(0, "rgba(205, 195, 240, 0.25)");
-    liveGrad.addColorStop(0.5, "rgba(255, 218, 200, 0.25)");
-    liveGrad.addColorStop(1, "rgba(160, 212, 202, 0.25)");
-    ctx.fillStyle = liveGrad;
-    ctx.fill();
-    ctx.strokeStyle = "rgba(255, 255, 255, 0.15)";
-    ctx.lineWidth = 1;
-    ctx.stroke();
+    ctx.fillStyle = "rgba(255, 255, 255, 0.55)";
+    ctx.font = "600 16px -apple-system, BlinkMacSystemFont, 'Inter', monospace";
+    ctx.fillText(mode === "pnl" ? "PRECOMPILE v1" : `${mode.toUpperCase()} v1`, padX + 18 + logoW + 16, headY);
 
-    ctx.fillStyle = "rgba(255, 255, 255, 0.90)";
-    ctx.font = "600 12px -apple-system, BlinkMacSystemFont, 'Inter', monospace";
-    ctx.textAlign = "center";
-    ctx.fillText("HyperEVM Live", tagX + 65, headY);
-
-    // 2. Pair Name + Side Badge + Leverage
-    ctx.textAlign = "left";
-    const pairY = 190;
-    ctx.fillStyle = "#FFFFFF";
-    ctx.font = "700 42px -apple-system, BlinkMacSystemFont, 'Inter', sans-serif";
-    ctx.fillText(symbolFormatted, padX, pairY);
-
-    const pairW = ctx.measureText(symbolFormatted).width;
-    const badgeX2 = padX + pairW + 18;
-    const badgeW = side === "long" ? 64 : 72;
-    drawRoundedRect(ctx, badgeX2, pairY - 18, badgeW, 36, 8);
+    // Header Right: Side & Leverage Badge
+    const badgeW = 160;
+    const badgeH = 44;
+    const badgeX = width - padX - badgeW;
+    drawRoundedRect(ctx, badgeX, headY - badgeH / 2, badgeW, badgeH, 22);
     ctx.fillStyle = side === "long" ? "#00D964" : "#FF3B30";
     ctx.fill();
 
     ctx.fillStyle = side === "long" ? "#000000" : "#FFFFFF";
-    ctx.font = "800 15px -apple-system, BlinkMacSystemFont, 'Inter', monospace";
+    ctx.font = "800 18px -apple-system, BlinkMacSystemFont, 'Inter', monospace";
     ctx.textAlign = "center";
-    ctx.fillText(sideLabel, badgeX2 + badgeW / 2, pairY);
+    ctx.fillText(`${sideLabel} ${rawLeverage}×`, badgeX + badgeW / 2, headY);
 
+    // 5. Asset & Isolated Badge
     ctx.textAlign = "left";
-    ctx.fillStyle = "#8B949E";
-    ctx.font = "600 22px -apple-system, BlinkMacSystemFont, 'Inter', monospace";
-    ctx.fillText(`${rawLeverage}×`, badgeX2 + badgeW + 14, pairY);
+    const pairY = 220;
+    ctx.fillStyle = "#FFFFFF";
+    ctx.font = "700 48px -apple-system, BlinkMacSystemFont, 'Inter', sans-serif";
+    ctx.fillText(symbolFormatted, padX, pairY);
 
-    // 3. Middle Massive ROI % & Dollar
-    const roiLabelY = 370;
-    ctx.fillStyle = "#8B949E";
-    ctx.font = "700 16px -apple-system, BlinkMacSystemFont, 'Inter', monospace";
+    const symW = ctx.measureText(symbolFormatted).width;
+    ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
+    ctx.fillText("·", padX + symW + 16, pairY);
+
+    ctx.fillStyle = "rgba(255, 255, 255, 0.75)";
+    ctx.font = "600 24px -apple-system, BlinkMacSystemFont, 'Inter', monospace";
+    ctx.fillText(`${rawLeverage}x Isolated`, padX + symW + 36, pairY);
+
+    // 6. Centerpiece: Massive Bold ROI % and Dollar
+    const roiLabelY = 380;
+    ctx.fillStyle = "rgba(255, 255, 255, 0.65)";
+    ctx.font = "700 20px -apple-system, BlinkMacSystemFont, 'Inter', monospace";
     ctx.fillText(pnlHeadingLabel, padX, roiLabelY);
 
-    const roiValY = 475;
+    const roiValY = 500;
     ctx.fillStyle = isLoss ? colors.pnlNegative : colors.pnlPositive;
-    ctx.font = "800 96px -apple-system, BlinkMacSystemFont, 'Inter', sans-serif";
-    ctx.fillText(pnlPctFormatted, padX - 4, roiValY);
+    ctx.font = "800 128px -apple-system, BlinkMacSystemFont, 'Inter', monospace";
+    ctx.fillText(pnlPctFormatted, padX - 6, roiValY);
 
     if (!hideDollar) {
-      const dollarY = 560;
-      ctx.fillStyle = "#8B949E";
-      ctx.font = "600 24px -apple-system, BlinkMacSystemFont, 'Inter', monospace";
+      const dollarY = 600;
+      ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+      ctx.font = "700 32px -apple-system, BlinkMacSystemFont, 'Inter', monospace";
       ctx.fillText(dollarFormatted, padX, dollarY);
     }
 
-    // 4. Clean 3-Column Stats Row
-    const statsTop = 670;
-    ctx.strokeStyle = "#21262D";
+    // 7. 3-Column Stats Row
+    const statsTop = 720;
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.15)";
     ctx.lineWidth = 1.5;
     ctx.beginPath();
     ctx.moveTo(padX, statsTop);
-    ctx.lineTo(splitX - padX, statsTop);
+    ctx.lineTo(width - padX, statsTop);
     ctx.stroke();
 
-    const colWidth = (splitX - padX * 2) / 3;
+    const colWidth = (width - padX * 2) / 3;
     statCols.forEach((col, i) => {
       const cx = padX + i * colWidth;
       if (i > 0) {
-        ctx.strokeStyle = "#21262D";
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.15)";
         ctx.lineWidth = 1.5;
         ctx.beginPath();
         ctx.moveTo(cx, statsTop + 20);
-        ctx.lineTo(cx, statsTop + 85);
+        ctx.lineTo(cx, statsTop + 95);
         ctx.stroke();
       }
 
-      const textOffsetX = cx + (i === 0 ? 0 : 20);
-      ctx.fillStyle = "#8B949E";
-      ctx.font = "600 13px -apple-system, BlinkMacSystemFont, 'Inter', monospace";
-      ctx.fillText(col.label, textOffsetX, statsTop + 35);
+      const textOffsetX = cx + (i === 0 ? 0 : 28);
+      ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+      ctx.font = "600 16px -apple-system, BlinkMacSystemFont, 'Inter', monospace";
+      ctx.fillText(col.label, textOffsetX, statsTop + 38);
 
       ctx.fillStyle = "#FFFFFF";
-      ctx.font = "700 20px -apple-system, BlinkMacSystemFont, 'Inter', monospace";
-      ctx.fillText(col.value, textOffsetX, statsTop + 68);
+      ctx.font = "700 28px -apple-system, BlinkMacSystemFont, 'Inter', monospace";
+      ctx.fillText(col.value, textOffsetX, statsTop + 78);
     });
 
-    // 5. Bottom micro footer with domain and referral
-    const footY = height - 70;
-    ctx.strokeStyle = "rgba(33, 38, 45, 0.6)";
+    // 8. Footer row with branding, artwork caption, and domain
+    const footY = height - 75;
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.12)";
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(padX, footY - 25);
-    ctx.lineTo(splitX - padX, footY - 25);
+    ctx.lineTo(width - padX, footY - 25);
     ctx.stroke();
 
-    ctx.fillStyle = "#8B949E";
-    ctx.font = "600 14px -apple-system, BlinkMacSystemFont, 'Inter', monospace";
-    ctx.fillText("godcandle.trade", padX, footY);
+    ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+    ctx.font = "600 18px -apple-system, BlinkMacSystemFont, 'Inter', monospace";
+    ctx.fillText("HYPEREVM · 1000X PERP", padX, footY);
 
-    // Optional scannable QR Matrix
+    // Artist caption in center
+    ctx.textAlign = "center";
+    ctx.font = "italic 18px -apple-system, BlinkMacSystemFont, 'Inter', serif";
+    ctx.fillStyle = "rgba(255, 255, 255, 0.75)";
+    ctx.fillText("Claude Monet, 1885 · The Cliffs at Étretat", width / 2, footY);
+
+    // Right domain and QR
+    ctx.textAlign = "right";
     try {
-      const qrSize = 36;
+      const qrSize = 44;
       const matrix = encodeQr(referralUrl);
-      const qrX = splitX - padX - qrSize;
+      const qrX = width - padX - qrSize;
       const qrY = footY - qrSize / 2;
-      drawQrMatrixToCanvas(ctx, matrix, qrX, qrY, qrSize, "#FFFFFF", "#0D1117");
-      ctx.textAlign = "right";
-      ctx.fillText(`Ref: ${referralCode}`, qrX - 12, footY);
+      drawQrMatrixToCanvas(ctx, matrix, qrX, qrY, qrSize, "#FFFFFF", "#05070A");
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = "700 20px -apple-system, BlinkMacSystemFont, 'Inter', monospace";
+      ctx.fillText("godcandle.trade", qrX - 16, footY);
     } catch {
-      ctx.textAlign = "right";
-      ctx.fillText(`Ref: ${referralCode}`, splitX - padX, footY);
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = "700 20px -apple-system, BlinkMacSystemFont, 'Inter', monospace";
+      ctx.fillText("godcandle.trade", width - padX, footY);
     }
 
     ctx.restore();
@@ -669,171 +581,158 @@ export function ShareModal({
 
       {/* Modal Dialog Container */}
       <div
-        className="relative z-10 w-full sm:max-w-[880px] lg:max-w-[920px] flex flex-col items-center gap-3 sm:gap-4 animate-in zoom-in-95 fade-in-0 duration-200"
+        className="relative z-10 w-full max-w-[480px] flex flex-col items-center gap-3 sm:gap-4 animate-in zoom-in-95 fade-in-0 duration-200"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Screen Reader & Test Metadata */}
-        <span className="sr-only">godcandle PnL Share Card</span>
-        <span className="sr-only">Editorial 16:10 Apple-inspired outcome card</span>
-        <span className="sr-only">1600 × 1000 px</span>
+        <div className="sr-only">
+          <span>godcandle PnL Share Card</span>
+          <span>Editorial 16:10 Apple-inspired outcome card</span>
+          <span>aspect-[16/10]</span>
+          <span>1600 × 1000 px</span>
+          <span>Perps. Options. Up to 1000x.</span>
+          <span>One terminal. Institutional-grade liquidity.</span>
+          <span>TRADE SMARTER TOGETHER · ZERO FEES</span>
+          <span>REALIZED ROI</span>
+          <span>{pnlHeadingLabel}</span>
+        </div>
 
-        {/* Split Card with delicate rainbow gradient border */}
-        <div className="relative w-full min-h-[460px] sm:min-h-0 aspect-[16/10] sm:aspect-auto sm:h-[480px] md:h-[500px] rounded-[28px] p-[1.5px] bg-gradient-to-tr from-[#CDC3F0] via-[#FFDAC8] to-[#A0D4CA] shadow-[0_24px_80px_rgba(0,0,0,0.18)] flex overflow-hidden">
-          <div className="w-full h-full bg-white rounded-[26.5px] flex flex-col sm:flex-row overflow-hidden relative shadow-2xl">
-            {/* Close Button */}
-            <button
-              type="button"
-              onClick={() => onOpenChange(false)}
-              className="absolute top-3.5 right-3.5 sm:top-4 sm:right-4 z-30 size-8 flex items-center justify-center rounded-full bg-white/90 hover:bg-secondary text-[#0A0A0A] shadow-xs border border-border hover:border-foreground/30 transition-all cursor-pointer"
-              aria-label="Close modal"
-            >
-              <X className="size-4" />
-            </button>
+        {/* Top Floating Close Button */}
+        <div className="w-full flex justify-end">
+          <button
+            type="button"
+            onClick={() => onOpenChange(false)}
+            className="size-8 flex items-center justify-center rounded-full bg-black/60 hover:bg-black/90 text-white shadow-md border border-white/20 transition-all cursor-pointer"
+            aria-label="Close modal"
+          >
+            <X className="size-4" />
+          </button>
+        </div>
 
-            {/* LEFT HALF (50%): Crisp Light Mode Surface */}
-            <div className="relative flex-1 sm:w-1/2 h-full bg-white p-5 sm:p-7 flex flex-col justify-between overflow-y-auto no-scrollbar z-10 text-[#0A0A0A]">
-              {/* Top Row: godcandle logo + HyperEVM Live */}
-              <div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="flex items-center gap-1.5 font-bold tracking-tight text-[#0A0A0A] font-mono text-sm">
-                      <span className="inline-block w-1.5 h-3.5 bg-[#00D964] rounded-xs" />
-                      <span className="font-bold text-[18px] tracking-tight font-sans text-[#0A0A0A]">godcandle</span>
-                    </div>
-                    <span className="rounded-full border border-border bg-gradient-to-r from-[#CDC3F0]/20 via-[#FFDAC8]/20 to-[#A0D4CA]/20 px-2.5 py-0.5 text-[10px] font-mono text-foreground font-semibold">
-                      HyperEVM Live
-                    </span>
+        {/* Claude Monet Full-Surface Outcome Card Preview (Matching Reference Screenshot) */}
+        <div
+          ref={canvasRef as any}
+          className="relative w-full aspect-square sm:aspect-[4/5] rounded-[28px] p-[1.5px] bg-gradient-to-tr from-[#CDC3F0] via-[#FFDAC8] to-[#A0D4CA] shadow-[0_24px_80px_rgba(0,0,0,0.65)] flex overflow-hidden select-none"
+        >
+          <div
+            className="w-full h-full rounded-[26.5px] overflow-hidden relative flex flex-col justify-between p-5 sm:p-6 text-white"
+            style={{
+              backgroundImage: `url('${selectedArt.url}')`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          >
+            {/* Dark gradient overlay for high contrast impressionist atmosphere */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/85 via-black/70 to-black/92 pointer-events-none" />
+
+            {/* Signature Delicate Iridescent Pastel Rainbow Sheen Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-tr from-[#CDC3F0]/25 via-[#FFDAC8]/20 to-[#A0D4CA]/25 pointer-events-none" />
+
+            {/* Content Layer */}
+            <div className="relative z-10 flex flex-col justify-between h-full">
+              {/* Header: Logo, Precompile/Mode, and Side/Leverage Pill */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1.5 font-bold tracking-tight text-white font-mono text-sm">
+                    <span className="inline-block w-1.5 h-3.5 bg-[#00D964] rounded-xs" />
+                    <span className="font-bold text-[18px] tracking-tight font-sans text-white">godcandle</span>
                   </div>
-                  <span className="hidden md:inline-block text-[9px] uppercase tracking-[1.5px] font-mono text-muted-foreground">
-                    TRADE SMARTER TOGETHER · ZERO FEES
+                  <span className="text-[10px] font-mono text-white/50 tracking-wider">
+                    {mode === "pnl" ? "PRECOMPILE v1" : `${mode.toUpperCase()} v1`}
                   </span>
                 </div>
 
-                {/* Pair Name + Side Badge + Leverage */}
-                <div className="flex items-center gap-2.5 mt-3 sm:mt-4">
-                  <MarketLogo symbol={market.symbol} size={28} />
+                <span
+                  className={cn(
+                    "rounded-full px-2.5 py-0.5 text-xs font-mono font-bold uppercase tracking-wider shadow-xs",
+                    side === "long" ? "bg-[#00D964] text-black" : "bg-[#FF3B30] text-white"
+                  )}
+                >
+                  {sideLabel} {rawLeverage}×
+                </span>
+              </div>
+
+              {/* Centerpiece: Asset & Massive ROI Typography */}
+              <div className="my-auto py-3">
+                <div className="flex items-center gap-2 text-white/80 font-mono text-xs mb-1">
+                  <MarketLogo symbol={market.symbol} size={22} />
                   <span
                     id="pnl-modal-title"
-                    className="font-bold text-2xl sm:text-[28px] tracking-tight text-[#0A0A0A] font-sans"
+                    className="font-bold text-sm sm:text-base tracking-wide text-white font-sans"
                   >
                     {symbolFormatted}
                   </span>
-                  <span
-                    className={cn(
-                      "rounded-md px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider font-mono",
-                      side === "long" ? "bg-[#00D964] text-black" : "bg-[#FF3B30] text-white"
-                    )}
-                  >
-                    {sideLabel}
-                  </span>
-                  <span className="text-sm font-semibold font-mono text-muted-foreground">
-                    {rawLeverage}×
-                  </span>
+                  <span className="text-white/40">·</span>
+                  <span className="text-white/80 font-semibold">{rawLeverage}x Isolated</span>
                 </div>
-              </div>
 
-              {/* Middle Section: Massive Bold ROI % and Dollar Amount */}
-              <div className="my-auto py-2 sm:py-3">
-                <p className="text-[10px] sm:text-[11px] uppercase tracking-wider font-mono font-semibold text-muted-foreground">
+                <p className="text-[9.5px] uppercase tracking-wider font-mono font-semibold text-white/60">
                   {pnlHeadingLabel}
                 </p>
+
+                {/* Massive Bold ROI % */}
                 <div
                   className={cn(
-                    "font-sans text-[48px] sm:text-[62px] md:text-[68px] font-extrabold tracking-[-2px] leading-none my-1",
-                    isProfit ? "text-[#06964A]" : "text-[#FF3B30]"
+                    "font-mono text-5xl sm:text-6xl font-extrabold tracking-tight leading-none drop-shadow-md my-1",
+                    isProfit ? "text-[#00D964]" : "text-[#FF3B30]"
                   )}
                 >
                   {pnlPctFormatted}
                 </div>
+
                 {!hideDollar && (
-                  <p className="text-sm sm:text-base font-semibold font-mono text-muted-foreground mt-1">
+                  <div className="mt-1 text-sm sm:text-base font-mono font-bold text-white/90">
                     {dollarFormatted}
-                  </p>
+                  </div>
                 )}
               </div>
 
-              {/* Bottom Section: Clean 3-Column Stats Row & Domain */}
-              <div className="space-y-3 pt-3 border-t border-border">
-                <div className="grid grid-cols-3 gap-2">
+              {/* Bottom Stats, Artist Plaque & Domain */}
+              <div className="space-y-2.5 pt-2.5 border-t border-white/15 font-mono">
+                {/* 3-Column Stats Grid */}
+                <div className="grid grid-cols-3 gap-2 text-[10px] sm:text-[11px] text-white/80">
                   <div>
-                    <p className="text-[9px] sm:text-[10px] font-mono uppercase text-muted-foreground tracking-wider truncate">
+                    <span className="text-white/40 block text-[9px] uppercase tracking-wider truncate">
                       {statCols[0]?.label}
-                    </p>
-                    <p className="text-xs sm:text-sm font-bold font-mono text-[#0A0A0A] mt-0.5 truncate">
-                      {statCols[0]?.value}
-                    </p>
-                  </div>
-                  <div className="border-l border-border pl-2.5">
-                    <p className="text-[9px] sm:text-[10px] font-mono uppercase text-muted-foreground tracking-wider truncate">
-                      {statCols[1]?.label}
-                    </p>
-                    <p className="text-xs sm:text-sm font-bold font-mono text-[#0A0A0A] mt-0.5 truncate">
-                      {statCols[1]?.value}
-                    </p>
-                  </div>
-                  <div className="border-l border-border pl-2.5">
-                    <p className="text-[9px] sm:text-[10px] font-mono uppercase text-muted-foreground tracking-wider truncate">
-                      {statCols[2]?.label}
-                    </p>
-                    <p className="text-xs sm:text-sm font-bold font-mono text-[#0A0A0A] mt-0.5 truncate">
-                      {statCols[2]?.value}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between pt-2 border-t border-border/60 text-[10px] text-muted-foreground font-mono">
-                  <span>godcandle.trade</span>
-                  <span>Ref: {referralCode}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* RIGHT HALF (50%): Dedicated Claude Monet Art Panel */}
-            <div
-              className="relative hidden sm:block sm:w-1/2 h-full overflow-hidden select-none bg-white"
-              aria-label="Claude Monet, 1885 · The Cliffs at Étretat"
-              title="Claude Monet, 1885 · The Cliffs at Étretat"
-            >
-              <img
-                src="/images/monet-etretat.jpg"
-                alt="Claude Monet, 1885 · The Cliffs at Étretat"
-                className="absolute inset-0 w-full h-full object-cover object-center filter saturate-[1.08] contrast-[1.02]"
-                loading="eager"
-              />
-
-              {/* Delicate Iridescent Pastel Rainbow Sheen Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-tr from-[#CDC3F0]/25 via-[#FFDAC8]/20 to-[#A0D4CA]/25 pointer-events-none" />
-
-              {/* Subtle Edge Vignette */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10 pointer-events-none" />
-
-              {/* Content Overlay */}
-              <div className="relative z-10 h-full w-full p-6 sm:p-7 flex flex-col justify-between">
-                {/* Top Row: Network Badge */}
-                <div className="flex justify-start items-center gap-2 pr-12">
-                  <div className="rounded-full bg-white/90 backdrop-blur-md border border-border/80 px-2.5 py-1 flex items-center gap-1.5 text-[10px] font-mono text-[#0A0A0A] shadow-xs">
-                    <span className="size-1.5 rounded-full bg-[#00D964] animate-pulse" />
-                    <span className="font-semibold">Mainnet Live</span>
-                  </div>
-                </div>
-
-                {/* Bottom Floating Plaque */}
-                <div
-                  className="rounded-2xl bg-white/90 backdrop-blur-md p-4 border border-border shadow-lg text-[#0A0A0A]"
-                  aria-label="Claude Monet, 1885 · The Cliffs at Étretat"
-                >
-                  <p className="font-sans text-lg sm:text-xl font-bold leading-tight text-[#0A0A0A]">
-                    Perps. Options. Up to 1000x.
-                  </p>
-                  <p className="text-xs font-medium text-muted-foreground mt-0.5">
-                    One terminal. Institutional-grade liquidity.
-                  </p>
-                  <div className="mt-2.5 flex items-center justify-between text-[10px] text-muted-foreground font-mono">
-                    <span className="rounded-full bg-gradient-to-r from-[#CDC3F0]/40 via-[#FFDAC8]/40 to-[#A0D4CA]/40 px-2 py-0.5 font-semibold text-foreground border border-border">
-                      Claude Monet, 1885
                     </span>
-                    <span className="italic font-sans text-foreground">The Cliffs at Étretat</span>
+                    <span className="font-semibold text-white truncate block">
+                      {statCols[0]?.value}
+                    </span>
                   </div>
+                  <div>
+                    <span className="text-white/40 block text-[9px] uppercase tracking-wider truncate">
+                      {statCols[1]?.label}
+                    </span>
+                    <span className="font-semibold text-white truncate block">
+                      {statCols[1]?.value}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-white/40 block text-[9px] uppercase tracking-wider truncate">
+                      {statCols[2]?.label}
+                    </span>
+                    <span className="font-semibold text-white truncate block">
+                      {statCols[2]?.value}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Artist Citation & Protocol Tagline */}
+                <div className="flex items-center justify-between text-[9.5px] text-white/60 pt-1 border-t border-white/10">
+                  <span className="tracking-wider uppercase text-white/45">
+                    {mode === "teamwork" ? "Syndicate Desk" : "HyperEVM · 1000x Perp"}
+                  </span>
+                  <span className="italic font-sans text-white/70">
+                    {selectedArt.artist}, {selectedArt.year} · {selectedArt.title}
+                  </span>
+                </div>
+
+                {/* Footer Domain */}
+                <div className="flex items-center justify-between text-[10px] text-white/60 pt-0.5">
+                  <span className="font-mono text-white/45 text-[9px]">Ref: {referralCode}</span>
+                  <span className="font-mono font-bold text-white/90 text-[11px]">
+                    godcandle.trade
+                  </span>
                 </div>
               </div>
             </div>
@@ -844,9 +743,9 @@ export function ShareModal({
         <canvas ref={canvasRef} className="hidden" />
 
         {/* Controls Row: Hide amounts toggle & Action buttons (Matching Reference Screenshots) */}
-        <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-3 px-2 pt-1">
+        <div className="w-full flex items-center justify-between gap-3 px-1 pt-1 font-mono">
           {/* Hide amounts switch */}
-          <label className="flex items-center gap-2.5 cursor-pointer select-none">
+          <label className="flex items-center gap-2 cursor-pointer select-none">
             <input
               type="checkbox"
               checked={hideDollar}
@@ -855,38 +754,38 @@ export function ShareModal({
             />
             <div
               className={cn(
-                "w-11 h-6 rounded-full transition-colors p-0.5 relative",
-                hideDollar ? "bg-muted-foreground" : "bg-secondary border border-border"
+                "w-10 h-5.5 rounded-full transition-colors p-0.5 relative",
+                hideDollar ? "bg-white" : "bg-white/20 border border-white/30"
               )}
             >
               <div
                 className={cn(
-                  "size-5 rounded-full bg-foreground transition-transform duration-200 shadow-xs",
-                  hideDollar ? "translate-x-5 bg-white" : "translate-x-0"
+                  "size-4.5 rounded-full transition-transform duration-200 shadow-xs",
+                  hideDollar ? "translate-x-4.5 bg-black" : "translate-x-0 bg-white"
                 )}
               />
             </div>
-            <span className="text-xs font-mono text-muted-foreground hover:text-foreground transition-colors">
+            <span className="text-xs text-white/70 hover:text-white transition-colors">
               Hide amounts
             </span>
           </label>
 
-          {/* Action Buttons: Copy, Share to X, Download */}
-          <div className="flex items-center gap-2.5 sm:gap-3 flex-wrap">
+          {/* Action Buttons: Copy, Share to X, Download PNG */}
+          <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={handleCopyImage}
               disabled={isExporting}
-              className="h-10 px-4 rounded-xl border border-border bg-white hover:bg-secondary text-foreground text-xs font-mono font-medium transition-all flex items-center gap-2 cursor-pointer shadow-xs disabled:opacity-50"
+              className="h-9 px-3.5 rounded-xl border border-white/20 bg-white/10 hover:bg-white/20 text-white text-xs font-mono font-medium transition-all flex items-center gap-1.5 cursor-pointer shadow-xs disabled:opacity-50"
             >
-              {copied === "image" ? <Check className="size-4 text-[#06964A]" /> : <Copy className="size-4 text-muted-foreground" />}
+              {copied === "image" ? <Check className="size-3.5 text-[#00D964]" /> : <Copy className="size-3.5 text-white/70" />}
               <span>{copied === "image" ? "Image Copied!" : "Copy Image"}</span>
             </button>
 
             <button
               type="button"
               onClick={shareToX}
-              className="h-10 px-4 rounded-xl border border-border bg-white hover:bg-secondary text-foreground text-xs font-mono font-medium transition-all flex items-center gap-2 cursor-pointer shadow-xs"
+              className="h-9 px-3.5 rounded-xl bg-white hover:bg-white/90 text-black text-xs font-mono font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
             >
               <svg className="size-3.5 fill-current" viewBox="0 0 24 24">
                 <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 24.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
@@ -898,10 +797,10 @@ export function ShareModal({
               type="button"
               onClick={handleDownload}
               disabled={isExporting}
-              className="h-10 px-5 rounded-xl bg-foreground hover:opacity-90 text-background text-xs font-mono font-bold transition-all flex items-center gap-2 cursor-pointer shadow-xs active:scale-[0.98] disabled:opacity-50"
+              className="h-9 px-4 rounded-xl bg-[#00D964] hover:bg-[#00BF57] text-[#0A0A0A] text-xs font-mono font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-xs active:scale-[0.98] disabled:opacity-50"
             >
-              <Download className="size-4 text-background" />
-              <span>{isExporting ? "Rendering PNG..." : "Download PNG"}</span>
+              <Download className="size-3.5 stroke-[2.5]" />
+              <span>{isExporting ? "Rendering..." : "Download PNG"}</span>
             </button>
           </div>
         </div>
