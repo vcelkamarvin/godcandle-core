@@ -90,10 +90,10 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Col 4: Platform Navigation */}
+          {/* Col 4: Platform Navigation & Socials */}
           <div className="space-y-2.5">
             <span className="font-semibold text-muted-foreground text-[10px] uppercase tracking-wider block">
-              Documentation & Specs
+              Documentation & Socials
             </span>
             <ul className="space-y-1.5 text-[11px]">
               <li>
@@ -117,24 +117,48 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link to="/docs/token" className="text-muted-foreground hover:text-foreground transition-colors">
-                  CANDLE Tokenomics & Waterfall
-                </Link>
+                <a
+                  href="https://github.com/vcelkamarvin/godcandle-core"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
+                >
+                  <span>GitHub Repository</span>
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://x.com/godcandle_app"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
+                >
+                  <span>X (Twitter) @godcandle_app</span>
+                  <ExternalLink className="w-3 h-3" />
+                </a>
               </li>
             </ul>
           </div>
         </div>
 
-        <div className="pt-6 flex flex-wrap items-center justify-between text-muted-foreground text-[10px] gap-2">
+        {/* Leverage Trading Risk Disclaimer */}
+        <div className="py-4 border-b border-border/80 text-[10px] text-muted-foreground font-mono leading-relaxed">
+          <p>
+            <strong className="text-foreground">RISK DISCLAIMER:</strong> Trading perpetual futures and leveraged financial instruments involves a high degree of risk and can result in the loss of your entire investment. Leverage can magnify both gains and losses. godcandle currently operates as a non-custodial interface routing standard 1x–50x trades directly to Hyperliquid L1 order books via native Builder Code (GODCANDLE). Synthetic 1000x House Pool, Candle Cup automated rewards, and physical hardware are under active development. Ensure you fully understand the risks before trading.
+          </p>
+        </div>
+
+        <div className="pt-4 flex flex-wrap items-center justify-between text-muted-foreground text-[10px] gap-2">
           <div>
-            godcandle protocol © 2026 · Non-Custodial Trading Desk
+            godcandle protocol © 2026 · Non-Custodial Trading Desk · Builder Code: GODCANDLE
           </div>
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1">
               <Activity className="w-3 h-3 text-[#06964A]" />
-              Execution Engine: Active
+              Execution Engine: Active (Hyperliquid L1)
             </span>
-            <span>Zero Slippage · Zero Entry Fee</span>
+            <span>Zero Slippage · Zero Protocol Surcharge</span>
           </div>
         </div>
       </div>

@@ -15,6 +15,7 @@ import { Route as CandleRouteImport } from './routes/candle'
 import { Route as CupRouteImport } from './routes/cup'
 import { Route as DocsRouteImport } from './routes/docs'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
+import { Route as MainRouteImport } from './routes/main'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
 import { Route as StakingRouteImport } from './routes/staking'
 import { Route as TradeRouteImport } from './routes/trade'
@@ -51,6 +52,11 @@ const DocsRoute = DocsRouteImport.update({
 const LeaderboardRoute = LeaderboardRouteImport.update({
   id: '/leaderboard',
   path: '/leaderboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MainRoute = MainRouteImport.update({
+  id: '/main',
+  path: '/main',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PortfolioRoute = PortfolioRouteImport.update({
@@ -96,6 +102,7 @@ export interface FileRoutesByFullPath {
   '/cup': typeof CupRoute
   '/docs': typeof DocsRouteWithChildren
   '/leaderboard': typeof LeaderboardRoute
+  '/main': typeof MainRoute
   '/portfolio': typeof PortfolioRoute
   '/staking': typeof StakingRoute
   '/trade': typeof TradeRoute
@@ -110,6 +117,7 @@ export interface FileRoutesByTo {
   '/candle': typeof CandleRoute
   '/cup': typeof CupRoute
   '/leaderboard': typeof LeaderboardRoute
+  '/main': typeof MainRoute
   '/portfolio': typeof PortfolioRoute
   '/staking': typeof StakingRoute
   '/trade': typeof TradeRoute
@@ -126,6 +134,7 @@ export interface FileRoutesById {
   '/cup': typeof CupRoute
   '/docs': typeof DocsRouteWithChildren
   '/leaderboard': typeof LeaderboardRoute
+  '/main': typeof MainRoute
   '/portfolio': typeof PortfolioRoute
   '/staking': typeof StakingRoute
   '/trade': typeof TradeRoute
@@ -143,6 +152,7 @@ export interface FileRouteTypes {
     | '/cup'
     | '/docs'
     | '/leaderboard'
+    | '/main'
     | '/portfolio'
     | '/staking'
     | '/trade'
@@ -157,6 +167,7 @@ export interface FileRouteTypes {
     | '/candle'
     | '/cup'
     | '/leaderboard'
+    | '/main'
     | '/portfolio'
     | '/staking'
     | '/trade'
@@ -172,6 +183,7 @@ export interface FileRouteTypes {
     | '/cup'
     | '/docs'
     | '/leaderboard'
+    | '/main'
     | '/portfolio'
     | '/staking'
     | '/trade'
@@ -188,6 +200,7 @@ export interface RootRouteChildren {
   CupRoute: typeof CupRoute
   DocsRoute: typeof DocsRouteWithChildren
   LeaderboardRoute: typeof LeaderboardRoute
+  MainRoute: typeof MainRoute
   PortfolioRoute: typeof PortfolioRoute
   StakingRoute: typeof StakingRoute
   TradeRoute: typeof TradeRoute
@@ -235,6 +248,13 @@ declare module '@tanstack/react-router' {
       path: '/leaderboard'
       fullPath: '/leaderboard'
       preLoaderRoute: typeof LeaderboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/main': {
+      id: '/main'
+      path: '/main'
+      fullPath: '/main'
+      preLoaderRoute: typeof MainRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/portfolio': {
@@ -312,6 +332,7 @@ const rootRouteChildren: RootRouteChildren = {
   CupRoute: CupRoute,
   DocsRoute: DocsRouteWithChildren,
   LeaderboardRoute: LeaderboardRoute,
+  MainRoute: MainRoute,
   PortfolioRoute: PortfolioRoute,
   StakingRoute: StakingRoute,
   TradeRoute: TradeRoute,

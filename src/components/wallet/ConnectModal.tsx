@@ -181,12 +181,8 @@ export function ConnectModal() {
   });
 
   const handleOpenLogin = () => {
-    if (openConnectModal) {
-      openConnectModal();
-    } else {
-      setFlowState('default');
-      setIsModalOpen(true);
-    }
+    setFlowState('default');
+    setIsModalOpen(true);
   };
 
   const handleCloseLogin = () => {
@@ -459,11 +455,17 @@ export function ConnectModal() {
                   className="relative hidden sm:block sm:w-1/2 h-full overflow-hidden select-none bg-[#F6F6F4]"
                   aria-label="Claude Monet, 1885 · The Cliffs at Étretat"
                   title="Claude Monet, 1885 · The Cliffs at Étretat"
+                  style={{
+                    backgroundImage: "url('/images/monet-etretat.jpg')",
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                  }}
                 >
                   <img
                     src="/images/monet-etretat.jpg"
                     alt="Claude Monet - The Cliffs at Étretat (1885)"
                     className="absolute inset-0 w-full h-full object-cover object-center filter saturate-[1.05] contrast-[1.02]"
+                    loading="eager"
                   />
 
                   {/* Delicate rainbow sheen & impressionist atmosphere overlay (not darkmode) */}

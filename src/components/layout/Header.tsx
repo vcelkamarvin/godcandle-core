@@ -50,6 +50,26 @@ export function Header() {
   return (
     <>
       <header className="sticky top-0 z-40 border-b border-border bg-white/95 backdrop-blur-md">
+        {/* Status Bar */}
+        <div className="border-b border-[#22272E] bg-[#0A0D12] text-[#8B949E] px-4 sm:px-6 py-1.5 flex items-center justify-between text-[11px] font-mono tracking-tight select-none">
+          <div className="flex items-center gap-2">
+            <span className="inline-block size-2 rounded-full bg-[#00D964] animate-pulse" />
+            <span className="font-semibold text-white tracking-wide">
+              ● HYPERLIQUID L1 CONNECTED · BUILDER CODE ACTIVE
+            </span>
+          </div>
+          <div className="hidden sm:flex items-center gap-4 text-[10px] text-[#8B949E]">
+            <span className="flex items-center gap-1.5">
+              <span className="size-1.5 rounded-full bg-[#00D964]" />
+              BUILDER CODE: <span className="text-[#58A6FF] font-semibold">GODCANDLE</span>
+            </span>
+            <span className="text-[#30363D]">|</span>
+            <span>DIRECT L1 ROUTING</span>
+            <span className="text-[#30363D]">|</span>
+            <span className="text-[#00D964]">ZERO ADDED LATENCY</span>
+          </div>
+        </div>
+
         {/* Signature Light Rainbow Iridescent Thin Bar */}
         <div className="h-[2px] w-full rainbow-bar" />
 
@@ -71,7 +91,7 @@ export function Header() {
               </span>
             </Link>
 
-            {/* Left Nav: Products [Perps | 1000x], Analysis, Leaderboard */}
+            {/* Left Nav: Products [Perps | 1000x], Trade (Live), Roadmap, Docs, Analysis, Leaderboard */}
             <nav aria-label="Main navigation" className="hidden md:flex items-center gap-2">
               {/* Product Switch Segment: Perps | 1000x */}
               <div className="flex items-center p-0.5 rounded-full bg-secondary border border-border/80 shadow-2xs">
@@ -116,6 +136,39 @@ export function Header() {
                   </span>
                 </Link>
               </div>
+
+              {/* Trade (Live) Direct Link */}
+              <Link
+                to="/trade"
+                activeProps={{
+                  className: 'pill pill-ink h-8 px-3 text-xs font-semibold shadow-xs',
+                }}
+                inactiveProps={{
+                  className:
+                    'pill h-8 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors',
+                }}
+              >
+                <span className="flex items-center gap-1.5">
+                  <span>Trade (Live)</span>
+                  <span className="size-1.5 rounded-full bg-[#00D964] animate-pulse" />
+                </span>
+              </Link>
+
+              {/* Roadmap Anchor Link */}
+              <a
+                href="/#roadmap"
+                className="pill h-8 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+              >
+                Roadmap
+              </a>
+
+              {/* Docs Link */}
+              <a
+                href="/docs"
+                className="pill h-8 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+              >
+                Docs
+              </a>
 
               <Link
                 to="/analytics"
@@ -303,6 +356,18 @@ export function Header() {
           >
             1000x
           </Link>
+          <a
+            href="/#roadmap"
+            className="pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary shrink-0"
+          >
+            Roadmap
+          </a>
+          <a
+            href="/docs"
+            className="pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary shrink-0"
+          >
+            Docs
+          </a>
           <Link
             to="/analytics"
             activeProps={{
