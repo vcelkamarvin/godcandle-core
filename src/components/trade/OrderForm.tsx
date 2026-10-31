@@ -96,6 +96,9 @@ export function OrderForm({
     const slPrice = computeTargetPrice(side, 'sl');
 
     setIsSubmitting(true);
+    if (mode === 'perps') {
+      hyperliquidEngineInstance.confirmFirstOrder();
+    }
     setTimeout(() => {
       setIsSubmitting(false);
       setPendingConfirmSide(null);
@@ -193,6 +196,20 @@ export function OrderForm({
               ${chip}
             </button>
           ))}
+        </div>
+        <div className="flex items-center justify-between pt-1 text-[10px]">
+          <span className="text-muted-foreground">SELECTED: <strong className="tabular text-foreground">${numMargin} USDC</strong></span>
+          <div className="flex items-center gap-1">
+            <span className="text-muted-foreground text-[9px]">CUSTOM:</span>
+            <input
+              type="number"
+              min="1"
+              max="50000"
+              value={margin}
+              onChange={(e) => setMargin(e.target.value)}
+              className="h-5 w-16 rounded border border-border/70 bg-white px-1 text-[10px] font-mono text-foreground focus:outline-none tabular-nums"
+            />
+          </div>
         </div>
       </div>
 

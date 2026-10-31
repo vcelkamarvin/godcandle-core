@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSettings } from '@/lib/settings';
 import { useTrading } from '@/components/godcandle/TradingProvider';
 import { useAccount, useDisconnect } from 'wagmi';
+import { hyperliquidEngineInstance } from '@/lib/engine/hyperliquid';
 import { Switch } from '@/components/ui/switch';
 import { Slider } from '@/components/ui/slider';
 import { Button } from '@/components/ui/button';
@@ -97,7 +98,17 @@ export function SettingsView({ isModal = false, onClose }: SettingsViewProps) {
   const { disconnect: wagmiDisconnect } = useDisconnect();
 
   const [localAddress, setLocalAddress] = useState<string | null>(null);
+  const [marginInput, setMarginInput] = useState(() => String(settings.defaultMargin));
+  const [leverageInput, setLeverageInput] = useState(() => String(settings.defaultLeverage));
   const { latency, status: pingStatus } = useRpcPing();
+
+  useEffect(() => {
+    setMarginInput(String(settings.defaultMargin));
+  }, [settings.defaultMargin]);
+
+  useEffect(() => {
+    setLeverageInput(String(settings.defaultLeverage));
+  }, [settings.defaultLeverage]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -109,6 +120,18 @@ export function SettingsView({ isModal = false, onClose }: SettingsViewProps) {
   const activeAddress = wagmiAddress || localAddress;
   const isWalletConnected = wagmiConnected || !!localAddress;
 
+  const getPingVisual = (ms: number, status: 'healthy' | 'degraded') => {
+    if (status === 'degraded' || ms >= 200) {
+      return { dot: '🔴', color: 'text-[#FF3B30]', pulseBg: 'bg-[#FF3B30]' };
+    }
+    if (ms >= 100) {
+      return { dot: '🟡', color: 'text-[#E3B341]', pulseBg: 'bg-[#E3B341]' };
+    }
+    return { dot: '🟢', color: 'text-[#00D964]', pulseBg: 'bg-[#00D964]' };
+  };
+
+  const pingVisual = getPingVisual(latency, pingStatus);
+
   const handleDisconnectWallet = () => {
     if (wagmiConnected) {
       wagmiDisconnect();
@@ -117,6 +140,7 @@ export function SettingsView({ isModal = false, onClose }: SettingsViewProps) {
       localStorage.removeItem('godcandle_wallet_address');
     }
     setLocalAddress(null);
+    hyperliquidEngineInstance.setConnectedWallet(null);
     toast.info('Wallet Disconnected', {
       description: 'You are now disconnected from HyperEVM.',
     });
@@ -125,9 +149,6 @@ export function SettingsView({ isModal = false, onClose }: SettingsViewProps) {
   const handleRevokeSessionKeys = () => {
     t.revokeSessionKeys();
     updateSetting('oneClickTrading', false);
-    toast.success('Session Keys Revoked', {
-      description: 'Local private keys removed from browser memory & storage.',
-    });
   };
 
   const isPro = settings.terminalDensity === 'pro';
@@ -269,11 +290,18 @@ export function SettingsView({ isModal = false, onClose }: SettingsViewProps) {
                   min="1"
                   max="50000"
                   step="10"
-                  value={settings.defaultMargin}
+                  value={marginInput}
                   onChange={(e) => {
+                    setMarginInput(e.target.value);
                     const val = parseFloat(e.target.value);
                     if (!isNaN(val) && val > 0) {
                       updateSetting('defaultMargin', Math.min(50000, Math.max(1, val)));
+                    }
+                  }}
+                  onBlur={() => {
+                    const val = parseFloat(marginInput);
+                    if (isNaN(val) || val <= 0) {
+                      setMarginInput(String(settings.defaultMargin));
                     }
                   }}
                   className="h-7 w-full rounded border border-[#30363D] bg-[#161B22] px-2 text-xs font-mono text-white placeholder-[#484F58] focus:border-[#00D964] focus:outline-none tabular-nums"
@@ -303,7 +331,7 @@ export function SettingsView({ isModal = false, onClose }: SettingsViewProps) {
                 onValueChange={(vals) => {
                   if (vals[0]) updateSetting('defaultLeverage', vals[0]);
                 }}
-                className="[&_.bg-primary]:bg-[#58A6FF] [&_.bg-primary\\/20]:bg-[#21262D]"
+                className="[&_.bg-primary]:bg-[#58A6FF] [&_.bg-primary\/20]:bg-[#21262D]"
               />
             </div>
 
@@ -324,6 +352,35 @@ export function SettingsView({ isModal = false, onClose }: SettingsViewProps) {
                 </button>
               ))}
             </div>
+
+            {/* Custom Leverage Input */}
+            <div className="flex items-center gap-2 pt-1">
+              <span className="text-[10px] text-[#8B949E] shrink-0">Custom Leverage:</span>
+              <div className="relative flex-1">
+                <input
+                  type="number"
+                  min="1"
+                  max="1000"
+                  step="1"
+                  value={leverageInput}
+                  onChange={(e) => {
+                    setLeverageInput(e.target.value);
+                    const val = parseInt(e.target.value, 10);
+                    if (!isNaN(val) && val >= 1) {
+                      updateSetting('defaultLeverage', Math.min(1000, Math.max(1, val)));
+                    }
+                  }}
+                  onBlur={() => {
+                    const val = parseInt(leverageInput, 10);
+                    if (isNaN(val) || val < 1) {
+                      setLeverageInput(String(settings.defaultLeverage));
+                    }
+                  }}
+                  className="h-7 w-full rounded border border-[#30363D] bg-[#161B22] px-2 text-xs font-mono text-white placeholder-[#484F58] focus:border-[#58A6FF] focus:outline-none tabular-nums"
+                />
+                <span className="absolute right-2 top-1.5 text-[10px] text-[#8B949E]">×</span>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -337,8 +394,8 @@ export function SettingsView({ isModal = false, onClose }: SettingsViewProps) {
               </span>
             </div>
             <div className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-[#161B22] border border-[#30363D] text-[10px]">
-              <span className="size-1.5 rounded-full bg-[#00D964] animate-ping" />
-              <span className="text-[#00D964] font-semibold tabular-nums">🟢 {latency}ms</span>
+              <span className={`size-1.5 rounded-full ${pingVisual.pulseBg} animate-ping`} />
+              <span className={`${pingVisual.color} font-semibold tabular-nums`}>{pingVisual.dot} {latency}ms</span>
             </div>
           </div>
 
@@ -369,9 +426,11 @@ export function SettingsView({ isModal = false, onClose }: SettingsViewProps) {
             <div className="flex items-center justify-between text-[11px] pt-1.5 border-t border-[#21262D]">
               <span className="text-[#8B949E]">Real-Time Ping / Latency</span>
               <div className="flex items-center gap-1.5 font-bold">
-                <span className="size-2 rounded-full bg-[#00D964] animate-pulse" />
-                <span className="text-[#00D964] tabular-nums text-xs">🟢 {latency}ms</span>
-                <span className="text-[9px] text-[#8B949E] font-normal">(Optimal L1 Heartbeat)</span>
+                <span className={`size-2 rounded-full ${pingVisual.pulseBg} animate-pulse`} />
+                <span className={`${pingVisual.color} tabular-nums text-xs`}>{pingVisual.dot} {latency}ms</span>
+                <span className="text-[9px] text-[#8B949E] font-normal">
+                  {latency < 80 ? '(Optimal L1 Heartbeat)' : latency < 150 ? '(Acceptable Network Jitter)' : '(Degraded RPC Latency)'}
+                </span>
               </div>
             </div>
 

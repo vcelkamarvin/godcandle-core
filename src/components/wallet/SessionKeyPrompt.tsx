@@ -3,9 +3,11 @@ import { Key, CheckCircle2, Clock, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTrading } from '@/components/godcandle/TradingProvider';
 import { hyperliquidEngineInstance } from '@/lib/engine/hyperliquid';
+import { useSettings } from '@/lib/settings';
 
 export function SessionKeyPrompt() {
   const t = useTrading();
+  const { updateSetting } = useSettings();
   const [loading, setLoading] = useState(false);
   const agentState = hyperliquidEngineInstance.getAgentState();
   const isEnabled = t.isAgentApproved || agentState?.isApproved;
@@ -14,10 +16,14 @@ export function SessionKeyPrompt() {
     setLoading(true);
     try {
       if (!isEnabled) {
-        await t.approveAgent();
+        const approved = await t.approveAgent();
+        if (approved) {
+          updateSetting('oneClickTrading', true);
+        }
       } else {
         // revoke
         t.revokeSessionKeys();
+        updateSetting('oneClickTrading', false);
       }
     } finally {
       setLoading(false);

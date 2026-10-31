@@ -131,6 +131,12 @@ export function useSettings() {
     };
   }, []);
 
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      document.documentElement.setAttribute('data-terminal-density', settings.terminalDensity);
+    }
+  }, [settings.terminalDensity]);
+
   const updateSetting = useCallback(<K extends keyof UserSettings>(key: K, value: UserSettings[K]) => {
     saveSettings({ [key]: value } as Partial<UserSettings>);
   }, []);

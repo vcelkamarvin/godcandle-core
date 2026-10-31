@@ -54,7 +54,7 @@ export function TradeTerminal() {
   // Determine dynamic max leverage
   const activeMaxLev = isPerps ? t.engine.getMaxLeverage(rawSymbol) : 1000;
   const [leverage, setLeverage] = useState(() =>
-    isPerps ? Math.min(50, activeMaxLev) : Math.min(settings.defaultLeverage ?? 500, activeMaxLev)
+    Math.min(settings.defaultLeverage ?? (isPerps ? 50 : 500), activeMaxLev)
   );
 
   const [chartMode, setChartMode] = useState<'reactive' | 'tradingview'>('reactive');
@@ -64,10 +64,10 @@ export function TradeTerminal() {
 
   // Sync default leverage when changed in settings
   useEffect(() => {
-    if (settings.defaultLeverage && !isPerps) {
+    if (settings.defaultLeverage) {
       setLeverage(Math.min(settings.defaultLeverage, activeMaxLev));
     }
-  }, [settings.defaultLeverage, isPerps, activeMaxLev]);
+  }, [settings.defaultLeverage, activeMaxLev]);
 
   // Clamp leverage whenever mode or selected asset changes
   useEffect(() => {

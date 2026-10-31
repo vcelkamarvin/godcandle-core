@@ -22,6 +22,7 @@ export function Header() {
   });
   const [transfer, setTransfer] = useState<'Deposit' | 'Withdraw' | null>(null);
   const [candleOpen, setCandleOpen] = useState(false);
+  const [settingsModalOpen, setSettingsModalOpen] = useState(false);
   const candleRef = useRef<HTMLDivElement>(null);
 
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -358,21 +359,31 @@ export function Header() {
             {/* Connect Wallet Modal */}
             <ConnectModal />
 
-            {/* Settings Gear Icon Link */}
-            <Link
-              to="/settings"
-              title="Settings (Cmd+,)"
-              aria-label="Settings"
-              className={`flex size-8 items-center justify-center rounded-full transition-all cursor-pointer shrink-0 ${
-                pathname === '/settings'
-                  ? 'bg-[#00D964] text-black shadow-xs font-bold'
-                  : isLanding
+            {/* Settings Gear Icon Link / Modal Trigger */}
+            {pathname === '/settings' ? (
+              <Link
+                to="/settings"
+                title="Settings Page"
+                aria-label="Settings"
+                className="flex size-8 items-center justify-center rounded-full bg-[#00D964] text-black shadow-xs font-bold transition-all cursor-pointer shrink-0"
+              >
+                <SettingsIcon className="size-3.5" />
+              </Link>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setSettingsModalOpen(true)}
+                title="Settings (Cmd+,)"
+                aria-label="Settings"
+                className={`flex size-8 items-center justify-center rounded-full transition-all cursor-pointer shrink-0 ${
+                  isLanding
                     ? 'border border-[#30363D] bg-[#161B22] text-[#8B949E] hover:text-white hover:bg-[#21262D]'
                     : 'border border-border/80 bg-secondary/70 text-muted-foreground hover:text-foreground hover:bg-secondary'
-              }`}
-            >
-              <SettingsIcon className="size-3.5" />
-            </Link>
+                }`}
+              >
+                <SettingsIcon className="size-3.5" />
+              </button>
+            )}
           </div>
         </div>
 
@@ -495,7 +506,7 @@ export function Header() {
       </header>
 
       {transfer && <TransferDialog mode={transfer} onClose={() => setTransfer(null)} />}
-      <SettingsModal />
+      <SettingsModal open={settingsModalOpen} onOpenChange={setSettingsModalOpen} />
     </>
   );
 }

@@ -105,6 +105,9 @@ export function TradePanel(p: Props) {
   const executeOrder = (side: Side) => {
     const tpPrice = computeTargetPrice(side, "tp");
     const slPrice = computeTargetPrice(side, "sl");
+    if (isPerps) {
+      hyperliquidEngineInstance.confirmFirstOrder();
+    }
     p.onOpen(side, tpPrice, slPrice);
     setTpValue("");
     setSlValue("");

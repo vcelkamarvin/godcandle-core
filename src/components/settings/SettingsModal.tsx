@@ -71,10 +71,10 @@ export function SettingsModal({
           hideClose
         >
           <div className="flex items-center justify-between pb-2 border-b border-[#21262D] text-xs text-[#8B949E]">
-            <span className="flex items-center gap-1.5 font-semibold text-white">
+            <DialogTitle className="flex items-center gap-1.5 font-semibold text-white text-xs">
               <SettingsIcon className="size-3.5 text-[#00D964]" />
               QUICK SETTINGS DRAWER · DIALOG
-            </span>
+            </DialogTitle>
             <div className="flex items-center gap-3">
               <Link
                 to="/settings"

@@ -86,6 +86,31 @@ describe('Settings Management & Persistence', () => {
     expect(sessionStorage.getItem('godcandle_hl_session_confirmed')).toBeNull();
     expect(hyperliquidEngineInstance.getAgentState()?.isApproved).toBe(false);
   });
+
+  it('safely handles non-positive numbers and invalid densities in getStoredSettings', () => {
+    localStorage.setItem(
+      'godcandle_settings',
+      JSON.stringify({
+        defaultMargin: -50,
+        defaultLeverage: 0,
+        terminalDensity: 'ultra-dense',
+        oneClickTrading: 'not-a-bool',
+      })
+    );
+    const settings = getStoredSettings();
+    expect(settings.defaultMargin).toBe(DEFAULT_SETTINGS.defaultMargin);
+    expect(settings.defaultLeverage).toBe(DEFAULT_SETTINGS.defaultLeverage);
+    expect(settings.terminalDensity).toBe(DEFAULT_SETTINGS.terminalDensity);
+    expect(settings.oneClickTrading).toBe(DEFAULT_SETTINGS.oneClickTrading);
+  });
+
+  it('tracks first order confirmation and purges it on revocation', () => {
+    expect(hyperliquidEngineInstance.hasConfirmedFirstOrder()).toBe(false);
+    hyperliquidEngineInstance.confirmFirstOrder();
+    expect(hyperliquidEngineInstance.hasConfirmedFirstOrder()).toBe(true);
+    hyperliquidEngineInstance.revokeSessionKeys();
+    expect(hyperliquidEngineInstance.hasConfirmedFirstOrder()).toBe(false);
+  });
 });
 
 describe('Settings Interface Structure & Content Requirements', () => {
