@@ -778,7 +778,7 @@ export function ShareModal({
     // Plaque Subtitle
     ctx.fillStyle = colors.textSecondary;
     ctx.font = "500 15px -apple-system, BlinkMacSystemFont, 'Inter', 'SF Pro Text', sans-serif";
-    ctx.fillText("Mark-clamped BBO · Zero Entry Fees", plaqueX + 20, plaqueY + 54);
+    ctx.fillText("Institutional Liquidity · Direct L1 Routing", plaqueX + 20, plaqueY + 54);
 
     // Rainbow Pill Badge: Claude Monet, 1885
     const pillText = `${selectedArt.artist}, ${selectedArt.year}`;
@@ -1484,7 +1484,7 @@ export function ShareModal({
                       className="text-[9px] sm:text-[11px] font-medium mt-0.5"
                       style={{ color: colors.textSecondary }}
                     >
-                      Mark-clamped BBO · Zero Entry Fees
+                      Institutional Liquidity · Direct L1 Routing
                     </p>
                     <div className="mt-1.5 flex items-center justify-between text-[8px] sm:text-[10px]">
                       <span className="rounded-full bg-gradient-to-r from-[#CDC3F0]/80 via-[#FFDAC8]/80 to-[#A0D4CA]/80 px-2 py-0.5 font-bold text-[#0A0A0A] border border-black/10">
