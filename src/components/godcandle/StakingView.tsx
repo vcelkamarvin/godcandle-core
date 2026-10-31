@@ -120,10 +120,23 @@ export function StakingView({ full = false }: { full?: boolean }) {
             <Segments items={["15m", "1h", "4h", "1d"]} value={period} onChange={setPeriod} />
           </div>
           <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
-            <Metric label="24h revenue" value="$41.2K" />
-            <Metric label="7d revenue" value="$288K" />
-            <Metric label="Annual APR" value="12.4%" tone="text-gain" />
-            <Metric label="Last hour" value="$1,371" />
+            <Metric
+              label="24h revenue"
+              value={`$${((solvency.feeWaterfall.stakingYieldAndBurn) / 1000).toFixed(1)}K`}
+            />
+            <Metric
+              label="7d revenue"
+              value={`$${((solvency.feeWaterfall.stakingYieldAndBurn * 7) / 1000).toFixed(0)}K`}
+            />
+            <Metric
+              label="Annual APR"
+              value={`${(((solvency.feeWaterfall.stakingYieldAndBurn * 365) / Math.max(1, solvency.tvlUsd)) * 100).toFixed(1)}%`}
+              tone="text-gain"
+            />
+            <Metric
+              label="Last hour"
+              value={`$${Math.round(solvency.feeWaterfall.stakingYieldAndBurn / 24).toLocaleString()}`}
+            />
           </div>
           <div className="mt-2">
             <ChartCanvas height={130} kind="bars" values={period === "1h" ? revenueSeries.slice(16, 32) : revenueSeries} />

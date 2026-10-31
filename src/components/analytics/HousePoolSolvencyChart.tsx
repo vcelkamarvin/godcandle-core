@@ -86,16 +86,30 @@ export function HousePoolSolvencyChart({
     return `${mainPath} L ${lastX.toFixed(1)} ${bottomY} L ${firstX.toFixed(1)} ${bottomY} Z`;
   }, [mainPath, data]);
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+  const updateCoord = (clientX: number) => {
     if (!containerRef.current) return;
     const rect = containerRef.current.getBoundingClientRect();
-    const relX = (e.clientX - rect.left) / rect.width;
+    const relX = (clientX - rect.left) / rect.width;
     const index = Math.round(relX * (data.length - 1));
     const clampedIndex = Math.max(0, Math.min(data.length - 1, index));
     setHoverIndex(clampedIndex);
   };
 
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    updateCoord(e.clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (e.touches[0]) {
+      updateCoord(e.touches[0].clientX);
+    }
+  };
+
   const handleMouseLeave = () => {
+    setHoverIndex(null);
+  };
+
+  const handleTouchEnd = () => {
     setHoverIndex(null);
   };
 
@@ -181,7 +195,10 @@ export function HousePoolSolvencyChart({
         ref={containerRef}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
-        className="relative mt-3 cursor-crosshair select-none"
+        onTouchStart={handleTouchMove}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        className="relative mt-3 cursor-crosshair select-none touch-none"
       >
         <svg
           viewBox={`0 0 ${width} ${height}`}
@@ -356,12 +373,15 @@ export function HousePoolSolvencyChart({
         {/* Floating Tooltip Box */}
         {hoverIndex !== null && activePoint && (
           <div
-            className="pointer-events-none absolute top-2 rounded-xl border border-hairline bg-white/95 p-2.5 shadow-md backdrop-blur-md transition-all text-xs z-10"
+            className="pointer-events-none absolute top-2 rounded-xl border border-hairline bg-white/95 p-2.5 shadow-md backdrop-blur-md transition-all text-xs z-10 whitespace-nowrap"
             style={{
-              left: `${Math.min(
-                Math.max(10, (hoverIndex / (data.length - 1)) * 100),
-                70
-              )}%`,
+              left: `${((hoverIndex / (data.length - 1)) * 100).toFixed(1)}%`,
+              transform:
+                hoverIndex / (data.length - 1) > 0.65
+                  ? "translateX(calc(-100% - 12px))"
+                  : hoverIndex / (data.length - 1) < 0.2
+                  ? "translateX(12px)"
+                  : "translateX(-50%)",
             }}
           >
             <p className="font-mono text-[10px] text-muted-foreground">{activePoint.dateLabel}</p>

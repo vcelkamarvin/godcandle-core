@@ -104,38 +104,41 @@ const BASELINE_PRICES: Record<MarketSymbol, { mark: number; vlm: number; oi: num
   ETH: { mark: 3485.5, vlm: 432500000, oi: 284100000, funding: 0.00001 },
   SOL: { mark: 178.6, vlm: 312800000, oi: 189400000, funding: 0.000015 },
   HYPE: { mark: 38.4, vlm: 145900000, oi: 94200000, funding: 0.00002 },
-  SPX: { mark: 5890.0, vlm: 104200000, oi: 56300000, funding: 0.000005 },
+  SPX: { mark: 6120.0, vlm: 104200000, oi: 56300000, funding: 0.000005 },
   DOGE: { mark: 0.164, vlm: 68400000, oi: 42100000, funding: 0.000018 },
 };
 
 export function generateCorridorTicks(
   market: MarketSymbol,
   currentMark: number,
-  count = 45
+  count = 45,
+  seedTime?: number
 ): CorridorTelemetryPoint[] {
   const points: CorridorTelemetryPoint[] = [];
-  const now = Date.now();
+  // Use a quantized time base so points progress smoothly
+  const baseTime = seedTime ?? Math.floor(Date.now() / 3000) * 3000;
   const stepMs = 3000;
   const corridorLimit = market === "HYPE" || market === "DOGE" ? 3.0 : 1.5;
 
   for (let i = count - 1; i >= 0; i--) {
-    const t = now - i * stepMs;
+    const t = baseTime - i * stepMs;
     const d = new Date(t);
     const timeLabel = `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}:${String(d.getSeconds()).padStart(2, "0")}`;
     
-    // Controlled pseudorandom oscillation around 0 with occasional boundary touches
-    const wave1 = Math.sin(i * 0.45) * 0.75;
-    const wave2 = Math.cos(i * 1.1) * 0.45;
-    const noise = ((i * 17) % 7 - 3) * 0.12;
+    // Controlled deterministic oscillation around 0 with occasional boundary touches
+    const wave1 = Math.sin((t / 15000) * 0.45) * 0.75;
+    const wave2 = Math.cos((t / 21000) * 1.1) * 0.45;
+    const noise = Math.sin(t / 7000) * 0.15;
     let dev = wave1 + wave2 + noise;
     
-    // Introduce a couple of realistic near-clamp spikes
-    if (i === 6 || i === 22) dev = 1.48;
-    if (i === 14) dev = -1.45;
-    if (i === 33) dev = 1.56; // clamped!
+    // Introduce periodic boundary touches
+    const cycle = Math.floor(t / 45000) % 6;
+    if (cycle === 1 && i === 6) dev = corridorLimit * 0.98;
+    if (cycle === 2 && i === 14) dev = -corridorLimit * 0.97;
+    if (cycle === 3 && i === 24) dev = corridorLimit * 1.05; // clamped
 
     const clamped = Math.abs(dev) >= corridorLimit;
-    const mark = currentMark * (1 + Math.sin(i * 0.2) * 0.0008);
+    const mark = currentMark * (1 + Math.sin(t / 25000) * 0.0008);
     const mid = mark * (1 + (dev / 10000));
 
     points.push({
@@ -242,7 +245,13 @@ export function useHyperliquidAnalytics() {
         const oiCoins = parseFloat(ctx.openInterest || "0");
         const funding = parseFloat(ctx.funding || "0");
 
-        map[u.name.toUpperCase()] = {
+        const sym = u.name.toUpperCase();
+        // Guard: Hyperliquid's 'SPX' is the SPX6900 memecoin (~$0.35), not the S&P 500 equities index (~$6120)
+        if (sym === "SPX" && mark < 500) {
+          return;
+        }
+
+        map[sym] = {
           mark,
           prevDay: prevDay || mark,
           vlm,

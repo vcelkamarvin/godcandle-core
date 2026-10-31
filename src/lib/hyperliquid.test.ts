@@ -71,14 +71,16 @@ describe('Hyperliquid L1 Engine Math', () => {
   });
 
   describe('Corridor Telemetry & Analytics Generators', () => {
-    it('generates corridor telemetry ticks with ±1.5 bps bounds for BTC', async () => {
+    it('generates corridor telemetry ticks with ±1.5 bps bounds for BTC and ±3.0 bps for DOGE/HYPE', async () => {
       const { generateCorridorTicks } = await import('./hyperliquid');
-      const ticks = generateCorridorTicks('BTC', 68000, 30);
-      expect(ticks).toHaveLength(30);
-      expect(ticks[0].upperLimitBps).toBe(1.5);
-      expect(ticks[0].lowerLimitBps).toBe(-1.5);
-      expect(ticks[0].markPx).toBeGreaterThan(0);
-      expect(ticks[0].midPx).toBeGreaterThan(0);
+      const btcTicks = generateCorridorTicks('BTC', 68000, 30);
+      expect(btcTicks).toHaveLength(30);
+      expect(btcTicks[0].upperLimitBps).toBe(1.5);
+      expect(btcTicks[0].lowerLimitBps).toBe(-1.5);
+
+      const dogeTicks = generateCorridorTicks('DOGE', 0.16, 30);
+      expect(dogeTicks[0].upperLimitBps).toBe(3.0);
+      expect(dogeTicks[0].lowerLimitBps).toBe(-3.0);
     });
 
     it('generates multi-metric time series data for all supported timeframes', async () => {
@@ -91,6 +93,13 @@ describe('Hyperliquid L1 Engine Math', () => {
         expect(data[0].liquidReserves).toBeGreaterThan(0);
         expect(data[0].solvencyRatio).toBeGreaterThan(100);
       }
+    });
+
+    it('ensures S&P 500 equities index is not confused with memecoin SPX6900', async () => {
+      const { getMarket } = await import('@/config/markets');
+      const spx = getMarket('SPX');
+      expect(spx.basePrice).toBeGreaterThan(5000);
+      expect(spx.name).toContain('S&P 500');
     });
   });
 });

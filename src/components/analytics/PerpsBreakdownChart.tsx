@@ -82,9 +82,17 @@ export function PerpsBreakdownChart({
 
       {/* Stacked Proportional Distribution Bar */}
       <div className="mt-4">
-        <div className="flex justify-between text-[10px] font-mono text-muted-foreground mb-1.5">
+        <div className="flex justify-between items-center text-[10px] font-mono text-muted-foreground mb-1.5">
           <span>Market Share Allocation</span>
-          <span>100% of L1 Perp Flow</span>
+          <span>
+            {hoverMarket ? (
+              <span className="font-bold text-foreground">
+                {hoverMarket}: ${fmtUsd(metric === "volume" ? markets[hoverMarket]?.volume24hUsd ?? 0 : markets[hoverMarket]?.openInterestUsd ?? 0, 0)} ({((((metric === "volume" ? markets[hoverMarket]?.volume24hUsd ?? 0 : markets[hoverMarket]?.openInterestUsd ?? 0) / Math.max(1, metric === "volume" ? totalVolume : totalOi))) * 100).toFixed(1)}%)
+              </span>
+            ) : (
+              "100% of L1 Perp Flow"
+            )}
+          </span>
         </div>
 
         <div className="flex h-5 w-full overflow-hidden rounded-lg bg-[#F8F8F7] p-0.5 border border-hairline">
@@ -99,7 +107,8 @@ export function PerpsBreakdownChart({
                 key={m.symbol}
                 onMouseEnter={() => setHoverMarket(m.symbol)}
                 onMouseLeave={() => setHoverMarket(null)}
-                className="h-full cursor-pointer transition-all duration-200 first:rounded-l last:rounded-r relative group"
+                onClick={() => setHoverMarket(hoverMarket === m.symbol ? null : m.symbol)}
+                className="h-full cursor-pointer transition-all duration-200 first:rounded-l last:rounded-r relative group select-none"
                 style={{
                   width: `${sharePct}%`,
                   backgroundColor: MARKET_COLORS[m.symbol],

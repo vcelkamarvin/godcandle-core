@@ -232,6 +232,22 @@ export function PriceChart({ market, windowMs, position, pnlLabel, pnlPositive, 
         pillTag(12, yL + sep, `LIQ $${fmtUsd(liq, decimals)} (${distanceToLiquidation(pos, snap.price).toFixed(2)}%)`, C.bg, C.loss, C.loss);
       }
 
+      // Mark-Clamped BBO corridor boundary (±1.5 bps)
+      const corridorBps = market === "HYPE" || market === "DOGE" ? 3.0 : 1.5;
+      const corridorOffset = snap.price * (corridorBps / 10000);
+      const yUpperCorridor = yOf(snap.price + corridorOffset);
+      const yLowerCorridor = yOf(snap.price - corridorOffset);
+
+      if (Math.abs(yLowerCorridor - yUpperCorridor) > 1) {
+        ctx.fillStyle = "rgba(205, 195, 240, 0.16)";
+        ctx.fillRect(
+          headX,
+          Math.min(yUpperCorridor, yLowerCorridor),
+          plotW - headX,
+          Math.abs(yLowerCorridor - yUpperCorridor)
+        );
+      }
+
       // current price dashed line
       ctx.setLineDash([2, 4]);
       ctx.strokeStyle = C.ink;
