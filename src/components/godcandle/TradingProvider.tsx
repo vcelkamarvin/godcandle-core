@@ -29,6 +29,7 @@ export interface TradingContextType {
   history: ClosedTrade[];
   balance: number;
   available: number;
+  marginUsed: number;
   open: (market: MarketSymbol, side: Side, stake: number, leverage: number, tp?: number | null, sl?: number | null) => void;
   close: (target: string, liquidated?: boolean, trigger?: "tp" | "sl" | "liquidation" | "manual") => void;
   deposit: (amount: number) => void;
@@ -194,6 +195,7 @@ function useTradingState() {
     mode === "perps"
       ? (address ? perpsAvailable : Math.max(0, perpsTestBalance - perpsTestPositions.reduce((s, p) => s + p.stake, 0)))
       : Math.max(0, paperBalance - paperPositions.reduce((s, p) => s + p.stake, 0));
+  const marginUsed = Math.max(0, balance - available);
 
   async function open(
     market: MarketSymbol,
@@ -407,6 +409,7 @@ function useTradingState() {
     history,
     balance,
     available,
+    marginUsed,
     open,
     close,
     deposit,

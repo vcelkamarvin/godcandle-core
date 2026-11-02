@@ -153,7 +153,12 @@ export function GoalPage() {
 
   const handleLockInGoal = () => {
     if (t?.open) {
-      t.open(underlying, direction, Math.min(amount, 500), 50);
+      t.open(
+        underlying,
+        direction === "LONG" ? "long" : "short",
+        Math.min(amount, 500),
+        50
+      );
     }
     setGoalLocked(true);
     toast.success("Target Goal Locked In!", {
@@ -166,16 +171,16 @@ export function GoalPage() {
     () => ({
       id: `goal-${Date.now()}`,
       market: underlying,
-      direction: direction,
+      side: direction === "LONG" ? "long" : "short",
       stake: amount,
       leverage: Math.round(boostMultiplier * 10),
-      entryPrice: spot,
-      exitPrice: targetPrice,
+      entry: spot,
+      exit: targetPrice,
       openedAt: Date.now() - days * 86400000,
       closedAt: Date.now(),
+      durationMs: days * 86400000,
+      liquidated: false,
       pnl: payout,
-      fees: amount * 0.001,
-      reason: "take_profit",
     }),
     [underlying, direction, amount, boostMultiplier, spot, targetPrice, days, payout],
   );

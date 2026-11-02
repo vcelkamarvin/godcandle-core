@@ -94,8 +94,8 @@ export function BoostPage() {
     }
   }, [spot, targetPrice, direction]);
 
-  const rawRoiPct = Math.max(-100, movePct * boostMultiplier);
-  const payout = Math.round(amount * (rawRoiPct / 100));
+  const roiPct = Math.max(-100, movePct * boostMultiplier);
+  const payout = Math.round(amount * (roiPct / 100));
 
   // Slider bounds
   const minTarget = useMemo(() => {
@@ -124,15 +124,20 @@ export function BoostPage() {
     const vals: number[] = [];
     for (let i = 0; i <= points; i++) {
       const progress = i / points;
-      const simRoi = rawRoiPct * Math.pow(progress, 1.4);
+      const simRoi = roiPct * Math.pow(progress, 1.4);
       vals.push(amount * (1 + simRoi / 100));
     }
     return vals;
-  }, [amount, rawRoiPct]);
+  }, [amount, roiPct]);
 
   const handleLockInBoost = () => {
     if (t?.open) {
-      t.open(underlying, direction, Math.min(amount, 500), Math.min(boostMultiplier * 10, 50));
+      t.open(
+        underlying,
+        direction === "LONG" ? "long" : "short",
+        Math.min(amount, 500),
+        Math.min(boostMultiplier * 10, 50)
+      );
     }
     setBoostLocked(true);
     toast.success(`${boostMultiplier}× Boost Active!`, {
@@ -145,16 +150,16 @@ export function BoostPage() {
     () => ({
       id: `boost-${Date.now()}`,
       market: underlying,
-      direction: direction,
+      side: direction === "LONG" ? "long" : "short",
       stake: amount,
       leverage: Math.round(boostMultiplier * 5),
-      entryPrice: spot,
-      exitPrice: targetPrice,
+      entry: spot,
+      exit: targetPrice,
       openedAt: Date.now() - days * 86400000,
       closedAt: Date.now(),
+      durationMs: days * 86400000,
+      liquidated: false,
       pnl: payout,
-      fees: amount * 0.001,
-      reason: "take_profit",
     }),
     [underlying, direction, amount, boostMultiplier, spot, targetPrice, days, payout],
   );
@@ -584,11 +589,11 @@ export function BoostPage() {
                   </span>
                   <span
                     className={`font-mono tabular text-2xl sm:text-3xl font-bold tracking-tight my-0.5 sm:my-1 ${
-                      rawRoiPct >= 0 ? "text-[#06964A]" : "text-[#FF3B30]"
+                      roiPct >= 0 ? "text-[#06964A]" : "text-[#FF3B30]"
                     }`}
                   >
-                    {rawRoiPct >= 0 ? "+" : ""}
-                    {rawRoiPct.toFixed(1)}%
+                    {roiPct >= 0 ? "+" : ""}
+                    {roiPct.toFixed(1)}%
                   </span>
                   <span className="font-mono tabular text-xs font-semibold text-foreground">
                     ${(amount + payout).toLocaleString()}

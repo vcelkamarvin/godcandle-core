@@ -199,6 +199,12 @@ export class PaperEngine implements TradingEngine {
     return 1000;
   }
 
+  public getSzDecimals(asset: string): number {
+    const rawAsset = asset.replace("-USD", "");
+    const market = PAPER_MARKETS.find((m) => m.symbol.startsWith(rawAsset));
+    return market ? market.szDecimals : 4;
+  }
+
   public quote(order: OrderParams, currentPrice: number): QuoteResult {
     const rawAsset = order.asset.replace("-USD", "");
     const market = PAPER_MARKETS.find((m) => m.symbol.startsWith(rawAsset)) || PAPER_MARKETS[0]!;

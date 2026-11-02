@@ -24,12 +24,12 @@ export interface PriceLineTarget {
 interface LightweightCandleChartProps {
   coin: string; // e.g. "BTC"
   interval: string; // "1m" | "5m" | "15m" | "1h" | "4h" | "1D"
-  entryPrice?: number | null;
-  liquidationPrice?: number | null;
-  takeProfitPrice?: number | null;
-  stopLossPrice?: number | null;
-  openOrders?: Array<{ id: string; price: number; side: 'buy' | 'sell'; sz: number }>;
-  height?: string | number;
+  entryPrice?: number | null | undefined;
+  liquidationPrice?: number | null | undefined;
+  takeProfitPrice?: number | null | undefined;
+  stopLossPrice?: number | null | undefined;
+  openOrders?: Array<{ id: string; price: number; side: 'buy' | 'sell'; sz: number }> | undefined;
+  height?: string | number | undefined;
 }
 
 export function LightweightCandleChart({

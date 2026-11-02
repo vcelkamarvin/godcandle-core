@@ -93,6 +93,7 @@ export interface TradingEngine {
   mode: TradingMode;
   getMarkets(): EngineMarket[];
   getMaxLeverage(asset: string): number;
+  getSzDecimals(asset: string): number;
   quote(order: OrderParams, currentPrice: number): QuoteResult;
   placeOrder(order: OrderParams, currentPrice: number): Promise<OrderResult>;
   closePosition(id: string, currentPrice?: number): Promise<CloseResult>;

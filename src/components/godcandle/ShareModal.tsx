@@ -46,8 +46,9 @@ const DEFAULT_MARKET = MARKETS[0]!;
 export interface ShareModalProps {
   trade: ClosedTrade | Position | null;
   onOpenChange: (open: boolean) => void;
-  initialMode?: CardMode;
-  initialHideDollar?: boolean;
+  open?: boolean | undefined;
+  initialMode?: CardMode | undefined;
+  initialHideDollar?: boolean | undefined;
 }
 
 function drawRoundedRect(
@@ -96,6 +97,7 @@ function loadImage(src: string): Promise<HTMLImageElement | null> {
 export function ShareModal({
   trade,
   onOpenChange,
+  open,
   initialMode = "pnl",
   initialHideDollar = false,
 }: ShareModalProps) {
@@ -563,7 +565,7 @@ export function ShareModal({
     }
   }, [drawCardToCanvas, market.symbol]);
 
-  if (!trade) return null;
+  if (!trade || open === false) return null;
 
   return (
     <div

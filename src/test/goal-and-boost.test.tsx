@@ -1,6 +1,38 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import fs from "node:fs";
 import path from "node:path";
+import { createRoot } from "react-dom/client";
+import { act } from "react";
+
+vi.mock("@tanstack/react-router", async () => {
+  const actual = await vi.importActual<typeof import("@tanstack/react-router")>("@tanstack/react-router");
+  return {
+    ...actual,
+    Link: ({ children, to, className, ...props }: any) => (
+      <a href={typeof to === "string" ? to : "/"} className={className} {...props}>
+        {children}
+      </a>
+    ),
+  };
+});
+
+vi.mock("@/components/godcandle/TradingProvider", () => ({
+  useTrading: () => ({
+    mode: "paper1000x",
+    feeds: {
+      BTC: { price: 68420.5 },
+      ETH: { price: 2540.2 },
+      SOL: { price: 182.4 },
+    },
+    open: vi.fn(),
+    close: vi.fn(),
+    balance: 10000,
+    available: 10000,
+    marginUsed: 0,
+    positions: [],
+    history: [],
+  }),
+}));
 
 describe("Target Goal Studio & Convexity Boost Multiplier", () => {
   const goalPath = path.resolve(__dirname, "../routes/goal.tsx");
@@ -109,3 +141,54 @@ describe("Target Goal Studio & Convexity Boost Multiplier", () => {
     expect(boostContent).toContain('Curve & Milestones');
   });
 });
+
+describe("Goal & Boost Interactive Component Rendering", () => {
+  let container: HTMLDivElement;
+
+  beforeEach(() => {
+    vi.stubGlobal(
+      "ResizeObserver",
+      class {
+        observe() {}
+        unobserve() {}
+        disconnect() {}
+      }
+    );
+    vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockImplementation(() => null);
+    container = document.createElement("div");
+    document.body.appendChild(container);
+  });
+
+  afterEach(() => {
+    container.remove();
+  });
+
+  it("mounts and renders GoalPage without unhandled exceptions or crashes", async () => {
+    const { GoalPage } = await import("@/routes/goal");
+    const root = createRoot(container);
+    await act(async () => {
+      root.render(<GoalPage />);
+    });
+
+    expect(container.textContent).toContain("Price Target Goal");
+    expect(container.textContent).toContain("Target Parameters");
+    expect(container.textContent).toContain("Long ↗ (Upside)");
+    expect(container.textContent).toContain("Short ↘ (Downside)");
+    expect(container.textContent).toContain("Goal →");
+  });
+
+  it("mounts and renders BoostPage without unhandled exceptions or roiPct errors", async () => {
+    const { BoostPage } = await import("@/routes/boost");
+    const root = createRoot(container);
+    await act(async () => {
+      root.render(<BoostPage />);
+    });
+
+    expect(container.textContent).toContain("Boost Multiplier");
+    expect(container.textContent).toContain("Multiplier Settings");
+    expect(container.textContent).toContain("Long ↗ (Upside)");
+    expect(container.textContent).toContain("Short ↘ (Downside)");
+    expect(container.textContent).toContain("10× Multiplier");
+  });
+});
+
