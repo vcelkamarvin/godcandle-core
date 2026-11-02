@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import {
   calcLiquidationPrice,
   calcLiquidationDistancePct,
+  calcLiquidationDistanceAtr,
   calcBreakEvenPrice,
   calcImpactPrice,
   clampLeverage,
@@ -36,6 +37,11 @@ describe('Trading Calculations & Risk Engine', () => {
 
     const dist = calcLiquidationDistancePct(entry, longLiq, 'long');
     expect(dist).toBeCloseTo(1.5);
+
+    // Liquidation distance in ATR volatility multiples
+    const atr1h = 1020; // 1.5% ATR
+    const distAtr = calcLiquidationDistanceAtr(entry, longLiq, atr1h);
+    expect(distAtr).toBe(1.0);
   });
 
   it('correctly calculates break-even price including taker fees and funding', () => {

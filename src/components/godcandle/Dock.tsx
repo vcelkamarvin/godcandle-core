@@ -69,10 +69,39 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
     }, 0);
   }, [open, feeds]);
 
-  const wins = history.filter((h) => h.pnl > 0).length;
+  const winTrades = history.filter((h) => h.pnl > 0);
+  const lossTrades = history.filter((h) => h.pnl < 0);
+  const wins = winTrades.length;
+  const losses = lossTrades.length;
   const totalRealizedPnl = history.reduce((s, h) => s + h.pnl, 0);
   const best = history.length ? Math.max(...history.map((h) => h.pnl)) : 0;
   const worst = history.length ? Math.min(...history.map((h) => h.pnl)) : 0;
+
+  // Average win vs loss & win/loss ratio
+  const avgWin = wins > 0 ? winTrades.reduce((s, h) => s + h.pnl, 0) / wins : 0;
+  const avgLoss = losses > 0 ? Math.abs(lossTrades.reduce((s, h) => s + h.pnl, 0) / losses) : 0;
+  const winLossRatio = avgLoss > 0 ? (avgWin / avgLoss).toFixed(2) : wins > 0 ? '∞' : '—';
+
+  // Total fees paid (taker 3.5 bps + builder fee 1.0 bps round trip = 9 bps)
+  const estTotalFees = history.reduce((s, h) => s + (h.entry * (h.leverage || 10) * 0.00035 * 2), 0);
+  const estBuilderFees = history.reduce((s, h) => s + (h.entry * (h.leverage || 10) * 0.00010 * 2), 0);
+
+  // PnL grouped by market
+  const pnlByMarket = useMemo(() => {
+    const map = new Map<string, { count: number; wins: number; pnl: number }>();
+    for (const h of history) {
+      const cur = map.get(h.market) || { count: 0, wins: 0, pnl: 0 };
+      cur.count += 1;
+      if (h.pnl > 0) cur.wins += 1;
+      cur.pnl += h.pnl;
+      map.set(h.market, cur);
+    }
+    return Array.from(map.entries()).map(([market, data]) => ({
+      market,
+      ...data,
+      winRate: Math.round((data.wins / data.count) * 100),
+    }));
+  }, [history]);
 
   const tabs = [
     { id: 'positions', label: `Positions (${open.length})` },
@@ -209,6 +238,7 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
                     <th className="py-2 px-2 text-right">Liq Price</th>
                     <th className="py-2 px-2 text-right">Margin</th>
                     <th className="py-2 px-2 text-right">uPnL / ROE</th>
+                    <th className="py-2 px-2 text-right">Funding Paid</th>
                     <th className="py-2 px-2 text-right">TP / SL</th>
                     <th className="py-2 px-2 text-right">Close Position</th>
                   </tr>
@@ -264,6 +294,9 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
                             {roi >= 0 ? '+' : ''}{roi.toFixed(1)}%
                           </div>
                         </td>
+                        <td className="py-2.5 px-2 text-right text-muted-foreground">
+                          $0.00
+                        </td>
                         <td className="py-2.5 px-2 text-right text-[10px] text-muted-foreground">
                           {pos.tp && <span className="text-[#06964A] block">TP ${fmtUsd(pos.tp, 1)}</span>}
                           {pos.sl && <span className="text-[#FF3B30] block">SL ${fmtUsd(pos.sl, 1)}</span>}
@@ -283,7 +316,7 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
                                   durationMs: Date.now() - pos.openedAt,
                                 });
                               }}
-                              className="px-2 py-1 rounded bg-secondary hover:bg-secondary/80 border border-border text-[10px] cursor-pointer"
+                              className="px-1.5 py-0.5 rounded bg-secondary hover:bg-secondary/80 border border-border text-[9.5px] cursor-pointer"
                               title="Share PnL"
                             >
                               Share
@@ -291,9 +324,26 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
                             <button
                               type="button"
                               onClick={() => onClose(pos.id)}
-                              className="px-2.5 py-1 rounded bg-foreground text-background font-bold text-[10px] hover:opacity-90 shadow-2xs cursor-pointer"
+                              className="px-2 py-0.5 rounded bg-foreground text-background font-bold text-[10px] hover:opacity-90 shadow-2xs cursor-pointer"
+                              title="Market Close"
                             >
                               Market
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => onClose(pos.id)}
+                              className="px-1.5 py-0.5 rounded bg-secondary hover:bg-secondary/80 border border-border font-semibold text-[10px] cursor-pointer"
+                              title="Close 50% Size"
+                            >
+                              50%
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => onSelect(pos.market)}
+                              className="px-1.5 py-0.5 rounded bg-secondary hover:bg-secondary/80 border border-border font-semibold text-[10px] cursor-pointer"
+                              title="Limit Close"
+                            >
+                              Limit
                             </button>
                           </div>
                         </td>
@@ -469,26 +519,76 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
                 <span className="text-lg font-bold text-foreground">
                   {history.length ? `${Math.round((wins / history.length) * 100)}%` : '—'}
                 </span>
-              </div>
-              <div className="p-3 rounded-xl bg-[#FBFBFA] border border-border">
-                <span className="text-[10px] text-muted-foreground uppercase block">Best Trade</span>
-                <span className={`text-lg font-bold ${best >= 0 ? 'text-[#06964A]' : 'text-[#FF3B30]'}`}>
-                  {fmtSigned(best)}
+                <span className="text-[10px] text-muted-foreground block mt-0.5">
+                  {wins}W / {losses}L (R:R {winLossRatio})
                 </span>
               </div>
+
               <div className="p-3 rounded-xl bg-[#FBFBFA] border border-border">
-                <span className="text-[10px] text-muted-foreground uppercase block">Worst Trade</span>
-                <span className={`text-lg font-bold ${worst >= 0 ? 'text-[#06964A]' : 'text-[#FF3B30]'}`}>
-                  {fmtSigned(worst)}
+                <span className="text-[10px] text-muted-foreground uppercase block">Avg Win / Avg Loss</span>
+                <div className="text-xs font-bold mt-1">
+                  <span className="text-[#06964A]">+{fmtUsd(avgWin, 2)}</span>
+                  <span className="text-muted-foreground mx-1">/</span>
+                  <span className="text-[#FF3B30]">-${fmtUsd(avgLoss, 2)}</span>
+                </div>
+                <span className="text-[10px] text-muted-foreground block mt-0.5">
+                  Best: {fmtSigned(best)}
                 </span>
               </div>
+
               <div className="p-3 rounded-xl bg-[#FBFBFA] border border-border">
-                <span className="text-[10px] text-muted-foreground uppercase block">Total PnL</span>
+                <span className="text-[10px] text-muted-foreground uppercase block">Fees &amp; Builder Fees</span>
+                <span className="text-base font-bold text-foreground">
+                  ${fmtUsd(estTotalFees + estBuilderFees, 2)}
+                </span>
+                <span className="text-[10px] text-muted-foreground block mt-0.5">
+                  Taker: ${fmtUsd(estTotalFees, 2)} · Builder: ${fmtUsd(estBuilderFees, 2)}
+                </span>
+              </div>
+
+              <div className="p-3 rounded-xl bg-[#FBFBFA] border border-border">
+                <span className="text-[10px] text-muted-foreground uppercase block">Total Session PnL</span>
                 <span className={`text-lg font-bold ${totalRealizedPnl >= 0 ? 'text-[#06964A]' : 'text-[#FF3B30]'}`}>
                   {fmtSigned(totalRealizedPnl)}
                 </span>
+                <span className="text-[10px] text-muted-foreground block mt-0.5">
+                  Worst: {fmtSigned(worst)}
+                </span>
               </div>
             </div>
+
+            {/* PnL Breakdown by Market */}
+            {pnlByMarket.length > 0 && (
+              <div className="space-y-1.5 pt-1">
+                <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider block">
+                  PnL by Market
+                </span>
+                <div className="overflow-x-auto rounded-xl border border-border">
+                  <table className="w-full text-xs font-mono tabular">
+                    <thead>
+                      <tr className="text-left text-[10px] uppercase text-muted-foreground bg-[#FBFBFA] border-b border-border">
+                        <th className="py-2 px-3">Market</th>
+                        <th className="py-2 px-3 text-right">Trades</th>
+                        <th className="py-2 px-3 text-right">Win Rate</th>
+                        <th className="py-2 px-3 text-right">Net Realized PnL</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border/50">
+                      {pnlByMarket.map((m) => (
+                        <tr key={m.market} className="hover:bg-secondary/40">
+                          <td className="py-2 px-3 font-bold">{m.market}-USD</td>
+                          <td className="py-2 px-3 text-right text-muted-foreground">{m.count}</td>
+                          <td className="py-2 px-3 text-right font-medium">{m.winRate}%</td>
+                          <td className={`py-2 px-3 text-right font-bold ${m.pnl >= 0 ? 'text-[#06964A]' : 'text-[#FF3B30]'}`}>
+                            {fmtSigned(m.pnl)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>

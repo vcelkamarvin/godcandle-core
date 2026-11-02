@@ -145,6 +145,7 @@ function TradingShell() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   // Default to light mode everywhere per user requirement
   const isDark = false;
+  const isTerminalRoute = pathname === "/" || pathname === "/trade";
 
   return (
     <div className="relative mx-auto min-h-screen max-w-[1800px] flex flex-col justify-between overflow-x-hidden bg-background text-foreground">
@@ -154,7 +155,7 @@ function TradingShell() {
         <Header />
         <Outlet />
       </div>
-      <Footer />
+      {!isTerminalRoute && <Footer />}
       <Toaster position="top-center" theme="light" />
     </div>
   );

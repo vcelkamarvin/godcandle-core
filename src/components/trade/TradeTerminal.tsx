@@ -11,9 +11,11 @@ import { MarketBar } from '@/components/godcandle/MarketBar';
 import { WatchlistStrip } from './WatchlistStrip';
 import { MarketBookTradesInfo } from './MarketBookTradesInfo';
 import { LightweightCandleChart } from './LightweightCandleChart';
+import { calcLiquidationPrice, type L2Book } from '@/lib/trading';
+import { marketStore, fetchL2BookSnapshot } from '@/lib/hyperliquid/market-data';
 import { useAccount } from 'wagmi';
 import { Link } from '@tanstack/react-router';
-import { BarChart2, CandlestickChart, ExternalLink, Zap } from 'lucide-react';
+import { BarChart2, CandlestickChart, ExternalLink, Zap, Maximize2, SlidersHorizontal } from 'lucide-react';
 
 // Lazy-load TradingView widget for performance
 const TradingViewWidget = lazy(() =>
@@ -84,6 +86,26 @@ export function TradeTerminal() {
   const [selectedTf, setSelectedTf] = useState<string>('15m');
   const [shareTrade, setShareTrade] = useState<ClosedTrade | null>(null);
   const [selectedBookPrice, setSelectedBookPrice] = useState<number | null>(null);
+  const [l2Book, setL2Book] = useState<L2Book>({ bids: [], asks: [] });
+  const [showIndicators, setShowIndicators] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  // Subscribe to live L2 book
+  useEffect(() => {
+    let mounted = true;
+    fetchL2BookSnapshot(rawSymbol).then((book) => {
+      if (mounted && (book.bids.length > 0 || book.asks.length > 0)) {
+        setL2Book(book);
+      }
+    });
+    const unsub = marketStore.subscribeL2Book(rawSymbol, (book) => {
+      if (mounted) setL2Book(book);
+    });
+    return () => {
+      mounted = false;
+      unsub();
+    };
+  }, [rawSymbol]);
 
   // Watchlist favorites
   const [favorites, setFavorites] = useState<string[]>(() => {
@@ -227,14 +249,14 @@ export function TradeTerminal() {
       </div>
 
       {/* 3 Columns: Chart (flex) | Book/Trades/Info (≈280px) | Order panel (≈340px) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-2 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 xl:grid-cols-[1fr_280px_340px] gap-2 items-start">
         {/* Column 1: Chart Panel (flex, min 520px height) */}
         <div
-          className={`lg:col-span-6 xl:col-span-7 flex flex-col min-h-[520px] bg-white rounded-2xl border border-border overflow-hidden shadow-xs ${
-            mobileTab === 'trade' ? 'hidden lg:flex' : 'flex'
-          }`}
+          className={`lg:col-span-4 xl:col-auto flex flex-col min-h-[520px] bg-white rounded-2xl border border-border overflow-hidden shadow-xs ${
+            isFullscreen ? 'fixed inset-2 z-50 min-h-[calc(100vh-16px)]' : ''
+          } ${mobileTab === 'trade' ? 'hidden lg:flex' : 'flex'}`}
         >
-          {/* Chart Header Bar: [Chart | TradingView] + Timeframes */}
+          {/* Chart Header Bar: [Chart | TradingView] + Timeframes + Indicators + Fullscreen */}
           <div className="flex flex-wrap items-center justify-between gap-2 p-2 border-b border-border bg-[#FBFBFA]">
             {/* Chart Mode Switcher */}
             <div className="flex items-center rounded-xl bg-secondary p-0.5 border border-border/60">
@@ -265,23 +287,53 @@ export function TradeTerminal() {
               </button>
             </div>
 
-            {/* Timeframe Interval Pills */}
+            {/* Timeframe Interval Pills + Indicators + Fullscreen */}
             {chartMode === 'chart' && (
-              <div className="flex items-center rounded-xl bg-secondary p-0.5 border border-border/60">
-                {TIMEFRAMES.map((tf) => (
+              <div className="flex items-center gap-1.5">
+                <div className="flex items-center rounded-xl bg-secondary p-0.5 border border-border/60">
+                  {TIMEFRAMES.map((tf) => (
+                    <button
+                      key={tf.label}
+                      type="button"
+                      onClick={() => setSelectedTf(tf.interval)}
+                      className={`h-6.5 px-2 rounded-lg text-[10px] font-mono font-semibold transition-all cursor-pointer ${
+                        selectedTf === tf.interval
+                          ? 'bg-foreground text-background font-bold shadow-2xs'
+                          : 'text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      {tf.label}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="flex items-center rounded-xl bg-secondary p-0.5 border border-border/60">
                   <button
-                    key={tf.label}
                     type="button"
-                    onClick={() => setSelectedTf(tf.interval)}
-                    className={`h-6.5 px-2 rounded-lg text-[10px] font-mono font-semibold transition-all cursor-pointer ${
-                      selectedTf === tf.interval
+                    onClick={() => setShowIndicators((prev) => !prev)}
+                    className={`h-6.5 px-2 rounded-lg text-[10px] font-mono flex items-center gap-1 transition-all cursor-pointer ${
+                      showIndicators
                         ? 'bg-foreground text-background font-bold shadow-2xs'
                         : 'text-muted-foreground hover:text-foreground'
                     }`}
+                    title="Toggle indicators (EMA / SMA)"
                   >
-                    {tf.label}
+                    <SlidersHorizontal className="size-2.5" />
+                    <span>SMA</span>
                   </button>
-                ))}
+                  <button
+                    type="button"
+                    onClick={() => setIsFullscreen((prev) => !prev)}
+                    className={`h-6.5 px-1.5 rounded-lg text-[10px] font-mono flex items-center gap-1 transition-all cursor-pointer ${
+                      isFullscreen
+                        ? 'bg-foreground text-background font-bold shadow-2xs'
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                    title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen chart'}
+                  >
+                    <Maximize2 className="size-3" />
+                  </button>
+                </div>
               </div>
             )}
           </div>
@@ -304,7 +356,9 @@ export function TradeTerminal() {
                   interval={selectedTf}
                   entryPrice={currentPosition?.entry}
                   liquidationPrice={
-                    currentPosition ? currentPosition.entry * (1 - 1 / currentPosition.leverage + 0.005) : null
+                    currentPosition
+                      ? calcLiquidationPrice(currentPosition.entry, currentPosition.leverage, currentPosition.side)
+                      : null
                   }
                   takeProfitPrice={currentPosition?.tp}
                   stopLossPrice={currentPosition?.sl}
@@ -326,7 +380,7 @@ export function TradeTerminal() {
 
         {/* Column 2: Book / Trades / Info (≈280px) */}
         <div
-          className={`lg:col-span-3 xl:col-span-2.5 h-[520px] ${
+          className={`lg:col-span-3 xl:col-auto w-full xl:w-[280px] h-[520px] shrink-0 ${
             mobileTab === 'trade' ? 'hidden lg:block' : 'hidden lg:block'
           }`}
         >
@@ -343,7 +397,7 @@ export function TradeTerminal() {
 
         {/* Column 3: Order Panel (≈340px) */}
         <div
-          className={`lg:col-span-5 xl:col-span-2.5 w-full shrink-0 ${
+          className={`lg:col-span-5 xl:col-auto w-full xl:w-[340px] shrink-0 ${
             mobileTab === 'chart' ? 'hidden lg:block' : 'block'
           }`}
         >
@@ -354,8 +408,9 @@ export function TradeTerminal() {
             maxLeverage={activeMaxLev}
             asset={rawSymbol}
             corridorBps={selectedMarket.corridorBps}
-            availableBalance={t?.available ?? 10000}
+            availableBalance={t?.available ?? 0}
             mode="perps"
+            book={l2Book}
             limitPriceInput={selectedBookPrice}
             onTrade={handleOrder}
           />

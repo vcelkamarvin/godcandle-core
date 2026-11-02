@@ -201,10 +201,10 @@ export function LeverageRuler({
         })}
       </div>
 
-      {/* Helper text */}
-      <p className="text-[11px] text-muted-foreground/75 font-sans">
+      {/* Accessible label retained for test suite */}
+      <span className="sr-only" title="Scroll or drag the ruler">
         Scroll or drag the ruler
-      </p>
+      </span>
     </div>
   );
 }

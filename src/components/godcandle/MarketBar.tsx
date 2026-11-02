@@ -22,7 +22,7 @@ import { MarketLogo } from "./MarketLogo";
 import { fmtUsd } from "@/lib/engine";
 import { cn } from "@/lib/utils";
 
-const FILTERS = ["Favorites", "All", "1000x", "Gainers", "Losers"] as const;
+const FILTERS = ["Favorites", "Majors", "Memes", "New", "All"] as const;
 
 const VOLUMES_24H: Record<MarketSymbol, string> = {
   BTC: "$1.84B",
@@ -31,6 +31,33 @@ const VOLUMES_24H: Record<MarketSymbol, string> = {
   HYPE: "$168.2M",
   SPX: "$3.42B",
   DOGE: "$84.6M",
+};
+
+const VOLUME_NUMERIC: Record<MarketSymbol, number> = {
+  BTC: 1840000000,
+  ETH: 924500000,
+  SOL: 412800000,
+  HYPE: 168200000,
+  SPX: 3420000000,
+  DOGE: 84600000,
+};
+
+const OPEN_INTERESTS: Record<MarketSymbol, string> = {
+  BTC: "$2.1B",
+  ETH: "$980M",
+  SOL: "$340M",
+  HYPE: "$85M",
+  SPX: "$1.4B",
+  DOGE: "$42M",
+};
+
+const OI_NUMERIC: Record<MarketSymbol, number> = {
+  BTC: 2100000000,
+  ETH: 980000000,
+  SOL: 340000000,
+  HYPE: 85000000,
+  SPX: 1400000000,
+  DOGE: 42000000,
 };
 
 const FUNDING_RATES: Record<MarketSymbol, string> = {
@@ -54,6 +81,8 @@ export interface MarketBarProps {
   onReset?: () => void;
 }
 
+type SortCol = 'symbol' | 'price' | 'change' | 'volume' | 'oi' | 'funding' | 'maxLev';
+
 export function MarketBar({
   market,
   onSelect,
@@ -71,6 +100,17 @@ export function MarketBar({
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<(typeof FILTERS)[number]>("All");
+  const [sortCol, setSortCol] = useState<SortCol>('volume');
+  const [sortAsc, setSortAsc] = useState<boolean>(false);
+  const [recents, setRecents] = useState<MarketSymbol[]>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const saved = localStorage.getItem("godcandle_recent_markets");
+        if (saved) return JSON.parse(saved);
+      } catch {}
+    }
+    return ["BTC", "ETH", "SOL"];
+  });
   const [favorites, setFavorites] = useState<MarketSymbol[]>(() => {
     if (typeof window !== "undefined") {
       try {
@@ -90,6 +130,27 @@ export function MarketBar({
       } catch {}
     }
   }, [favorites]);
+
+  const handleSelectMarket = (sym: MarketSymbol) => {
+    const updated = [sym, ...recents.filter((s) => s !== sym)].slice(0, 5);
+    setRecents(updated);
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem("godcandle_recent_markets", JSON.stringify(updated));
+      } catch {}
+    }
+    onSelect(sym);
+    setOpen(false);
+  };
+
+  const toggleSort = (col: SortCol) => {
+    if (sortCol === col) {
+      setSortAsc((prev) => !prev);
+    } else {
+      setSortCol(col);
+      setSortAsc(false);
+    }
+  };
 
   // Global keyboard shortcut: Cmd+K / Ctrl+K
   useEffect(() => {
@@ -122,16 +183,28 @@ export function MarketBar({
   };
 
   const rows = useMemo(() => {
-    return MARKETS.filter((m) =>
+    const filtered = MARKETS.filter((m) =>
       `${m.symbol} ${m.name}`.toLowerCase().includes(query.trim().toLowerCase())
     ).filter((m) => {
       if (filter === "Favorites") return favorites.includes(m.symbol);
-      if (filter === "1000x") return m.maxLeverage === 1000;
-      if (filter === "Gainers") return change(m.symbol) >= 0;
-      if (filter === "Losers") return change(m.symbol) < 0;
+      if (filter === "Majors") return ["BTC", "ETH", "SOL", "SPX"].includes(m.symbol);
+      if (filter === "Memes") return ["DOGE"].includes(m.symbol);
+      if (filter === "New") return ["HYPE"].includes(m.symbol);
       return true;
     });
-  }, [query, filter, favorites, feeds]);
+
+    return filtered.sort((a, b) => {
+      let diff = 0;
+      if (sortCol === 'symbol') diff = a.symbol.localeCompare(b.symbol);
+      else if (sortCol === 'price') diff = (feeds[a.symbol]?.price || a.basePrice) - (feeds[b.symbol]?.price || b.basePrice);
+      else if (sortCol === 'change') diff = change(a.symbol) - change(b.symbol);
+      else if (sortCol === 'volume') diff = (VOLUME_NUMERIC[a.symbol] || 0) - (VOLUME_NUMERIC[b.symbol] || 0);
+      else if (sortCol === 'oi') diff = (OI_NUMERIC[a.symbol] || 0) - (OI_NUMERIC[b.symbol] || 0);
+      else if (sortCol === 'funding') diff = a.symbol.localeCompare(b.symbol);
+      else if (sortCol === 'maxLev') diff = a.maxLeverage - b.maxLeverage;
+      return sortAsc ? diff : -diff;
+    });
+  }, [query, filter, favorites, feeds, sortCol, sortAsc]);
 
   // Current previewed market fallback
   const previewMarket: Market = useMemo(() => {
@@ -391,13 +464,82 @@ export function MarketBar({
                 ))}
               </div>
 
-              {/* Table Column Labels */}
-              <div className="grid grid-cols-[30px_1fr_80px_65px] sm:grid-cols-[32px_1fr_95px_70px_50px] items-center px-2 text-[10px] uppercase font-mono tracking-wider text-muted-foreground">
+              {/* Recents strip */}
+              {recents.length > 0 && (
+                <div className="flex items-center gap-1.5 text-[10px] font-mono text-muted-foreground px-1 overflow-x-auto no-scrollbar">
+                  <span className="uppercase text-[9px] font-bold text-muted-foreground/70 shrink-0">Recents:</span>
+                  {recents.map((r) => (
+                    <button
+                      key={r}
+                      type="button"
+                      onClick={() => handleSelectMarket(r)}
+                      className="px-2 py-0.5 rounded-md bg-secondary hover:bg-secondary/80 text-foreground font-semibold cursor-pointer border border-border/50 shrink-0"
+                    >
+                      {r}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {/* Table Column Labels with Click-to-Sort */}
+              <div className="grid grid-cols-[24px_1fr_75px_60px] md:grid-cols-[24px_85px_75px_60px_65px_60px_65px_45px] items-center px-2 text-[10px] uppercase font-mono tracking-wider text-muted-foreground select-none">
                 <span />
-                <span>Market</span>
-                <span className="text-right">Price</span>
-                <span className="text-right">24h</span>
-                <span className="hidden sm:inline text-right">Max</span>
+                <button
+                  type="button"
+                  onClick={() => toggleSort('symbol')}
+                  className="text-left hover:text-foreground cursor-pointer flex items-center gap-0.5"
+                >
+                  <span>Symbol</span>
+                  {sortCol === 'symbol' && <span>{sortAsc ? '↑' : '↓'}</span>}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => toggleSort('price')}
+                  className="text-right hover:text-foreground cursor-pointer flex items-center justify-end gap-0.5"
+                >
+                  <span>Price</span>
+                  {sortCol === 'price' && <span>{sortAsc ? '↑' : '↓'}</span>}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => toggleSort('change')}
+                  className="text-right hover:text-foreground cursor-pointer flex items-center justify-end gap-0.5"
+                >
+                  <span>24h%</span>
+                  {sortCol === 'change' && <span>{sortAsc ? '↑' : '↓'}</span>}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => toggleSort('volume')}
+                  className="hidden md:flex text-right hover:text-foreground cursor-pointer items-center justify-end gap-0.5"
+                >
+                  <span>Vol</span>
+                  {sortCol === 'volume' && <span>{sortAsc ? '↑' : '↓'}</span>}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => toggleSort('oi')}
+                  className="hidden md:flex text-right hover:text-foreground cursor-pointer items-center justify-end gap-0.5"
+                >
+                  <span>OI</span>
+                  {sortCol === 'oi' && <span>{sortAsc ? '↑' : '↓'}</span>}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => toggleSort('funding')}
+                  className="hidden md:flex text-right hover:text-foreground cursor-pointer items-center justify-end gap-0.5"
+                >
+                  <span>Funding</span>
+                  {sortCol === 'funding' && <span>{sortAsc ? '↑' : '↓'}</span>}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => toggleSort('maxLev')}
+                  className="hidden md:flex text-right hover:text-foreground cursor-pointer items-center justify-end gap-0.5"
+                >
+                  <span>Max</span>
+                  {sortCol === 'maxLev' && <span>{sortAsc ? '↑' : '↓'}</span>}
+                </button>
               </div>
             </div>
 
@@ -413,12 +555,9 @@ export function MarketBar({
                   <div
                     key={m.symbol}
                     onMouseEnter={() => setPreviewSymbol(m.symbol)}
-                    onClick={() => {
-                      onSelect(m.symbol);
-                      setOpen(false);
-                    }}
+                    onClick={() => handleSelectMarket(m.symbol)}
                     className={cn(
-                      "grid grid-cols-[30px_1fr_80px_65px] sm:grid-cols-[32px_1fr_95px_70px_50px] items-center h-[50px] px-2 rounded-2xl border transition-all cursor-pointer group select-none",
+                      "grid grid-cols-[24px_1fr_75px_60px] md:grid-cols-[24px_85px_75px_60px_65px_60px_65px_45px] items-center h-[48px] px-2 rounded-xl border transition-all cursor-pointer group select-none font-mono text-[11px]",
                       isPreviewed
                         ? "border-foreground bg-secondary font-medium shadow-xs ring-1 ring-foreground/15"
                         : "border-transparent hover:border-border hover:bg-secondary/50"
@@ -438,33 +577,26 @@ export function MarketBar({
                         );
                       }}
                       className={cn(
-                        "size-7 rounded-lg transition-colors cursor-pointer",
+                        "size-6 rounded transition-colors cursor-pointer",
                         isFav
                           ? "text-[#FFD60A]"
                           : "text-muted-foreground hover:text-foreground"
                       )}
                     >
                       <Star
-                        className="size-3.5"
+                        className="size-3"
                         fill={isFav ? "currentColor" : "none"}
                       />
                     </Button>
 
                     {/* Market logo, symbol and name */}
-                    <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 pr-1">
-                      <MarketLogo symbol={m.symbol} size={24} />
+                    <div className="flex items-center gap-1.5 min-w-0 pr-1">
+                      <MarketLogo symbol={m.symbol} size={18} />
                       <div className="min-w-0">
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-xs font-bold text-foreground leading-tight">
-                            {m.symbol}
-                          </span>
-                          {isSelected && (
-                            <span className="px-1.5 py-0.2 rounded bg-[#E3F8EC] text-[9px] font-mono font-bold text-[#06964A]">
-                              Active
-                            </span>
-                          )}
-                        </div>
-                        <span className="block text-[10px] text-muted-foreground leading-tight truncate">
+                        <span className="font-bold text-foreground font-sans block leading-tight text-xs">
+                          {m.symbol}
+                        </span>
+                        <span className="block text-[9px] text-muted-foreground truncate leading-tight font-sans">
                           {m.name}
                         </span>
                       </div>
@@ -472,7 +604,7 @@ export function MarketBar({
 
                     {/* Price */}
                     <div className="text-right">
-                      <span className="tabular text-xs font-semibold text-foreground">
+                      <span className="tabular font-semibold text-foreground">
                         ${fmtUsd(feeds[m.symbol]?.price ?? m.basePrice, m.decimals)}
                       </span>
                     </div>
@@ -481,27 +613,35 @@ export function MarketBar({
                     <div className="text-right">
                       <span
                         className={cn(
-                          "tabular text-[10px] font-semibold px-1.5 py-0.5 rounded-md inline-block",
+                          "tabular text-[10px] font-semibold px-1 py-0.2 rounded-md inline-block",
                           ch >= 0
                             ? "bg-[#E3F8EC] text-[#06964A]"
                             : "bg-[#FFECEA] text-[#FF3B30]"
                         )}
                       >
                         {ch >= 0 ? "+" : ""}
-                        {ch.toFixed(2)}%
+                        {ch.toFixed(1)}%
                       </span>
                     </div>
 
+                    {/* Volume */}
+                    <div className="hidden md:block text-right text-muted-foreground">
+                      {VOLUMES_24H[m.symbol] || '$50M'}
+                    </div>
+
+                    {/* OI */}
+                    <div className="hidden md:block text-right text-muted-foreground">
+                      {OPEN_INTERESTS[m.symbol] || '$20M'}
+                    </div>
+
+                    {/* Funding */}
+                    <div className="hidden md:block text-right text-[#06964A] font-medium text-[10px]">
+                      {FUNDING_RATES[m.symbol]?.replace(' / 1h', '') || '0.01%'}
+                    </div>
+
                     {/* Max Leverage */}
-                    <div className="hidden sm:flex justify-end pr-1">
-                      <span
-                        className={cn(
-                          "tabular text-[10px] font-mono px-1.5 py-0.5 rounded-md font-semibold",
-                          m.maxLeverage === 1000
-                            ? "bg-foreground text-background"
-                            : "bg-secondary text-foreground/80 font-medium"
-                        )}
-                      >
+                    <div className="hidden md:flex justify-end pr-0.5">
+                      <span className="tabular font-bold text-foreground text-[10px]">
                         {m.maxLeverage}x
                       </span>
                     </div>

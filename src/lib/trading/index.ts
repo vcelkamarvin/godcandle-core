@@ -66,6 +66,19 @@ export function calcLiquidationDistancePct(
 }
 
 /**
+ * Distance to liquidation expressed in volatility multiples (e.g. 0.4x 1h ATR away).
+ */
+export function calcLiquidationDistanceAtr(
+  currentPrice: number,
+  liqPrice: number,
+  atr1h: number
+): number {
+  if (atr1h <= 0 || currentPrice <= 0 || liqPrice <= 0) return 0;
+  const dist = Math.abs(currentPrice - liqPrice);
+  return +(dist / atr1h).toFixed(1);
+}
+
+/**
  * Break-even price computation considering taker entry fee, exit fee,
  * builder fee, and funding cost.
  */

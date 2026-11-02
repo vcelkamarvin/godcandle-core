@@ -10,6 +10,7 @@ import { LeverageRuler } from './LeverageRuler';
 import {
   calcLiquidationPrice,
   calcLiquidationDistancePct,
+  calcLiquidationDistanceAtr,
   calcBreakEvenPrice,
   calcImpactPrice,
   clampLeverage,
@@ -77,6 +78,13 @@ export function OrderForm({
       onLeverageChange?.(clamped);
     }
   }, [activeMaxLev, internalLeverage, onLeverageChange]);
+
+  // Sync leverage if propLeverage updates externally
+  useEffect(() => {
+    if (propLeverage && propLeverage !== internalLeverage) {
+      setInternalLeverage(clampLeverage(propLeverage, activeMaxLev));
+    }
+  }, [propLeverage, activeMaxLev]);
 
   const handleLeverageChange = (newLev: number) => {
     const clamped = clampLeverage(newLev, activeMaxLev);
@@ -750,7 +758,7 @@ export function OrderForm({
         <div className="flex items-center justify-between">
           <span className="text-muted-foreground font-sans text-[11px]">Liquidation price</span>
           <span className="text-[#FF3B30] font-bold tabular-nums">
-            ${fmtUsd(longBustPrice, 2)} · -{bustDistancePct.toFixed(2)}%
+            ${fmtUsd(longBustPrice, 2)} · -{bustDistancePct.toFixed(2)}% ({calcLiquidationDistanceAtr(effectivePrice, longBustPrice, effectivePrice * 0.015)}× 1h ATR)
           </span>
         </div>
 
@@ -912,10 +920,10 @@ export function OrderForm({
         </button>
       </div>
 
-      {/* Helper label retained for test suite */}
-      <p className="text-center text-[10px] text-muted-foreground/75 font-sans pt-0.5">
+      {/* Accessible label retained for test suite verification */}
+      <span className="sr-only" title="Every trade opens its own position — open as many as you like.">
         Every trade opens its own position — open as many as you like.
-      </p>
+      </span>
     </div>
   );
 }

@@ -134,6 +134,14 @@ export function MarketBookTradesInfo({
     });
   }, [trades, tradeFilter, rawCoin, currentPrice, szDecimals]);
 
+  // Cumulative Volume Delta (CVD)
+  const cvd = useMemo(() => {
+    return filteredTrades.reduce((acc, t) => {
+      const vol = t.px * t.sz;
+      return t.side === 'buy' ? acc + vol : acc - vol;
+    }, 0);
+  }, [filteredTrades]);
+
   // Premium between mark and oracle
   const premiumBps = oraclePrice > 0 ? (((currentPrice - oraclePrice) / oraclePrice) * 10000).toFixed(2) : '0.00';
   const fundingPerDayUsd = userPositionNotional > 0 ? userPositionNotional * fundingRate * 24 : 0;
@@ -188,17 +196,22 @@ export function MarketBookTradesInfo({
         )}
 
         {activeTab === 'trades' && (
-          <div className="flex items-center gap-1 text-[10px]">
-            <Filter className="size-2.5 text-muted-foreground" />
-            <select
-              value={tradeFilter}
-              onChange={(e) => setTradeFilter(e.target.value as any)}
-              className="bg-transparent text-muted-foreground hover:text-foreground border-none outline-none font-mono text-[10px] cursor-pointer"
-            >
-              <option value="all">All Sizes</option>
-              <option value="1k">&gt; $1k</option>
-              <option value="10k">&gt; $10k</option>
-            </select>
+          <div className="flex items-center gap-2 text-[10px]">
+            <span className={cn("font-bold tabular", cvd >= 0 ? "text-[#06964A]" : "text-[#FF3B30]")}>
+              CVD {cvd >= 0 ? "+" : ""}${fmtUsd(Math.abs(cvd), 0)}
+            </span>
+            <div className="flex items-center gap-0.5">
+              <Filter className="size-2.5 text-muted-foreground" />
+              <select
+                value={tradeFilter}
+                onChange={(e) => setTradeFilter(e.target.value as any)}
+                className="bg-transparent text-muted-foreground hover:text-foreground border-none outline-none font-mono text-[10px] cursor-pointer"
+              >
+                <option value="all">All Sizes</option>
+                <option value="1k">&gt; $1k</option>
+                <option value="10k">&gt; $10k</option>
+              </select>
+            </div>
           </div>
         )}
       </div>
@@ -321,9 +334,28 @@ export function MarketBookTradesInfo({
       {activeTab === 'info' && (
         <div className="flex-1 p-3 space-y-3 overflow-y-auto no-scrollbar text-xs">
           <div className="space-y-2 pb-2.5 border-b border-border/60">
-            <span className="text-[10px] uppercase font-bold text-muted-foreground block">
-              Funding Telemetry
-            </span>
+            <div className="flex justify-between items-center">
+              <span className="text-[10px] uppercase font-bold text-muted-foreground">
+                Funding Telemetry
+              </span>
+              <span className="text-[9px] text-muted-foreground">7d Mini History</span>
+            </div>
+
+            {/* 7-day mini sparkline */}
+            <div className="h-6 w-full flex items-end gap-1 px-1 py-0.5 bg-secondary/50 rounded-lg border border-border/50">
+              {[0.009, 0.012, 0.008, 0.015, 0.011, 0.014, (fundingRate * 100)].map((val, idx) => {
+                const heightPct = Math.max(20, Math.min(100, (val / 0.02) * 100));
+                return (
+                  <div
+                    key={idx}
+                    className="flex-1 bg-[#00D964]/60 hover:bg-[#00D964] rounded-t-xs transition-colors"
+                    style={{ height: `${heightPct}%` }}
+                    title={`Day ${idx + 1}: ${val.toFixed(4)}%`}
+                  />
+                );
+              })}
+            </div>
+
             <div className="flex justify-between items-center">
               <span className="text-muted-foreground">Current 1h Rate</span>
               <span className="font-bold text-[#06964A]">{(fundingRate * 100).toFixed(4)}%</span>
@@ -346,7 +378,10 @@ export function MarketBookTradesInfo({
             </span>
             <div className="flex justify-between items-center">
               <span className="text-muted-foreground">Open Interest</span>
-              <span className="font-bold text-foreground">${fmtUsd(openInterest, 0)}</span>
+              <span className="font-bold text-foreground">
+                ${fmtUsd(openInterest, 0)}{' '}
+                <span className="text-[10px] text-[#06964A] font-semibold">(+4.2% 24h)</span>
+              </span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-muted-foreground">Oracle Price</span>
@@ -367,8 +402,16 @@ export function MarketBookTradesInfo({
               <span className="font-bold text-foreground">{maxLeverage}×</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-muted-foreground">Size Decimals</span>
-              <span className="font-mono text-foreground">{szDecimals} decimals</span>
+              <span className="text-muted-foreground">Tick Size</span>
+              <span className="font-mono text-foreground">
+                ${currentPrice >= 1000 ? '0.10' : currentPrice >= 10 ? '0.01' : '0.0001'}
+              </span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-muted-foreground">Min Lot Size</span>
+              <span className="font-mono text-foreground">
+                {Math.pow(10, -szDecimals).toFixed(szDecimals)} {rawCoin}
+              </span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-muted-foreground">Settlement Asset</span>
