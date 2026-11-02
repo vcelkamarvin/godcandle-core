@@ -111,7 +111,7 @@ export function ShareModal({
 
   // Dismiss on Escape key
   useEffect(() => {
-    if (!trade) return;
+    if (!trade || open === false) return;
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         onOpenChange(false);
@@ -119,7 +119,7 @@ export function ShareModal({
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [trade, onOpenChange]);
+  }, [trade, open, onOpenChange]);
 
   // Market & Trade data normalization
   const marketSymbol = (trade?.market || "BTC") as MarketSymbol;
@@ -154,10 +154,14 @@ export function ShareModal({
   // Calculations per Mode (clean data without UI bloat)
   const { displayRoiPct, displayDollar, statCols, pnlHeadingLabel } = useMemo(() => {
     if (mode === "goal") {
-      const targetGoal = Math.round(rawEntry * (side === "long" ? 1.25 : 0.75));
+      const targetGoal = (trade && "exit" in trade && typeof trade.exit === "number" && trade.exit > 0)
+        ? trade.exit
+        : Math.round(rawEntry * (side === "long" ? 1.25 : 0.75));
       const priceDeltaPct = rawEntry > 0 ? ((targetGoal - rawEntry) / rawEntry) * (side === "long" ? 1 : -1) : 0;
-      const goalRoi = priceDeltaPct * rawLeverage * 100;
-      const goalPnl = rawStake * (goalRoi / 100);
+      const goalPnl = (trade && "pnl" in trade && typeof trade.pnl === "number")
+        ? trade.pnl
+        : rawStake * (priceDeltaPct * rawLeverage);
+      const goalRoi = rawStake > 0 ? (goalPnl / rawStake) * 100 : priceDeltaPct * rawLeverage * 100;
 
       return {
         displayRoiPct: goalRoi,
@@ -173,9 +177,11 @@ export function ShareModal({
 
     if (mode === "boost") {
       const boostMult = 5.0;
-      const boostedRoi = baseRoiPct >= 0 ? baseRoiPct * boostMult : baseRoiPct;
-      const boostedPnl = rawPnl >= 0 ? rawPnl * boostMult : rawPnl;
-      const effectiveLev = Math.round(rawLeverage * boostMult);
+      const effectiveLev = rawLeverage || Math.round(rawLeverage * boostMult);
+      const boostedPnl = (trade && "pnl" in trade && typeof trade.pnl === "number")
+        ? trade.pnl
+        : (rawPnl >= 0 ? rawPnl * boostMult : rawPnl);
+      const boostedRoi = rawStake > 0 ? (boostedPnl / rawStake) * 100 : (baseRoiPct >= 0 ? baseRoiPct * boostMult : baseRoiPct);
 
       return {
         displayRoiPct: boostedRoi,

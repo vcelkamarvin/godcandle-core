@@ -52,6 +52,26 @@ const DEFAULT_SPOTS: Record<Underlying, number> = {
   DOGE: 0.164,
 };
 
+function getTargetPrecision(price: number): number {
+  if (price >= 500) return 0;
+  if (price >= 10) return 2;
+  if (price >= 1) return 3;
+  return 4;
+}
+
+function roundToPrecision(val: number, precision: number): number {
+  const factor = Math.pow(10, precision);
+  return Math.round(val * factor) / factor;
+}
+
+function formatTargetPrice(val: number, spot: number): string {
+  const precision = getTargetPrecision(spot);
+  return val.toLocaleString(undefined, {
+    minimumFractionDigits: precision,
+    maximumFractionDigits: precision,
+  });
+}
+
 export function BoostPage() {
   const t = useTrading();
   const [underlying, setUnderlying] = useState<Underlying>("BTC");
@@ -66,7 +86,10 @@ export function BoostPage() {
   const spot = t?.feeds?.[underlying]?.price ?? DEFAULT_SPOTS[underlying];
 
   // Target price state
-  const [targetPrice, setTargetPrice] = useState(() => Math.round(spot * 1.15));
+  const [targetPrice, setTargetPrice] = useState(() => {
+    const precision = getTargetPrecision(spot);
+    return roundToPrecision(spot * 1.15, precision);
+  });
 
   // Only re-anchor target price when underlying asset or direction explicitly changes
   const prevUnderlyingRef = useRef(underlying);
@@ -80,7 +103,8 @@ export function BoostPage() {
       prevUnderlyingRef.current = underlying;
       prevDirectionRef.current = direction;
       const factor = direction === "LONG" ? 1.15 : 0.85;
-      setTargetPrice(Math.round(spot * factor));
+      const precision = getTargetPrecision(spot);
+      setTargetPrice(roundToPrecision(spot * factor, precision));
     }
   }, [underlying, direction, spot]);
 
@@ -99,23 +123,29 @@ export function BoostPage() {
 
   // Slider bounds
   const minTarget = useMemo(() => {
+    const precision = getTargetPrecision(spot);
     if (direction === "LONG") {
-      return Math.round(spot * 1.01);
+      return roundToPrecision(spot * 1.01, precision);
     } else {
-      return Math.max(1, Math.round(spot * 0.3));
+      return roundToPrecision(spot * 0.3, precision);
     }
   }, [spot, direction]);
 
   const maxTarget = useMemo(() => {
+    const precision = getTargetPrecision(spot);
     if (direction === "LONG") {
-      return Math.round(spot * 2.0);
+      return roundToPrecision(spot * 2.0, precision);
     } else {
-      return Math.round(spot * 0.99);
+      return roundToPrecision(spot * 0.99, precision);
     }
   }, [spot, direction]);
 
   const sliderStep = useMemo(() => {
-    return Math.max(1, Math.round(spot * 0.005));
+    const precision = getTargetPrecision(spot);
+    const rawStep = spot * 0.005;
+    return precision === 0
+      ? Math.max(1, Math.round(rawStep))
+      : roundToPrecision(Math.max(Math.pow(10, -precision), rawStep), precision);
   }, [spot]);
 
   // Modeled non-linear trajectory curve for ChartCanvas
@@ -393,7 +423,10 @@ export function BoostPage() {
                 <div className="flex items-center gap-1 mr-1">
                   <button
                     type="button"
-                    onClick={() => setTargetPrice((p) => Math.max(minTarget, p - sliderStep))}
+                    onClick={() => {
+                      const prec = getTargetPrecision(spot);
+                      setTargetPrice((p) => Math.max(minTarget, roundToPrecision(p - sliderStep, prec)));
+                    }}
                     className="size-5 rounded border border-border bg-white flex items-center justify-center hover:bg-secondary cursor-pointer"
                     title="Decrease target price"
                   >
@@ -401,7 +434,10 @@ export function BoostPage() {
                   </button>
                   <button
                     type="button"
-                    onClick={() => setTargetPrice((p) => Math.min(maxTarget, p + sliderStep))}
+                    onClick={() => {
+                      const prec = getTargetPrecision(spot);
+                      setTargetPrice((p) => Math.min(maxTarget, roundToPrecision(p + sliderStep, prec)));
+                    }}
                     className="size-5 rounded border border-border bg-white flex items-center justify-center hover:bg-secondary cursor-pointer"
                     title="Increase target price"
                   >
@@ -409,7 +445,7 @@ export function BoostPage() {
                   </button>
                 </div>
                 <span className="text-foreground font-bold text-sm tabular">
-                  ${targetPrice.toLocaleString()}
+                  ${formatTargetPrice(targetPrice, spot)}
                 </span>
                 <span
                   className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
@@ -429,14 +465,16 @@ export function BoostPage() {
                 max={maxTarget}
                 step={sliderStep}
                 onValueChange={([val]) => {
-                  if (typeof val === "number") setTargetPrice(val);
+                  if (typeof val === "number") {
+                    setTargetPrice(roundToPrecision(val, getTargetPrecision(spot)));
+                  }
                 }}
                 className="py-1 cursor-grab active:cursor-grabbing"
               />
               <div className="flex justify-between text-[10px] text-muted-foreground font-mono mt-1.5">
-                <span>${minTarget.toLocaleString()}</span>
-                <span>Spot: ${Math.round(spot).toLocaleString()}</span>
-                <span>${maxTarget.toLocaleString()}</span>
+                <span>${formatTargetPrice(minTarget, spot)}</span>
+                <span>Spot: ${formatTargetPrice(spot, spot)}</span>
+                <span>${formatTargetPrice(maxTarget, spot)}</span>
               </div>
             </div>
           </div>
@@ -448,10 +486,11 @@ export function BoostPage() {
             </span>
             <div className="grid grid-cols-4 gap-1.5">
               {[5, 10, 20, 40].map((pct) => {
+                const precision = getTargetPrecision(spot);
                 const target =
                   direction === "LONG"
-                    ? Math.round(spot * (1 + pct / 100))
-                    : Math.round(spot * (1 - pct / 100));
+                    ? roundToPrecision(spot * (1 + pct / 100), precision)
+                    : roundToPrecision(spot * (1 - pct / 100), precision);
                 return (
                   <button
                     key={pct}
@@ -467,7 +506,7 @@ export function BoostPage() {
                       {direction === "LONG" ? `+${pct}%` : `-${pct}%`}
                     </div>
                     <div className="text-[9px] font-mono text-muted-foreground mt-0.5">
-                      ${target.toLocaleString()}
+                      ${formatTargetPrice(target, spot)}
                     </div>
                   </button>
                 );
@@ -639,7 +678,7 @@ export function BoostPage() {
                   <div className="flex justify-between py-1.5 border-b border-border">
                     <span className="text-muted-foreground font-sans">Target Price</span>
                     <span className="font-bold tabular text-foreground">
-                      ${targetPrice.toLocaleString()}
+                      ${formatTargetPrice(targetPrice, spot)}
                     </span>
                   </div>
                   <div className="flex justify-between py-1.5 border-b border-border">

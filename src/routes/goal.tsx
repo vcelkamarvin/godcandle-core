@@ -52,6 +52,26 @@ const DEFAULT_SPOTS: Record<Underlying, number> = {
   DOGE: 0.164,
 };
 
+function getTargetPrecision(price: number): number {
+  if (price >= 500) return 0;
+  if (price >= 10) return 2;
+  if (price >= 1) return 3;
+  return 4;
+}
+
+function roundToPrecision(val: number, precision: number): number {
+  const factor = Math.pow(10, precision);
+  return Math.round(val * factor) / factor;
+}
+
+function formatTargetPrice(val: number, spot: number): string {
+  const precision = getTargetPrecision(spot);
+  return val.toLocaleString(undefined, {
+    minimumFractionDigits: precision,
+    maximumFractionDigits: precision,
+  });
+}
+
 export function GoalPage() {
   const t = useTrading();
   const [underlying, setUnderlying] = useState<Underlying>("BTC");
@@ -65,7 +85,10 @@ export function GoalPage() {
   const spot = t?.feeds?.[underlying]?.price ?? DEFAULT_SPOTS[underlying];
 
   // Target price state
-  const [targetPrice, setTargetPrice] = useState(() => Math.round(spot * 1.15));
+  const [targetPrice, setTargetPrice] = useState(() => {
+    const precision = getTargetPrecision(spot);
+    return roundToPrecision(spot * 1.15, precision);
+  });
 
   // Only re-anchor target price when underlying asset or direction explicitly changes
   const prevUnderlyingRef = useRef(underlying);
@@ -79,7 +102,8 @@ export function GoalPage() {
       prevUnderlyingRef.current = underlying;
       prevDirectionRef.current = direction;
       const factor = direction === "LONG" ? 1.15 : 0.85;
-      setTargetPrice(Math.round(spot * factor));
+      const precision = getTargetPrecision(spot);
+      setTargetPrice(roundToPrecision(spot * factor, precision));
     }
   }, [underlying, direction, spot]);
 
@@ -101,40 +125,47 @@ export function GoalPage() {
 
   // Slider bounds
   const minTarget = useMemo(() => {
+    const precision = getTargetPrecision(spot);
     if (direction === "LONG") {
-      return Math.round(spot * 1.01);
+      return roundToPrecision(spot * 1.01, precision);
     } else {
-      return Math.max(1, Math.round(spot * 0.3));
+      return roundToPrecision(spot * 0.3, precision);
     }
   }, [spot, direction]);
 
   const maxTarget = useMemo(() => {
+    const precision = getTargetPrecision(spot);
     if (direction === "LONG") {
-      return Math.round(spot * 2.0);
+      return roundToPrecision(spot * 2.0, precision);
     } else {
-      return Math.round(spot * 0.99);
+      return roundToPrecision(spot * 0.99, precision);
     }
   }, [spot, direction]);
 
   const sliderStep = useMemo(() => {
-    return Math.max(1, Math.round(spot * 0.005));
+    const precision = getTargetPrecision(spot);
+    const rawStep = spot * 0.005;
+    return precision === 0
+      ? Math.max(1, Math.round(rawStep))
+      : roundToPrecision(Math.max(Math.pow(10, -precision), rawStep), precision);
   }, [spot]);
 
   // Quick milestone chips
   const milestones = useMemo(() => {
+    const precision = getTargetPrecision(spot);
     if (direction === "LONG") {
       return [
-        { id: "1", label: "+5% Target", price: Math.round(spot * 1.05), pct: 5 },
-        { id: "2", label: "+15% Target", price: Math.round(spot * 1.15), pct: 15 },
-        { id: "3", label: "+30% Target", price: Math.round(spot * 1.3), pct: 30 },
-        { id: "4", label: "+50% Target", price: Math.round(spot * 1.5), pct: 50 },
+        { id: "1", label: "+5% Target", price: roundToPrecision(spot * 1.05, precision), pct: 5 },
+        { id: "2", label: "+15% Target", price: roundToPrecision(spot * 1.15, precision), pct: 15 },
+        { id: "3", label: "+30% Target", price: roundToPrecision(spot * 1.3, precision), pct: 30 },
+        { id: "4", label: "+50% Target", price: roundToPrecision(spot * 1.5, precision), pct: 50 },
       ];
     } else {
       return [
-        { id: "1", label: "-5% Target", price: Math.round(spot * 0.95), pct: -5 },
-        { id: "2", label: "-15% Target", price: Math.round(spot * 0.85), pct: -15 },
-        { id: "3", label: "-30% Target", price: Math.round(spot * 0.7), pct: -30 },
-        { id: "4", label: "-50% Target", price: Math.round(spot * 0.5), pct: -50 },
+        { id: "1", label: "-5% Target", price: roundToPrecision(spot * 0.95, precision), pct: -5 },
+        { id: "2", label: "-15% Target", price: roundToPrecision(spot * 0.85, precision), pct: -15 },
+        { id: "3", label: "-30% Target", price: roundToPrecision(spot * 0.7, precision), pct: -30 },
+        { id: "4", label: "-50% Target", price: roundToPrecision(spot * 0.5, precision), pct: -50 },
       ];
     }
   }, [spot, direction]);
@@ -389,7 +420,10 @@ export function GoalPage() {
                 <div className="flex items-center gap-1 mr-1">
                   <button
                     type="button"
-                    onClick={() => setTargetPrice((p) => Math.max(minTarget, p - sliderStep))}
+                    onClick={() => {
+                      const prec = getTargetPrecision(spot);
+                      setTargetPrice((p) => Math.max(minTarget, roundToPrecision(p - sliderStep, prec)));
+                    }}
                     className="size-5 rounded border border-border bg-white flex items-center justify-center hover:bg-secondary cursor-pointer"
                     title="Decrease target price"
                   >
@@ -397,7 +431,10 @@ export function GoalPage() {
                   </button>
                   <button
                     type="button"
-                    onClick={() => setTargetPrice((p) => Math.min(maxTarget, p + sliderStep))}
+                    onClick={() => {
+                      const prec = getTargetPrecision(spot);
+                      setTargetPrice((p) => Math.min(maxTarget, roundToPrecision(p + sliderStep, prec)));
+                    }}
                     className="size-5 rounded border border-border bg-white flex items-center justify-center hover:bg-secondary cursor-pointer"
                     title="Increase target price"
                   >
@@ -405,7 +442,7 @@ export function GoalPage() {
                   </button>
                 </div>
                 <span className="text-foreground font-bold text-sm tabular">
-                  ${targetPrice.toLocaleString()}
+                  ${formatTargetPrice(targetPrice, spot)}
                 </span>
                 <span
                   className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
@@ -426,14 +463,16 @@ export function GoalPage() {
                 max={maxTarget}
                 step={sliderStep}
                 onValueChange={([val]) => {
-                  if (typeof val === "number") setTargetPrice(val);
+                  if (typeof val === "number") {
+                    setTargetPrice(roundToPrecision(val, getTargetPrecision(spot)));
+                  }
                 }}
                 className="py-1 cursor-grab active:cursor-grabbing"
               />
               <div className="flex justify-between text-[10px] text-muted-foreground font-mono mt-1.5">
-                <span>${minTarget.toLocaleString()}</span>
-                <span>Spot: ${Math.round(spot).toLocaleString()}</span>
-                <span>${maxTarget.toLocaleString()}</span>
+                <span>${formatTargetPrice(minTarget, spot)}</span>
+                <span>Spot: ${formatTargetPrice(spot, spot)}</span>
+                <span>${formatTargetPrice(maxTarget, spot)}</span>
               </div>
             </div>
           </div>
@@ -459,7 +498,7 @@ export function GoalPage() {
                   >
                     <div className="text-[11px] truncate font-sans">{m.label}</div>
                     <div className="text-[10px] font-mono tabular mt-0.5 text-foreground font-bold">
-                      ${m.price.toLocaleString()}
+                      ${formatTargetPrice(m.price, spot)}
                     </div>
                   </button>
                 );
@@ -534,7 +573,7 @@ export function GoalPage() {
               ) : (
                 <span className="flex items-center gap-1.5">
                   <Target className="size-3.5" />
-                  Set ${targetPrice.toLocaleString()} Goal →
+                  Set ${formatTargetPrice(targetPrice, spot)} Goal →
                 </span>
               )}
             </Button>
@@ -632,7 +671,7 @@ export function GoalPage() {
                   <div className="flex justify-between py-1.5 border-b border-border">
                     <span className="text-muted-foreground font-sans">Target Price</span>
                     <span className="font-bold tabular text-foreground">
-                      ${targetPrice.toLocaleString()}
+                      ${formatTargetPrice(targetPrice, spot)}
                     </span>
                   </div>
                   <div className="flex justify-between py-1.5 border-b border-border">
@@ -691,7 +730,8 @@ export function GoalPage() {
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
               {(direction === "LONG" ? [1.05, 1.15, 1.3, 1.5] : [0.95, 0.85, 0.7, 0.5]).map(
                 (mult) => {
-                  const p = Math.round(spot * mult);
+                  const precision = getTargetPrecision(spot);
+                  const p = roundToPrecision(spot * mult, precision);
                   const move =
                     direction === "LONG" ? ((p - spot) / spot) * 100 : ((spot - p) / spot) * 100;
                   const r = move * boostMultiplier;
@@ -707,7 +747,7 @@ export function GoalPage() {
                           : `-${move.toFixed(0)}% Target Move`}
                       </div>
                       <div className="text-xs sm:text-sm font-bold text-foreground font-mono tabular">
-                        ${p.toLocaleString()}
+                        ${formatTargetPrice(p, spot)}
                       </div>
                       <div className="text-[10px] sm:text-[11px] font-bold text-[#06964A] font-mono tabular">
                         +${g.toLocaleString()} (+{r.toFixed(0)}%)

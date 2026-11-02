@@ -28,6 +28,7 @@ export function ChartCanvas({
       if (!canvas || !ctx) return;
       const w = canvas.clientWidth;
       const h = canvas.clientHeight;
+      if (w <= 0 || h <= 0) return;
       const dpr = window.devicePixelRatio || 1;
 
       canvas.width = w * dpr;
@@ -160,8 +161,9 @@ export function ChartCanvas({
         });
       } else {
         // Line & Curve with godcandle rainbow pastel gradient fill
+        const len = Math.max(1, data.length - 1);
         const points = data.map((v, i) => {
-          const x = pad + (i / (data.length - 1)) * (plotW - 10);
+          const x = pad + (i / len) * (plotW - 10);
           const y = plotH - 8 - ((v - min) / range) * (plotH - 20);
           return { x, y };
         });
@@ -221,17 +223,23 @@ export function ChartCanvas({
         kind === "curve"
           ? ["NOW", "+25%", "+50%", "+75%", "TARGET"]
           : ["-24h", "-18h", "-12h", "-6h", "-1h", "NOW"];
+      const timesLen = Math.max(1, times.length - 1);
       for (let i = 0; i < times.length; i++) {
-        const x = pad + (i / (times.length - 1)) * (plotW - 20);
+        const x = pad + (i / timesLen) * (plotW - 20);
         const label = times[i];
         if (label) ctx.fillText(label, x, h - 6);
       }
     }
 
     draw();
-    const observer = new ResizeObserver(draw);
-    observer.observe(canvas);
-    return () => observer.disconnect();
+    let observer: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== "undefined") {
+      observer = new ResizeObserver(draw);
+      observer.observe(canvas);
+    }
+    return () => {
+      if (observer) observer.disconnect();
+    };
   }, [kind, values, height]);
 
   return (

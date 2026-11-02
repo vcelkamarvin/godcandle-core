@@ -190,5 +190,72 @@ describe("Goal & Boost Interactive Component Rendering", () => {
     expect(container.textContent).toContain("Short ↘ (Downside)");
     expect(container.textContent).toContain("10× Multiplier");
   });
+
+  it("handles low-price assets (DOGE) and SHORT direction without min > max slider errors", async () => {
+    const { GoalPage } = await import("@/routes/goal");
+    const root = createRoot(container);
+    await act(async () => {
+      root.render(<GoalPage />);
+    });
+
+    // Find and click DOGE asset button
+    const dogeBtn = Array.from(container.querySelectorAll("button")).find(
+      (b) => b.textContent?.trim() === "DOGE"
+    );
+    expect(dogeBtn).toBeDefined();
+    await act(async () => {
+      dogeBtn?.click();
+    });
+
+    // Verify DOGE target is not rounded down to 0
+    expect(container.textContent).not.toContain("$0 (");
+    expect(container.textContent).toContain("$0.16");
+
+    // Click Short ↘ (Downside)
+    const shortBtn = Array.from(container.querySelectorAll("button")).find((b) =>
+      b.textContent?.includes("Short ↘")
+    );
+    expect(shortBtn).toBeDefined();
+    await act(async () => {
+      shortBtn?.click();
+    });
+
+    // Verify target price and slider remain positive and valid
+    expect(container.textContent).toContain("Short ↘");
+    expect(container.textContent).not.toContain("NaN");
+  });
+
+  it("opens ShareModal on Goal and Boost pages with synchronized target and ROI", async () => {
+    const { GoalPage } = await import("@/routes/goal");
+    const root = createRoot(container);
+    await act(async () => {
+      root.render(<GoalPage />);
+    });
+
+    // Click Share Goal button
+    const shareBtn = Array.from(container.querySelectorAll("button")).find((b) =>
+      b.textContent?.includes("Share Goal")
+    );
+    expect(shareBtn).toBeDefined();
+    await act(async () => {
+      shareBtn?.click();
+    });
+
+    // Share modal should now be open
+    expect(container.querySelector('[role="dialog"]')).not.toBeNull();
+    expect(container.textContent).toContain("TARGET GOAL ROI");
+    expect(container.textContent).toContain("TARGET GOAL");
+  });
+
+  it("ChartCanvas safely handles 1-element arrays and zero client dimensions", async () => {
+    const { ChartCanvas } = await import("@/components/godcandle/ChartCanvas");
+    const root = createRoot(container);
+    await act(async () => {
+      root.render(<ChartCanvas kind="curve" values={[100]} height={130} />);
+    });
+
+    const canvas = container.querySelector("canvas");
+    expect(canvas).not.toBeNull();
+  });
 });
 
