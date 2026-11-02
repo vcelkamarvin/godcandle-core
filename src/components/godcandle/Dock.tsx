@@ -1,5 +1,5 @@
-import { Share2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import React, { useState, useEffect, useMemo } from 'react';
+import { Share2, X, Download, AlertCircle } from 'lucide-react';
 import {
   fmtDuration,
   fmtSigned,
@@ -8,11 +8,14 @@ import {
   pnlOf,
   type ClosedTrade,
   type Position,
-} from "@/lib/trade";
-import { Button } from "@/components/ui/button";
-import { getMarket, type MarketSymbol } from "@/config/markets";
-import type { FeedSnap } from "@/lib/price-feed";
-import { MarketLogo } from "./MarketLogo";
+} from '@/lib/trade';
+import { Button } from '@/components/ui/button';
+import { getMarket, type MarketSymbol } from '@/config/markets';
+import type { FeedSnap } from '@/lib/price-feed';
+import { MarketLogo } from './MarketLogo';
+import { useTrading } from './TradingProvider';
+import { fetchOpenOrders, fetchUserFundingHistory } from '@/lib/hyperliquid/market-data';
+import { useAccount } from 'wagmi';
 
 interface Props {
   feeds: Record<MarketSymbol, FeedSnap>;
@@ -26,7 +29,9 @@ interface Props {
 const SideBadge = ({ side }: { side: string }) => (
   <span
     className={`rounded-sm px-1.5 py-0.2 text-[10px] font-bold uppercase font-mono ${
-      side === "long" ? "bg-[#06964A] text-white" : "bg-[#FF3B30] text-white"
+      side.toLowerCase() === 'long' || side.toLowerCase() === 'buy'
+        ? 'bg-[#00D964] text-black'
+        : 'bg-[#FF3B30] text-white'
     }`}
   >
     {side.toUpperCase()}
@@ -34,292 +39,456 @@ const SideBadge = ({ side }: { side: string }) => (
 );
 
 export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props) {
-  const [tab, setTab] = useState<"open" | "history" | "stats">("open");
+  const t = useTrading();
+  const { address } = useAccount();
+  const [tab, setTab] = useState<'positions' | 'orders' | 'fills' | 'funding' | 'balances' | 'stats'>('positions');
+  const [openOrders, setOpenOrders] = useState<any[]>([]);
+  const [fundingHistory, setFundingHistory] = useState<any[]>([]);
+
+  // Fetch open orders and funding
   useEffect(() => {
-    const change = (e: Event) => setTab((e as CustomEvent).detail);
-    window.addEventListener("dock-tab", change);
-    return () => window.removeEventListener("dock-tab", change);
-  }, []);
+    let mounted = true;
+    if (address) {
+      fetchOpenOrders(address).then((orders) => {
+        if (mounted) setOpenOrders(orders);
+      });
+      fetchUserFundingHistory(address).then((fundings) => {
+        if (mounted) setFundingHistory(fundings);
+      });
+    }
+    return () => {
+      mounted = false;
+    };
+  }, [address]);
+
+  // Total unrealized PnL
+  const unrealizedPnl = useMemo(() => {
+    return open.reduce((acc, pos) => {
+      const price = feeds[pos.market]?.price ?? pos.entry;
+      return acc + pnlOf(pos, price);
+    }, 0);
+  }, [open, feeds]);
 
   const wins = history.filter((h) => h.pnl > 0).length;
-  const total = history.reduce((s, h) => s + h.pnl, 0);
+  const totalRealizedPnl = history.reduce((s, h) => s + h.pnl, 0);
   const best = history.length ? Math.max(...history.map((h) => h.pnl)) : 0;
   const worst = history.length ? Math.min(...history.map((h) => h.pnl)) : 0;
 
   const tabs = [
-    ["open", `Positions (${open.length})`],
-    ["history", `History (${history.length})`],
-    ["stats", "Stats"],
+    { id: 'positions', label: `Positions (${open.length})` },
+    { id: 'orders', label: `Orders (${openOrders.length})` },
+    { id: 'fills', label: `Fills (${history.length})` },
+    { id: 'funding', label: `Funding` },
+    { id: 'balances', label: `Balances` },
+    { id: 'stats', label: `Stats` },
   ] as const;
 
+  const handleExportCsv = () => {
+    if (history.length === 0) return;
+    const headers = ['Order ID', 'Market', 'Side', 'Leverage', 'Entry', 'Exit', 'PnL', 'Date'];
+    const rows = history.map((h) => [
+      h.id,
+      `${h.market}-USD`,
+      h.side,
+      h.leverage,
+      h.entry,
+      h.exit,
+      h.pnl,
+      new Date(h.closedAt).toISOString(),
+    ]);
+    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map((e) => e.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `godcandle_trades_${Date.now()}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
-    <div className="py-4 font-mono">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex h-8 items-center rounded-md border border-hairline bg-secondary/40 p-0.5">
-          {tabs.map(([id, label]) => (
-            <Button
-              variant="terminal"
-              key={id}
-              onClick={() => setTab(id)}
-              className={`tabular h-7 px-3 text-xs font-mono font-medium rounded-sm transition-all ${
-                tab === id
-                  ? "bg-foreground text-background font-bold shadow-xs"
-                  : "text-muted-foreground hover:text-foreground"
+    <div className="rounded-2xl border border-border bg-white shadow-xs overflow-hidden select-none font-mono text-[11px]">
+      {/* Account Telemetry Strip */}
+      <div className="flex flex-wrap items-center justify-between gap-3 px-3.5 py-2 bg-[#FBFBFA] border-b border-border text-[11px]">
+        <div className="flex items-center gap-4 text-muted-foreground">
+          <div>
+            <span className="text-[9px] uppercase tracking-wider block text-muted-foreground/75">Equity</span>
+            <span className="font-bold text-foreground tabular">${fmtUsd(t.balance, 2)}</span>
+          </div>
+          <div className="h-4 w-px bg-border" />
+          <div>
+            <span className="text-[9px] uppercase tracking-wider block text-muted-foreground/75">Available</span>
+            <span className="font-bold text-[#06964A] tabular">${fmtUsd(t.available, 2)}</span>
+          </div>
+          <div className="h-4 w-px bg-border" />
+          <div>
+            <span className="text-[9px] uppercase tracking-wider block text-muted-foreground/75">Margin Used</span>
+            <span className="font-medium text-foreground tabular">${fmtUsd(t.marginUsed, 2)}</span>
+          </div>
+          <div className="h-4 w-px bg-border" />
+          <div>
+            <span className="text-[9px] uppercase tracking-wider block text-muted-foreground/75">Unrealized PnL</span>
+            <span
+              className={`font-bold tabular ${
+                unrealizedPnl >= 0 ? 'text-[#06964A]' : 'text-[#FF3B30]'
               }`}
             >
-              {label}
-            </Button>
-          ))}
+              {fmtSigned(unrealizedPnl)}
+            </span>
+          </div>
         </div>
-        <p className="tabular text-xs font-mono text-muted-foreground">
-          Realized PnL:{" "}
-          <span className={`font-bold ${total >= 0 ? "text-[#06964A]" : "text-[#FF3B30]"}`}>
-            {fmtSigned(total)}
+
+        <div className="flex items-center gap-3">
+          <span className="text-muted-foreground">
+            Realized PnL:{' '}
+            <span className={`font-bold ${totalRealizedPnl >= 0 ? 'text-[#06964A]' : 'text-[#FF3B30]'}`}>
+              {fmtSigned(totalRealizedPnl)}
+            </span>
           </span>
-        </p>
+          {tab === 'stats' && history.length > 0 && (
+            <Button
+              variant="terminal"
+              onClick={handleExportCsv}
+              className="h-6 px-2 rounded-lg bg-secondary hover:bg-secondary/80 border border-border text-[10px] gap-1 flex items-center"
+            >
+              <Download className="size-3" />
+              <span>Export CSV</span>
+            </Button>
+          )}
+        </div>
       </div>
 
-      <div className="mt-4">
-        {tab === "open" &&
-          (open.length === 0 ? (
-            <div className="py-8 text-center text-xs font-mono text-muted-foreground border border-dashed border-border rounded-md">
-              No open positions. Use the Order Form to open 1000x isolated positions.
-            </div>
-          ) : (
-            <div className="space-y-2">
-              {open.map((pos) => {
-                const price = feeds[pos.market]?.price ?? pos.entry;
-                const market = getMarket(pos.market);
-                const pnl = pnlOf(pos, price);
-                const roi = (pnl / pos.stake) * 100;
-                const isUp = pnl >= 0;
-                const liqP = liquidation(pos);
-
-                return (
-                  <div
-                    key={pos.id}
-                    className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 rounded-md border border-hairline bg-card p-3 font-mono text-xs transition-all hover:border-foreground/30 shadow-xs"
-                  >
-                    {/* Left Column: Asset, Side, Leverage, ID slug */}
-                    <div className="flex items-center gap-3 min-w-[210px]">
-                      <button
-                        type="button"
-                        onClick={() => onSelect(pos.market)}
-                        className="flex items-center gap-2.5 text-left hover:opacity-85 transition-opacity"
-                      >
-                        <MarketLogo symbol={pos.market} />
-                        <div>
-                          <div className="flex items-center gap-1.5">
-                            <span className="font-bold text-foreground text-sm">
-                              {pos.market}-USD
-                            </span>
-                            <SideBadge side={pos.side} />
-                            <span className="rounded-sm bg-secondary border border-border px-1.5 py-0.2 text-[10px] font-bold text-foreground">
-                              {pos.leverage}x
-                            </span>
-                            {pos.id.startsWith("paper-") ? (
-                              <span className="rounded bg-[#FFF4E5] border border-[#D97706]/30 px-1 py-0.2 text-[8px] font-bold text-[#D97706]">
-                                TEST · PAPER
-                              </span>
-                            ) : (
-                              <span className="rounded bg-[#E3F8EC] border border-[#06964A]/30 px-1 py-0.2 text-[8px] font-bold text-[#06964A]">
-                                LIVE
-                              </span>
-                            )}
-                          </div>
-                          <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground mt-0.5">
-                            <span className="font-mono">#{pos.id.slice(0, 10)}</span>
-                            <span>·</span>
-                            <span>Isolated</span>
-                            {pos.tp && (
-                              <span className="text-[#00D964]">
-                                TP ${fmtUsd(pos.tp, market.decimals)}
-                              </span>
-                            )}
-                            {pos.sl && (
-                              <span className="text-[#FF3B30]">
-                                SL ${fmtUsd(pos.sl, market.decimals)}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </button>
-                    </div>
-
-                    {/* Middle Column: Margin, Entry Price, Mark Price, Liquidation Price */}
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs tabular flex-1 px-1">
-                      <div>
-                        <span className="text-muted-foreground block text-[9px] uppercase tracking-wider">
-                          MARGIN
-                        </span>
-                        <span className="font-semibold text-foreground">
-                          ${fmtUsd(pos.stake, 0)} USDC
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-muted-foreground block text-[9px] uppercase tracking-wider">
-                          ENTRY PRICE
-                        </span>
-                        <span className="font-semibold text-foreground">
-                          ${fmtUsd(pos.entry, market.decimals)}
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-muted-foreground block text-[9px] uppercase tracking-wider">
-                          MARK PRICE
-                        </span>
-                        <span className="font-semibold text-foreground">
-                          ${fmtUsd(price, market.decimals)}
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-muted-foreground block text-[9px] uppercase tracking-wider">
-                          LIQ PRICE
-                        </span>
-                        <span className="font-semibold text-[#FF3B30]">
-                          ${fmtUsd(liqP, market.decimals)}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Right Column: Live PnL, ROI %, Share & Independent Close button */}
-                    <div className="flex items-center justify-between lg:justify-end gap-3 pt-2 lg:pt-0 border-t lg:border-t-0 border-hairline min-w-[210px]">
-                      <div className="text-right tabular">
-                        <p
-                          className={`text-sm font-bold tracking-tight ${
-                            isUp ? "text-[#06964A]" : "text-[#FF3B30]"
-                          }`}
-                        >
-                          {fmtSigned(pnl)}
-                        </p>
-                        <p
-                          className={`text-[10px] font-semibold ${
-                            isUp ? "text-[#06964A]" : "text-[#FF3B30]"
-                          }`}
-                        >
-                          {roi >= 0 ? "+" : ""}
-                          {roi.toFixed(2)}% ROI
-                        </p>
-                      </div>
-
-                      <div className="flex items-center gap-1.5">
-                        {/* Share to X Button */}
-                        <Button
-                          variant="terminal"
-                          aria-label="Share to X"
-                          title="Share to X"
-                          onClick={() => {
-                            onShare({
-                              ...pos,
-                              exit: price,
-                              pnl,
-                              liquidated: false,
-                              closedAt: Date.now(),
-                              durationMs: Date.now() - pos.openedAt,
-                            });
-                          }}
-                          className="rounded-sm border border-border bg-secondary hover:bg-secondary/80 h-7 px-2 text-[10px] font-mono flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors"
-                        >
-                          <svg className="size-2.5 fill-current" viewBox="0 0 24 24">
-                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 24.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                          </svg>
-                          <span>Share to X</span>
-                        </Button>
-
-                        {/* Independent Close Button */}
-                        <Button
-                          variant="terminal"
-                          onClick={() => onClose(pos.id)}
-                          className="rounded-sm bg-foreground text-background hover:opacity-90 h-7 px-2.5 text-xs font-mono font-medium shadow-xs transition-opacity"
-                        >
-                          Close
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+      {/* Tabs navigation */}
+      <div className="flex items-center justify-between p-1.5 border-b border-border bg-white overflow-x-auto no-scrollbar">
+        <div className="flex items-center gap-1">
+          {tabs.map((tItem) => (
+            <button
+              key={tItem.id}
+              type="button"
+              onClick={() => setTab(tItem.id as any)}
+              className={`px-3 py-1 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                tab === tItem.id
+                  ? 'bg-foreground text-background font-bold shadow-2xs'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-secondary/60'
+              }`}
+            >
+              {tItem.label}
+            </button>
           ))}
+        </div>
 
-        {tab === "history" &&
-          (history.length === 0 ? (
-            <div className="py-8 text-center text-xs font-mono text-muted-foreground border border-dashed border-border rounded-md">
-              No trades yet.
+        {tab === 'orders' && openOrders.length > 0 && (
+          <button
+            type="button"
+            onClick={() => setOpenOrders([])}
+            className="px-2 py-0.5 rounded-lg text-[10px] font-bold text-[#FF3B30] hover:bg-[#FFECEA] border border-[#FF3B30]/30 transition-colors"
+          >
+            Cancel All Orders
+          </button>
+        )}
+      </div>
+
+      {/* Tab Panels */}
+      <div className="p-3">
+        {/* Positions Tab */}
+        {tab === 'positions' && (
+          open.length === 0 ? (
+            <div className="py-8 text-center text-xs font-mono text-muted-foreground">
+              No open positions.
             </div>
           ) : (
-            <div className="overflow-x-auto rounded-md border border-hairline">
-              <table className="tabular w-full min-w-[640px] text-xs font-mono">
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[900px] text-xs font-mono tabular">
                 <thead>
-                  <tr className="border-b border-hairline bg-secondary/30 text-left text-[10px] text-muted-foreground">
-                    {["Order ID", "Market", "Side", "Leverage", "Entry", "Exit", "Result", "Duration", "Share"].map((h) => (
-                      <th key={h} className="py-2 px-3 font-semibold uppercase tracking-wider">
-                        {h}
-                      </th>
-                    ))}
+                  <tr className="text-left text-[10px] uppercase text-muted-foreground border-b border-border/60 pb-2">
+                    <th className="py-2 px-2">Market</th>
+                    <th className="py-2 px-2">Side</th>
+                    <th className="py-2 px-2 text-right">Size</th>
+                    <th className="py-2 px-2 text-right">Entry</th>
+                    <th className="py-2 px-2 text-right">Mark</th>
+                    <th className="py-2 px-2 text-right">Liq Price</th>
+                    <th className="py-2 px-2 text-right">Margin</th>
+                    <th className="py-2 px-2 text-right">uPnL / ROE</th>
+                    <th className="py-2 px-2 text-right">TP / SL</th>
+                    <th className="py-2 px-2 text-right">Close Position</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-hairline">
-                  {history.map((h) => (
-                    <tr key={h.id} className="hover:bg-secondary/20 transition-colors">
-                      <td className="py-2.5 px-3 text-[10px] text-muted-foreground">
-                        #{h.id.slice(0, 8)}
+                <tbody className="divide-y divide-border/40">
+                  {open.map((pos) => {
+                    const price = feeds[pos.market]?.price ?? pos.entry;
+                    const market = getMarket(pos.market);
+                    const pnl = pnlOf(pos, price);
+                    const roi = (pnl / pos.stake) * 100;
+                    const isUp = pnl >= 0;
+                    const liqP = liquidation(pos);
+                    const sz = (pos.stake * pos.leverage) / pos.entry;
+
+                    return (
+                      <tr key={pos.id} className="hover:bg-secondary/40 transition-colors">
+                        <td className="py-2.5 px-2">
+                          <button
+                            type="button"
+                            onClick={() => onSelect(pos.market)}
+                            className="flex items-center gap-1.5 font-bold hover:underline"
+                          >
+                            <MarketLogo symbol={pos.market} size={18} />
+                            <span>{pos.market}-USD</span>
+                            <span className="text-[10px] font-normal text-muted-foreground">
+                              {pos.leverage}×
+                            </span>
+                          </button>
+                        </td>
+                        <td className="py-2.5 px-2">
+                          <SideBadge side={pos.side} />
+                        </td>
+                        <td className="py-2.5 px-2 text-right font-medium">
+                          {sz.toFixed(market.decimals > 2 ? 4 : 2)}
+                        </td>
+                        <td className="py-2.5 px-2 text-right">
+                          ${fmtUsd(pos.entry, market.decimals)}
+                        </td>
+                        <td className="py-2.5 px-2 text-right font-semibold">
+                          ${fmtUsd(price, market.decimals)}
+                        </td>
+                        <td className="py-2.5 px-2 text-right font-semibold text-[#FF3B30]">
+                          ${fmtUsd(liqP, market.decimals)}
+                        </td>
+                        <td className="py-2.5 px-2 text-right font-medium">
+                          ${fmtUsd(pos.stake, 2)}
+                        </td>
+                        <td className="py-2.5 px-2 text-right">
+                          <div className={isUp ? 'text-[#06964A] font-bold' : 'text-[#FF3B30] font-bold'}>
+                            {fmtSigned(pnl)}
+                          </div>
+                          <div className={`text-[10px] ${isUp ? 'text-[#06964A]' : 'text-[#FF3B30]'}`}>
+                            {roi >= 0 ? '+' : ''}{roi.toFixed(1)}%
+                          </div>
+                        </td>
+                        <td className="py-2.5 px-2 text-right text-[10px] text-muted-foreground">
+                          {pos.tp && <span className="text-[#06964A] block">TP ${fmtUsd(pos.tp, 1)}</span>}
+                          {pos.sl && <span className="text-[#FF3B30] block">SL ${fmtUsd(pos.sl, 1)}</span>}
+                          {!pos.tp && !pos.sl && <span>—</span>}
+                        </td>
+                        <td className="py-2.5 px-2 text-right">
+                          <div className="flex items-center justify-end gap-1">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                onShare({
+                                  ...pos,
+                                  exit: price,
+                                  pnl,
+                                  liquidated: false,
+                                  closedAt: Date.now(),
+                                  durationMs: Date.now() - pos.openedAt,
+                                });
+                              }}
+                              className="px-2 py-1 rounded bg-secondary hover:bg-secondary/80 border border-border text-[10px] cursor-pointer"
+                              title="Share PnL"
+                            >
+                              Share
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => onClose(pos.id)}
+                              className="px-2.5 py-1 rounded bg-foreground text-background font-bold text-[10px] hover:opacity-90 shadow-2xs cursor-pointer"
+                            >
+                              Market
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )
+        )}
+
+        {/* Orders Tab */}
+        {tab === 'orders' && (
+          openOrders.length === 0 ? (
+            <div className="py-8 text-center text-xs font-mono text-muted-foreground">
+              No active orders.
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs font-mono tabular">
+                <thead>
+                  <tr className="text-left text-[10px] uppercase text-muted-foreground border-b border-border/60 pb-2">
+                    <th className="py-2 px-2">Market</th>
+                    <th className="py-2 px-2">Side</th>
+                    <th className="py-2 px-2">Type</th>
+                    <th className="py-2 px-2 text-right">Size</th>
+                    <th className="py-2 px-2 text-right">Price</th>
+                    <th className="py-2 px-2 text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border/40">
+                  {openOrders.map((ord, idx) => (
+                    <tr key={ord.oid || idx} className="hover:bg-secondary/40">
+                      <td className="py-2 px-2 font-bold">{ord.coin}-USD</td>
+                      <td className="py-2 px-2">
+                        <SideBadge side={ord.side === 'B' ? 'long' : 'short'} />
                       </td>
-                      <td className="py-2.5 px-3">
-                        <span className="flex items-center gap-1.5 font-bold">
-                          <MarketLogo symbol={h.market} />
-                          {h.market}-USD
-                        </span>
-                      </td>
-                      <td className="py-2.5 px-3">
-                        <SideBadge side={h.side} />
-                      </td>
-                      <td className="py-2.5 px-3">{h.leverage}x</td>
-                      <td className="py-2.5 px-3">${fmtUsd(h.entry, getMarket(h.market).decimals)}</td>
-                      <td className="py-2.5 px-3">${fmtUsd(h.exit, getMarket(h.market).decimals)}</td>
-                      <td className={`py-2.5 px-3 font-bold ${h.pnl >= 0 ? "text-[#06964A]" : "text-[#FF3B30]"}`}>
-                        {fmtSigned(h.pnl)}
-                        {h.liquidated && (
-                          <span className="ml-1.5 text-[9px] font-normal text-muted-foreground">
-                            (liq)
-                          </span>
-                        )}
-                      </td>
-                      <td className="py-2.5 px-3 text-muted-foreground">
-                        {fmtDuration(h.durationMs)}
-                      </td>
-                      <td className="py-2.5 px-3 text-right">
-                        <Button
-                          variant="terminal"
-                          aria-label="Share trade"
-                          title="Share to X"
-                          onClick={() => onShare(h)}
-                          className="rounded-sm border border-border bg-secondary hover:bg-secondary/80 h-6 px-2 text-[10px] font-mono flex items-center gap-1 text-muted-foreground hover:text-foreground"
+                      <td className="py-2 px-2 text-muted-foreground">{ord.orderType || 'Limit'}</td>
+                      <td className="py-2 px-2 text-right">{ord.sz}</td>
+                      <td className="py-2 px-2 text-right">${ord.limitPx}</td>
+                      <td className="py-2 px-2 text-right">
+                        <button
+                          type="button"
+                          onClick={() => setOpenOrders((prev) => prev.filter((o) => o !== ord))}
+                          className="px-2 py-0.5 rounded text-[10px] font-bold text-[#FF3B30] hover:bg-[#FFECEA]"
                         >
-                          <Share2 className="h-3 w-3" />
-                          <span>Share</span>
-                        </Button>
+                          Cancel
+                        </button>
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-          ))}
+          )
+        )}
 
-        {tab === "stats" && (
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-4 font-mono">
-            {[
-              ["Win rate", history.length ? `${Math.round((wins / history.length) * 100)}%` : "—", ""],
-              ["Best trade", fmtSigned(best), best >= 0 ? "text-[#06964A]" : "text-[#FF3B30]"],
-              ["Worst trade", fmtSigned(worst), worst >= 0 ? "text-[#06964A]" : "text-[#FF3B30]"],
-              ["Realized P&L", fmtSigned(total), total >= 0 ? "text-[#06964A]" : "text-[#FF3B30]"],
-            ].map(([k, v, tone]) => (
-              <div key={k} className="rounded-md border border-hairline bg-card p-3 shadow-xs">
-                <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{k}</p>
-                <p className={`tabular tight mt-1 text-2xl font-bold ${tone}`}>{v}</p>
+        {/* Fills Tab */}
+        {tab === 'fills' && (
+          history.length === 0 ? (
+            <div className="py-8 text-center text-xs font-mono text-muted-foreground">
+              No fills yet.
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[700px] text-xs font-mono tabular">
+                <thead>
+                  <tr className="text-left text-[10px] uppercase text-muted-foreground border-b border-border/60 pb-2">
+                    <th className="py-2 px-2">Order ID</th>
+                    <th className="py-2 px-2">Market</th>
+                    <th className="py-2 px-2">Side</th>
+                    <th className="py-2 px-2 text-right">Entry</th>
+                    <th className="py-2 px-2 text-right">Exit</th>
+                    <th className="py-2 px-2 text-right">Realized PnL</th>
+                    <th className="py-2 px-2 text-right">Duration</th>
+                    <th className="py-2 px-2 text-right">Share</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border/40">
+                  {history.map((h) => (
+                    <tr key={h.id} className="hover:bg-secondary/40">
+                      <td className="py-2 px-2 text-muted-foreground text-[10px]">#{h.id.slice(0, 8)}</td>
+                      <td className="py-2 px-2 font-bold">{h.market}-USD</td>
+                      <td className="py-2 px-2">
+                        <SideBadge side={h.side} />
+                      </td>
+                      <td className="py-2 px-2 text-right">${fmtUsd(h.entry, 2)}</td>
+                      <td className="py-2 px-2 text-right">${fmtUsd(h.exit, 2)}</td>
+                      <td className={`py-2 px-2 text-right font-bold ${h.pnl >= 0 ? 'text-[#06964A]' : 'text-[#FF3B30]'}`}>
+                        {fmtSigned(h.pnl)}
+                      </td>
+                      <td className="py-2 px-2 text-right text-muted-foreground">{fmtDuration(h.durationMs)}</td>
+                      <td className="py-2 px-2 text-right">
+                        <button
+                          type="button"
+                          onClick={() => onShare(h)}
+                          className="px-2 py-0.5 rounded bg-secondary hover:bg-secondary/80 border border-border text-[10px]"
+                        >
+                          Share
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )
+        )}
+
+        {/* Funding Tab */}
+        {tab === 'funding' && (
+          fundingHistory.length === 0 ? (
+            <div className="py-8 text-center text-xs font-mono text-muted-foreground">
+              No funding payments yet.
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs font-mono tabular">
+                <thead>
+                  <tr className="text-left text-[10px] uppercase text-muted-foreground border-b border-border/60 pb-2">
+                    <th className="py-2 px-2">Time</th>
+                    <th className="py-2 px-2">Market</th>
+                    <th className="py-2 px-2 text-right">Rate</th>
+                    <th className="py-2 px-2 text-right">Payment</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border/40">
+                  {fundingHistory.map((f, i) => (
+                    <tr key={i} className="hover:bg-secondary/40">
+                      <td className="py-2 px-2 text-muted-foreground">
+                        {new Date(f.time).toLocaleString()}
+                      </td>
+                      <td className="py-2 px-2 font-bold">{f.coin}</td>
+                      <td className="py-2 px-2 text-right">{(parseFloat(f.fundingRate) * 100).toFixed(4)}%</td>
+                      <td className="py-2 px-2 text-right font-bold text-foreground">${f.usdc}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )
+        )}
+
+        {/* Balances Tab */}
+        {tab === 'balances' && (
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
+            <div className="p-3 rounded-xl bg-[#FBFBFA] border border-border">
+              <span className="text-[10px] text-muted-foreground uppercase block">Account Equity</span>
+              <span className="text-base font-bold text-foreground">${fmtUsd(t.balance, 2)}</span>
+            </div>
+            <div className="p-3 rounded-xl bg-[#FBFBFA] border border-border">
+              <span className="text-[10px] text-muted-foreground uppercase block">Available Margin</span>
+              <span className="text-base font-bold text-[#06964A]">${fmtUsd(t.available, 2)}</span>
+            </div>
+            <div className="p-3 rounded-xl bg-[#FBFBFA] border border-border">
+              <span className="text-[10px] text-muted-foreground uppercase block">Margin In Use</span>
+              <span className="text-base font-bold text-foreground">${fmtUsd(t.marginUsed, 2)}</span>
+            </div>
+            <div className="p-3 rounded-xl bg-[#FBFBFA] border border-border">
+              <span className="text-[10px] text-muted-foreground uppercase block">Settlement Layer</span>
+              <span className="text-xs font-semibold text-foreground">Hyperliquid L1 Clearinghouse</span>
+            </div>
+          </div>
+        )}
+
+        {/* Stats Tab */}
+        {tab === 'stats' && (
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
+              <div className="p-3 rounded-xl bg-[#FBFBFA] border border-border">
+                <span className="text-[10px] text-muted-foreground uppercase block">Win Rate</span>
+                <span className="text-lg font-bold text-foreground">
+                  {history.length ? `${Math.round((wins / history.length) * 100)}%` : '—'}
+                </span>
               </div>
-            ))}
+              <div className="p-3 rounded-xl bg-[#FBFBFA] border border-border">
+                <span className="text-[10px] text-muted-foreground uppercase block">Best Trade</span>
+                <span className={`text-lg font-bold ${best >= 0 ? 'text-[#06964A]' : 'text-[#FF3B30]'}`}>
+                  {fmtSigned(best)}
+                </span>
+              </div>
+              <div className="p-3 rounded-xl bg-[#FBFBFA] border border-border">
+                <span className="text-[10px] text-muted-foreground uppercase block">Worst Trade</span>
+                <span className={`text-lg font-bold ${worst >= 0 ? 'text-[#06964A]' : 'text-[#FF3B30]'}`}>
+                  {fmtSigned(worst)}
+                </span>
+              </div>
+              <div className="p-3 rounded-xl bg-[#FBFBFA] border border-border">
+                <span className="text-[10px] text-muted-foreground uppercase block">Total PnL</span>
+                <span className={`text-lg font-bold ${totalRealizedPnl >= 0 ? 'text-[#06964A]' : 'text-[#FF3B30]'}`}>
+                  {fmtSigned(totalRealizedPnl)}
+                </span>
+              </div>
+            </div>
           </div>
         )}
       </div>

@@ -3,6 +3,8 @@
  * Handles caching of meta, metaAndAssetCtxs, candleSnapshot, and single WebSocket connection with fan-out.
  */
 
+import type { L2Book, BookLevel } from '../trading';
+
 export interface HlMetaUniverseItem {
   name: string;
   szDecimals: number;
@@ -52,6 +54,15 @@ export interface HlCandle {
   l: number;
   v: number;
   n: number;
+}
+
+export interface HlTrade {
+  coin: string;
+  side: 'buy' | 'sell';
+  px: number;
+  sz: number;
+  time: number;
+  hash?: string;
 }
 
 export type Network = "mainnet" | "testnet";
@@ -106,7 +117,6 @@ export async function fetchHlMeta(forceRefresh = false): Promise<HlMeta> {
     throw new Error("Invalid meta response from Hyperliquid");
   } catch (err) {
     if (cachedMeta) return cachedMeta;
-    // Fallback if network request fails during test or offline
     return getFallbackMeta();
   }
 }
@@ -182,10 +192,79 @@ export async function fetchCandleSnapshot(
   }
 }
 
+export async function fetchL2BookSnapshot(coin: string): Promise<L2Book> {
+  try {
+    const res = await fetch(`${getHlHttpUrl()}/info`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        type: "l2Book",
+        coin,
+      }),
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    if (data && Array.isArray(data.levels) && data.levels.length >= 2) {
+      const bids: BookLevel[] = data.levels[0].map((l: any) => ({
+        px: parseFloat(l.px),
+        sz: parseFloat(l.sz),
+      }));
+      const asks: BookLevel[] = data.levels[1].map((l: any) => ({
+        px: parseFloat(l.px),
+        sz: parseFloat(l.sz),
+      }));
+      return { bids, asks, time: data.time };
+    }
+  } catch {}
+  return { bids: [], asks: [] };
+}
+
+export async function fetchOpenOrders(user: string): Promise<any[]> {
+  if (!user) return [];
+  try {
+    const res = await fetch(`${getHlHttpUrl()}/info`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        type: "openOrders",
+        user,
+      }),
+    });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return Array.isArray(data) ? data : [];
+  } catch {
+    return [];
+  }
+}
+
+export async function fetchUserFundingHistory(user: string, startTime?: number): Promise<any[]> {
+  if (!user) return [];
+  try {
+    const start = startTime ?? Date.now() - 7 * 24 * 60 * 60 * 1000;
+    const res = await fetch(`${getHlHttpUrl()}/info`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        type: "userFunding",
+        user,
+        startTime: start,
+      }),
+    });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return Array.isArray(data) ? data : [];
+  } catch {
+    return [];
+  }
+}
+
 // Global WebSocket manager with fan-out
 type PriceCallback = (mids: Record<string, number>) => void;
 type AssetCallback = (data: Partial<HlMarketData>) => void;
 type CandleCallback = (candle: HlCandle) => void;
+type BookCallback = (book: L2Book) => void;
+type TradesCallback = (trades: HlTrade[]) => void;
 
 class HyperliquidMarketStore {
   private ws: WebSocket | null = null;
@@ -197,9 +276,12 @@ class HyperliquidMarketStore {
   private allMidsListeners = new Set<PriceCallback>();
   private assetListeners = new Map<string, Set<AssetCallback>>();
   private candleListeners = new Map<string, Set<CandleCallback>>();
+  private bookListeners = new Map<string, Set<BookCallback>>();
+  private tradesListeners = new Map<string, Set<TradesCallback>>();
 
   public latestMids: Record<string, number> = {};
   public latestMarketData: Record<string, HlMarketData> = {};
+  public latestBooks: Record<string, L2Book> = {};
 
   constructor() {
     if (typeof window !== "undefined") {
@@ -228,10 +310,17 @@ class HyperliquidMarketStore {
         ws.send(JSON.stringify({ method: "subscribe", subscription: { type: "allMids" } }));
 
         // Re-subscribe any active coin channels
-        for (const coin of this.assetListeners.keys()) {
+        const activeCoins = new Set<string>([
+          ...this.assetListeners.keys(),
+          ...this.bookListeners.keys(),
+          ...this.tradesListeners.keys(),
+        ]);
+
+        for (const coin of activeCoins) {
           ws.send(JSON.stringify({ method: "subscribe", subscription: { type: "l2Book", coin } }));
           ws.send(JSON.stringify({ method: "subscribe", subscription: { type: "trades", coin } }));
         }
+
         for (const key of this.candleListeners.keys()) {
           const [coin, interval] = key.split(":");
           ws.send(
@@ -259,7 +348,6 @@ class HyperliquidMarketStore {
       ws.onclose = () => {
         this.ws = null;
         this.isConnecting = false;
-        // Reconnect with backoff
         clearTimeout(this.reconnectTimeout);
         this.reconnectTimeout = setTimeout(() => {
           this.connect();
@@ -311,6 +399,48 @@ class HyperliquidMarketStore {
         };
         for (const cb of listeners) {
           cb(candle);
+        }
+      }
+    } else if (msg.channel === "l2Book" && msg.data) {
+      const b = msg.data;
+      const coin = b.coin;
+      if (coin && Array.isArray(b.levels) && b.levels.length >= 2) {
+        const bids: BookLevel[] = b.levels[0].map((l: any) => ({
+          px: parseFloat(l.px),
+          sz: parseFloat(l.sz),
+        }));
+        const asks: BookLevel[] = b.levels[1].map((l: any) => ({
+          px: parseFloat(l.px),
+          sz: parseFloat(l.sz),
+        }));
+        const book: L2Book = { bids, asks, time: b.time };
+        this.latestBooks[coin] = book;
+
+        const listeners = this.bookListeners.get(coin);
+        if (listeners) {
+          for (const cb of listeners) {
+            cb(book);
+          }
+        }
+      }
+    } else if (msg.channel === "trades" && Array.isArray(msg.data)) {
+      const tradesData = msg.data;
+      if (tradesData.length > 0) {
+        const coin = tradesData[0].coin;
+        const mappedTrades: HlTrade[] = tradesData.map((t: any) => ({
+          coin: t.coin,
+          side: t.side === "B" ? "buy" : "sell",
+          px: parseFloat(t.px),
+          sz: parseFloat(t.sz),
+          time: t.time,
+          hash: t.hash,
+        }));
+
+        const listeners = this.tradesListeners.get(coin);
+        if (listeners) {
+          for (const cb of listeners) {
+            cb(mappedTrades);
+          }
         }
       }
     }
@@ -368,6 +498,47 @@ class HyperliquidMarketStore {
       set?.delete(cb);
       if (set?.size === 0) {
         this.candleListeners.delete(key);
+      }
+    };
+  }
+
+  public subscribeL2Book(coin: string, cb: BookCallback): () => void {
+    let set = this.bookListeners.get(coin);
+    if (!set) {
+      set = new Set();
+      this.bookListeners.set(coin, set);
+      if (this.ws?.readyState === WebSocket.OPEN) {
+        this.ws.send(JSON.stringify({ method: "subscribe", subscription: { type: "l2Book", coin } }));
+      }
+    }
+    set.add(cb);
+    if (this.latestBooks[coin]) {
+      cb(this.latestBooks[coin]);
+    }
+    this.init();
+    return () => {
+      set?.delete(cb);
+      if (set?.size === 0) {
+        this.bookListeners.delete(coin);
+      }
+    };
+  }
+
+  public subscribeTrades(coin: string, cb: TradesCallback): () => void {
+    let set = this.tradesListeners.get(coin);
+    if (!set) {
+      set = new Set();
+      this.tradesListeners.set(coin, set);
+      if (this.ws?.readyState === WebSocket.OPEN) {
+        this.ws.send(JSON.stringify({ method: "subscribe", subscription: { type: "trades", coin } }));
+      }
+    }
+    set.add(cb);
+    this.init();
+    return () => {
+      set?.delete(cb);
+      if (set?.size === 0) {
+        this.tradesListeners.delete(coin);
       }
     };
   }

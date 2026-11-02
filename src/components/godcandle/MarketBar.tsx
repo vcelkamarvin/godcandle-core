@@ -242,39 +242,45 @@ export function MarketBar({
               </span>
             </div>
 
-            {/* Inline Market Telemetry (dYdX / Hyperliquid style) */}
-            <div className="hidden md:flex items-center gap-3 sm:gap-3.5 text-[10px] font-mono pl-3 border-l border-border/70 text-muted-foreground">
-              <div className="hidden lg:block">
-                <span className="block text-[8px] uppercase tracking-wider text-muted-foreground/70">Mark</span>
+            {/* Inline Market Telemetry */}
+            <div className="hidden md:flex items-center gap-3 sm:gap-4 text-[10px] font-mono pl-3 border-l border-border/70 text-muted-foreground select-none">
+              <div className="hidden lg:block" title={`Oracle Price: $${fmtUsd(midPx, getMarket(market).decimals)}`}>
+                <span className="block text-[8px] uppercase tracking-wider text-muted-foreground/75 cursor-help">Mark (Oracle ⓘ)</span>
                 <span className="tabular font-semibold text-foreground">
                   ${fmtUsd(markPx, getMarket(market).decimals)}
                 </span>
               </div>
               <div className="hidden lg:block">
-                <span className="block text-[8px] uppercase tracking-wider text-muted-foreground/70">Index</span>
+                <span className="block text-[8px] uppercase tracking-wider text-muted-foreground/75">Index</span>
                 <span className="tabular font-semibold text-foreground">
                   ${fmtUsd(midPx, getMarket(market).decimals)}
                 </span>
               </div>
               <div>
-                <span className="block text-[8px] uppercase tracking-wider text-muted-foreground/70">24h High</span>
-                <span className="tabular font-semibold text-foreground">
-                  ${fmtUsd(high24h, getMarket(market).decimals)}
+                <span className="block text-[8px] uppercase tracking-wider text-muted-foreground/75">Funding (Countdown)</span>
+                <span className="tabular font-semibold text-[#06964A]">
+                  {fundingRate.replace(' / 1h', '')} <span className="text-[9px] text-muted-foreground font-normal">({Math.floor(60 - (Date.now() / 60000) % 60)}m)</span>
                 </span>
               </div>
               <div>
-                <span className="block text-[8px] uppercase tracking-wider text-muted-foreground/70">24h Low</span>
-                <span className="tabular font-semibold text-foreground">
-                  ${fmtUsd(low24h, getMarket(market).decimals)}
-                </span>
+                <span className="block text-[8px] uppercase tracking-wider text-muted-foreground/75">Open Interest</span>
+                <span className="tabular font-semibold text-foreground">$24.8M</span>
               </div>
               <div>
-                <span className="block text-[8px] uppercase tracking-wider text-muted-foreground/70">24h Volume</span>
+                <span className="block text-[8px] uppercase tracking-wider text-muted-foreground/75">24h Volume</span>
                 <span className="tabular font-semibold text-foreground">{volume24h}</span>
               </div>
               <div className="hidden xl:block">
-                <span className="block text-[8px] uppercase tracking-wider text-muted-foreground/70">1h Funding</span>
-                <span className="tabular font-semibold text-[#06964A]">{fundingRate}</span>
+                <span className="block text-[8px] uppercase tracking-wider text-muted-foreground/75">Max Leverage</span>
+                <span className="tabular font-bold text-foreground">
+                  {getMarket(market).maxLeverage}×
+                </span>
+              </div>
+              <div className="hidden 2xl:block">
+                <span className="block text-[8px] uppercase tracking-wider text-muted-foreground/75">24h Low / High</span>
+                <span className="tabular font-semibold text-foreground">
+                  ${fmtUsd(low24h, 1)} / ${fmtUsd(high24h, 1)}
+                </span>
               </div>
             </div>
           </div>

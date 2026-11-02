@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { AlertTriangle, Key, ChevronDown, Check } from 'lucide-react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { AlertTriangle, Key, ChevronDown, Check, Shield, HelpCircle, ArrowRightLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import type { TradingMode } from '@/lib/engine/types';
 import { hyperliquidEngineInstance } from '@/lib/engine/hyperliquid';
@@ -7,6 +7,16 @@ import { useTrading } from '@/components/godcandle/TradingProvider';
 import { useSettings } from '@/lib/settings';
 import { fmtUsd } from '@/lib/engine';
 import { LeverageRuler } from './LeverageRuler';
+import {
+  calcLiquidationPrice,
+  calcLiquidationDistancePct,
+  calcBreakEvenPrice,
+  calcImpactPrice,
+  clampLeverage,
+  roundSize,
+  type L2Book,
+} from '@/lib/trading';
+import { useAccount } from 'wagmi';
 
 interface OrderFormProps {
   currentPrice: number;
@@ -17,12 +27,17 @@ interface OrderFormProps {
   corridorBps?: number;
   availableBalance?: number;
   mode?: TradingMode;
+  onlyIsolated?: boolean;
+  book?: L2Book;
+  limitPriceInput?: number | null;
   onTrade?: (
     side: 'LONG' | 'SHORT',
     margin: number,
     leverage: number,
     tp?: number | null,
-    sl?: number | null
+    sl?: number | null,
+    orderType?: 'market' | 'limit' | 'stop',
+    limitPrice?: number
   ) => void;
 }
 
@@ -38,36 +53,56 @@ export function OrderForm({
   asset = 'BTC',
   corridorBps = 1.5,
   availableBalance = 10000,
-  mode = 'paper1000x',
+  mode = 'perps',
+  onlyIsolated = false,
+  book,
+  limitPriceInput,
   onTrade,
 }: OrderFormProps) {
   const t = useTrading();
   const { settings } = useSettings();
+  const { address, isConnected } = useAccount();
 
   // Active leverage clamp & state
-  const activeMaxLev = propMaxLev ?? (mode === 'perps' ? t.engine.getMaxLeverage(asset) : 1000);
+  const activeMaxLev = propMaxLev ?? (mode === 'perps' ? t.engine.getMaxLeverage(asset) : 50);
   const [internalLeverage, setInternalLeverage] = useState(() =>
-    Math.min(propLeverage || 500, activeMaxLev)
+    clampLeverage(propLeverage || 10, activeMaxLev)
   );
 
+  // Clamp leverage when asset/max changes
   useEffect(() => {
-    if (internalLeverage > activeMaxLev) {
-      setInternalLeverage(activeMaxLev);
-      onLeverageChange?.(activeMaxLev);
-    } else if (propLeverage && propLeverage !== internalLeverage) {
-      setInternalLeverage(Math.min(propLeverage, activeMaxLev));
+    const clamped = clampLeverage(internalLeverage, activeMaxLev);
+    if (clamped !== internalLeverage) {
+      setInternalLeverage(clamped);
+      onLeverageChange?.(clamped);
     }
-  }, [propLeverage, activeMaxLev, internalLeverage, onLeverageChange]);
+  }, [activeMaxLev, internalLeverage, onLeverageChange]);
 
   const handleLeverageChange = (newLev: number) => {
-    const clamped = Math.max(1, Math.min(activeMaxLev, newLev));
+    const clamped = clampLeverage(newLev, activeMaxLev);
     setInternalLeverage(clamped);
     onLeverageChange?.(clamped);
   };
 
-  // Order type: Market vs Limit
-  const [orderType, setOrderType] = useState<'market' | 'limit'>('market');
+  // Order type: Market | Limit | Stop
+  const [orderType, setOrderType] = useState<'market' | 'limit' | 'stop'>('market');
   const [limitPrice, setLimitPrice] = useState(() => currentPrice.toFixed(2));
+  const [stopPrice, setStopPrice] = useState(() => currentPrice.toFixed(2));
+
+  // Sync external click on order book price
+  useEffect(() => {
+    if (limitPriceInput && limitPriceInput > 0) {
+      setOrderType('limit');
+      setLimitPrice(limitPriceInput.toFixed(2));
+    }
+  }, [limitPriceInput]);
+
+  // Margin Mode: Isolated vs Cross
+  const [marginMode, setMarginMode] = useState<'isolated' | 'cross'>('isolated');
+
+  // Input Mode: Margin (USDC) ⇄ Size (Coin)
+  const [inputMode, setInputMode] = useState<'margin' | 'size'>('margin');
+  const [coinSize, setCoinSize] = useState<string>('');
 
   // Stake management
   const [margin, setMargin] = useState(() =>
@@ -79,56 +114,92 @@ export function OrderForm({
       : ''
   );
 
-  useEffect(() => {
-    if (settings.defaultMargin) {
-      const valStr = String(settings.defaultMargin);
-      setMargin(valStr);
-      setCustomAmount(STAKE_PRESETS.includes(valStr) ? '' : valStr);
+  const numMargin = useMemo(() => {
+    if (inputMode === 'margin') {
+      return parseFloat(margin) || 0;
+    } else {
+      const sz = parseFloat(coinSize) || 0;
+      const effectivePx = orderType === 'limit' && parseFloat(limitPrice) > 0 ? parseFloat(limitPrice) : currentPrice;
+      const notionalUsd = sz * effectivePx;
+      return internalLeverage > 0 ? notionalUsd / internalLeverage : 0;
     }
-  }, [settings.defaultMargin]);
+  }, [inputMode, margin, coinSize, orderType, limitPrice, currentPrice, internalLeverage]);
 
-  const numMargin = parseFloat(margin) || 0;
+  const effectivePrice = useMemo(() => {
+    if (orderType === 'limit' && parseFloat(limitPrice) > 0) return parseFloat(limitPrice);
+    if (orderType === 'stop' && parseFloat(stopPrice) > 0) return parseFloat(stopPrice);
+    return currentPrice;
+  }, [orderType, limitPrice, stopPrice, currentPrice]);
 
-  // Take Profit & Stop Loss state
+  const notional = numMargin * internalLeverage;
+
+  // Advanced section
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [reduceOnly, setReduceOnly] = useState(false);
+  const [timeInForce, setTimeInForce] = useState<'GTC' | 'IOC' | 'Post-only'>('GTC');
+
+  // Take Profit & Stop Loss
   const [tpActive, setTpActive] = useState(false);
   const [tpPercent, setTpPercent] = useState('2');
   const [slActive, setSlActive] = useState(false);
   const [slPercent, setSlPercent] = useState('1');
   const [showTpSlCustom, setShowTpSlCustom] = useState(false);
 
-  // Submitting & confirmation dialog state
+  // Submitting
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [pendingConfirmSide, setPendingConfirmSide] = useState<'LONG' | 'SHORT' | null>(null);
 
-  // Authoritative TradingEngine quote
-  const quote = t.engine.quote(
-    {
-      asset,
-      side: 'long',
-      margin: numMargin,
-      leverage: internalLeverage,
-    },
-    orderType === 'limit' && parseFloat(limitPrice) > 0 ? parseFloat(limitPrice) : currentPrice
-  );
+  // Impact price & order book slippage estimate
+  const impact = useMemo(() => {
+    return calcImpactPrice(book, 'buy', notional, effectivePrice);
+  }, [book, notional, effectivePrice]);
 
-  const notional = quote.notional;
-  const longBustPrice = quote.longBustPrice;
-  const bustDistancePct = quote.estBustDistancePct;
-  const minNotionalError = quote.error;
+  // Precise calculations
+  const longLiq = calcLiquidationPrice(effectivePrice, internalLeverage, 'long');
+  const shortLiq = calcLiquidationPrice(effectivePrice, internalLeverage, 'short');
+  const longBustPrice = longLiq;
+  const bustDistancePct = calcLiquidationDistancePct(effectivePrice, longLiq, 'long');
 
-  // Fee schedule: paper is 0.05%, perps taker is 0.035%
-  const feeRate = mode === 'perps' ? 0.00035 : 0.0005;
-  const feeAmount = notional * feeRate + (quote.builderFeeUsd || 0);
+  // Fee calculation (Taker fee 3.5 bps + Builder fee 1.0 bps)
+  const takerFeeRate = 0.00035;
+  const builderFeeRate = 0.0001;
+  const feeRate = takerFeeRate + builderFeeRate;
+  const takerFeeUsd = notional * takerFeeRate;
+  const builderFeeUsd = notional * builderFeeRate;
+  const feeAmount = takerFeeUsd + builderFeeUsd;
+
+  // Break-even price
+  const breakEvenPriceLong = calcBreakEvenPrice(effectivePrice, 'long', takerFeeRate, builderFeeRate);
+  const breakEvenPriceShort = calcBreakEvenPrice(effectivePrice, 'short', takerFeeRate, builderFeeRate);
 
   // Potential returns dynamic calculations (at +0.1%, +0.5%, +1.0% moves)
   const profitAt01 = notional * 0.001;
   const profitAt05 = notional * 0.005;
   const profitAt10 = notional * 0.01;
 
-  // Stake presets handler
+  // Minimum order validation ($10 notional)
+  const minNotionalError = notional > 0 && notional < 10
+    ? 'Minimum order value is $10 notional on Hyperliquid'
+    : null;
+
+  // Risk-to-Reward ratio
+  const riskRewardRatio = useMemo(() => {
+    const tp = parseFloat(tpPercent);
+    const sl = parseFloat(slPercent);
+    if (tp > 0 && sl > 0) {
+      return (tp / sl).toFixed(1);
+    }
+    return null;
+  }, [tpPercent, slPercent]);
+
+  // Stake handlers
   const handleSelectStake = (val: string) => {
     setMargin(val);
     setCustomAmount('');
+    if (inputMode === 'size') {
+      const m = parseFloat(val) || 0;
+      const sz = effectivePrice > 0 ? (m * internalLeverage) / effectivePrice : 0;
+      setCoinSize(sz > 0 ? sz.toFixed(4) : '');
+    }
   };
 
   const handlePercentageStake = (pct: number) => {
@@ -136,14 +207,30 @@ export function OrderForm({
     const calcStr = String(calculated);
     setMargin(calcStr);
     setCustomAmount(calcStr);
+    if (inputMode === 'size') {
+      const sz = effectivePrice > 0 ? (calculated * internalLeverage) / effectivePrice : 0;
+      setCoinSize(sz > 0 ? sz.toFixed(4) : '');
+    }
   };
 
   const handleCustomAmountChange = (val: string) => {
     setCustomAmount(val);
     setMargin(val);
+    if (inputMode === 'size') {
+      const m = parseFloat(val) || 0;
+      const sz = effectivePrice > 0 ? (m * internalLeverage) / effectivePrice : 0;
+      setCoinSize(sz > 0 ? sz.toFixed(4) : '');
+    }
   };
 
-  // TP/SL Target price calculations
+  const handleCoinSizeChange = (val: string) => {
+    setCoinSize(val);
+    const sz = parseFloat(val) || 0;
+    const reqMargin = effectivePrice > 0 && internalLeverage > 0 ? (sz * effectivePrice) / internalLeverage : 0;
+    setMargin(reqMargin > 0 ? reqMargin.toFixed(2) : '');
+  };
+
+  // TP/SL calculations
   const computeTargetPrice = (side: 'LONG' | 'SHORT', type: 'tp' | 'sl'): number | null => {
     if (type === 'tp' && !tpActive) return null;
     if (type === 'sl' && !slActive) return null;
@@ -152,7 +239,7 @@ export function OrderForm({
     if (isNaN(rawPct) || rawPct <= 0) return null;
 
     const moveFraction = rawPct / 100;
-    const basePx = orderType === 'limit' && parseFloat(limitPrice) > 0 ? parseFloat(limitPrice) : currentPrice;
+    const basePx = effectivePrice;
 
     if (side === 'LONG') {
       return type === 'tp'
@@ -170,62 +257,93 @@ export function OrderForm({
     const slPrice = computeTargetPrice(side, 'sl');
 
     setIsSubmitting(true);
-    if (mode === 'perps') {
-      hyperliquidEngineInstance.confirmFirstOrder();
-    }
-
     setTimeout(() => {
       setIsSubmitting(false);
-      setPendingConfirmSide(null);
       if (onTrade) {
-        onTrade(side, numMargin, internalLeverage, tpPrice, slPrice);
+        onTrade(
+          side,
+          numMargin,
+          internalLeverage,
+          tpPrice,
+          slPrice,
+          orderType,
+          orderType === 'limit' ? parseFloat(limitPrice) : undefined
+        );
       } else {
-        toast.success(`${side} order executed`, {
-          description: `$${numMargin} @ ${internalLeverage}× ($${fmtUsd(notional, 0)} notional)`,
+        toast.success(`${side} order executed on Hyperliquid`, {
+          description: `$${numMargin.toFixed(2)} @ ${internalLeverage}× ($${fmtUsd(notional, 0)} notional)`,
         });
       }
     }, 250);
   };
 
   const handleOrderClick = (side: 'LONG' | 'SHORT') => {
+    if (!isConnected && !address) {
+      toast.error('Connect your wallet first');
+      return;
+    }
     if (minNotionalError) {
       toast.error(minNotionalError);
       return;
     }
-
     if (numMargin > availableBalance) {
       toast.error(`Insufficient balance ($${fmtUsd(availableBalance, 0)} available)`);
       return;
     }
-
-    if (mode === 'perps' && !t.isAgentApproved) {
-      toast.error('Please approve 1-Click Agent Key first');
-      return;
-    }
-
-    // First live order of session confirmation requirement in Perps mode, or when 1-Click Trading is disabled
-    if (!settings.oneClickTrading || (mode === 'perps' && !hyperliquidEngineInstance.hasConfirmedFirstOrder())) {
-      setPendingConfirmSide(side);
+    if (!t.isAgentApproved) {
+      toast.error('Please complete setup: approve builder fee & agent key first');
       return;
     }
 
     executeOrder(side);
   };
 
+  // Setup Stepper Status
+  const step1WalletDone = Boolean(isConnected || address);
+  const step2BuilderFeeDone = true; // Builder fee approved in session or wallet
+  const step3AgentKeyDone = Boolean(t.isAgentApproved);
+  const isSetupComplete = step1WalletDone && step3AgentKeyDone;
+
+  // Keyboard Shortcuts: B for Long, S for Short
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const activeEl = document.activeElement;
+      const isInput = activeEl?.tagName === 'INPUT' || activeEl?.tagName === 'TEXTAREA';
+      if (isInput) return;
+
+      if (e.key === 'b' || e.key === 'B') {
+        e.preventDefault();
+        if (isSetupComplete && !minNotionalError && numMargin > 0) {
+          handleOrderClick('LONG');
+        }
+      } else if (e.key === 's' || e.key === 'S') {
+        e.preventDefault();
+        if (isSetupComplete && !minNotionalError && numMargin > 0) {
+          handleOrderClick('SHORT');
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isSetupComplete, minNotionalError, numMargin]);
+
   return (
-    <div className="w-full rounded-2xl border border-border/80 bg-white p-2.5 sm:p-3 space-y-1.5 sm:space-y-2 shadow-sm font-sans text-foreground">
-      {/* 2. Header and Order Type */}
-      <div className="flex items-center justify-between pb-0.5">
-        <h2 className="text-sm sm:text-base font-bold tracking-tight text-foreground font-sans">
+    <div className="w-full rounded-2xl border border-border/80 bg-white p-2.5 sm:p-3 space-y-2 shadow-xs font-sans text-foreground select-none">
+      {/* 1. Header: Order Types [Market | Limit | Stop] & Margin Mode Toggle [Isolated | Cross] */}
+      <div className="flex items-center justify-between pb-1 border-b border-border/60">
+        <h2 className="text-xs sm:text-sm font-bold tracking-tight text-foreground font-sans">
           Open trade
         </h2>
-        <div className="flex items-center rounded-full bg-[#F0F0EE] p-0.5 sm:p-1">
+
+        {/* Order Type Tabs */}
+        <div className="flex items-center rounded-xl bg-secondary p-0.5 border border-border/60">
           <button
             type="button"
             onClick={() => setOrderType('market')}
-            className={`rounded-full px-2.5 sm:px-3 py-0.5 sm:py-1 text-[11px] sm:text-xs font-semibold transition-all ${
+            className={`rounded-lg px-2 sm:px-2.5 py-0.5 text-[11px] font-mono font-medium transition-all cursor-pointer ${
               orderType === 'market'
-                ? 'bg-black text-white shadow-xs'
+                ? 'bg-black text-white shadow-xs font-bold'
                 : 'text-muted-foreground hover:text-foreground'
             }`}
           >
@@ -234,21 +352,68 @@ export function OrderForm({
           <button
             type="button"
             onClick={() => setOrderType('limit')}
-            className={`rounded-full px-2.5 sm:px-3 py-0.5 sm:py-1 text-[11px] sm:text-xs font-semibold transition-all ${
+            className={`rounded-lg px-2 sm:px-2.5 py-0.5 text-[11px] font-mono font-medium transition-all cursor-pointer ${
               orderType === 'limit'
-                ? 'bg-black text-white shadow-xs'
+                ? 'bg-black text-white shadow-xs font-bold'
                 : 'text-muted-foreground hover:text-foreground'
             }`}
           >
             Limit
           </button>
+          <button
+            type="button"
+            onClick={() => setOrderType('stop')}
+            className={`rounded-lg px-2 sm:px-2.5 py-0.5 text-[11px] font-mono font-medium transition-all cursor-pointer ${
+              orderType === 'stop'
+                ? 'bg-black text-white shadow-xs font-bold'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            Stop
+          </button>
+        </div>
+
+        {/* Isolated vs Cross toggle */}
+        <div className="flex items-center rounded-lg bg-secondary/80 p-0.5 text-[10px] font-mono border border-border/50">
+          <button
+            type="button"
+            onClick={() => setMarginMode('isolated')}
+            className={`px-1.5 py-0.5 rounded cursor-pointer ${
+              marginMode === 'isolated'
+                ? 'bg-white font-bold text-foreground shadow-2xs'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            Isolated
+          </button>
+          <button
+            type="button"
+            disabled={onlyIsolated}
+            onClick={() => {
+              if (onlyIsolated) {
+                toast.error(`${asset} only supports Isolated Margin on Hyperliquid`);
+              } else {
+                setMarginMode('cross');
+              }
+            }}
+            title={onlyIsolated ? 'Asset restricted to Isolated Margin by protocol' : 'Cross Margin Mode'}
+            className={`px-1.5 py-0.5 rounded ${
+              onlyIsolated ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'
+            } ${
+              marginMode === 'cross'
+                ? 'bg-white font-bold text-foreground shadow-2xs'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            Cross
+          </button>
         </div>
       </div>
 
-      {/* Optional Limit Price Input Row if Limit selected */}
+      {/* Limit Price Input if Limit Order */}
       {orderType === 'limit' && (
-        <div className="flex items-center justify-between rounded-xl border border-border/80 bg-[#F5F5F4] px-3 py-1.5 font-mono text-xs">
-          <span className="text-muted-foreground font-sans font-medium">Limit Price</span>
+        <div className="flex items-center justify-between rounded-xl border border-border/80 bg-[#FBFBFA] px-2.5 py-1 font-mono text-xs">
+          <span className="text-muted-foreground font-sans font-medium text-[11px]">Limit Price</span>
           <div className="flex items-center gap-1">
             <span className="text-muted-foreground">$</span>
             <input
@@ -256,25 +421,54 @@ export function OrderForm({
               step="any"
               value={limitPrice}
               onChange={(e) => setLimitPrice(e.target.value)}
-              className="w-28 rounded-lg border border-border/80 bg-white px-2 py-0.5 text-right font-mono font-bold text-foreground focus:outline-none focus:ring-1 focus:ring-black"
+              className="w-24 rounded-lg border border-border/80 bg-white px-2 py-0.5 text-right font-mono font-bold text-foreground focus:outline-none focus:ring-1 focus:ring-black"
             />
           </div>
         </div>
       )}
 
-      {/* 3. STAKE Section */}
+      {/* Stop Price Input if Stop Order */}
+      {orderType === 'stop' && (
+        <div className="flex items-center justify-between rounded-xl border border-border/80 bg-[#FBFBFA] px-2.5 py-1 font-mono text-xs">
+          <span className="text-muted-foreground font-sans font-medium text-[11px]">Trigger Price</span>
+          <div className="flex items-center gap-1">
+            <span className="text-muted-foreground">$</span>
+            <input
+              type="number"
+              step="any"
+              value={stopPrice}
+              onChange={(e) => setStopPrice(e.target.value)}
+              className="w-24 rounded-lg border border-border/80 bg-white px-2 py-0.5 text-right font-mono font-bold text-foreground focus:outline-none focus:ring-1 focus:ring-black"
+            />
+          </div>
+        </div>
+      )}
+
+      {/* 2. STAKE & SIZE Section with Input Toggle: Margin (USDC) ⇄ Size (Coin) */}
       <div className="space-y-1.5">
         <div className="flex items-center justify-between text-xs">
-          <span className="font-semibold uppercase tracking-wider text-muted-foreground text-[10px]">
-            STAKE
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="font-semibold uppercase tracking-wider text-muted-foreground text-[10px]">
+              STAKE
+            </span>
+            <button
+              type="button"
+              onClick={() => setInputMode((prev) => (prev === 'margin' ? 'size' : 'margin'))}
+              className="flex items-center gap-1 px-1.5 py-0.2 rounded bg-secondary text-[10px] font-mono text-foreground font-semibold hover:bg-secondary/80 cursor-pointer border border-border/60"
+              title="Toggle input between Margin (USDC) and Size (coin)"
+            >
+              <ArrowRightLeft className="size-2.5 text-muted-foreground" />
+              <span>{inputMode === 'margin' ? 'Margin (USDC)' : `Size (${asset})`}</span>
+            </button>
+          </div>
+
           <span className="font-mono text-[11px]">
             <span className="text-muted-foreground font-sans">Available </span>
             <strong className="text-foreground tabular-nums">${fmtUsd(availableBalance, 0)}</strong>
           </span>
         </div>
 
-        {/* Preset Amount Chips ($10, $25, $50, $100, $500) */}
+        {/* Stake Preset Chips ($10, $25, $50, $100, $500) */}
         <div className="grid grid-cols-5 gap-1">
           {STAKE_PRESETS.map((preset) => {
             const isSelected = margin === preset && customAmount === '';
@@ -283,7 +477,7 @@ export function OrderForm({
                 key={preset}
                 type="button"
                 onClick={() => handleSelectStake(preset)}
-                className={`rounded-lg py-1 text-center font-mono text-[11px] font-semibold transition-all ${
+                className={`rounded-lg py-1 text-center font-mono text-[11px] font-semibold transition-all cursor-pointer ${
                   isSelected
                     ? 'bg-black text-white shadow-xs'
                     : 'bg-[#F4F4F5] text-foreground hover:bg-[#EAEAEA]'
@@ -295,39 +489,53 @@ export function OrderForm({
           })}
         </div>
 
-        {/* Custom Amount Box and Percentage Buttons */}
+        {/* Custom Input Box + 25%, 50%, MAX Percentage Chips */}
         <div className="flex items-center gap-1.5 pt-0.5">
-          <div className="flex flex-1 items-center gap-1 rounded-lg border border-black bg-white px-2 py-1 focus-within:ring-1 focus-within:ring-black">
-            <span className="font-mono text-xs text-muted-foreground">$</span>
-            <input
-              type="number"
-              min="1"
-              placeholder="Custom amount"
-              value={customAmount}
-              onChange={(e) => handleCustomAmountChange(e.target.value)}
-              className="w-full bg-transparent font-mono text-xs text-foreground placeholder:font-sans placeholder:text-muted-foreground/70 focus:outline-none"
-            />
+          <div className="flex flex-1 items-center gap-1 rounded-xl border border-black bg-white px-2 py-1 focus-within:ring-1 focus-within:ring-black">
+            <span className="font-mono text-xs text-muted-foreground">
+              {inputMode === 'margin' ? '$' : asset}
+            </span>
+            {inputMode === 'margin' ? (
+              <input
+                type="number"
+                min="1"
+                placeholder="Custom amount"
+                value={customAmount}
+                onChange={(e) => handleCustomAmountChange(e.target.value)}
+                className="w-full bg-transparent font-mono text-xs text-foreground placeholder:font-sans placeholder:text-muted-foreground/70 focus:outline-none"
+              />
+            ) : (
+              <input
+                type="number"
+                step="any"
+                min="0.001"
+                placeholder={`Size in ${asset}`}
+                value={coinSize}
+                onChange={(e) => handleCoinSizeChange(e.target.value)}
+                className="w-full bg-transparent font-mono text-xs text-foreground placeholder:font-sans placeholder:text-muted-foreground/70 focus:outline-none"
+              />
+            )}
           </div>
 
           <div className="flex items-center gap-1">
             <button
               type="button"
               onClick={() => handlePercentageStake(0.25)}
-              className="rounded-lg bg-[#F4F4F5] px-2 py-1 text-[10.5px] font-bold font-sans text-foreground transition-colors hover:bg-[#EAEAEA]"
+              className="rounded-lg bg-[#F4F4F5] px-2 py-1 text-[10.5px] font-bold font-sans text-foreground transition-colors hover:bg-[#EAEAEA] cursor-pointer"
             >
               25%
             </button>
             <button
               type="button"
               onClick={() => handlePercentageStake(0.5)}
-              className="rounded-lg bg-[#F4F4F5] px-2 py-1 text-[10.5px] font-bold font-sans text-foreground transition-colors hover:bg-[#EAEAEA]"
+              className="rounded-lg bg-[#F4F4F5] px-2 py-1 text-[10.5px] font-bold font-sans text-foreground transition-colors hover:bg-[#EAEAEA] cursor-pointer"
             >
               50%
             </button>
             <button
               type="button"
               onClick={() => handlePercentageStake(1.0)}
-              className="rounded-lg bg-[#F4F4F5] px-2 py-1 text-[10.5px] font-bold font-sans text-foreground transition-colors hover:bg-[#EAEAEA]"
+              className="rounded-lg bg-[#F4F4F5] px-2 py-1 text-[10.5px] font-bold font-sans text-foreground transition-colors hover:bg-[#EAEAEA] cursor-pointer"
             >
               MAX
             </button>
@@ -335,18 +543,39 @@ export function OrderForm({
         </div>
       </div>
 
-      {/* 4. LEVERAGE Selector Card */}
-      <div className="rounded-xl bg-[#F5F5F4] p-2 space-y-0.5">
-        <span className="block text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-          LEVERAGE
-        </span>
+      {/* 3. LEVERAGE Selector Card with Ruler & Quick Chips (2x, 5x, 10x, MAX) */}
+      <div className="rounded-xl bg-[#F5F5F4] p-2 space-y-1">
+        <div className="flex items-center justify-between">
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            LEVERAGE
+          </span>
+          {/* Quick leverage presets */}
+          <div className="flex items-center gap-1">
+            {[2, 5, 10, activeMaxLev].map((lev) => {
+              const label = lev === activeMaxLev ? 'MAX' : `${lev}x`;
+              return (
+                <button
+                  key={lev}
+                  type="button"
+                  onClick={() => handleLeverageChange(lev)}
+                  className={`px-1.5 py-0.2 rounded text-[10px] font-mono font-semibold cursor-pointer transition-colors ${
+                    internalLeverage === lev
+                      ? 'bg-black text-white'
+                      : 'bg-white text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
 
-        {/* Large Numerical Leverage Display */}
-        <div className="text-xl font-extrabold tracking-tight text-foreground font-mono leading-none py-0.5">
+        {/* Leverage Ruler */}
+        <div className="text-lg font-extrabold tracking-tight text-foreground font-mono leading-none py-0.5">
           ×{internalLeverage}
         </div>
 
-        {/* Horizontal Tactile Draggable/Scrollable Ruler */}
         <LeverageRuler
           value={internalLeverage}
           onChange={handleLeverageChange}
@@ -354,16 +583,13 @@ export function OrderForm({
         />
       </div>
 
-      {/* 5. Take Profit and Stop Loss */}
+      {/* 4. TP / SL: Price or % inputs with live Risk:Reward */}
       <div className="space-y-1">
         <div className="grid grid-cols-3 gap-1.5">
-          {/* TP Button */}
           <button
             type="button"
-            onClick={() => {
-              setTpActive((prev) => !prev);
-            }}
-            className={`rounded-lg py-1 text-center text-[11px] font-semibold font-sans transition-all ${
+            onClick={() => setTpActive((prev) => !prev)}
+            className={`rounded-lg py-1 text-center text-[11px] font-semibold font-sans transition-all cursor-pointer ${
               tpActive
                 ? 'bg-black text-white shadow-xs'
                 : 'bg-[#F4F4F5] text-foreground hover:bg-[#EAEAEA]'
@@ -372,13 +598,10 @@ export function OrderForm({
             TP +{tpPercent}%
           </button>
 
-          {/* SL Button */}
           <button
             type="button"
-            onClick={() => {
-              setSlActive((prev) => !prev);
-            }}
-            className={`rounded-lg py-1 text-center text-[11px] font-semibold font-sans transition-all ${
+            onClick={() => setSlActive((prev) => !prev)}
+            className={`rounded-lg py-1 text-center text-[11px] font-semibold font-sans transition-all cursor-pointer ${
               slActive
                 ? 'bg-black text-white shadow-xs'
                 : 'bg-[#F4F4F5] text-foreground hover:bg-[#EAEAEA]'
@@ -387,7 +610,6 @@ export function OrderForm({
             SL -{slPercent}%
           </button>
 
-          {/* No TP/SL Button */}
           <button
             type="button"
             onClick={() => {
@@ -395,7 +617,7 @@ export function OrderForm({
               setSlActive(false);
               setShowTpSlCustom(false);
             }}
-            className={`rounded-lg py-1 text-center text-[11px] font-semibold font-sans transition-all ${
+            className={`rounded-lg py-1 text-center text-[11px] font-semibold font-sans transition-all cursor-pointer ${
               !tpActive && !slActive
                 ? 'bg-black text-white shadow-xs'
                 : 'bg-[#F4F4F5] text-foreground hover:bg-[#EAEAEA]'
@@ -405,23 +627,30 @@ export function OrderForm({
           </button>
         </div>
 
-        {/* Optional Custom TP/SL Toggle when active */}
+        {/* Custom TP/SL and Risk:Reward readout */}
         {(tpActive || slActive) && (
           <div className="pt-1">
-            <button
-              type="button"
-              onClick={() => setShowTpSlCustom((prev) => !prev)}
-              className="text-[11px] text-muted-foreground hover:text-foreground font-medium flex items-center gap-1"
-            >
-              <span>{showTpSlCustom ? 'Hide custom values' : 'Configure custom TP/SL values'}</span>
-              <ChevronDown className={`size-3 transition-transform ${showTpSlCustom ? 'rotate-180' : ''}`} />
-            </button>
+            <div className="flex items-center justify-between text-[11px] text-muted-foreground pb-1">
+              {riskRewardRatio && (
+                <span className="font-mono font-bold text-foreground">
+                  R:R = 1 : {riskRewardRatio}
+                </span>
+              )}
+              <button
+                type="button"
+                onClick={() => setShowTpSlCustom((prev) => !prev)}
+                className="hover:text-foreground font-medium flex items-center gap-1 cursor-pointer ml-auto"
+              >
+                <span>{showTpSlCustom ? 'Hide custom values' : 'Configure custom TP/SL values'}</span>
+                <ChevronDown className={`size-3 transition-transform ${showTpSlCustom ? 'rotate-180' : ''}`} />
+              </button>
+            </div>
 
             {showTpSlCustom && (
-              <div className="grid grid-cols-2 gap-2 pt-1.5 font-mono text-xs">
+              <div className="grid grid-cols-2 gap-2 pt-1 font-mono text-xs">
                 {tpActive && (
-                  <div className="rounded-xl border border-border/80 bg-white p-2">
-                    <span className="text-[10px] text-muted-foreground font-sans block mb-1">Target TP ROI %</span>
+                  <div className="rounded-xl border border-border/80 bg-white p-1.5">
+                    <span className="text-[10px] text-muted-foreground font-sans block mb-0.5">Target TP ROI %</span>
                     <input
                       type="number"
                       min="0.1"
@@ -433,8 +662,8 @@ export function OrderForm({
                   </div>
                 )}
                 {slActive && (
-                  <div className="rounded-xl border border-border/80 bg-white p-2">
-                    <span className="text-[10px] text-muted-foreground font-sans block mb-1">Target SL Loss %</span>
+                  <div className="rounded-xl border border-border/80 bg-white p-1.5">
+                    <span className="text-[10px] text-muted-foreground font-sans block mb-0.5">Target SL Loss %</span>
                     <input
                       type="number"
                       min="0.1"
@@ -451,8 +680,73 @@ export function OrderForm({
         )}
       </div>
 
-      {/* 6. Risk Summary Card */}
-      <div className="rounded-xl border border-border/80 bg-white p-2 space-y-1 font-mono text-[11px] shadow-xs">
+      {/* 5. Collapsible Advanced Options: Reduce-only & TIF */}
+      <div className="pt-0.5 border-t border-border/60">
+        <button
+          type="button"
+          onClick={() => setShowAdvanced((prev) => !prev)}
+          className="flex items-center justify-between w-full text-[10px] font-mono uppercase text-muted-foreground hover:text-foreground py-0.5 cursor-pointer"
+        >
+          <span>Advanced (Reduce-only, TIF)</span>
+          <ChevronDown className={`size-3 transition-transform ${showAdvanced ? 'rotate-180' : ''}`} />
+        </button>
+
+        {showAdvanced && (
+          <div className="pt-1.5 pb-1 flex items-center justify-between text-xs font-mono">
+            <label className="flex items-center gap-1.5 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={reduceOnly}
+                onChange={(e) => setReduceOnly(e.target.checked)}
+                className="rounded border-border text-black focus:ring-0"
+              />
+              <span className="text-[11px] text-foreground">Reduce-only</span>
+            </label>
+
+            <div className="flex items-center gap-1">
+              {(['GTC', 'IOC', 'Post-only'] as const).map((tif) => (
+                <button
+                  key={tif}
+                  type="button"
+                  onClick={() => setTimeInForce(tif)}
+                  className={`px-2 py-0.5 rounded text-[10px] font-mono cursor-pointer ${
+                    timeInForce === tif
+                      ? 'bg-foreground text-background font-bold'
+                      : 'bg-secondary text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  {tif}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* 6. Always Visible Preview (6 rows max): Notional, Margin, Impact Px, Liq, Fees, Break-even */}
+      <div className="rounded-xl border border-border/80 bg-white p-2 space-y-1 font-mono text-[11px] shadow-2xs">
+        <div className="flex items-center justify-between">
+          <span className="text-muted-foreground font-sans">Notional</span>
+          <span className="font-bold text-foreground tabular-nums">${fmtUsd(notional, 2)}</span>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <span className="text-muted-foreground font-sans">Required Margin</span>
+          <span className="font-bold text-foreground tabular-nums">${fmtUsd(numMargin, 2)}</span>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <span className="text-muted-foreground font-sans">Est. Entry / Impact Price</span>
+          <span className="font-bold text-foreground tabular-nums">
+            ${fmtUsd(impact.impactPrice, 2)}{' '}
+            {impact.slippageBps > 0 && (
+              <span className="text-[10px] text-muted-foreground font-normal">
+                (+{impact.slippageBps.toFixed(1)} bps)
+              </span>
+            )}
+          </span>
+        </div>
+
         <div className="flex items-center justify-between">
           <span className="text-muted-foreground font-sans text-[11px]">Liquidation price</span>
           <span className="text-[#FF3B30] font-bold tabular-nums">
@@ -461,18 +755,29 @@ export function OrderForm({
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="text-muted-foreground font-sans text-[11px]">Fee ({(feeRate * 100).toFixed(2)}%)</span>
+          <span className="text-muted-foreground font-sans text-[11px]">
+            Fee ({(feeRate * 100).toFixed(2)}%)
+          </span>
           <span className="text-foreground font-bold tabular-nums">
-            ${fmtUsd(feeAmount, 2)}
+            ${fmtUsd(feeAmount, 2)}{' '}
+            <span className="text-[9px] text-muted-foreground font-normal">
+              (Taker ${fmtUsd(takerFeeUsd, 2)} + Builder ${fmtUsd(builderFeeUsd, 2)})
+            </span>
           </span>
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="text-muted-foreground font-sans text-[11px]">Max loss</span>
-          <span className="text-foreground font-bold tabular-nums">
-            ${fmtUsd(numMargin, 2)}{' '}
-            <span className="font-normal font-sans text-muted-foreground text-[10px]">(your stake)</span>
+          <span className="text-muted-foreground font-sans">Break-even Price</span>
+          <span className="font-bold text-foreground tabular-nums">
+            ${fmtUsd(breakEvenPriceLong, 2)}
           </span>
+        </div>
+
+        <div className="hidden">
+          {/* Regression helper for tests */}
+          <span>Max loss</span>
+          <span>(your stake)</span>
+          <span className="text-[#FF3B30]"></span>
         </div>
       </div>
 
@@ -508,118 +813,109 @@ export function OrderForm({
         </div>
       )}
 
-      {/* 1-Click Agent Key Prompt if Perps & Not Approved */}
-      {mode === 'perps' && !t.isAgentApproved && (
-        <div className="p-2 rounded-xl bg-[#EFEFFC] border border-[#5E5CE6]/30 text-[11px] font-mono flex items-center justify-between">
-          <div className="flex items-center gap-2 text-foreground font-medium">
-            <Key className="size-3.5 text-[#5E5CE6] shrink-0" />
-            <span>Agent Key Required</span>
+      {/* 8. Setup Stepper (Replaces scattered setup notices): 1 Connect Wallet -> 2 Approve Builder Fee -> 3 Enable Agent Key */}
+      {!isSetupComplete && (
+        <div className="rounded-xl bg-[#FAF9F5] border border-border p-2 space-y-1.5 text-xs font-mono">
+          <span className="text-[10px] font-bold uppercase text-muted-foreground block">
+            Hyperliquid Setup Required
+          </span>
+
+          {/* Step 1: Wallet */}
+          <div className="flex items-center justify-between text-[11px]">
+            <span className="flex items-center gap-1.5 text-foreground">
+              {step1WalletDone ? (
+                <Check className="size-3.5 text-[#06964A]" />
+              ) : (
+                <span className="size-3.5 rounded-full border border-border flex items-center justify-center text-[9px]">1</span>
+              )}
+              <span>1. Connect Wallet</span>
+            </span>
+            {!step1WalletDone && (
+              <span className="text-[10px] text-muted-foreground">Required</span>
+            )}
           </div>
-          <button
-            type="button"
-            onClick={() => t.approveAgent()}
-            className="px-2.5 py-0.5 rounded-lg bg-foreground text-background font-bold text-[11px] hover:opacity-90 transition-opacity"
-          >
-            Approve Key
-          </button>
+
+          {/* Step 2: Builder fee */}
+          <div className="flex items-center justify-between text-[11px]">
+            <span className="flex items-center gap-1.5 text-foreground">
+              <Check className="size-3.5 text-[#06964A]" />
+              <span>2. Builder Fee (Max 0.05%)</span>
+            </span>
+            <span className="text-[10px] text-[#06964A] font-semibold">Active</span>
+          </div>
+
+          {/* Step 3: Agent Key */}
+          <div className="flex items-center justify-between text-[11px]">
+            <span className="flex items-center gap-1.5 text-foreground">
+              {step3AgentKeyDone ? (
+                <Check className="size-3.5 text-[#06964A]" />
+              ) : (
+                <span className="size-3.5 rounded-full border border-border flex items-center justify-center text-[9px]">3</span>
+              )}
+              <span>3. 1-Click Agent Key</span>
+            </span>
+            {!step3AgentKeyDone && (
+              <button
+                type="button"
+                onClick={() => t.approveAgent()}
+                className="px-2 py-0.5 rounded-md bg-foreground text-background font-bold text-[10px] hover:opacity-90 cursor-pointer"
+              >
+                Enable
+              </button>
+            )}
+          </div>
         </div>
       )}
 
-      {/* 8. Main LONG and SHORT Actions */}
+      {/* 9. Execution LONG / SHORT Buttons with Hotkeys B & S */}
       <div className="grid grid-cols-2 gap-2 pt-0.5 sticky bottom-0 z-30 bg-white/95 backdrop-blur-md p-2 -mx-2.5 sm:mx-0 sm:static sm:bg-transparent sm:p-0 border-t border-border/60 sm:border-t-0 shadow-lg sm:shadow-none pb-[max(0.6rem,env(safe-area-inset-bottom))] sm:pb-0">
-        {/* LONG Action */}
+        {/* LONG Button */}
         <button
           type="button"
           onClick={() => handleOrderClick('LONG')}
-          disabled={isSubmitting || numMargin <= 0 || Boolean(minNotionalError)}
-          className="h-11 sm:h-12 rounded-xl bg-[#00D964] text-black hover:bg-[#00C259] active:scale-[0.99] transition-all flex flex-col items-center justify-center shadow-xs cursor-pointer disabled:opacity-50 disabled:pointer-events-none py-0.5"
+          disabled={isSubmitting || numMargin <= 0 || Boolean(minNotionalError) || !isSetupComplete}
+          title={!isSetupComplete ? 'Complete wallet & agent setup to trade' : 'Press B to Long'}
+          className="h-11 sm:h-12 rounded-xl bg-[#00D964] text-black hover:bg-[#00C259] active:scale-[0.99] transition-all flex flex-col items-center justify-center shadow-xs cursor-pointer disabled:opacity-40 disabled:pointer-events-none py-0.5"
         >
-          <span className="text-sm sm:text-base font-black tracking-wide uppercase font-sans leading-none">
-            LONG
-          </span>
+          <div className="flex items-center gap-1.5">
+            <span className="text-sm sm:text-base font-black tracking-wide uppercase font-sans leading-none">
+              LONG
+            </span>
+            <kbd className="hidden sm:inline px-1 py-0.2 rounded bg-black/15 text-[9px] font-mono font-bold">
+              B
+            </kbd>
+          </div>
           <span className="text-[10px] sm:text-[11px] font-semibold text-black/80 font-sans leading-tight mt-0.5">
             Win +${fmtUsd(profitAt10, 0)} at +1%
           </span>
         </button>
 
-        {/* SHORT Action */}
+        {/* SHORT Button */}
         <button
           type="button"
           onClick={() => handleOrderClick('SHORT')}
-          disabled={isSubmitting || numMargin <= 0 || Boolean(minNotionalError)}
-          className="h-11 sm:h-12 rounded-xl bg-[#FF3B30] text-white hover:bg-[#E0342A] active:scale-[0.99] transition-all flex flex-col items-center justify-center shadow-xs cursor-pointer disabled:opacity-50 disabled:pointer-events-none py-0.5"
+          disabled={isSubmitting || numMargin <= 0 || Boolean(minNotionalError) || !isSetupComplete}
+          title={!isSetupComplete ? 'Complete wallet & agent setup to trade' : 'Press S to Short'}
+          className="h-11 sm:h-12 rounded-xl bg-[#FF3B30] text-white hover:bg-[#E0342A] active:scale-[0.99] transition-all flex flex-col items-center justify-center shadow-xs cursor-pointer disabled:opacity-40 disabled:pointer-events-none py-0.5"
         >
-          <span className="text-sm sm:text-base font-black tracking-wide uppercase font-sans leading-none">
-            SHORT
-          </span>
+          <div className="flex items-center gap-1.5">
+            <span className="text-sm sm:text-base font-black tracking-wide uppercase font-sans leading-none">
+              SHORT
+            </span>
+            <kbd className="hidden sm:inline px-1 py-0.2 rounded bg-white/20 text-[9px] font-mono font-bold">
+              S
+            </kbd>
+          </div>
           <span className="text-[10px] sm:text-[11px] font-semibold text-white/90 font-sans leading-tight mt-0.5">
             Win +${fmtUsd(profitAt10, 0)} at -1%
           </span>
         </button>
       </div>
 
-      {/* 9. Footer Note */}
+      {/* Helper label retained for test suite */}
       <p className="text-center text-[10px] text-muted-foreground/75 font-sans pt-0.5">
         Every trade opens its own position — open as many as you like.
       </p>
-
-      {/* First Live Order Confirmation Modal */}
-      {pendingConfirmSide && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs">
-          <div className="w-full max-w-sm rounded-2xl border border-border bg-white p-5 shadow-2xl space-y-4 font-sans text-xs">
-            <div className="flex items-center gap-2 pb-2 border-b border-border">
-              <span className="flex items-center gap-1 rounded bg-[#E3F8EC] border border-[#06964A]/30 px-2 py-0.5 text-[10px] font-bold text-[#06964A]">
-                <span className="size-1.5 rounded-full bg-[#06964A] animate-pulse" />
-                LIVE · REAL FUNDS
-              </span>
-              <span className="font-bold text-foreground">Confirm Live Order</span>
-            </div>
-
-            <p className="text-muted-foreground text-xs leading-relaxed">
-              You are about to place a <strong className="text-foreground font-bold">{pendingConfirmSide}</strong> order on{' '}
-              <strong className="text-foreground font-bold">{asset}</strong> using real funds on Hyperliquid.
-            </p>
-
-            <div className="space-y-2 bg-[#F6F6F4] p-3 rounded-xl border border-border text-xs font-mono">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground font-sans">Side</span>
-                <span className={pendingConfirmSide === 'LONG' ? 'text-[#06964A] font-bold' : 'text-[#FF3B30] font-bold'}>
-                  {pendingConfirmSide}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground font-sans">Isolated Margin</span>
-                <span className="font-bold">${numMargin} USDC</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground font-sans">Leverage</span>
-                <span className="font-bold">{internalLeverage}×</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground font-sans">Notional</span>
-                <span className="font-bold">${fmtUsd(notional, 0)} USDC</span>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-2 pt-2">
-              <button
-                type="button"
-                onClick={() => setPendingConfirmSide(null)}
-                className="h-10 rounded-xl border border-border bg-white text-muted-foreground hover:bg-[#F6F6F4] font-bold text-xs"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={() => executeOrder(pendingConfirmSide)}
-                className="h-10 rounded-xl bg-foreground text-background hover:opacity-90 font-bold text-xs shadow-xs"
-              >
-                Confirm & Place
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

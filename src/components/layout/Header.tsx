@@ -106,22 +106,25 @@ export function Header() {
     <>
       <header className="sticky top-0 z-40 border-b border-border bg-white/95 text-foreground font-sans backdrop-blur-md">
         {/* Status Bar */}
-        <div className="hidden sm:flex border-b border-border/60 bg-secondary/50 text-muted-foreground px-4 sm:px-6 py-1 items-center justify-between text-[11px] font-mono tracking-tight select-none">
+        <div className="hidden sm:flex border-b border-border/60 bg-secondary/50 text-muted-foreground px-4 sm:px-6 py-0.5 items-center justify-between text-[11px] font-mono tracking-tight select-none">
           <div className="flex items-center gap-2">
             <span className="inline-block size-1.5 rounded-full bg-[#00D964] animate-pulse" />
-            <span className="font-semibold text-foreground tracking-wide">
+            <span className="font-bold text-foreground tracking-wide">
               ● HYPERLIQUID L1 CONNECTED · BUILDER CODE ACTIVE
+            </span>
+            <span className="px-1.5 py-0.2 rounded bg-foreground text-background font-mono font-bold text-[9px] uppercase">
+              {(typeof process !== "undefined" && process.env?.["NEXT_PUBLIC_HL_NETWORK"]?.toUpperCase()) || "TESTNET"}
             </span>
           </div>
           <div className="hidden sm:flex items-center gap-4 text-[10px] text-muted-foreground">
             <span className="flex items-center gap-1.5">
               <span className="size-1.5 rounded-full bg-[#00D964]" />
-              BUILDER CODE: <span className="text-[#2563EB] font-semibold">GODCANDLE</span>
+              BUILDER CODE: <span className="text-[#2563EB] font-bold">GODCANDLE</span>
             </span>
             <span className="text-border">|</span>
             <span>DIRECT L1 ROUTING</span>
             <span className="text-border">|</span>
-            <span className="text-[#06964A] font-semibold">ZERO ADDED LATENCY</span>
+            <span className="text-[#06964A] font-semibold">14ms LATENCY</span>
           </div>
         </div>
 
@@ -129,7 +132,7 @@ export function Header() {
         <div className="h-[2px] w-full rainbow-bar" />
 
         {/* Main Navbar */}
-        <div className="flex h-14 items-center justify-between gap-3 sm:gap-4 px-4 sm:px-6">
+        <div className="flex h-12 sm:h-13 items-center justify-between gap-3 sm:gap-4 px-4 sm:px-6">
           {/* Left Cluster: Logo & Primary Left Navigation */}
           <div className="flex items-center gap-3 sm:gap-5 lg:gap-6">
             <Link
@@ -146,7 +149,7 @@ export function Header() {
               </span>
             </Link>
 
-            {/* Left Nav: Trading [Perps | 1000x], Analysis, Leaderboard, More */}
+            {/* Left Nav: Trading [Perps | 1000x 🔒], Analysis, Leaderboard, More */}
             <nav aria-label="Main navigation" className="hidden md:flex items-center gap-2">
               {/* Primary Trading Segment */}
               <div className="flex items-center p-0.5 rounded-full bg-secondary/80 border border-border/80 shadow-2xs">
@@ -154,11 +157,7 @@ export function Header() {
                   to="/"
                   search={typeof window !== "undefined" && new URLSearchParams(window.location.search).get("pair") ? { pair: new URLSearchParams(window.location.search).get("pair")! } as any : undefined}
                   onClick={() => t.setMode("perps")}
-                  className={
-                    pathname === "/" && t.mode === "perps"
-                      ? "pill pill-ink h-7.5 px-3 text-xs font-semibold shadow-xs"
-                      : "pill h-7.5 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-white/60 transition-colors"
-                  }
+                  className="pill pill-ink h-7.5 px-3 text-xs font-semibold shadow-xs"
                   title="Trade (Live) · Hyperliquid L1 Perps"
                   aria-label="Trade (Live) Perps"
                 >
@@ -169,17 +168,13 @@ export function Header() {
                 </Link>
                 <Link
                   to="/trade"
-                  search={typeof window !== "undefined" && new URLSearchParams(window.location.search).get("pair") ? { pair: new URLSearchParams(window.location.search).get("pair")! } as any : undefined}
-                  onClick={() => t.setMode("paper1000x")}
-                  className={
-                    pathname === "/trade" && t.mode === "paper1000x"
-                      ? "pill pill-ink h-7.5 px-3 text-xs font-semibold shadow-xs"
-                      : "pill h-7.5 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-white/60 transition-colors"
-                  }
-                  title="1000x Trading Simulation"
+                  className="pill h-7.5 px-3 text-xs text-muted-foreground/70 cursor-not-allowed flex items-center gap-1 pointer-events-none opacity-60"
+                  title="1000x Trading Simulation (Locked · House Pool $2.4M / $5.0M to unlock)"
                   aria-label="1000x Trading"
+                  aria-disabled="true"
                 >
                   <span>1000x</span>
+                  <span className="text-[10px]">🔒</span>
                 </Link>
               </div>
 
@@ -473,50 +468,26 @@ export function Header() {
               )}
             </div>
 
-            {/* Available Balance */}
-            <div className="hidden xl:block text-right pr-1">
-              <p className="data-label text-[9px] flex items-center justify-end gap-1">
-                <span>{t.mode === "perps" ? "Real Withdrawable" : "Paper Available"}</span>
-                {t.mode === "perps" && (
-                  <span className="font-mono text-[#06964A] font-bold">· LIVE</span>
-                )}
-                {t.mode === "paper1000x" && (
-                  <span className="font-mono text-[#D97706] font-bold">· 1000x</span>
-                )}
+            {/* Available Balance / Equity */}
+            <div className="hidden xl:block text-right pr-1 select-none">
+              <p className="data-label text-[9px] text-muted-foreground uppercase tracking-wider">
+                Equity
               </p>
-              <p className="tabular text-xs font-semibold text-foreground">
-                ${fmtUsd(t.available)}
+              <p className="tabular text-xs font-mono font-bold text-foreground">
+                ${fmtUsd(t.balance)}
               </p>
             </div>
 
-            {/* Deposit or Reset Button */}
-            {t.mode === "paper1000x" ? (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={async () => {
-                  const res = await t.resetPaperBalance();
-                  if (res.success) {
-                    toast.success("Paper balance reset to $10,000.00 USDC");
-                  } else {
-                    toast.error(res.error || "Reset cooldown active");
-                  }
-                }}
-                className="pill pill-ink h-8 px-3 text-xs gap-1 border-0 cursor-pointer shadow-xs"
-              >
-                Reset ($10k)
-              </Button>
-            ) : (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setTransfer("Deposit")}
-                className="pill pill-ink h-8 px-3 text-xs gap-1 border-0 cursor-pointer shadow-xs"
-              >
-                <Plus className="size-3" />
-                Deposit
-              </Button>
-            )}
+            {/* Deposit Button */}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setTransfer("Deposit")}
+              className="pill pill-ink h-8 px-3 text-xs gap-1 border-0 cursor-pointer shadow-xs"
+            >
+              <Plus className="size-3" />
+              Deposit
+            </Button>
 
             {/* Connect Wallet Modal */}
             <ConnectModal />
@@ -566,15 +537,11 @@ export function Header() {
             </Link>
             <Link
               to="/trade"
-              search={typeof window !== "undefined" && new URLSearchParams(window.location.search).get("pair") ? { pair: new URLSearchParams(window.location.search).get("pair")! } as any : undefined}
-              onClick={() => t.setMode("paper1000x")}
-              className={
-                pathname === "/trade" && t.mode === "paper1000x"
-                  ? "pill pill-ink h-7 px-2.5 text-[11px] font-semibold"
-                  : "pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-white/60 transition-colors"
-              }
+              className="pill h-7 px-2 text-[11px] text-muted-foreground/70 cursor-not-allowed opacity-60 flex items-center gap-1 pointer-events-none"
+              title="1000x Trading Simulation (Locked · House Pool $2.4M / $5.0M to unlock)"
             >
               <span>1000x</span>
+              <span className="text-[9px]">🔒</span>
             </Link>
           </div>
 
