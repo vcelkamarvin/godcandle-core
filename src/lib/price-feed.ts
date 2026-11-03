@@ -1,12 +1,12 @@
 import { useSyncExternalStore } from "react";
-import { MARKETS, type MarketSymbol, type MarketStatus } from "@/config/markets";
+import { MARKETS, getMarket, type MarketSymbol, type MarketStatus } from "@/config/markets";
 import { createBuffers, type Tick } from "./mock-data";
 export type { Tick } from "./mock-data";
 export interface FeedSnap { price: number; prev: number; open24: number; lastTick: number; status: MarketStatus }
 export interface Simulation { volatility: number; tickSpeed: number }
 const initial = Object.fromEntries(MARKETS.map(m=>[m.symbol,{price:m.basePrice,prev:m.basePrice,open24:m.basePrice*.991,lastTick:0,status:m.status}])) as Record<MarketSymbol,FeedSnap>;
 let snapshots = initial;
-let buffers: Record<MarketSymbol,Tick[]> | undefined;
+let buffers: Record<string, Tick[]> = {};
 let simulation: Simulation = {volatility:1,tickSpeed:200};
 let started = false;
 const listeners = new Set<()=>void>();

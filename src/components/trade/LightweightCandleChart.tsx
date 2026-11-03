@@ -146,7 +146,7 @@ export function LightweightCandleChart({
       if (showIndicators) {
         const smaSeries = chart.addSeries(LineSeries, {
           color: '#2563EB',
-          lineWidth: 1.5,
+          lineWidth: 2,
           priceLineVisible: false,
           lastValueVisible: false,
           title: 'SMA 20',
@@ -352,8 +352,12 @@ export function LightweightCandleChart({
         });
       }
 
-      const unsubTrades = marketStore.subscribeTrades(rawCoin, (trade: HlTrade) => {
-        handleLiveTick(trade.px, trade.sz, trade.side === 'buy', trade.time);
+      const unsubTrades = marketStore.subscribeTrades(rawCoin, (trades: HlTrade[]) => {
+        if (Array.isArray(trades)) {
+          trades.forEach((trade) => {
+            handleLiveTick(trade.px, trade.sz, trade.side === 'buy', trade.time);
+          });
+        }
       });
 
       const unsubMids = marketStore.subscribeMids((mids: Record<string, number>) => {

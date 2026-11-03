@@ -15,6 +15,7 @@ import type { FeedSnap } from '@/lib/price-feed';
 import { MarketLogo } from './MarketLogo';
 import { fetchOpenOrders, fetchUserFundingHistory, marketStore } from '@/lib/hyperliquid/market-data';
 import { useAccount } from 'wagmi';
+import { useTrading } from '@/components/godcandle/TradingProvider';
 
 interface Props {
   feeds: Record<MarketSymbol, FeedSnap>;
