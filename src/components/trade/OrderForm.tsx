@@ -64,8 +64,11 @@ export function OrderForm({
   const { settings } = useSettings();
   const { address, isConnected } = useAccount();
 
-  // Active leverage clamp & state
-  const activeMaxLev = propMaxLev ?? (mode === 'perps' ? t.engine.getMaxLeverage(asset) : 50);
+  // Active trading mode check
+  const isPaper = mode === 'paper1000x' || t?.mode === 'paper1000x';
+
+  // Active leverage clamp & state (1000x in paper mode, up to protocol max in perps mode)
+  const activeMaxLev = propMaxLev ?? t.engine.getMaxLeverage(asset);
   const [internalLeverage, setInternalLeverage] = useState(() =>
     clampLeverage(propLeverage || 10, activeMaxLev)
   );
@@ -184,8 +187,8 @@ export function OrderForm({
   const profitAt05 = notional * 0.005;
   const profitAt10 = notional * 0.01;
 
-  // Minimum order validation ($10 notional)
-  const minNotionalError = notional > 0 && notional < 10
+  // Minimum order validation ($10 notional on Hyperliquid perps; no minimum on paper simulation)
+  const minNotionalError = !isPaper && notional > 0 && notional < 10
     ? 'Minimum order value is $10 notional on Hyperliquid'
     : null;
 
@@ -286,20 +289,22 @@ export function OrderForm({
   };
 
   const handleOrderClick = (side: 'LONG' | 'SHORT') => {
-    if (!isConnected && !address) {
-      toast.error('Connect your wallet first');
-      return;
-    }
-    if (minNotionalError) {
-      toast.error(minNotionalError);
-      return;
+    if (!isPaper) {
+      if (!isConnected && !address) {
+        toast.error('Connect your wallet first');
+        return;
+      }
+      if (minNotionalError) {
+        toast.error(minNotionalError);
+        return;
+      }
+      if (!t.isAgentApproved) {
+        toast.error('Please complete setup: approve builder fee & agent key first');
+        return;
+      }
     }
     if (numMargin > availableBalance) {
       toast.error(`Insufficient balance ($${fmtUsd(availableBalance, 0)} available)`);
-      return;
-    }
-    if (!t.isAgentApproved) {
-      toast.error('Please complete setup: approve builder fee & agent key first');
       return;
     }
 
@@ -310,7 +315,7 @@ export function OrderForm({
   const step1WalletDone = Boolean(isConnected || address);
   const step2BuilderFeeDone = true; // Builder fee approved in session or wallet
   const step3AgentKeyDone = Boolean(t.isAgentApproved);
-  const isSetupComplete = step1WalletDone && step3AgentKeyDone;
+  const isSetupComplete = isPaper || (step1WalletDone && step3AgentKeyDone);
 
   // Keyboard Shortcuts: B for Long, S for Short
   useEffect(() => {
@@ -321,12 +326,12 @@ export function OrderForm({
 
       if (e.key === 'b' || e.key === 'B') {
         e.preventDefault();
-        if (isSetupComplete && !minNotionalError && numMargin > 0) {
+        if ((isSetupComplete || isPaper) && (!minNotionalError || isPaper) && numMargin > 0) {
           handleOrderClick('LONG');
         }
       } else if (e.key === 's' || e.key === 'S') {
         e.preventDefault();
-        if (isSetupComplete && !minNotionalError && numMargin > 0) {
+        if ((isSetupComplete || isPaper) && (!minNotionalError || isPaper) && numMargin > 0) {
           handleOrderClick('SHORT');
         }
       }
@@ -334,7 +339,7 @@ export function OrderForm({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isSetupComplete, minNotionalError, numMargin]);
+  }, [isSetupComplete, minNotionalError, numMargin, isPaper]);
 
   return (
     <div className="w-full rounded-2xl border border-border/80 bg-white p-2.5 sm:p-3 space-y-2 shadow-xs font-sans text-foreground select-none">
@@ -822,7 +827,7 @@ export function OrderForm({
       )}
 
       {/* 8. Setup Stepper (Replaces scattered setup notices): 1 Connect Wallet -> 2 Approve Builder Fee -> 3 Enable Agent Key */}
-      {!isSetupComplete && (
+      {!isSetupComplete && !isPaper && (
         <div className="rounded-xl bg-[#FAF9F5] border border-border p-2.5 space-y-2 text-xs font-mono">
           <span className="text-xs font-bold uppercase text-muted-foreground block">
             Hyperliquid Setup Required
@@ -881,19 +886,19 @@ export function OrderForm({
         <button
           type="button"
           onClick={() => handleOrderClick('LONG')}
-          disabled={isSubmitting || numMargin <= 0 || Boolean(minNotionalError) || !isSetupComplete}
-          title={!isSetupComplete ? 'Complete wallet & agent setup to trade' : 'Press B to Long'}
+          disabled={isSubmitting || numMargin <= 0 || (Boolean(minNotionalError) && !isPaper) || (!isSetupComplete && !isPaper)}
+          title={!isSetupComplete && !isPaper ? 'Complete wallet & agent setup to trade' : 'Press B to Long'}
           className="h-11 sm:h-12 rounded-xl bg-[#00D964] text-black hover:bg-[#00C259] active:scale-[0.99] transition-all flex flex-col items-center justify-center shadow-xs cursor-pointer disabled:opacity-40 disabled:pointer-events-none py-0.5"
         >
           <div className="flex items-center gap-1.5">
             <span className="text-sm sm:text-base font-black tracking-wide uppercase font-sans leading-none">
               LONG
             </span>
-            <kbd className="hidden sm:inline px-1 py-0.2 rounded bg-black/15 text-[9px] font-mono font-bold">
+            <kbd className="hidden sm:inline px-1 py-0.2 rounded bg-black/15 text-xs font-mono font-bold">
               B
             </kbd>
           </div>
-          <span className="text-[10px] sm:text-[11px] font-semibold text-black/80 font-sans leading-tight mt-0.5">
+          <span className="text-xs font-semibold text-black/80 font-sans leading-tight mt-0.5">
             Win +${fmtUsd(profitAt10, 0)} at +1%
           </span>
         </button>
@@ -902,19 +907,19 @@ export function OrderForm({
         <button
           type="button"
           onClick={() => handleOrderClick('SHORT')}
-          disabled={isSubmitting || numMargin <= 0 || Boolean(minNotionalError) || !isSetupComplete}
-          title={!isSetupComplete ? 'Complete wallet & agent setup to trade' : 'Press S to Short'}
+          disabled={isSubmitting || numMargin <= 0 || (Boolean(minNotionalError) && !isPaper) || (!isSetupComplete && !isPaper)}
+          title={!isSetupComplete && !isPaper ? 'Complete wallet & agent setup to trade' : 'Press S to Short'}
           className="h-11 sm:h-12 rounded-xl bg-[#FF3B30] text-white hover:bg-[#E0342A] active:scale-[0.99] transition-all flex flex-col items-center justify-center shadow-xs cursor-pointer disabled:opacity-40 disabled:pointer-events-none py-0.5"
         >
           <div className="flex items-center gap-1.5">
             <span className="text-sm sm:text-base font-black tracking-wide uppercase font-sans leading-none">
               SHORT
             </span>
-            <kbd className="hidden sm:inline px-1 py-0.2 rounded bg-white/20 text-[9px] font-mono font-bold">
+            <kbd className="hidden sm:inline px-1 py-0.2 rounded bg-white/20 text-xs font-mono font-bold">
               S
             </kbd>
           </div>
-          <span className="text-[10px] sm:text-[11px] font-semibold text-white/90 font-sans leading-tight mt-0.5">
+          <span className="text-xs font-semibold text-white/90 font-sans leading-tight mt-0.5">
             Win +${fmtUsd(profitAt10, 0)} at -1%
           </span>
         </button>

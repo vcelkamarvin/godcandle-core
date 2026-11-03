@@ -432,7 +432,7 @@ export function MarketBar({
                   type="button"
                   onClick={() => setOpen(false)}
                   aria-label="Close dialog"
-                  className="rounded-md bg-secondary border border-border px-2 py-0.5 text-[10px] font-mono font-medium text-muted-foreground shrink-0 hover:bg-secondary/80 hover:text-foreground cursor-pointer transition-colors"
+                  className="rounded-md bg-secondary border border-border px-2.5 py-1 text-xs font-mono font-medium text-muted-foreground shrink-0 hover:bg-secondary/80 hover:text-foreground cursor-pointer transition-colors"
                   title="Close (Esc)"
                 >
                   Esc
@@ -466,8 +466,8 @@ export function MarketBar({
 
               {/* Recents strip */}
               {recents.length > 0 && (
-                <div className="flex items-center gap-1.5 text-[10px] font-mono text-muted-foreground px-1 overflow-x-auto no-scrollbar">
-                  <span className="uppercase text-[9px] font-bold text-muted-foreground/70 shrink-0">Recents:</span>
+                <div className="flex items-center gap-1.5 text-xs font-mono text-muted-foreground px-1 overflow-x-auto no-scrollbar">
+                  <span className="uppercase text-xs font-bold text-muted-foreground/70 shrink-0">Recents:</span>
                   {recents.map((r) => (
                     <button
                       key={r}
@@ -482,7 +482,7 @@ export function MarketBar({
               )}
 
               {/* Table Column Labels with Click-to-Sort */}
-              <div className="grid grid-cols-[24px_1fr_75px_60px] md:grid-cols-[24px_85px_75px_60px_65px_60px_65px_45px] items-center px-2 text-[10px] uppercase font-mono tracking-wider text-muted-foreground select-none">
+              <div className="grid grid-cols-[24px_1fr_75px_60px] md:grid-cols-[24px_85px_75px_60px_65px_60px_65px_45px] items-center px-2 text-xs uppercase font-mono tracking-wider text-muted-foreground select-none">
                 <span />
                 <button
                   type="button"
@@ -557,7 +557,7 @@ export function MarketBar({
                     onMouseEnter={() => setPreviewSymbol(m.symbol)}
                     onClick={() => handleSelectMarket(m.symbol)}
                     className={cn(
-                      "grid grid-cols-[24px_1fr_75px_60px] md:grid-cols-[24px_85px_75px_60px_65px_60px_65px_45px] items-center h-[48px] px-2 rounded-xl border transition-all cursor-pointer group select-none font-mono text-[11px]",
+                      "grid grid-cols-[24px_1fr_75px_60px] md:grid-cols-[24px_85px_75px_60px_65px_60px_65px_45px] items-center h-[48px] px-2 rounded-xl border transition-all cursor-pointer group select-none font-mono text-xs",
                       isPreviewed
                         ? "border-foreground bg-secondary font-medium shadow-xs ring-1 ring-foreground/15"
                         : "border-transparent hover:border-border hover:bg-secondary/50"
@@ -596,7 +596,7 @@ export function MarketBar({
                         <span className="font-bold text-foreground font-sans block leading-tight text-xs">
                           {m.symbol}
                         </span>
-                        <span className="block text-[9px] text-muted-foreground truncate leading-tight font-sans">
+                        <span className="block text-xs text-muted-foreground truncate leading-tight font-sans">
                           {m.name}
                         </span>
                       </div>
@@ -613,7 +613,7 @@ export function MarketBar({
                     <div className="text-right">
                       <span
                         className={cn(
-                          "tabular text-[10px] font-semibold px-1 py-0.2 rounded-md inline-block",
+                          "tabular text-xs font-semibold px-1 py-0.2 rounded-md inline-block",
                           ch >= 0
                             ? "bg-[#E3F8EC] text-[#06964A]"
                             : "bg-[#FFECEA] text-[#FF3B30]"
@@ -635,13 +635,13 @@ export function MarketBar({
                     </div>
 
                     {/* Funding */}
-                    <div className="hidden md:block text-right text-[#06964A] font-medium text-[10px]">
+                    <div className="hidden md:block text-right text-[#06964A] font-medium text-xs">
                       {FUNDING_RATES[m.symbol]?.replace(' / 1h', '') || '0.01%'}
                     </div>
 
                     {/* Max Leverage */}
                     <div className="hidden md:flex justify-end pr-0.5">
-                      <span className="tabular font-bold text-foreground text-[10px]">
+                      <span className="tabular font-bold text-foreground text-xs">
                         {m.maxLeverage}x
                       </span>
                     </div>
@@ -653,7 +653,7 @@ export function MarketBar({
                 <div className="py-12 text-center text-muted-foreground space-y-2">
                   <Activity className="size-7 mx-auto opacity-40" />
                   <p className="text-xs font-medium text-foreground">No markets found</p>
-                  <p className="text-[11px]">
+                  <p className="text-xs">
                     No assets match &ldquo;{query}&rdquo; {filter !== "All" && `in ${filter}`}
                   </p>
                   {filter !== "All" && (
@@ -670,7 +670,7 @@ export function MarketBar({
             </div>
 
             {/* Footer Navigation Tip */}
-            <div className="shrink-0 pt-2 border-t border-border flex items-center justify-between text-[10px] font-mono text-muted-foreground">
+            <div className="shrink-0 pt-2 border-t border-border flex items-center justify-between text-xs font-mono text-muted-foreground">
               <span>Press ↑ ↓ to preview · Enter to select</span>
               <span>ESC to close</span>
             </div>
@@ -694,10 +694,10 @@ export function MarketBar({
             <div className="space-y-4">
               {/* Header Status Bar */}
               <div className="flex items-center justify-between pr-8">
-                <span className="rounded-full bg-white border border-border px-2.5 py-0.5 text-[9px] font-mono font-semibold tracking-wider uppercase text-muted-foreground shadow-2xs">
+                <span className="rounded-full bg-white border border-border px-2.5 py-0.5 text-xs font-mono font-semibold tracking-wider uppercase text-muted-foreground shadow-2xs">
                   {previewMarket.maxLeverage === 1000 ? "1000x Synthetic Perp" : "Perpetual Futures"}
                 </span>
-                <span className="flex items-center gap-1.5 text-[10px] font-mono font-medium text-[#06964A]">
+                <span className="flex items-center gap-1.5 text-xs font-mono font-medium text-[#06964A]">
                   <span className="size-1.5 rounded-full bg-[#00D964] animate-pulse" />
                   Live Feed
                 </span>
@@ -711,7 +711,7 @@ export function MarketBar({
                     <h3 className="font-sans text-xl font-bold tracking-tight text-foreground">
                       {previewMarket.symbol}-USD
                     </h3>
-                    <span className="rounded bg-foreground text-background px-1.5 py-0.2 text-[9px] font-mono font-bold">
+                    <span className="rounded bg-foreground text-background px-2 py-0.5 text-xs font-mono font-bold">
                       {previewMarket.maxLeverage}x
                     </span>
                   </div>
@@ -746,7 +746,7 @@ export function MarketBar({
 
               {/* 24h High/Low Range Bar */}
               <div className="space-y-1.5 pt-1">
-                <div className="flex items-center justify-between text-[10px] font-mono text-muted-foreground">
+                <div className="flex items-center justify-between text-xs font-mono text-muted-foreground">
                   <span>24h Low: ${fmtUsd(previewLow, previewMarket.decimals)}</span>
                   <span>24h High: ${fmtUsd(previewHigh, previewMarket.decimals)}</span>
                 </div>
@@ -761,7 +761,7 @@ export function MarketBar({
               {/* Market Intelligence Grid (6 key metrics) */}
               <div className="grid grid-cols-2 gap-2 pt-2">
                 <div className="p-2.5 rounded-xl bg-white border border-border shadow-2xs">
-                  <span className="text-[9px] font-mono uppercase text-muted-foreground block">
+                  <span className="text-xs font-mono uppercase text-muted-foreground block font-medium">
                     24h Volume
                   </span>
                   <span className="text-xs font-mono font-semibold text-foreground">
@@ -770,7 +770,7 @@ export function MarketBar({
                 </div>
 
                 <div className="p-2.5 rounded-xl bg-white border border-border shadow-2xs">
-                  <span className="text-[9px] font-mono uppercase text-muted-foreground block">
+                  <span className="text-xs font-mono uppercase text-muted-foreground block font-medium">
                     Funding Rate
                   </span>
                   <span className="text-xs font-mono font-semibold text-[#06964A]">
@@ -779,7 +779,7 @@ export function MarketBar({
                 </div>
 
                 <div className="p-2.5 rounded-xl bg-white border border-border shadow-2xs">
-                  <span className="text-[9px] font-mono uppercase text-muted-foreground block">
+                  <span className="text-xs font-mono uppercase text-muted-foreground block font-medium">
                     Index Price
                   </span>
                   <span className="text-xs font-mono font-semibold text-foreground">
@@ -788,7 +788,7 @@ export function MarketBar({
                 </div>
 
                 <div className="p-2.5 rounded-xl bg-white border border-border shadow-2xs">
-                  <span className="text-[9px] font-mono uppercase text-muted-foreground block">
+                  <span className="text-xs font-mono uppercase text-muted-foreground block font-medium">
                     Order Type
                   </span>
                   <span className="text-xs font-mono font-semibold text-[#06964A]">
@@ -797,7 +797,7 @@ export function MarketBar({
                 </div>
 
                 <div className="p-2.5 rounded-xl bg-white border border-border shadow-2xs">
-                  <span className="text-[9px] font-mono uppercase text-muted-foreground block">
+                  <span className="text-xs font-mono uppercase text-muted-foreground block font-medium">
                     Taker Fee
                   </span>
                   <span className="text-xs font-mono font-semibold text-foreground">
@@ -806,7 +806,7 @@ export function MarketBar({
                 </div>
 
                 <div className="p-2.5 rounded-xl bg-white border border-border shadow-2xs">
-                  <span className="text-[9px] font-mono uppercase text-muted-foreground block">
+                  <span className="text-xs font-mono uppercase text-muted-foreground block font-medium">
                     Settlement
                   </span>
                   <span className="text-xs font-mono font-semibold text-[#06964A]">

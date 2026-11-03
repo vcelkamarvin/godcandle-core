@@ -168,7 +168,7 @@ export function LeverageRuler({
                 <span
                   key={kv}
                   style={{ left: `${pct}%` }}
-                  className={`absolute top-0 -translate-x-1/2 font-mono text-[10px] font-semibold tabular-nums pointer-events-none transition-colors ${
+                  className={`absolute top-0 -translate-x-1/2 font-mono text-xs font-semibold tabular-nums pointer-events-none transition-colors ${
                     isHighlighted ? 'text-[#00D964]' : 'text-[#71717A]'
                   }`}
                 >

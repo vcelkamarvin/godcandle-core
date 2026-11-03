@@ -58,27 +58,27 @@ function Portfolio() {
       {/* Protocol Solvency & Settlement Telemetry Strip */}
       <section aria-label="Protocol Status Strip" className="grid grid-cols-2 gap-2.5 lg:grid-cols-4">
         <div className="rounded-2xl border border-border bg-white p-3.5 shadow-2xs font-mono">
-          <span className="text-[10px] text-muted-foreground uppercase block">House Pool Liquid Reserve</span>
+          <span className="text-xs text-muted-foreground uppercase block font-medium">House Pool Liquid Reserve</span>
           <p className="tabular mt-1 text-base font-bold text-foreground">$10,000.00</p>
-          <span className="text-[9px] text-[#06964A] font-semibold">100% Solvent</span>
+          <span className="text-xs text-[#06964A] font-semibold">100% Solvent</span>
         </div>
 
         <div className="rounded-2xl border border-border bg-white p-3.5 shadow-2xs font-mono">
-          <span className="text-[10px] text-muted-foreground uppercase block">FIFO Payout Queue Depth</span>
+          <span className="text-xs text-muted-foreground uppercase block font-medium">FIFO Payout Queue Depth</span>
           <p className="tabular mt-1 text-base font-bold text-[#06964A]">$0.00</p>
-          <span className="text-[9px] text-muted-foreground">0 Backlog · Block Payout</span>
+          <span className="text-xs text-muted-foreground">0 Backlog · Block Payout</span>
         </div>
 
         <div className="rounded-2xl border border-border bg-white p-3.5 shadow-2xs font-mono">
-          <span className="text-[10px] text-muted-foreground uppercase block">Net Open Interest</span>
+          <span className="text-xs text-muted-foreground uppercase block font-medium">Net Open Interest</span>
           <p className="tabular mt-1 text-base font-bold text-foreground">Long $1.84M / Short $1.40M</p>
-          <span className="text-[9px] text-[#06964A] font-semibold">Net Long +$440,300</span>
+          <span className="text-xs text-[#06964A] font-semibold">Net Long +$440,300</span>
         </div>
 
         <div className="rounded-2xl border border-border bg-white p-3.5 shadow-2xs font-mono">
-          <span className="text-[10px] text-muted-foreground uppercase block">Execution Telemetry</span>
+          <span className="text-xs text-muted-foreground uppercase block font-medium">Execution Telemetry</span>
           <p className="tabular mt-1 text-base font-bold text-[#06964A]">Optimal L1 Routing</p>
-          <span className="text-[9px] text-muted-foreground">99.98% Fill Quality</span>
+          <span className="text-xs text-muted-foreground">99.98% Fill Quality</span>
         </div>
       </section>
 
@@ -116,11 +116,11 @@ function Portfolio() {
           <h2 className="data-label text-foreground font-mono">Wallet Margin</h2>
           <div className="mt-2 grid grid-cols-2 gap-2">
             <div className="rounded-xl bg-card p-2.5">
-              <p className="text-[10px] text-muted-foreground font-mono">Available</p>
+              <p className="text-xs text-muted-foreground font-mono">Available</p>
               <p className="tabular mt-0.5 text-sm font-semibold font-mono">${fmtUsd(t.available)}</p>
             </div>
             <div className="rounded-xl bg-card p-2.5">
-              <p className="text-[10px] text-muted-foreground font-mono">In positions</p>
+              <p className="text-xs text-muted-foreground font-mono">In positions</p>
               <p className="tabular mt-0.5 text-sm font-semibold font-mono">${fmtUsd(t.balance - t.available)}</p>
             </div>
           </div>
@@ -132,7 +132,7 @@ function Portfolio() {
               Withdraw
             </Button>
           </div>
-          <p className="tabular mt-2 text-[9px] text-muted-foreground text-center font-mono">Native USDC · HyperEVM (999)</p>
+          <p className="tabular mt-2 text-xs text-muted-foreground text-center font-mono">Native USDC · HyperEVM (999)</p>
         </aside>
       </div>
 
@@ -151,9 +151,9 @@ function Portfolio() {
         <section className="rounded-2xl border p-3 bg-white font-mono text-xs">
           <div className="flex justify-between items-center pb-2 border-b border-border">
             <h2 className="text-xs font-semibold text-muted-foreground uppercase">Risk & Execution Ledger</h2>
-            <span className="text-[10px] text-[#06964A]">Pure FIFO Block Settlement</span>
+            <span className="text-xs text-[#06964A] font-semibold">Pure FIFO Block Settlement</span>
           </div>
-          <div className="space-y-2 mt-2.5 text-[11px]">
+          <div className="space-y-2 mt-2.5 text-xs">
             <div className="flex justify-between">
               <span className="text-muted-foreground">Max Drawdown (Est):</span>
               <span className="font-semibold text-foreground">-12.4 bps</span>

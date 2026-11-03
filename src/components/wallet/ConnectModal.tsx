@@ -340,11 +340,11 @@ export function ConnectModal({ isDark: isDarkProp }: { isDark?: boolean } = {}) 
             {activeAddress ? `${activeAddress.slice(0, 6)}...${activeAddress.slice(-4)}` : ''}
           </span>
           {hypeBalance && (
-            <span className="tabular text-[11px] font-semibold hidden sm:inline">
+            <span className="tabular text-xs font-semibold hidden sm:inline">
               {parseFloat(formatUnits(hypeBalance.value, hypeBalance.decimals)).toFixed(3)} HYPE
             </span>
           )}
-          <span className="rounded px-1.5 py-0.5 text-[9px] font-mono border bg-white text-muted-foreground border-border/60">
+          <span className="rounded px-1.5 py-0.5 text-xs font-mono border bg-white text-muted-foreground border-border/60">
             999
           </span>
         </button>
@@ -426,7 +426,7 @@ export function ConnectModal({ isDark: isDarkProp }: { isDark?: boolean } = {}) 
                           <div className="absolute inset-0 flex items-center">
                             <div className="w-full border-t border-border" />
                           </div>
-                          <span className="relative px-3 text-[11px] font-mono uppercase tracking-wider text-muted-foreground bg-white">
+                          <span className="relative px-3 text-xs font-mono uppercase tracking-wider text-muted-foreground bg-white">
                             OR
                           </span>
                         </div>
@@ -489,7 +489,7 @@ export function ConnectModal({ isDark: isDarkProp }: { isDark?: boolean } = {}) 
 
                         {/* Trust Microcopy & Secondary Read-Only Link */}
                         <div className="text-center space-y-2 pt-1">
-                          <p className="text-[11px] text-muted-foreground flex items-center justify-center gap-1.5 font-mono">
+                          <p className="text-xs text-muted-foreground flex items-center justify-center gap-1.5 font-mono">
                             <ShieldCheck className="size-3.5 text-muted-foreground" />
                             <span>Protected by Privy embedded wallets</span>
                           </p>
@@ -544,7 +544,7 @@ export function ConnectModal({ isDark: isDarkProp }: { isDark?: boolean } = {}) 
                                       {wallet.name}
                                     </span>
                                   </div>
-                                  <p className="text-[10px] text-muted-foreground truncate">
+                                  <p className="text-xs text-muted-foreground truncate">
                                     {wallet.badge || (wallet.recommended ? 'Recommended' : wallet.desc)}
                                   </p>
                                 </div>
@@ -630,7 +630,7 @@ export function ConnectModal({ isDark: isDarkProp }: { isDark?: boolean } = {}) 
 
                   {/* Micro Footer Notice */}
                   <div className="pt-3 border-t border-border text-center shrink-0">
-                    <p className="text-[11px] leading-relaxed text-muted-foreground">
+                    <p className="text-xs leading-relaxed text-muted-foreground">
                       By continuing, you agree to our{' '}
                       <span className="underline cursor-pointer hover:text-foreground">Terms of Service</span> &amp;{' '}
                       <span className="underline cursor-pointer hover:text-foreground">Privacy Policy</span>.
@@ -659,7 +659,7 @@ export function ConnectModal({ isDark: isDarkProp }: { isDark?: boolean } = {}) 
                   <div className="relative z-10 h-full w-full p-6 sm:p-7 flex flex-col justify-between">
                     {/* Top Row: Network Badge */}
                     <div className="flex justify-start items-center gap-2 pr-12">
-                      <div className="rounded-full bg-white/90 backdrop-blur-md border border-border/80 px-2.5 py-1 flex items-center gap-1.5 text-[10px] font-mono text-[#0A0A0A] shadow-xs">
+                      <div className="rounded-full bg-white/90 backdrop-blur-md border border-border/80 px-2.5 py-1 flex items-center gap-1.5 text-xs font-mono text-[#0A0A0A] shadow-xs">
                         <span className="size-1.5 rounded-full bg-[#00D964] animate-pulse" />
                         <span className="font-semibold">Mainnet Live</span>
                       </div>
@@ -668,10 +668,10 @@ export function ConnectModal({ isDark: isDarkProp }: { isDark?: boolean } = {}) 
                     {flowState === 'connecting' && (
                       <div className="my-auto flex flex-col items-center justify-center rounded-2xl bg-white/90 backdrop-blur-md p-4 border border-border shadow-lg text-[#0A0A0A] text-center animate-in fade-in-0 duration-200">
                         <DotRingLoader dotColor="#00D964" className="scale-110" />
-                        <span className="text-[11px] font-mono font-semibold text-[#0A0A0A] mt-3 tracking-wider uppercase">
+                        <span className="text-xs font-mono font-semibold text-[#0A0A0A] mt-3 tracking-wider uppercase">
                           Session Handshake
                         </span>
-                        <span className="text-[10px] text-muted-foreground mt-0.5">
+                        <span className="text-xs text-muted-foreground mt-0.5">
                           Delegating session keys with zero gas overhead
                         </span>
                       </div>
@@ -688,7 +688,7 @@ export function ConnectModal({ isDark: isDarkProp }: { isDark?: boolean } = {}) 
                       <p className="text-xs font-medium text-muted-foreground mt-0.5">
                         One terminal. Institutional-grade liquidity.
                       </p>
-                      <div className="mt-2.5 flex items-center justify-between text-[10px] text-muted-foreground font-mono">
+                      <div className="mt-2.5 flex items-center justify-between text-xs text-muted-foreground font-mono">
                         <span className="rounded-full bg-gradient-to-r from-[#CDC3F0]/40 via-[#FFDAC8]/40 to-[#A0D4CA]/40 px-2 py-0.5 font-semibold text-foreground border border-border">
                           Claude Monet, 1885
                         </span>
@@ -750,7 +750,7 @@ export function ConnectModal({ isDark: isDarkProp }: { isDark?: boolean } = {}) 
                 {/* Status Grid */}
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   <div className="p-3 bg-secondary/50 border border-border/60 rounded-xl">
-                    <span className="text-muted-foreground text-[10px] uppercase font-mono block">
+                    <span className="text-muted-foreground text-xs uppercase font-mono block">
                       Native Balance
                     </span>
                     <span className="font-semibold text-foreground tabular">
@@ -758,7 +758,7 @@ export function ConnectModal({ isDark: isDarkProp }: { isDark?: boolean } = {}) 
                     </span>
                   </div>
                   <div className="p-3 bg-secondary/50 border border-border/60 rounded-xl">
-                    <span className="text-muted-foreground text-[10px] uppercase font-mono block">
+                    <span className="text-muted-foreground text-xs uppercase font-mono block">
                       Settlement
                     </span>
                     <span className="font-semibold text-[#06964A]">Instant Settlement</span>

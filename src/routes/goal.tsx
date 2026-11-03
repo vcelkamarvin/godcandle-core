@@ -231,7 +231,7 @@ export function GoalPage() {
               <h1 className="text-lg sm:text-xl font-bold tracking-tight text-foreground font-sans">
                 Price Target Goal
               </h1>
-              <span className="rounded-full bg-secondary px-2.5 py-0.5 text-[10px] font-semibold text-muted-foreground border border-border">
+              <span className="rounded-full bg-secondary px-2.5 py-0.5 text-xs font-semibold text-muted-foreground border border-border">
                 Price Target Tool
               </span>
             </div>
@@ -289,7 +289,7 @@ export function GoalPage() {
       <div className="lg:hidden p-3 rounded-2xl bg-white border border-border shadow-xs space-y-2.5">
         <div className="flex items-center justify-between">
           <div>
-            <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold block">
+            <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold block">
               Estimated Return ({direction})
             </span>
             <div className="flex items-baseline gap-2 mt-0.5">
@@ -307,7 +307,7 @@ export function GoalPage() {
             </div>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="text-[10px] font-mono font-bold text-[#06964A] bg-[#E3F8EC] px-2 py-0.5 rounded-full border border-[#06964A]/20">
+            <span className="text-xs font-mono font-bold text-[#06964A] bg-[#E3F8EC] px-2 py-0.5 rounded-full border border-[#06964A]/20">
               {boostMultiplier}× Multiplier
             </span>
           </div>
@@ -353,14 +353,14 @@ export function GoalPage() {
               <Target className="size-3.5 text-[#06964A]" />
               Target Parameters
             </span>
-            <span className="text-[10px] font-mono font-bold text-[#06964A] bg-[#E3F8EC] px-2 py-0.5 rounded-full border border-[#06964A]/20">
+            <span className="text-xs font-mono font-bold text-[#06964A] bg-[#E3F8EC] px-2 py-0.5 rounded-full border border-[#06964A]/20">
               {boostMultiplier}× Multiplier
             </span>
           </div>
 
           {/* Direction Selector (Long vs Short) */}
           <div className="space-y-1.5">
-            <span className="text-[10px] text-muted-foreground uppercase font-semibold block">
+            <span className="text-xs text-muted-foreground uppercase font-semibold block">
               Market Direction
             </span>
             <div className="grid grid-cols-2 gap-2">
@@ -394,7 +394,7 @@ export function GoalPage() {
           {/* Current Price */}
           <div className="p-3 rounded-2xl bg-[#F6F6F4] border border-border flex justify-between items-center">
             <div>
-              <span className="text-[10px] text-muted-foreground uppercase font-semibold block">
+              <span className="text-xs text-muted-foreground uppercase font-semibold block">
                 {underlying} Current Price
               </span>
               <span className="text-sm font-bold tabular text-foreground font-mono">
@@ -405,7 +405,7 @@ export function GoalPage() {
                 })}
               </span>
             </div>
-            <span className="text-[10px] text-[#06964A] font-semibold flex items-center gap-1">
+            <span className="text-xs text-[#06964A] font-semibold flex items-center gap-1">
               <ShieldCheck className="size-3" />
               Live Price
             </span>
@@ -413,7 +413,7 @@ export function GoalPage() {
 
           {/* Target Price with Radix Slider & Stepper Controls */}
           <div className="space-y-2 pt-1">
-            <div className="flex justify-between items-center text-[11px]">
+            <div className="flex justify-between items-center text-xs">
               <span className="text-muted-foreground font-semibold">TARGET PRICE</span>
               <div className="flex items-center gap-1.5 font-mono">
                 {/* Stepper buttons for micro-adjustments */}
@@ -445,7 +445,7 @@ export function GoalPage() {
                   ${formatTargetPrice(targetPrice, spot)}
                 </span>
                 <span
-                  className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
+                  className={`text-xs font-bold px-1.5 py-0.5 rounded ${
                     movePct >= 0 ? "bg-[#E3F8EC] text-[#06964A]" : "bg-[#FFECEA] text-[#FF3B30]"
                   }`}
                 >
@@ -469,7 +469,7 @@ export function GoalPage() {
                 }}
                 className="py-1 cursor-grab active:cursor-grabbing"
               />
-              <div className="flex justify-between text-[10px] text-muted-foreground font-mono mt-1.5">
+              <div className="flex justify-between text-xs text-muted-foreground font-mono mt-1.5">
                 <span>${formatTargetPrice(minTarget, spot)}</span>
                 <span>Spot: ${formatTargetPrice(spot, spot)}</span>
                 <span>${formatTargetPrice(maxTarget, spot)}</span>
@@ -479,7 +479,7 @@ export function GoalPage() {
 
           {/* Quick Targets Matrix */}
           <div className="space-y-1.5 pt-2 border-t border-border">
-            <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold block">
+            <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold block">
               Quick Target Presets ({direction})
             </span>
             <div className="grid grid-cols-2 gap-2">
@@ -496,8 +496,8 @@ export function GoalPage() {
                         : "border-border bg-[#F6F6F4] text-muted-foreground hover:text-foreground hover:bg-white"
                     }`}
                   >
-                    <div className="text-[11px] truncate font-sans">{m.label}</div>
-                    <div className="text-[10px] font-mono tabular mt-0.5 text-foreground font-bold">
+                    <div className="text-xs truncate font-sans">{m.label}</div>
+                    <div className="text-xs font-mono tabular mt-0.5 text-foreground font-bold">
                       ${formatTargetPrice(m.price, spot)}
                     </div>
                   </button>
@@ -508,7 +508,7 @@ export function GoalPage() {
 
           {/* Capital Allocation Presets */}
           <div className="space-y-2 pt-2 border-t border-border">
-            <div className="flex justify-between items-center text-[11px]">
+            <div className="flex justify-between items-center text-xs">
               <span className="text-muted-foreground font-semibold">CAPITAL AMOUNT</span>
               <span className="text-foreground font-bold tabular font-mono text-sm">
                 ${amount.toLocaleString()}
@@ -520,7 +520,7 @@ export function GoalPage() {
                   key={val}
                   type="button"
                   onClick={() => setAmount(val)}
-                  className={`pill h-7 text-[11px] font-mono transition-all cursor-pointer ${
+                  className={`pill h-7 text-xs font-mono transition-all cursor-pointer ${
                     amount === val
                       ? "pill-ink font-semibold shadow-xs"
                       : "border border-border bg-[#F6F6F4] text-muted-foreground hover:text-foreground hover:bg-white"
@@ -534,7 +534,7 @@ export function GoalPage() {
 
           {/* Expiry / Timeline */}
           <div className="space-y-2 pt-2 border-t border-border">
-            <div className="flex justify-between items-center text-[11px]">
+            <div className="flex justify-between items-center text-xs">
               <span className="text-muted-foreground font-semibold">TIME HORIZON</span>
               <span className="text-foreground font-bold tabular font-mono">{days} Days</span>
             </div>
@@ -544,7 +544,7 @@ export function GoalPage() {
                   key={d}
                   type="button"
                   onClick={() => setDays(d)}
-                  className={`pill h-7 text-[11px] font-mono transition-all cursor-pointer ${
+                  className={`pill h-7 text-xs font-mono transition-all cursor-pointer ${
                     days === d
                       ? "pill-ink font-semibold shadow-xs"
                       : "border border-border bg-[#F6F6F4] text-muted-foreground hover:text-foreground hover:bg-white"
@@ -616,7 +616,7 @@ export function GoalPage() {
                 <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[#CDC3F0]/40 via-[#FFDAC8]/30 to-[#A0D4CA]/35 blur-2xl opacity-80" />
 
                 <div className="relative z-10 size-36 sm:size-44 rounded-full flex flex-col items-center justify-center text-center p-3 sm:p-4 border border-border bg-white/90 backdrop-blur-md shadow-[0_8px_30px_rgb(0,0,0,0.06)]">
-                  <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-semibold font-sans">
+                  <span className="text-xs text-muted-foreground uppercase tracking-widest font-semibold font-sans">
                     Estimated Return
                   </span>
                   <span
@@ -630,7 +630,7 @@ export function GoalPage() {
                   <span className="font-mono tabular text-xs font-semibold text-foreground">
                     ${(amount + payout).toLocaleString()}
                   </span>
-                  <span className="text-[9px] text-muted-foreground mt-0.5 sm:mt-1 font-sans">
+                  <span className="text-xs text-muted-foreground mt-0.5 sm:mt-1 font-sans">
                     {boostMultiplier}× Multiplier
                   </span>
                 </div>
@@ -647,7 +647,7 @@ export function GoalPage() {
                   </p>
                 </div>
 
-                <div className="space-y-2 text-[11px] font-mono">
+                <div className="space-y-2 text-xs font-mono">
                   <div className="flex justify-between py-1.5 border-b border-border">
                     <span className="text-muted-foreground font-sans">Direction</span>
                     <span
@@ -713,7 +713,7 @@ export function GoalPage() {
                 <TrendingUp className="size-3.5 text-[#06964A]" />
                 Capital Payoff Curve
               </span>
-              <span className="text-[10px] text-muted-foreground font-mono">
+              <span className="text-xs text-muted-foreground font-mono">
                 {days}D Target Curve ({direction})
               </span>
             </div>
@@ -741,7 +741,7 @@ export function GoalPage() {
                       key={mult}
                       className="p-2 sm:p-3 rounded-2xl border border-border bg-[#F6F6F4] space-y-0.5 sm:space-y-1 transition-all hover:bg-white hover:border-foreground/30 shadow-2xs"
                     >
-                      <div className="text-[9.5px] sm:text-[10px] text-muted-foreground font-semibold font-sans">
+                      <div className="text-xs sm:text-xs text-muted-foreground font-semibold font-sans">
                         {direction === "LONG"
                           ? `+${move.toFixed(0)}% Target Move`
                           : `-${move.toFixed(0)}% Target Move`}
@@ -749,7 +749,7 @@ export function GoalPage() {
                       <div className="text-xs sm:text-sm font-bold text-foreground font-mono tabular">
                         ${formatTargetPrice(p, spot)}
                       </div>
-                      <div className="text-[10px] sm:text-[11px] font-bold text-[#06964A] font-mono tabular">
+                      <div className="text-xs sm:text-xs font-bold text-[#06964A] font-mono tabular">
                         +${g.toLocaleString()} (+{r.toFixed(0)}%)
                       </div>
                     </div>

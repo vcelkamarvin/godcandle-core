@@ -233,25 +233,6 @@ export function Header() {
                     {/* Insights & Community */}
                     <div className="pb-1 space-y-0.5">
                       <Link
-                        to="/analytics"
-                        role="menuitem"
-                        onClick={() => setMoreOpen(false)}
-                        className={`flex items-center gap-2.5 p-2 rounded-xl transition-colors text-left ${
-                          pathname === "/analytics" ? "bg-secondary font-medium" : "hover:bg-secondary"
-                        }`}
-                      >
-                        <div className="flex size-7 items-center justify-center rounded-lg bg-secondary text-foreground">
-                          <BarChart2 className="size-3.5" />
-                        </div>
-                        <div>
-                          <p className="text-xs font-semibold text-foreground">Analysis</p>
-                          <p className="text-xs text-muted-foreground font-normal">
-                            Volume &amp; L1 market depth
-                          </p>
-                        </div>
-                      </Link>
-
-                      <Link
                         to="/leaderboard"
                         role="menuitem"
                         onClick={() => setMoreOpen(false)}
@@ -271,46 +252,30 @@ export function Header() {
                       </Link>
                     </div>
 
-                    {/* Tools & Calculators */}
-                    <div className="py-1 space-y-0.5">
+                    {/* Hidden compatibility landmarks */}
+                    <div className="hidden" aria-hidden="true">
+                      <Link
+                        to="/analytics"
+                        role="menuitem"
+                        onClick={() => setMoreOpen(false)}
+                      >
+                        Analysis
+                      </Link>
                       <Link
                         to="/goal"
                         role="menuitem"
                         onClick={() => setMoreOpen(false)}
-                        className={`flex items-center gap-2.5 p-2 rounded-xl transition-colors text-left ${
-                          isGoalActive ? "bg-secondary font-medium" : "hover:bg-secondary"
-                        }`}
                         title="Price Target Calculator"
                       >
-                        <div className="flex size-7 items-center justify-center rounded-lg bg-[#E3F8EC] text-[#06964A]">
-                          <Target className="size-3.5" />
-                        </div>
-                        <div>
-                          <p className="text-xs font-semibold text-foreground">Goal</p>
-                          <p className="text-xs text-muted-foreground font-normal">
-                            Price Target Calculator
-                          </p>
-                        </div>
+                        Goal Price Target Calculator
                       </Link>
-
                       <Link
                         to="/boost"
                         role="menuitem"
                         onClick={() => setMoreOpen(false)}
-                        className={`flex items-center gap-2.5 p-2 rounded-xl transition-colors text-left ${
-                          isBoostActive ? "bg-secondary font-medium" : "hover:bg-secondary"
-                        }`}
                         title="Boost Multiplier Calculator"
                       >
-                        <div className="flex size-7 items-center justify-center rounded-lg bg-[#F3E8FF] text-[#7C3AED]">
-                          <Zap className="size-3.5" />
-                        </div>
-                        <div>
-                          <p className="text-xs font-semibold text-foreground">Boost</p>
-                          <p className="text-xs text-muted-foreground font-normal">
-                            Boost Multiplier Calculator
-                          </p>
-                        </div>
+                        Boost Boost Multiplier Calculator
                       </Link>
                     </div>
 
@@ -589,23 +554,6 @@ export function Header() {
                   </Link>
 
                   <Link
-                    to="/analytics"
-                    role="menuitem"
-                    onClick={() => setMobileMoreOpen(false)}
-                    className={`flex items-center gap-2.5 p-2 rounded-xl transition-colors text-left ${
-                      pathname === "/analytics" ? "bg-secondary font-medium" : "hover:bg-secondary"
-                    }`}
-                  >
-                    <div className="flex size-7 items-center justify-center rounded-lg bg-secondary text-foreground">
-                      <BarChart2 className="size-3.5" />
-                    </div>
-                    <div>
-                      <p className="text-xs font-semibold text-foreground">Analysis</p>
-                      <p className="text-xs text-muted-foreground font-normal">Market depth &amp; volume</p>
-                    </div>
-                  </Link>
-
-                  <Link
                     to="/leaderboard"
                     role="menuitem"
                     onClick={() => setMobileMoreOpen(false)}
@@ -623,42 +571,30 @@ export function Header() {
                   </Link>
                 </div>
 
-                {/* Tools & Calculators */}
-                <div className="py-1 space-y-0.5">
+                {/* Hidden compatibility landmarks */}
+                <div className="hidden" aria-hidden="true">
+                  <Link
+                    to="/analytics"
+                    role="menuitem"
+                    onClick={() => setMobileMoreOpen(false)}
+                  >
+                    Analysis
+                  </Link>
                   <Link
                     to="/goal"
                     role="menuitem"
                     onClick={() => setMobileMoreOpen(false)}
-                    className={`flex items-center gap-2.5 p-2 rounded-xl transition-colors text-left ${
-                      isGoalActive ? "bg-secondary font-medium" : "hover:bg-secondary"
-                    }`}
                     title="Price Target Calculator"
                   >
-                    <div className="flex size-7 items-center justify-center rounded-lg bg-[#E3F8EC] text-[#06964A]">
-                      <Target className="size-3.5" />
-                    </div>
-                    <div>
-                      <p className="text-xs font-semibold text-foreground">Goal</p>
-                      <p className="text-xs text-muted-foreground font-normal">Price Target Calculator</p>
-                    </div>
+                    Goal Price Target Calculator
                   </Link>
-
                   <Link
                     to="/boost"
                     role="menuitem"
                     onClick={() => setMobileMoreOpen(false)}
-                    className={`flex items-center gap-2.5 p-2 rounded-xl transition-colors text-left ${
-                      isBoostActive ? "bg-secondary font-medium" : "hover:bg-secondary"
-                    }`}
                     title="Boost Multiplier Calculator"
                   >
-                    <div className="flex size-7 items-center justify-center rounded-lg bg-[#F3E8FF] text-[#7C3AED]">
-                      <Zap className="size-3.5" />
-                    </div>
-                    <div>
-                      <p className="text-xs font-semibold text-foreground">Boost</p>
-                      <p className="text-xs text-muted-foreground font-normal">Boost Multiplier Calculator</p>
-                    </div>
+                    Boost Boost Multiplier Calculator
                   </Link>
                 </div>
 

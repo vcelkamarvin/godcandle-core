@@ -51,7 +51,7 @@ export function TradePanel(p: Props) {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5 flex-wrap">
                     <span
-                      className={`rounded-md px-1.5 py-0.5 text-[10px] uppercase font-bold text-white ${
+                      className={`rounded-md px-1.5 py-0.5 text-xs uppercase font-bold text-white ${
                         pos.side === "long" ? "bg-[#06964A]" : "bg-[#FF3B30]"
                       }`}
                     >
@@ -68,12 +68,12 @@ export function TradePanel(p: Props) {
                       {fmtSigned(pnl)} ({roi >= 0 ? "+" : ""}{roi.toFixed(1)}%)
                     </span>
                     {pos.tp && (
-                      <span className="text-[#00D964] text-[10px]">
+                      <span className="text-[#00D964] text-xs">
                         TP ${fmtUsd(pos.tp, m.decimals)}
                       </span>
                     )}
                     {pos.sl && (
-                      <span className="text-[#FF3B30] text-[10px]">
+                      <span className="text-[#FF3B30] text-xs">
                         SL ${fmtUsd(pos.sl, m.decimals)}
                       </span>
                     )}
@@ -81,7 +81,7 @@ export function TradePanel(p: Props) {
                   <button
                     type="button"
                     onClick={() => p.onClose(pos.id)}
-                    className="rounded-lg bg-foreground/10 hover:bg-foreground/20 text-foreground px-2 py-0.5 text-[10px] font-mono font-bold transition-colors ml-1"
+                    className="rounded-lg bg-foreground/10 hover:bg-foreground/20 text-foreground px-2 py-0.5 text-xs font-mono font-bold transition-colors ml-1"
                   >
                     Close
                   </button>

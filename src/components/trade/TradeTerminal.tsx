@@ -420,7 +420,7 @@ export function TradeTerminal() {
             asset={rawSymbol}
             corridorBps={selectedMarket.corridorBps}
             availableBalance={t?.available ?? 0}
-            mode="perps"
+            mode={t?.mode || 'perps'}
             book={l2Book}
             limitPriceInput={selectedBookPrice}
             onTrade={handleOrder}
@@ -452,7 +452,7 @@ export function TradeTerminal() {
             className="flex-1 h-11 rounded-xl bg-[#00D964] text-black font-bold font-sans flex items-center justify-center gap-1.5 shadow-xs active:scale-[0.98] transition-transform text-xs cursor-pointer"
           >
             <span className="font-extrabold uppercase tracking-wide">LONG</span>
-            <span className="text-[10px] opacity-80 font-mono">↗</span>
+            <span className="text-xs opacity-80 font-mono">↗</span>
           </button>
           <button
             type="button"
@@ -463,7 +463,7 @@ export function TradeTerminal() {
             className="flex-1 h-11 rounded-xl bg-[#FF3B30] text-white font-bold font-sans flex items-center justify-center gap-1.5 shadow-xs active:scale-[0.98] transition-transform text-xs cursor-pointer"
           >
             <span className="font-extrabold uppercase tracking-wide">SHORT</span>
-            <span className="text-[10px] opacity-80 font-mono">↘</span>
+            <span className="text-xs opacity-80 font-mono">↘</span>
           </button>
         </div>
       )}

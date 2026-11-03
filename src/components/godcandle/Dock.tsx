@@ -28,7 +28,7 @@ interface Props {
 
 const SideBadge = ({ side }: { side: string }) => (
   <span
-    className={`rounded-sm px-1.5 py-0.2 text-[10px] font-bold uppercase font-mono ${
+    className={`rounded-sm px-1.5 py-0.5 text-xs font-bold uppercase font-mono ${
       side.toLowerCase() === 'long' || side.toLowerCase() === 'buy'
         ? 'bg-[#00D964] text-black'
         : 'bg-[#FF3B30] text-white'
@@ -263,7 +263,7 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
                           >
                             <MarketLogo symbol={pos.market} size={18} />
                             <span>{pos.market}-USD</span>
-                            <span className="text-[10px] font-normal text-muted-foreground">
+                            <span className="text-xs font-normal text-muted-foreground">
                               {pos.leverage}×
                             </span>
                           </button>
@@ -290,14 +290,14 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
                           <div className={isUp ? 'text-[#06964A] font-bold' : 'text-[#FF3B30] font-bold'}>
                             {fmtSigned(pnl)}
                           </div>
-                          <div className={`text-[10px] ${isUp ? 'text-[#06964A]' : 'text-[#FF3B30]'}`}>
+                          <div className={`text-xs ${isUp ? 'text-[#06964A]' : 'text-[#FF3B30]'}`}>
                             {roi >= 0 ? '+' : ''}{roi.toFixed(1)}%
                           </div>
                         </td>
                         <td className="py-2.5 px-2 text-right text-muted-foreground">
                           $0.00
                         </td>
-                        <td className="py-2.5 px-2 text-right text-[10px] text-muted-foreground">
+                        <td className="py-2.5 px-2 text-right text-xs text-muted-foreground">
                           {pos.tp && <span className="text-[#06964A] block">TP ${fmtUsd(pos.tp, 1)}</span>}
                           {pos.sl && <span className="text-[#FF3B30] block">SL ${fmtUsd(pos.sl, 1)}</span>}
                           {!pos.tp && !pos.sl && <span>—</span>}
@@ -316,7 +316,7 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
                                   durationMs: Date.now() - pos.openedAt,
                                 });
                               }}
-                              className="px-1.5 py-0.5 rounded bg-secondary hover:bg-secondary/80 border border-border text-[9.5px] cursor-pointer"
+                              className="px-2 py-0.5 rounded bg-secondary hover:bg-secondary/80 border border-border text-xs font-medium cursor-pointer"
                               title="Share PnL"
                             >
                               Share
@@ -324,7 +324,7 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
                             <button
                               type="button"
                               onClick={() => onClose(pos.id)}
-                              className="px-2 py-0.5 rounded bg-foreground text-background font-bold text-[10px] hover:opacity-90 shadow-2xs cursor-pointer"
+                              className="px-2 py-0.5 rounded bg-foreground text-background font-bold text-xs hover:opacity-90 shadow-2xs cursor-pointer"
                               title="Market Close"
                             >
                               Market
@@ -332,7 +332,7 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
                             <button
                               type="button"
                               onClick={() => onClose(pos.id)}
-                              className="px-1.5 py-0.5 rounded bg-secondary hover:bg-secondary/80 border border-border font-semibold text-[10px] cursor-pointer"
+                              className="px-2 py-0.5 rounded bg-secondary hover:bg-secondary/80 border border-border font-semibold text-xs cursor-pointer"
                               title="Close 50% Size"
                             >
                               50%
@@ -340,7 +340,7 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
                             <button
                               type="button"
                               onClick={() => onSelect(pos.market)}
-                              className="px-1.5 py-0.5 rounded bg-secondary hover:bg-secondary/80 border border-border font-semibold text-[10px] cursor-pointer"
+                              className="px-2 py-0.5 rounded bg-secondary hover:bg-secondary/80 border border-border font-semibold text-xs cursor-pointer"
                               title="Limit Close"
                             >
                               Limit
@@ -366,7 +366,7 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
             <div className="overflow-x-auto">
               <table className="w-full text-xs font-mono tabular">
                 <thead>
-                  <tr className="text-left text-[10px] uppercase text-muted-foreground border-b border-border/60 pb-2">
+                  <tr className="text-left text-xs uppercase text-muted-foreground border-b border-border/60 pb-2">
                     <th className="py-2 px-2">Market</th>
                     <th className="py-2 px-2">Side</th>
                     <th className="py-2 px-2">Type</th>
@@ -389,7 +389,7 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
                         <button
                           type="button"
                           onClick={() => setOpenOrders((prev) => prev.filter((o) => o !== ord))}
-                          className="px-2 py-0.5 rounded text-[10px] font-bold text-[#FF3B30] hover:bg-[#FFECEA]"
+                          className="px-2 py-0.5 rounded text-xs font-bold text-[#FF3B30] hover:bg-[#FFECEA]"
                         >
                           Cancel
                         </button>
@@ -412,7 +412,7 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
             <div className="overflow-x-auto">
               <table className="w-full min-w-[700px] text-xs font-mono tabular">
                 <thead>
-                  <tr className="text-left text-[10px] uppercase text-muted-foreground border-b border-border/60 pb-2">
+                  <tr className="text-left text-xs uppercase text-muted-foreground border-b border-border/60 pb-2">
                     <th className="py-2 px-2">Order ID</th>
                     <th className="py-2 px-2">Market</th>
                     <th className="py-2 px-2">Side</th>
@@ -426,7 +426,7 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
                 <tbody className="divide-y divide-border/40">
                   {history.map((h) => (
                     <tr key={h.id} className="hover:bg-secondary/40">
-                      <td className="py-2 px-2 text-muted-foreground text-[10px]">#{h.id.slice(0, 8)}</td>
+                      <td className="py-2 px-2 text-muted-foreground text-xs">#{h.id.slice(0, 8)}</td>
                       <td className="py-2 px-2 font-bold">{h.market}-USD</td>
                       <td className="py-2 px-2">
                         <SideBadge side={h.side} />
@@ -441,7 +441,7 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
                         <button
                           type="button"
                           onClick={() => onShare(h)}
-                          className="px-2 py-0.5 rounded bg-secondary hover:bg-secondary/80 border border-border text-[10px]"
+                          className="px-2 py-0.5 rounded bg-secondary hover:bg-secondary/80 border border-border text-xs"
                         >
                           Share
                         </button>
