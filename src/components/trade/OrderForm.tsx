@@ -490,7 +490,7 @@ export function OrderForm({
                 key={preset}
                 type="button"
                 onClick={() => handleSelectStake(preset)}
-                className={`rounded-lg py-1.5 text-center font-mono text-xs font-semibold transition-all cursor-pointer ${
+                className={`rounded-lg py-1 text-center font-mono text-xs font-semibold transition-all cursor-pointer ${
                   isSelected
                     ? 'bg-black text-white shadow-xs'
                     : 'bg-[#F4F4F5] text-foreground hover:bg-[#EAEAEA]'
@@ -859,7 +859,7 @@ export function OrderForm({
       )}
 
       {/* 9. Execution LONG / SHORT Buttons with Hotkeys B & S */}
-      <div className="grid grid-cols-2 gap-2 pt-0.5 sticky bottom-0 z-30 bg-white/95 backdrop-blur-md p-2 -mx-2.5 sm:mx-0 sm:static sm:bg-transparent sm:p-0 border-t border-border/60 sm:border-t-0 shadow-lg sm:shadow-none pb-[max(0.6rem,env(safe-area-inset-bottom))] sm:pb-0">
+      <div className="grid grid-cols-2 gap-2 pt-1 sticky bottom-0 z-30 bg-white/95 backdrop-blur-md p-1.5 -mx-2 sm:-mx-2.5 border-t border-border/60 shadow-md pb-[max(0.4rem,env(safe-area-inset-bottom))]">
         {/* LONG Button */}
         <button
           type="button"

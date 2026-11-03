@@ -63,7 +63,8 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
   // Total unrealized PnL
   const unrealizedPnl = useMemo(() => {
     return open.reduce((acc, pos) => {
-      const price = feeds[pos.market]?.price ?? marketStore.getMid(pos.market) ?? pos.entry;
+      const raw = pos.market.replace('-USD', '') as MarketSymbol;
+      const price = feeds[pos.market]?.price ?? feeds[raw]?.price ?? marketStore.getMid(raw) ?? pos.entry;
       return acc + pnlOf(pos, price);
     }, 0);
   }, [open, feeds]);
@@ -244,7 +245,8 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
                 </thead>
                 <tbody className="divide-y divide-border/40">
                   {open.map((pos) => {
-                    const price = feeds[pos.market]?.price ?? marketStore.getMid(pos.market) ?? pos.entry;
+                    const rawMarket = pos.market.replace('-USD', '') as MarketSymbol;
+                    const price = feeds[pos.market]?.price ?? feeds[rawMarket]?.price ?? marketStore.getMid(rawMarket) ?? pos.entry;
                     const market = getMarket(pos.market);
                     const pnl = pnlOf(pos, price);
                     const roi = (pnl / pos.stake) * 100;

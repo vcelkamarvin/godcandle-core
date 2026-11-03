@@ -341,7 +341,7 @@ export function MarketBar({
               </div>
               <div className="hidden lg:block">
                 <span className="block text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Open Interest</span>
-                <span className="tabular font-semibold text-foreground text-xs">$24.8M</span>
+                <span className="tabular font-semibold text-foreground text-xs">{OPEN_INTERESTS[market] || "$120M"}</span>
               </div>
               <div className="hidden xl:block">
                 <span className="block text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Max Leverage</span>

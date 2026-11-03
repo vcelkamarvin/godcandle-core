@@ -20,12 +20,12 @@ function TradePage() {
     if (typeof window !== "undefined") {
       const param = new URLSearchParams(window.location.search).get("mode");
       if (param === "perps") {
-        if (t.mode !== "perps") t.setMode("perps");
+        t.setMode("perps");
       } else {
-        if (t.mode !== "paper1000x") t.setMode("paper1000x");
+        t.setMode("paper1000x");
       }
     }
-  }, [t]);
+  }, []);
 
   return (
     <div className="py-1.5 sm:py-2 px-2.5 sm:px-4 md:px-5">

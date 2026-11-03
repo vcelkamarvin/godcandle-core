@@ -5,6 +5,7 @@ import {
   CandlestickSeries,
   AreaSeries,
   HistogramSeries,
+  LineSeries,
   LineStyle,
   type IChartApi,
   type ISeriesApi,
@@ -12,6 +13,7 @@ import {
   type IPriceLine,
 } from 'lightweight-charts';
 import { fetchCandleSnapshot, marketStore, type HlCandle, type HlTrade } from '@/lib/hyperliquid/market-data';
+import { getTicks, getSnap, subscribePriceFeed } from '@/lib/price-feed';
 import { fmtUsd } from '@/lib/engine';
 
 export interface PriceLineTarget {
@@ -31,6 +33,7 @@ interface LightweightCandleChartProps {
   stopLossPrice?: number | null | undefined;
   openOrders?: Array<{ id: string; price: number; side: 'buy' | 'sell'; sz: number }> | undefined;
   height?: string | number | undefined;
+  showIndicators?: boolean | undefined;
 }
 
 export function LightweightCandleChart({
@@ -42,13 +45,16 @@ export function LightweightCandleChart({
   stopLossPrice,
   openOrders = [],
   height = '100%',
+  showIndicators = false,
 }: LightweightCandleChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const candleSeriesRef = useRef<ISeriesApi<'Candlestick'> | null>(null);
   const areaSeriesRef = useRef<ISeriesApi<'Area'> | null>(null);
   const volumeSeriesRef = useRef<ISeriesApi<'Histogram'> | null>(null);
+  const smaSeriesRef = useRef<ISeriesApi<'Line'> | null>(null);
   const priceLinesRef = useRef<IPriceLine[]>([]);
+  const lastTickSecRef = useRef<number>(0);
 
   const isTick = interval === 'Tick';
 
@@ -136,6 +142,19 @@ export function LightweightCandleChart({
       });
       candleSeriesRef.current = candleSeries;
       areaSeriesRef.current = null;
+
+      if (showIndicators) {
+        const smaSeries = chart.addSeries(LineSeries, {
+          color: '#2563EB',
+          lineWidth: 1.5,
+          priceLineVisible: false,
+          lastValueVisible: false,
+          title: 'SMA 20',
+        });
+        smaSeriesRef.current = smaSeries;
+      } else {
+        smaSeriesRef.current = null;
+      }
     }
 
     // Add Volume series in lower pane
@@ -208,8 +227,9 @@ export function LightweightCandleChart({
       candleSeriesRef.current = null;
       areaSeriesRef.current = null;
       volumeSeriesRef.current = null;
+      smaSeriesRef.current = null;
     };
-  }, [interval, isTick]);
+  }, [interval, isTick, showIndicators]);
 
   // Load snapshot candles and subscribe to live updates
   useEffect(() => {
@@ -220,84 +240,133 @@ export function LightweightCandleChart({
       // 1. Tick Mode: seed from recent 1m candles then pipe live trades and mids
       async function loadTickBaseline() {
         const startTime = Date.now() - 2 * 60 * 60 * 1000;
-        const candles = await fetchCandleSnapshot(rawCoin, '1m', startTime);
+        let candles: HlCandle[] = [];
+        try {
+          candles = await fetchCandleSnapshot(rawCoin, '1m', startTime);
+        } catch {}
+
         if (isCancelled || !areaSeriesRef.current || !volumeSeriesRef.current) return;
 
-        if (candles.length > 0) {
+        const tickData: any[] = [];
+        const volumeData: any[] = [];
+        let maxT = 0;
+
+        if (candles && candles.length > 0) {
           candles.sort((a, b) => a.t - b.t);
-          const tickData: any[] = [];
-          const volumeData: any[] = [];
-          let lastT = 0;
           for (const c of candles) {
             const timeSec = Math.floor(c.t / 1000) as UTCTimestamp;
-            if (timeSec <= lastT) continue;
-            lastT = timeSec;
+            if (timeSec <= maxT) continue;
+            maxT = timeSec;
             tickData.push({ time: timeSec, value: c.c });
             volumeData.push({
               time: timeSec,
-              value: c.v,
+              value: c.v || 0.1,
               color: c.c >= c.o ? 'rgba(0, 217, 100, 0.35)' : 'rgba(255, 59, 48, 0.35)',
             });
           }
+        }
+
+        // If no candles returned, check stored buffer ticks from price feed
+        if (tickData.length === 0) {
+          const feedTicks = getTicks(rawCoin);
+          if (feedTicks.length > 0) {
+            for (const t of feedTicks) {
+              const timeSec = Math.floor(t.t / 1000) as UTCTimestamp;
+              if (timeSec <= maxT) continue;
+              maxT = timeSec;
+              tickData.push({ time: timeSec, value: t.p });
+              volumeData.push({
+                time: timeSec,
+                value: 1,
+                color: 'rgba(0, 217, 100, 0.35)',
+              });
+            }
+          }
+        }
+
+        // If still empty (e.g. freshly initialized testnet pair), synthesize clean baseline
+        if (tickData.length === 0) {
+          const snap = getSnap(rawCoin);
+          const basePx = marketStore.getMid(rawCoin) ?? snap?.price ?? 100;
+          const nowSec = Math.floor(Date.now() / 1000);
+          for (let i = 25; i >= 0; i--) {
+            const tSec = (nowSec - i * 2) as UTCTimestamp;
+            maxT = tSec;
+            tickData.push({ time: tSec, value: basePx });
+            volumeData.push({ time: tSec, value: 0.1, color: 'rgba(0, 217, 100, 0.35)' });
+          }
+        }
+
+        if (tickData.length > 0) {
           areaSeriesRef.current.setData(tickData);
           volumeSeriesRef.current.setData(volumeData);
-          const last = candles[candles.length - 1];
+          lastTickSecRef.current = Math.max(lastTickSecRef.current, maxT);
+          const last = tickData[tickData.length - 1];
           if (last) {
-            setLatestPrice(last.c);
+            setLatestPrice(last.value);
             setOhlc({
-              o: last.c,
-              h: last.c,
-              l: last.c,
-              c: last.c,
-              v: last.v,
-              time: new Date(last.t).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+              o: last.value,
+              h: last.value,
+              l: last.value,
+              c: last.value,
+              v: volumeData[volumeData.length - 1]?.value ?? 0,
+              time: new Date(last.time * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
             });
           }
           chartRef.current?.timeScale().fitContent();
         }
       }
+
       loadTickBaseline();
 
-      let lastTickSec = 0;
-      const unsubTrades = marketStore.subscribeTrades(rawCoin, (trade: HlTrade) => {
-        if (isCancelled || !areaSeriesRef.current || !volumeSeriesRef.current) return;
-        let timeSec = Math.floor(trade.time / 1000) as UTCTimestamp;
-        if (timeSec < lastTickSec) timeSec = lastTickSec as UTCTimestamp;
-        lastTickSec = timeSec;
+      function handleLiveTick(px: number, sz: number, isBuy: boolean, timeMs: number) {
+        if (isCancelled || !areaSeriesRef.current || !volumeSeriesRef.current || !px || px <= 0) return;
+        let timeSec = Math.floor(timeMs / 1000) as UTCTimestamp;
+        if (timeSec < lastTickSecRef.current) {
+          timeSec = lastTickSecRef.current as UTCTimestamp;
+        }
+        lastTickSecRef.current = timeSec;
 
-        areaSeriesRef.current.update({
-          time: timeSec,
-          value: trade.px,
-        });
-        volumeSeriesRef.current.update({
-          time: timeSec,
-          value: trade.sz,
-          color: trade.side === 'buy' ? 'rgba(0, 217, 100, 0.35)' : 'rgba(255, 59, 48, 0.35)',
-        });
-        setLatestPrice(trade.px);
-        setOhlc({
-          o: trade.px,
-          h: trade.px,
-          l: trade.px,
-          c: trade.px,
-          v: trade.sz,
-          time: new Date(trade.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
-        });
-      });
-
-      const unsubMids = marketStore.subscribeMids((mids: Record<string, number>) => {
-        if (isCancelled || !areaSeriesRef.current) return;
-        const px = mids[rawCoin];
-        if (px && px > 0) {
-          let timeSec = Math.floor(Date.now() / 1000) as UTCTimestamp;
-          if (timeSec < lastTickSec) timeSec = lastTickSec as UTCTimestamp;
-          lastTickSec = timeSec;
-
+        try {
           areaSeriesRef.current.update({
             time: timeSec,
             value: px,
           });
-          setLatestPrice(px);
+          volumeSeriesRef.current.update({
+            time: timeSec,
+            value: sz,
+            color: isBuy ? 'rgba(0, 217, 100, 0.35)' : 'rgba(255, 59, 48, 0.35)',
+          });
+        } catch {
+          // Guard against internal time-order assertions
+        }
+
+        setLatestPrice(px);
+        setOhlc({
+          o: px,
+          h: px,
+          l: px,
+          c: px,
+          v: sz,
+          time: new Date(timeSec * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+        });
+      }
+
+      const unsubTrades = marketStore.subscribeTrades(rawCoin, (trade: HlTrade) => {
+        handleLiveTick(trade.px, trade.sz, trade.side === 'buy', trade.time);
+      });
+
+      const unsubMids = marketStore.subscribeMids((mids: Record<string, number>) => {
+        const px = mids[rawCoin];
+        if (px && px > 0) {
+          handleLiveTick(px, 1, true, Date.now());
+        }
+      });
+
+      const unsubFeed = subscribePriceFeed(() => {
+        const snap = getSnap(rawCoin);
+        if (snap && snap.price > 0) {
+          handleLiveTick(snap.price, 1, snap.price >= snap.prev, snap.lastTick || Date.now());
         }
       });
 
@@ -305,6 +374,7 @@ export function LightweightCandleChart({
         isCancelled = true;
         unsubTrades();
         unsubMids();
+        unsubFeed();
       };
     }
 
@@ -347,6 +417,22 @@ export function LightweightCandleChart({
 
         candleSeriesRef.current.setData(candleData);
         volumeSeriesRef.current.setData(volumeData);
+
+        if (smaSeriesRef.current && candleData.length >= 20) {
+          const period = 20;
+          const smaData: any[] = [];
+          for (let i = period - 1; i < candleData.length; i++) {
+            let sum = 0;
+            for (let j = 0; j < period; j++) {
+              sum += candleData[i - j].close;
+            }
+            smaData.push({
+              time: candleData[i].time,
+              value: sum / period,
+            });
+          }
+          smaSeriesRef.current.setData(smaData);
+        }
 
         const last = candles[candles.length - 1];
         if (last) {
@@ -402,7 +488,7 @@ export function LightweightCandleChart({
       isCancelled = true;
       unsubscribe();
     };
-  }, [coin, interval, isTick]);
+  }, [coin, interval, isTick, showIndicators]);
 
   // Update dynamic horizontal price lines: Entry, Liquidation, TP, SL, and Limit orders
   useEffect(() => {

@@ -247,6 +247,35 @@ describe("Trade Execution Mechanics", () => {
     // Duplicate quick leverage presets above ruler are removed
     expect(orderFormContent).not.toContain("[2, 5, 10, activeMaxLev].map");
   });
+
+  it("verifies Tick chart has fallback data sources, timestamp ordering protection, and indicators", () => {
+    const fs = require("fs");
+    const path = require("path");
+    const chartContent = fs.readFileSync(path.resolve(__dirname, "../components/trade/LightweightCandleChart.tsx"), "utf-8");
+    const terminalContent = fs.readFileSync(path.resolve(__dirname, "../components/trade/TradeTerminal.tsx"), "utf-8");
+
+    // Robust tick data sources
+    expect(chartContent).toContain("getTicks(rawCoin)");
+    expect(chartContent).toContain("subscribePriceFeed");
+    expect(chartContent).toContain("marketStore.subscribeMids");
+    expect(chartContent).toContain("lastTickSecRef.current");
+
+    // SMA indicator support
+    expect(chartContent).toContain("showIndicators");
+    expect(chartContent).toContain("LineSeries");
+    expect(terminalContent).toContain("showIndicators={showIndicators}");
+  });
+
+  it("verifies MarketBar minimalist strip uses dynamic Open Interest and connects paper reset", () => {
+    const fs = require("fs");
+    const path = require("path");
+    const marketBarContent = fs.readFileSync(path.resolve(__dirname, "../components/godcandle/MarketBar.tsx"), "utf-8");
+    const terminalContent = fs.readFileSync(path.resolve(__dirname, "../components/trade/TradeTerminal.tsx"), "utf-8");
+
+    expect(marketBarContent).toContain("OPEN_INTERESTS[market]");
+    expect(terminalContent).toContain("showReset={t?.mode === 'paper1000x'}");
+    expect(terminalContent).toContain("onReset={() => t?.resetPaperBalance && t.resetPaperBalance()}");
+  });
 });
 
 

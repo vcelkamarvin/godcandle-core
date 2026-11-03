@@ -56,14 +56,18 @@ export function Header() {
     pathname === "/settings" ||
     pathname === "/main";
 
-  // Sync mode with pathname
+  // Sync mode only when pathname actually changes
+  const prevPathRef = useRef(pathname);
   useEffect(() => {
-    if (pathname === "/" && t.mode !== "perps") {
-      t.setMode("perps");
-    } else if (pathname === "/trade" && t.mode !== "paper1000x") {
-      t.setMode("paper1000x");
+    if (prevPathRef.current !== pathname) {
+      prevPathRef.current = pathname;
+      if (pathname === "/trade") {
+        t.setMode("paper1000x");
+      } else if (pathname === "/") {
+        t.setMode("perps");
+      }
     }
-  }, [pathname, t.mode]);
+  }, [pathname, t]);
 
   // Close dropdown on click outside
   useEffect(() => {

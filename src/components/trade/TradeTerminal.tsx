@@ -156,7 +156,7 @@ export function TradeTerminal() {
   const handleMarketSelect = (m: MarketDef) => {
     setSelectedMarket(m);
     const asset = m.symbol.replace('-USD', '');
-    const maxLev = t.engine.getMaxLeverage(asset);
+    const maxLev = t?.mode === 'paper1000x' ? 1000 : t.engine.getMaxLeverage(asset);
     setLeverage((prev) => Math.min(prev, maxLev));
     if (typeof window !== 'undefined') {
       const url = new URL(window.location.href);
@@ -170,7 +170,7 @@ export function TradeTerminal() {
       symbol: `${sym}-USD`,
       name: sym,
       index: 0,
-      maxLev: t.engine.getMaxLeverage(sym),
+      maxLev: t?.mode === 'paper1000x' ? 1000 : t.engine.getMaxLeverage(sym),
       corridorBps: 1.5,
       defaultPrice: (t?.feeds as any)?.[sym]?.price || 100,
     };
@@ -187,7 +187,8 @@ export function TradeTerminal() {
         price={currentPrice}
         open24h={open24h}
         corridorBps={selectedMarket.corridorBps}
-        showReset={false}
+        showReset={t?.mode === 'paper1000x'}
+        onReset={() => t?.resetPaperBalance && t.resetPaperBalance()}
       />
 
       {/* 2. Watchlist Strip: persistent starred favorites with [+] picker trigger */}
@@ -352,18 +353,41 @@ export function TradeTerminal() {
           {/* Chart Viewport */}
           <div className="relative flex-1 w-full min-h-[460px] bg-white">
             {chartMode === 'chart' ? (
-              <LightweightCandleChart
-                coin={rawSymbol}
-                interval={selectedTf}
-                entryPrice={currentPosition?.entry}
-                liquidationPrice={
-                  currentPosition
-                    ? calcLiquidationPrice(currentPosition.entry, currentPosition.leverage, currentPosition.side)
-                    : null
-                }
-                takeProfitPrice={currentPosition?.tp}
-                stopLossPrice={currentPosition?.sl}
-              />
+              <>
+                <LightweightCandleChart
+                  coin={rawSymbol}
+                  interval={selectedTf}
+                  entryPrice={currentPosition?.entry}
+                  liquidationPrice={
+                    currentPosition
+                      ? ((currentPosition as any).liqPrice ??
+                         (currentPosition as any).liquidationPrice ??
+                         calcLiquidationPrice(
+                           currentPosition.entry,
+                           currentPosition.leverage,
+                           currentPosition.side,
+                           t?.mode === 'paper1000x' ? 0.0004 : 0.005
+                         ))
+                      : null
+                  }
+                  takeProfitPrice={currentPosition?.tp}
+                  stopLossPrice={currentPosition?.sl}
+                  showIndicators={showIndicators}
+                />
+                {currentPosition && (
+                  <div className="absolute top-2 right-12 z-20 flex items-center gap-2 bg-white/90 backdrop-blur-xs px-2.5 py-1 rounded-lg border border-border shadow-2xs font-mono text-xs">
+                    <span className="font-bold">{currentPosition.side.toUpperCase()} {currentPosition.leverage}×</span>
+                    <span className={posPnl >= 0 ? "text-[#06964A] font-bold" : "text-[#FF3B30] font-bold"}>{pnlLabel}</span>
+                    <button
+                      type="button"
+                      onClick={() => t?.close && t.close(currentPosition.id)}
+                      className="px-1.5 py-0.5 rounded bg-secondary hover:bg-secondary/80 text-[10px] font-bold text-foreground cursor-pointer transition-colors"
+                    >
+                      Close
+                    </button>
+                  </div>
+                )}
+              </>
             ) : (
               <Suspense
                 fallback={
