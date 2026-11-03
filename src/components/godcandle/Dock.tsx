@@ -136,29 +136,29 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
   };
 
   return (
-    <div className="rounded-2xl border border-border bg-white shadow-xs overflow-hidden select-none font-mono text-[11px]">
+    <div className="rounded-2xl border border-border bg-white shadow-xs overflow-hidden select-none font-mono text-xs">
       {/* Account Telemetry Strip */}
-      <div className="flex flex-wrap items-center justify-between gap-3 px-3.5 py-2 bg-[#FBFBFA] border-b border-border text-[11px]">
+      <div className="flex flex-wrap items-center justify-between gap-3 px-3.5 py-2.5 bg-[#FBFBFA] border-b border-border text-xs">
         <div className="flex items-center gap-4 text-muted-foreground">
           <div>
-            <span className="text-[9px] uppercase tracking-wider block text-muted-foreground/75">Equity</span>
-            <span className="font-bold text-foreground tabular">${fmtUsd(t.balance, 2)}</span>
+            <span className="text-xs uppercase tracking-wider block text-muted-foreground font-medium">Equity</span>
+            <span className="font-bold text-foreground tabular text-xs sm:text-sm">${fmtUsd(t.balance, 2)}</span>
           </div>
           <div className="h-4 w-px bg-border" />
           <div>
-            <span className="text-[9px] uppercase tracking-wider block text-muted-foreground/75">Available</span>
-            <span className="font-bold text-[#06964A] tabular">${fmtUsd(t.available, 2)}</span>
+            <span className="text-xs uppercase tracking-wider block text-muted-foreground font-medium">Available</span>
+            <span className="font-bold text-[#06964A] tabular text-xs sm:text-sm">${fmtUsd(t.available, 2)}</span>
           </div>
           <div className="h-4 w-px bg-border" />
           <div>
-            <span className="text-[9px] uppercase tracking-wider block text-muted-foreground/75">Margin Used</span>
-            <span className="font-medium text-foreground tabular">${fmtUsd(t.marginUsed, 2)}</span>
+            <span className="text-xs uppercase tracking-wider block text-muted-foreground font-medium">Margin Used</span>
+            <span className="font-semibold text-foreground tabular text-xs sm:text-sm">${fmtUsd(t.marginUsed, 2)}</span>
           </div>
           <div className="h-4 w-px bg-border" />
           <div>
-            <span className="text-[9px] uppercase tracking-wider block text-muted-foreground/75">Unrealized PnL</span>
+            <span className="text-xs uppercase tracking-wider block text-muted-foreground font-medium">Unrealized PnL</span>
             <span
-              className={`font-bold tabular ${
+              className={`font-bold tabular text-xs sm:text-sm ${
                 unrealizedPnl >= 0 ? 'text-[#06964A]' : 'text-[#FF3B30]'
               }`}
             >
@@ -168,7 +168,7 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
         </div>
 
         <div className="flex items-center gap-3">
-          <span className="text-muted-foreground">
+          <span className="text-muted-foreground font-medium">
             Realized PnL:{' '}
             <span className={`font-bold ${totalRealizedPnl >= 0 ? 'text-[#06964A]' : 'text-[#FF3B30]'}`}>
               {fmtSigned(totalRealizedPnl)}
@@ -178,9 +178,9 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
             <Button
               variant="terminal"
               onClick={handleExportCsv}
-              className="h-6 px-2 rounded-lg bg-secondary hover:bg-secondary/80 border border-border text-[10px] gap-1 flex items-center"
+              className="h-7 px-2.5 rounded-lg bg-secondary hover:bg-secondary/80 border border-border text-xs gap-1 flex items-center font-medium"
             >
-              <Download className="size-3" />
+              <Download className="size-3.5" />
               <span>Export CSV</span>
             </Button>
           )}
@@ -210,7 +210,7 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
           <button
             type="button"
             onClick={() => setOpenOrders([])}
-            className="px-2 py-0.5 rounded-lg text-[10px] font-bold text-[#FF3B30] hover:bg-[#FFECEA] border border-[#FF3B30]/30 transition-colors"
+            className="px-2.5 py-1 rounded-lg text-xs font-bold text-[#FF3B30] hover:bg-[#FFECEA] border border-[#FF3B30]/30 transition-colors"
           >
             Cancel All Orders
           </button>
@@ -229,7 +229,7 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
             <div className="overflow-x-auto">
               <table className="w-full min-w-[900px] text-xs font-mono tabular">
                 <thead>
-                  <tr className="text-left text-[10px] uppercase text-muted-foreground border-b border-border/60 pb-2">
+                  <tr className="text-left text-xs uppercase text-muted-foreground font-semibold border-b border-border/60 pb-2">
                     <th className="py-2 px-2">Market</th>
                     <th className="py-2 px-2">Side</th>
                     <th className="py-2 px-2 text-right">Size</th>
@@ -464,7 +464,7 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
             <div className="overflow-x-auto">
               <table className="w-full text-xs font-mono tabular">
                 <thead>
-                  <tr className="text-left text-[10px] uppercase text-muted-foreground border-b border-border/60 pb-2">
+                  <tr className="text-left text-xs uppercase text-muted-foreground font-semibold border-b border-border/60 pb-2">
                     <th className="py-2 px-2">Time</th>
                     <th className="py-2 px-2">Market</th>
                     <th className="py-2 px-2 text-right">Rate</th>
@@ -491,20 +491,20 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
         {/* Balances Tab */}
         {tab === 'balances' && (
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
-            <div className="p-3 rounded-xl bg-[#FBFBFA] border border-border">
-              <span className="text-[10px] text-muted-foreground uppercase block">Account Equity</span>
+            <div className="p-3.5 rounded-xl bg-[#FBFBFA] border border-border">
+              <span className="text-xs text-muted-foreground uppercase font-semibold block">Account Equity</span>
               <span className="text-base font-bold text-foreground">${fmtUsd(t.balance, 2)}</span>
             </div>
-            <div className="p-3 rounded-xl bg-[#FBFBFA] border border-border">
-              <span className="text-[10px] text-muted-foreground uppercase block">Available Margin</span>
+            <div className="p-3.5 rounded-xl bg-[#FBFBFA] border border-border">
+              <span className="text-xs text-muted-foreground uppercase font-semibold block">Available Margin</span>
               <span className="text-base font-bold text-[#06964A]">${fmtUsd(t.available, 2)}</span>
             </div>
-            <div className="p-3 rounded-xl bg-[#FBFBFA] border border-border">
-              <span className="text-[10px] text-muted-foreground uppercase block">Margin In Use</span>
+            <div className="p-3.5 rounded-xl bg-[#FBFBFA] border border-border">
+              <span className="text-xs text-muted-foreground uppercase font-semibold block">Margin In Use</span>
               <span className="text-base font-bold text-foreground">${fmtUsd(t.marginUsed, 2)}</span>
             </div>
-            <div className="p-3 rounded-xl bg-[#FBFBFA] border border-border">
-              <span className="text-[10px] text-muted-foreground uppercase block">Settlement Layer</span>
+            <div className="p-3.5 rounded-xl bg-[#FBFBFA] border border-border">
+              <span className="text-xs text-muted-foreground uppercase font-semibold block">Settlement Layer</span>
               <span className="text-xs font-semibold text-foreground">Hyperliquid L1 Clearinghouse</span>
             </div>
           </div>
@@ -514,44 +514,44 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
         {tab === 'stats' && (
           <div className="space-y-4">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
-              <div className="p-3 rounded-xl bg-[#FBFBFA] border border-border">
-                <span className="text-[10px] text-muted-foreground uppercase block">Win Rate</span>
+              <div className="p-3.5 rounded-xl bg-[#FBFBFA] border border-border">
+                <span className="text-xs text-muted-foreground uppercase font-semibold block">Win Rate</span>
                 <span className="text-lg font-bold text-foreground">
                   {history.length ? `${Math.round((wins / history.length) * 100)}%` : '—'}
                 </span>
-                <span className="text-[10px] text-muted-foreground block mt-0.5">
+                <span className="text-xs text-muted-foreground block mt-0.5 font-medium">
                   {wins}W / {losses}L (R:R {winLossRatio})
                 </span>
               </div>
 
-              <div className="p-3 rounded-xl bg-[#FBFBFA] border border-border">
-                <span className="text-[10px] text-muted-foreground uppercase block">Avg Win / Avg Loss</span>
+              <div className="p-3.5 rounded-xl bg-[#FBFBFA] border border-border">
+                <span className="text-xs text-muted-foreground uppercase font-semibold block">Avg Win / Avg Loss</span>
                 <div className="text-xs font-bold mt-1">
                   <span className="text-[#06964A]">+{fmtUsd(avgWin, 2)}</span>
                   <span className="text-muted-foreground mx-1">/</span>
                   <span className="text-[#FF3B30]">-${fmtUsd(avgLoss, 2)}</span>
                 </div>
-                <span className="text-[10px] text-muted-foreground block mt-0.5">
+                <span className="text-xs text-muted-foreground block mt-0.5 font-medium">
                   Best: {fmtSigned(best)}
                 </span>
               </div>
 
-              <div className="p-3 rounded-xl bg-[#FBFBFA] border border-border">
-                <span className="text-[10px] text-muted-foreground uppercase block">Fees &amp; Builder Fees</span>
+              <div className="p-3.5 rounded-xl bg-[#FBFBFA] border border-border">
+                <span className="text-xs text-muted-foreground uppercase font-semibold block">Fees &amp; Builder Fees</span>
                 <span className="text-base font-bold text-foreground">
                   ${fmtUsd(estTotalFees + estBuilderFees, 2)}
                 </span>
-                <span className="text-[10px] text-muted-foreground block mt-0.5">
+                <span className="text-xs text-muted-foreground block mt-0.5 font-medium">
                   Taker: ${fmtUsd(estTotalFees, 2)} · Builder: ${fmtUsd(estBuilderFees, 2)}
                 </span>
               </div>
 
-              <div className="p-3 rounded-xl bg-[#FBFBFA] border border-border">
-                <span className="text-[10px] text-muted-foreground uppercase block">Total Session PnL</span>
+              <div className="p-3.5 rounded-xl bg-[#FBFBFA] border border-border">
+                <span className="text-xs text-muted-foreground uppercase font-semibold block">Total Session PnL</span>
                 <span className={`text-lg font-bold ${totalRealizedPnl >= 0 ? 'text-[#06964A]' : 'text-[#FF3B30]'}`}>
                   {fmtSigned(totalRealizedPnl)}
                 </span>
-                <span className="text-[10px] text-muted-foreground block mt-0.5">
+                <span className="text-xs text-muted-foreground block mt-0.5 font-medium">
                   Worst: {fmtSigned(worst)}
                 </span>
               </div>
@@ -560,13 +560,13 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
             {/* PnL Breakdown by Market */}
             {pnlByMarket.length > 0 && (
               <div className="space-y-1.5 pt-1">
-                <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider block">
+                <span className="text-xs uppercase font-bold text-muted-foreground tracking-wider block">
                   PnL by Market
                 </span>
                 <div className="overflow-x-auto rounded-xl border border-border">
                   <table className="w-full text-xs font-mono tabular">
                     <thead>
-                      <tr className="text-left text-[10px] uppercase text-muted-foreground bg-[#FBFBFA] border-b border-border">
+                      <tr className="text-left text-xs uppercase text-muted-foreground font-semibold bg-[#FBFBFA] border-b border-border">
                         <th className="py-2 px-3">Market</th>
                         <th className="py-2 px-3 text-right">Trades</th>
                         <th className="py-2 px-3 text-right">Win Rate</th>

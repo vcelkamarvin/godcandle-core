@@ -202,24 +202,35 @@ export function TradeTerminal() {
         feeds={t?.feeds || {}}
       />
 
-      {/* Mobile Segmented Switcher [Chart | Trade] */}
+      {/* Mobile Segmented Switcher [Perps | 1000x] and [Chart | Trade] */}
       <div className="flex lg:hidden items-center justify-between gap-2 p-1 bg-white border border-border rounded-xl shadow-2xs">
         <div className="flex items-center p-0.5 rounded-lg bg-secondary border border-border/70">
           <Link
             to="/"
             search={{ pair: selectedMarket.symbol } as any}
-            className="h-7 px-3 rounded-md text-xs font-bold bg-black text-white shadow-xs flex items-center gap-1.5"
+            onClick={() => t?.setMode('perps')}
+            className={`h-7 px-3 rounded-md text-xs font-bold flex items-center gap-1.5 transition-colors ${
+              t?.mode === 'perps'
+                ? 'bg-black text-white shadow-xs'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
           >
             <span className="size-1.5 rounded-full bg-[#00D964] animate-pulse" />
             <span>Perps</span>
           </Link>
-          <span
-            className="h-7 px-3 rounded-md text-xs font-medium text-muted-foreground/60 flex items-center gap-1 cursor-not-allowed"
-            title="1000x Locked (House Pool $2.4M / $5.0M to unlock)"
+          <Link
+            to="/trade"
+            search={{ pair: selectedMarket.symbol } as any}
+            onClick={() => t?.setMode('paper1000x')}
+            className={`h-7 px-3 rounded-md text-xs font-bold flex items-center gap-1 transition-colors ${
+              t?.mode === 'paper1000x'
+                ? 'bg-black text-white shadow-xs'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+            title="1000x Paper Synthetic Trading"
           >
             <span>1000x</span>
-            <span className="text-[10px]">🔒</span>
-          </span>
+          </Link>
         </div>
 
         <div className="flex items-center p-0.5 rounded-lg bg-secondary border border-border/70">
@@ -263,27 +274,27 @@ export function TradeTerminal() {
               <button
                 type="button"
                 onClick={() => setChartMode('chart')}
-                className={`h-6.5 px-2.5 rounded-lg text-[11px] font-mono font-medium gap-1 flex items-center transition-all cursor-pointer ${
+                className={`h-7.5 px-3 rounded-lg text-xs font-mono font-medium gap-1.5 flex items-center transition-all cursor-pointer ${
                   chartMode === 'chart'
                     ? 'bg-foreground text-background font-bold shadow-2xs'
                     : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
-                <CandlestickChart className="size-3 text-[#00D964]" />
+                <CandlestickChart className="size-3.5 text-[#00D964]" />
                 <span>Chart</span>
               </button>
               <button
                 type="button"
                 onClick={() => setChartMode('tradingview')}
-                className={`h-6.5 px-2.5 rounded-lg text-[11px] font-mono font-medium gap-1 flex items-center transition-all cursor-pointer ${
+                className={`h-7.5 px-3 rounded-lg text-xs font-mono font-medium gap-1.5 flex items-center transition-all cursor-pointer ${
                   chartMode === 'tradingview'
                     ? 'bg-foreground text-background font-bold shadow-2xs'
                     : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
-                <BarChart2 className="size-3 text-[#2563EB]" />
+                <BarChart2 className="size-3.5 text-[#2563EB]" />
                 <span>TradingView</span>
-                <span className="text-[9px] text-muted-foreground/80 font-normal">(External feed)</span>
+                <span className="text-xs text-muted-foreground font-normal">(External)</span>
               </button>
             </div>
 
@@ -296,7 +307,7 @@ export function TradeTerminal() {
                       key={tf.label}
                       type="button"
                       onClick={() => setSelectedTf(tf.interval)}
-                      className={`h-6.5 px-2 rounded-lg text-[10px] font-mono font-semibold transition-all cursor-pointer ${
+                      className={`h-7.5 px-2.5 rounded-lg text-xs font-mono font-semibold transition-all cursor-pointer ${
                         selectedTf === tf.interval
                           ? 'bg-foreground text-background font-bold shadow-2xs'
                           : 'text-muted-foreground hover:text-foreground'
@@ -311,27 +322,27 @@ export function TradeTerminal() {
                   <button
                     type="button"
                     onClick={() => setShowIndicators((prev) => !prev)}
-                    className={`h-6.5 px-2 rounded-lg text-[10px] font-mono flex items-center gap-1 transition-all cursor-pointer ${
+                    className={`h-7.5 px-2.5 rounded-lg text-xs font-mono flex items-center gap-1 transition-all cursor-pointer ${
                       showIndicators
                         ? 'bg-foreground text-background font-bold shadow-2xs'
                         : 'text-muted-foreground hover:text-foreground'
                     }`}
                     title="Toggle indicators (EMA / SMA)"
                   >
-                    <SlidersHorizontal className="size-2.5" />
+                    <SlidersHorizontal className="size-3" />
                     <span>SMA</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => setIsFullscreen((prev) => !prev)}
-                    className={`h-6.5 px-1.5 rounded-lg text-[10px] font-mono flex items-center gap-1 transition-all cursor-pointer ${
+                    className={`h-7.5 px-2 rounded-lg text-xs font-mono flex items-center gap-1 transition-all cursor-pointer ${
                       isFullscreen
                         ? 'bg-foreground text-background font-bold shadow-2xs'
                         : 'text-muted-foreground hover:text-foreground'
                     }`}
                     title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen chart'}
                   >
-                    <Maximize2 className="size-3" />
+                    <Maximize2 className="size-3.5" />
                   </button>
                 </div>
               </div>

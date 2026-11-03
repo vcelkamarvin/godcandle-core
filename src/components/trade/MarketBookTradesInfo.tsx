@@ -147,7 +147,7 @@ export function MarketBookTradesInfo({
   const fundingPerDayUsd = userPositionNotional > 0 ? userPositionNotional * fundingRate * 24 : 0;
 
   return (
-    <div className="flex flex-col h-full bg-white border border-border rounded-2xl shadow-xs overflow-hidden select-none font-mono text-[11px]">
+    <div className="flex flex-col h-full bg-white border border-border rounded-2xl shadow-xs overflow-hidden select-none font-mono text-xs">
       {/* Tab Switcher */}
       <div className="flex items-center justify-between p-1.5 border-b border-border bg-[#FBFBFA]">
         <div className="flex items-center gap-1">
@@ -155,7 +155,7 @@ export function MarketBookTradesInfo({
             type="button"
             onClick={() => setActiveTab('book')}
             className={cn(
-              "px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer",
+              "px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer",
               activeTab === 'book'
                 ? "bg-foreground text-background shadow-2xs font-bold"
                 : "text-muted-foreground hover:text-foreground"
@@ -167,7 +167,7 @@ export function MarketBookTradesInfo({
             type="button"
             onClick={() => setActiveTab('trades')}
             className={cn(
-              "px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer",
+              "px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer",
               activeTab === 'trades'
                 ? "bg-foreground text-background shadow-2xs font-bold"
                 : "text-muted-foreground hover:text-foreground"
@@ -179,7 +179,7 @@ export function MarketBookTradesInfo({
             type="button"
             onClick={() => setActiveTab('info')}
             className={cn(
-              "px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer",
+              "px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer",
               activeTab === 'info'
                 ? "bg-foreground text-background shadow-2xs font-bold"
                 : "text-muted-foreground hover:text-foreground"
@@ -190,22 +190,22 @@ export function MarketBookTradesInfo({
         </div>
 
         {activeTab === 'book' && (
-          <div className="text-[10px] text-muted-foreground tabular">
+          <div className="text-xs text-muted-foreground font-medium tabular">
             Imbalance: <span className="font-bold text-[#06964A]">{bidImbalancePct}% Bids</span>
           </div>
         )}
 
         {activeTab === 'trades' && (
-          <div className="flex items-center gap-2 text-[10px]">
+          <div className="flex items-center gap-2 text-xs">
             <span className={cn("font-bold tabular", cvd >= 0 ? "text-[#06964A]" : "text-[#FF3B30]")}>
               CVD {cvd >= 0 ? "+" : ""}${fmtUsd(Math.abs(cvd), 0)}
             </span>
             <div className="flex items-center gap-0.5">
-              <Filter className="size-2.5 text-muted-foreground" />
+              <Filter className="size-3 text-muted-foreground" />
               <select
                 value={tradeFilter}
                 onChange={(e) => setTradeFilter(e.target.value as any)}
-                className="bg-transparent text-muted-foreground hover:text-foreground border-none outline-none font-mono text-[10px] cursor-pointer"
+                className="bg-transparent text-muted-foreground hover:text-foreground border-none outline-none font-mono text-xs cursor-pointer"
               >
                 <option value="all">All Sizes</option>
                 <option value="1k">&gt; $1k</option>
@@ -220,7 +220,7 @@ export function MarketBookTradesInfo({
       {activeTab === 'book' && (
         <div className="flex flex-col flex-1 p-2 min-h-0 overflow-hidden">
           {/* Header */}
-          <div className="grid grid-cols-3 text-[10px] uppercase text-muted-foreground pb-1.5 border-b border-border/60">
+          <div className="grid grid-cols-3 text-xs uppercase text-muted-foreground font-semibold pb-1.5 border-b border-border/60">
             <span>Price</span>
             <span className="text-right">Size ({rawCoin})</span>
             <span className="text-right">Total ($)</span>
@@ -243,7 +243,7 @@ export function MarketBookTradesInfo({
                   <span className="text-[#FF3B30] font-semibold group-hover:underline">
                     ${fmtUsd(ask.px, currentPrice >= 100 ? 1 : 2)}
                   </span>
-                  <span className="text-right text-muted-foreground">{ask.sz.toFixed(szDecimals)}</span>
+                  <span className="text-right text-muted-foreground font-medium">{ask.sz.toFixed(szDecimals)}</span>
                   <span className="text-right text-muted-foreground font-medium">
                     ${fmtUsd(ask.sz * ask.px, 0)}
                   </span>
@@ -253,11 +253,11 @@ export function MarketBookTradesInfo({
           </div>
 
           {/* Spread Bar */}
-          <div className="my-1 py-1.5 px-2 bg-secondary/70 border-y border-border/70 flex items-center justify-between text-[10px]">
+          <div className="my-1 py-1.5 px-2 bg-secondary/70 border-y border-border/70 flex items-center justify-between text-xs">
             <span className="font-bold text-foreground tabular">
               Spread ${fmtUsd(spreadUsd, 2)} ({spreadBps} bps)
             </span>
-            <span className="text-muted-foreground tabular">
+            <span className="text-muted-foreground font-medium tabular">
               Mid: ${fmtUsd((bestBid + bestAsk) / 2, 2)}
             </span>
           </div>
@@ -293,7 +293,7 @@ export function MarketBookTradesInfo({
       {/* Tab 2: Trades Tape */}
       {activeTab === 'trades' && (
         <div className="flex-1 p-2 flex flex-col min-h-0 overflow-y-auto no-scrollbar">
-          <div className="grid grid-cols-3 text-[10px] uppercase text-muted-foreground pb-1.5 border-b border-border/60">
+          <div className="grid grid-cols-3 text-xs uppercase text-muted-foreground font-semibold pb-1.5 border-b border-border/60">
             <span>Price</span>
             <span className="text-right">Size</span>
             <span className="text-right">Time</span>
@@ -312,16 +312,16 @@ export function MarketBookTradesInfo({
                   )}
                 >
                   {t.side === 'buy' ? (
-                    <ArrowUpRight className="size-2.5 inline" />
+                    <ArrowUpRight className="size-3 inline" />
                   ) : (
-                    <ArrowDownRight className="size-2.5 inline" />
+                    <ArrowDownRight className="size-3 inline" />
                   )}
                   ${fmtUsd(t.px, currentPrice >= 100 ? 1 : 2)}
                 </span>
-                <span className="text-right text-foreground font-medium">
+                <span className="text-right text-foreground font-semibold">
                   {t.sz.toFixed(szDecimals)}
                 </span>
-                <span className="text-right text-muted-foreground text-[10px]">
+                <span className="text-right text-muted-foreground font-medium text-xs">
                   {new Date(t.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
                 </span>
               </div>
@@ -335,10 +335,10 @@ export function MarketBookTradesInfo({
         <div className="flex-1 p-3 space-y-3 overflow-y-auto no-scrollbar text-xs">
           <div className="space-y-2 pb-2.5 border-b border-border/60">
             <div className="flex justify-between items-center">
-              <span className="text-[10px] uppercase font-bold text-muted-foreground">
+              <span className="text-xs uppercase font-bold text-muted-foreground">
                 Funding Telemetry
               </span>
-              <span className="text-[9px] text-muted-foreground">7d Mini History</span>
+              <span className="text-xs text-muted-foreground font-medium">7d Mini History</span>
             </div>
 
             {/* 7-day mini sparkline */}
@@ -357,64 +357,64 @@ export function MarketBookTradesInfo({
             </div>
 
             <div className="flex justify-between items-center">
-              <span className="text-muted-foreground">Current 1h Rate</span>
+              <span className="text-muted-foreground font-medium">Current 1h Rate</span>
               <span className="font-bold text-[#06964A]">{(fundingRate * 100).toFixed(4)}%</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-muted-foreground">Predicted Next Rate</span>
+              <span className="text-muted-foreground font-medium">Predicted Next Rate</span>
               <span className="font-semibold text-foreground">{(fundingRate * 0.95 * 100).toFixed(4)}%</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-muted-foreground">Est. Cost / Day</span>
-              <span className="font-mono font-medium text-foreground">
+              <span className="text-muted-foreground font-medium">Est. Cost / Day</span>
+              <span className="font-mono font-bold text-foreground">
                 ${fmtUsd(fundingPerDayUsd, 2)}
               </span>
             </div>
           </div>
 
           <div className="space-y-2 pb-2.5 border-b border-border/60">
-            <span className="text-[10px] uppercase font-bold text-muted-foreground block">
+            <span className="text-xs uppercase font-bold text-muted-foreground block">
               Open Interest &amp; Premium
             </span>
             <div className="flex justify-between items-center">
-              <span className="text-muted-foreground">Open Interest</span>
+              <span className="text-muted-foreground font-medium">Open Interest</span>
               <span className="font-bold text-foreground">
                 ${fmtUsd(openInterest, 0)}{' '}
-                <span className="text-[10px] text-[#06964A] font-semibold">(+4.2% 24h)</span>
+                <span className="text-xs text-[#06964A] font-semibold">(+4.2% 24h)</span>
               </span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-muted-foreground">Oracle Price</span>
-              <span className="font-mono text-foreground">${fmtUsd(oraclePrice, 2)}</span>
+              <span className="text-muted-foreground font-medium">Oracle Price</span>
+              <span className="font-mono font-bold text-foreground">${fmtUsd(oraclePrice, 2)}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-muted-foreground">Mark / Oracle Premium</span>
-              <span className="font-mono text-muted-foreground">{premiumBps} bps</span>
+              <span className="text-muted-foreground font-medium">Mark / Oracle Premium</span>
+              <span className="font-mono font-bold text-muted-foreground">{premiumBps} bps</span>
             </div>
           </div>
 
           <div className="space-y-2">
-            <span className="text-[10px] uppercase font-bold text-muted-foreground block">
+            <span className="text-xs uppercase font-bold text-muted-foreground block">
               Contract Specifications
             </span>
             <div className="flex justify-between items-center">
-              <span className="text-muted-foreground">Max Allowed Leverage</span>
+              <span className="text-muted-foreground font-medium">Max Allowed Leverage</span>
               <span className="font-bold text-foreground">{maxLeverage}×</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-muted-foreground">Tick Size</span>
-              <span className="font-mono text-foreground">
+              <span className="text-muted-foreground font-medium">Tick Size</span>
+              <span className="font-mono font-bold text-foreground">
                 ${currentPrice >= 1000 ? '0.10' : currentPrice >= 10 ? '0.01' : '0.0001'}
               </span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-muted-foreground">Min Lot Size</span>
-              <span className="font-mono text-foreground">
+              <span className="text-muted-foreground font-medium">Min Lot Size</span>
+              <span className="font-mono font-bold text-foreground">
                 {Math.pow(10, -szDecimals).toFixed(szDecimals)} {rawCoin}
               </span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-muted-foreground">Settlement Asset</span>
+              <span className="text-muted-foreground font-medium">Settlement Asset</span>
               <span className="font-bold text-[#06964A]">USDC (Hyperliquid L1)</span>
             </div>
           </div>

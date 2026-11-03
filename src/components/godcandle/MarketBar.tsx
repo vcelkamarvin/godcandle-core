@@ -284,7 +284,7 @@ export function MarketBar({
                 <span className="text-xs font-bold tracking-tight">{market}-USD</span>
                 <span
                   className={cn(
-                    "rounded px-1 py-0.2 text-[8px] font-mono font-semibold uppercase",
+                    "rounded px-1.5 py-0.5 text-xs font-mono font-bold uppercase",
                     is1000x
                       ? "bg-[#FFD60A]/20 border border-[#FFD60A]/40 text-[#FFD60A]"
                       : "bg-white/20 border border-white/30 text-white"
@@ -303,7 +303,7 @@ export function MarketBar({
               </span>
               <span
                 className={cn(
-                  "flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-mono font-semibold",
+                  "flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-mono font-semibold",
                   isPositive ? "bg-[#E3F8EC] text-[#06964A]" : "bg-[#FFECEA] text-[#FF3B30]"
                 )}
               >
@@ -316,42 +316,42 @@ export function MarketBar({
             </div>
 
             {/* Inline Market Telemetry */}
-            <div className="hidden md:flex items-center gap-3 sm:gap-4 text-[10px] font-mono pl-3 border-l border-border/70 text-muted-foreground select-none">
+            <div className="hidden md:flex items-center gap-3 sm:gap-4 text-xs font-mono pl-3 border-l border-border/70 text-foreground select-none">
               <div className="hidden lg:block" title={`Oracle Price: $${fmtUsd(midPx, getMarket(market).decimals)}`}>
-                <span className="block text-[8px] uppercase tracking-wider text-muted-foreground/75 cursor-help">Mark (Oracle ⓘ)</span>
-                <span className="tabular font-semibold text-foreground">
+                <span className="block text-xs uppercase tracking-wider text-muted-foreground font-medium cursor-help">Mark (Oracle ⓘ)</span>
+                <span className="tabular font-bold text-foreground text-xs sm:text-sm">
                   ${fmtUsd(markPx, getMarket(market).decimals)}
                 </span>
               </div>
               <div className="hidden lg:block">
-                <span className="block text-[8px] uppercase tracking-wider text-muted-foreground/75">Index</span>
-                <span className="tabular font-semibold text-foreground">
+                <span className="block text-xs uppercase tracking-wider text-muted-foreground font-medium">Index</span>
+                <span className="tabular font-bold text-foreground text-xs sm:text-sm">
                   ${fmtUsd(midPx, getMarket(market).decimals)}
                 </span>
               </div>
               <div>
-                <span className="block text-[8px] uppercase tracking-wider text-muted-foreground/75">Funding (Countdown)</span>
-                <span className="tabular font-semibold text-[#06964A]">
-                  {fundingRate.replace(' / 1h', '')} <span className="text-[9px] text-muted-foreground font-normal">({Math.floor(60 - (Date.now() / 60000) % 60)}m)</span>
+                <span className="block text-xs uppercase tracking-wider text-muted-foreground font-medium">Funding (Countdown)</span>
+                <span className="tabular font-bold text-[#06964A] text-xs sm:text-sm">
+                  {fundingRate.replace(' / 1h', '')} <span className="text-xs text-muted-foreground font-normal">({Math.floor(60 - (Date.now() / 60000) % 60)}m)</span>
                 </span>
               </div>
               <div>
-                <span className="block text-[8px] uppercase tracking-wider text-muted-foreground/75">Open Interest</span>
-                <span className="tabular font-semibold text-foreground">$24.8M</span>
+                <span className="block text-xs uppercase tracking-wider text-muted-foreground font-medium">Open Interest</span>
+                <span className="tabular font-bold text-foreground text-xs sm:text-sm">$24.8M</span>
               </div>
               <div>
-                <span className="block text-[8px] uppercase tracking-wider text-muted-foreground/75">24h Volume</span>
-                <span className="tabular font-semibold text-foreground">{volume24h}</span>
+                <span className="block text-xs uppercase tracking-wider text-muted-foreground font-medium">24h Volume</span>
+                <span className="tabular font-bold text-foreground text-xs sm:text-sm">{volume24h}</span>
               </div>
               <div className="hidden xl:block">
-                <span className="block text-[8px] uppercase tracking-wider text-muted-foreground/75">Max Leverage</span>
-                <span className="tabular font-bold text-foreground">
+                <span className="block text-xs uppercase tracking-wider text-muted-foreground font-medium">Max Leverage</span>
+                <span className="tabular font-bold text-foreground text-xs sm:text-sm">
                   {getMarket(market).maxLeverage}×
                 </span>
               </div>
               <div className="hidden 2xl:block">
-                <span className="block text-[8px] uppercase tracking-wider text-muted-foreground/75">24h Low / High</span>
-                <span className="tabular font-semibold text-foreground">
+                <span className="block text-xs uppercase tracking-wider text-muted-foreground font-medium">24h Low / High</span>
+                <span className="tabular font-bold text-foreground text-xs sm:text-sm">
                   ${fmtUsd(low24h, 1)} / ${fmtUsd(high24h, 1)}
                 </span>
               </div>
@@ -363,11 +363,11 @@ export function MarketBar({
             <Button
               variant="terminal"
               onClick={() => setOpen(true)}
-              className="h-8 rounded-lg bg-secondary hover:bg-secondary/80 px-2.5 text-[11px] text-muted-foreground gap-1.5 border border-border/60 transition-colors cursor-pointer"
+              className="h-8.5 rounded-lg bg-secondary hover:bg-secondary/80 px-3 text-xs font-medium text-foreground gap-1.5 border border-border/60 transition-colors cursor-pointer"
             >
-              <Search className="size-3 text-muted-foreground" />
+              <Search className="size-3.5 text-muted-foreground" />
               <span className="hidden sm:inline">Search</span>
-              <kbd className="rounded bg-card border border-border px-1 py-0.2 text-[8px] font-mono text-muted-foreground">
+              <kbd className="rounded bg-card border border-border px-1.5 py-0.5 text-xs font-mono text-muted-foreground">
                 ⌘K
               </kbd>
             </Button>
@@ -376,10 +376,10 @@ export function MarketBar({
               <Button
                 variant="terminal"
                 onClick={onReset}
-                className="h-8 rounded-lg bg-[#F6F6F4] hover:bg-[#EAEAE8] border border-border px-2.5 text-[10px] font-mono text-muted-foreground hover:text-foreground gap-1 transition-colors cursor-pointer"
+                className="h-8.5 rounded-lg bg-[#F6F6F4] hover:bg-[#EAEAE8] border border-border px-3 text-xs font-mono font-medium text-foreground hover:text-foreground gap-1.5 transition-colors cursor-pointer"
                 title="Reset paper balance to $10,000 USDC"
               >
-                <RotateCcw className="size-3" />
+                <RotateCcw className="size-3.5" />
                 <span>{resetLabel}</span>
               </Button>
             )}

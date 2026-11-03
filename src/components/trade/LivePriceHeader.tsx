@@ -36,7 +36,7 @@ export function LivePriceHeader({
           <div>
             <div className="flex items-center gap-2">
               <span className="text-base font-bold text-foreground">{symbol}</span>
-              <span className="rounded-full border border-border bg-[#F6F6F4] px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
+              <span className="rounded-full border border-border bg-[#F6F6F4] px-2.5 py-0.5 text-xs font-bold text-muted-foreground">
                 PERP
               </span>
             </div>
@@ -58,31 +58,31 @@ export function LivePriceHeader({
         </div>
 
         {/* Clean Standard Market Stats */}
-        <div className="grid grid-cols-2 gap-2 text-[11px] sm:grid-cols-4 sm:gap-3">
+        <div className="grid grid-cols-2 gap-2 text-xs sm:grid-cols-4 sm:gap-3">
           <div className="rounded-xl border border-border bg-[#F6F6F4] px-3 py-2">
-            <span className="block text-[9px] font-medium text-muted-foreground">MARK PRICE</span>
-            <span className="tabular font-semibold text-foreground">
+            <span className="block text-xs font-semibold text-muted-foreground">MARK PRICE</span>
+            <span className="tabular text-xs sm:text-sm font-bold text-foreground">
               ${markPx.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </span>
           </div>
 
           <div className="rounded-xl border border-border bg-[#F6F6F4] px-3 py-2">
-            <span className="block text-[9px] font-medium text-muted-foreground">INDEX PRICE</span>
-            <span className="tabular font-semibold text-foreground">
+            <span className="block text-xs font-semibold text-muted-foreground">INDEX PRICE</span>
+            <span className="tabular text-xs sm:text-sm font-bold text-foreground">
               ${mid.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </span>
           </div>
 
           <div className="rounded-xl border border-border bg-[#F6F6F4] px-3 py-2">
-            <span className="block text-[9px] font-medium text-muted-foreground">24H HIGH</span>
-            <span className="tabular font-semibold text-foreground">
+            <span className="block text-xs font-semibold text-muted-foreground">24H HIGH</span>
+            <span className="tabular text-xs sm:text-sm font-bold text-foreground">
               ${high24h.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </span>
           </div>
 
           <div className="rounded-xl border border-border bg-[#F6F6F4] px-3 py-2">
-            <span className="block text-[9px] font-medium text-muted-foreground">24H LOW</span>
-            <span className="tabular font-semibold text-foreground">
+            <span className="block text-xs font-semibold text-muted-foreground">24H LOW</span>
+            <span className="tabular text-xs sm:text-sm font-bold text-foreground">
               ${low24h.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </span>
           </div>

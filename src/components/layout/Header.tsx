@@ -106,19 +106,19 @@ export function Header() {
     <>
       <header className="sticky top-0 z-40 border-b border-border bg-white/95 text-foreground font-sans backdrop-blur-md">
         {/* Status Bar */}
-        <div className="hidden sm:flex border-b border-border/60 bg-secondary/50 text-muted-foreground px-4 sm:px-6 py-0.5 items-center justify-between text-[11px] font-mono tracking-tight select-none">
+        <div className="hidden sm:flex border-b border-border/60 bg-secondary/50 text-foreground px-4 sm:px-6 py-1 items-center justify-between text-xs font-mono tracking-tight select-none">
           <div className="flex items-center gap-2">
-            <span className="inline-block size-1.5 rounded-full bg-[#00D964] animate-pulse" />
+            <span className="inline-block size-2 rounded-full bg-[#00D964] animate-pulse" />
             <span className="font-bold text-foreground tracking-wide">
               ● HYPERLIQUID L1 CONNECTED · BUILDER CODE ACTIVE
             </span>
-            <span className="px-1.5 py-0.2 rounded bg-foreground text-background font-mono font-bold text-[9px] uppercase">
+            <span className="px-2 py-0.5 rounded bg-foreground text-background font-mono font-bold text-xs uppercase">
               {(typeof process !== "undefined" && process.env?.["NEXT_PUBLIC_HL_NETWORK"]?.toUpperCase()) || "TESTNET"}
             </span>
           </div>
-          <div className="hidden sm:flex items-center gap-4 text-[10px] text-muted-foreground">
+          <div className="hidden sm:flex items-center gap-4 text-xs text-foreground/80 font-medium">
             <span className="flex items-center gap-1.5">
-              <span className="size-1.5 rounded-full bg-[#00D964]" />
+              <span className="size-2 rounded-full bg-[#00D964]" />
               BUILDER CODE: <span className="text-[#2563EB] font-bold">GODCANDLE</span>
             </span>
             <span className="text-border">|</span>
@@ -143,13 +143,13 @@ export function Header() {
               <span className="text-[19px] sm:text-[20px] font-bold tracking-tight text-foreground transition-opacity group-hover:opacity-85">
                 godcandle
               </span>
-              <span className="hidden rounded-full border border-border bg-gradient-to-r from-[#CDC3F0]/40 via-[#FFDAC8]/40 to-[#A0D4CA]/40 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-foreground sm:inline-flex items-center gap-1 font-mono">
+              <span className="hidden rounded-full border border-border bg-gradient-to-r from-[#CDC3F0]/40 via-[#FFDAC8]/40 to-[#A0D4CA]/40 px-2 py-0.5 text-xs font-semibold uppercase tracking-wider text-foreground sm:inline-flex items-center gap-1 font-mono">
                 <Sparkles className="size-2.5 text-[#0A0A0A]/70" />
                 Light
               </span>
             </Link>
 
-            {/* Left Nav: Trading [Perps | 1000x 🔒], Analysis, Leaderboard, More */}
+            {/* Left Nav: Trading [Perps | 1000x], Leaderboard, More */}
             <nav aria-label="Main navigation" className="hidden md:flex items-center gap-2">
               {/* Primary Trading Segment */}
               <div className="flex items-center p-0.5 rounded-full bg-secondary/80 border border-border/80 shadow-2xs">
@@ -157,7 +157,11 @@ export function Header() {
                   to="/"
                   search={typeof window !== "undefined" && new URLSearchParams(window.location.search).get("pair") ? { pair: new URLSearchParams(window.location.search).get("pair")! } as any : undefined}
                   onClick={() => t.setMode("perps")}
-                  className="pill pill-ink h-7.5 px-3 text-xs font-semibold shadow-xs"
+                  className={
+                    pathname === "/" && t.mode === "perps"
+                      ? "pill pill-ink h-7.5 px-3 text-xs font-semibold shadow-xs"
+                      : "pill h-7.5 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary/70 transition-colors"
+                  }
                   title="Trade (Live) · Hyperliquid L1 Perps"
                   aria-label="Trade (Live) Perps"
                 >
@@ -168,31 +172,21 @@ export function Header() {
                 </Link>
                 <Link
                   to="/trade"
-                  className="pill h-7.5 px-3 text-xs text-muted-foreground/70 cursor-not-allowed flex items-center gap-1 pointer-events-none opacity-60"
-                  title="1000x Trading Simulation (Locked · House Pool $2.4M / $5.0M to unlock)"
+                  search={typeof window !== "undefined" && new URLSearchParams(window.location.search).get("pair") ? { pair: new URLSearchParams(window.location.search).get("pair")! } as any : undefined}
+                  onClick={() => t.setMode("paper1000x")}
+                  className={
+                    pathname === "/trade" || t.mode === "paper1000x"
+                      ? "pill pill-ink h-7.5 px-3 text-xs font-semibold shadow-xs"
+                      : "pill h-7.5 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary/70 transition-colors"
+                  }
+                  title="1000x Trading Simulation (Paper Synthetic Trading)"
                   aria-label="1000x Trading"
-                  aria-disabled="true"
                 >
                   <span>1000x</span>
-                  <span className="text-[10px]">🔒</span>
                 </Link>
               </div>
 
-              {/* Direct links on wide screens (hidden below xl to prevent horizontal overflow) */}
-              <Link
-                to="/analytics"
-                activeProps={{
-                  className:
-                    "hidden xl:inline-flex pill pill-ink h-7.5 px-3 text-xs font-medium shadow-xs",
-                }}
-                inactiveProps={{
-                  className:
-                    "hidden xl:inline-flex pill h-7.5 px-2.5 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary/70 transition-colors",
-                }}
-              >
-                Analysis
-              </Link>
-
+              {/* Direct link for Leaderboard on wide screens */}
               <Link
                 to="/leaderboard"
                 activeProps={{
@@ -251,7 +245,7 @@ export function Header() {
                         </div>
                         <div>
                           <p className="text-xs font-semibold text-foreground">Analysis</p>
-                          <p className="text-[10px] text-muted-foreground">
+                          <p className="text-xs text-muted-foreground font-normal">
                             Volume &amp; L1 market depth
                           </p>
                         </div>
@@ -270,7 +264,7 @@ export function Header() {
                         </div>
                         <div>
                           <p className="text-xs font-semibold text-foreground">Leaderboard</p>
-                          <p className="text-[10px] text-muted-foreground">
+                          <p className="text-xs text-muted-foreground font-normal">
                             Rankings &amp; Candle Cup
                           </p>
                         </div>
@@ -293,7 +287,7 @@ export function Header() {
                         </div>
                         <div>
                           <p className="text-xs font-semibold text-foreground">Goal</p>
-                          <p className="text-[10px] text-muted-foreground">
+                          <p className="text-xs text-muted-foreground font-normal">
                             Price Target Calculator
                           </p>
                         </div>
@@ -313,7 +307,7 @@ export function Header() {
                         </div>
                         <div>
                           <p className="text-xs font-semibold text-foreground">Boost</p>
-                          <p className="text-[10px] text-muted-foreground">
+                          <p className="text-xs text-muted-foreground font-normal">
                             Boost Multiplier Calculator
                           </p>
                         </div>
@@ -335,7 +329,7 @@ export function Header() {
                         </div>
                         <div>
                           <p className="text-xs font-semibold text-foreground">Docs</p>
-                          <p className="text-[10px] text-muted-foreground">
+                          <p className="text-xs text-muted-foreground font-normal">
                             API &amp; terminal guides
                           </p>
                         </div>
@@ -352,7 +346,7 @@ export function Header() {
                         </div>
                         <div>
                           <p className="text-xs font-semibold text-foreground">Roadmap</p>
-                          <p className="text-[10px] text-muted-foreground">
+                          <p className="text-xs text-muted-foreground font-normal">
                             Masterplan phases 0–3
                           </p>
                         </div>
@@ -371,7 +365,7 @@ export function Header() {
                         </div>
                         <div>
                           <p className="text-xs font-semibold text-foreground">Settings</p>
-                          <p className="text-[10px] text-muted-foreground">
+                          <p className="text-xs text-muted-foreground font-normal">
                             Trading preferences &amp; RPC
                           </p>
                         </div>
@@ -442,7 +436,7 @@ export function Header() {
                     </div>
                     <div>
                       <p className="text-xs font-semibold text-foreground">Platform Analysis</p>
-                      <p className="text-[10px] text-muted-foreground">
+                      <p className="text-xs text-muted-foreground font-normal">
                         Protocol supply &amp; activity
                       </p>
                     </div>
@@ -459,7 +453,7 @@ export function Header() {
                     </div>
                     <div>
                       <p className="text-xs font-semibold text-foreground">Staking</p>
-                      <p className="text-[10px] text-muted-foreground">
+                      <p className="text-xs text-muted-foreground font-normal">
                         USDC revenue distributions
                       </p>
                     </div>
@@ -470,10 +464,10 @@ export function Header() {
 
             {/* Available Balance / Equity */}
             <div className="hidden xl:block text-right pr-1 select-none">
-              <p className="data-label text-[9px] text-muted-foreground uppercase tracking-wider">
+              <p className="data-label text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 Equity
               </p>
-              <p className="tabular text-xs font-mono font-bold text-foreground">
+              <p className="tabular text-sm font-mono font-bold text-foreground">
                 ${fmtUsd(t.balance)}
               </p>
             </div>
@@ -526,8 +520,8 @@ export function Header() {
               onClick={() => t.setMode("perps")}
               className={
                 pathname === "/" && t.mode === "perps"
-                  ? "pill pill-ink h-7 px-2.5 text-[11px] font-semibold"
-                  : "pill h-7 px-2.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-white/60 transition-colors"
+                  ? "pill pill-ink h-7.5 px-3 text-xs font-semibold"
+                  : "pill h-7.5 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-white/60 transition-colors"
               }
             >
               <span className="flex items-center gap-1">
@@ -537,11 +531,16 @@ export function Header() {
             </Link>
             <Link
               to="/trade"
-              className="pill h-7 px-2 text-[11px] text-muted-foreground/70 cursor-not-allowed opacity-60 flex items-center gap-1 pointer-events-none"
-              title="1000x Trading Simulation (Locked · House Pool $2.4M / $5.0M to unlock)"
+              search={typeof window !== "undefined" && new URLSearchParams(window.location.search).get("pair") ? { pair: new URLSearchParams(window.location.search).get("pair")! } as any : undefined}
+              onClick={() => t.setMode("paper1000x")}
+              className={
+                (pathname === "/trade" || t.mode === "paper1000x") && pathname !== "/"
+                  ? "pill pill-ink h-7.5 px-3 text-xs font-semibold"
+                  : "pill h-7.5 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-white/60 transition-colors"
+              }
+              title="1000x Trading Simulation"
             >
               <span>1000x</span>
-              <span className="text-[9px]">🔒</span>
             </Link>
           </div>
 
@@ -550,7 +549,7 @@ export function Header() {
             <button
               type="button"
               onClick={() => setMobileMoreOpen((v) => !v)}
-              className={`pill h-7 px-2.5 text-[11px] font-medium gap-1 transition-colors cursor-pointer ${
+              className={`pill h-7.5 px-3 text-xs font-medium gap-1 transition-colors cursor-pointer ${
                 mobileMoreOpen || isMoreActive || isCandleActive || pathname === "/portfolio"
                   ? "pill-ink shadow-xs"
                   : "bg-secondary/80 text-muted-foreground hover:text-foreground border border-border/80"
@@ -585,7 +584,7 @@ export function Header() {
                     </div>
                     <div>
                       <p className="text-xs font-semibold text-foreground">Portfolio</p>
-                      <p className="text-[10px] text-muted-foreground">Balances &amp; open PnL</p>
+                      <p className="text-xs text-muted-foreground font-normal">Balances &amp; open PnL</p>
                     </div>
                   </Link>
 
@@ -602,7 +601,7 @@ export function Header() {
                     </div>
                     <div>
                       <p className="text-xs font-semibold text-foreground">Analysis</p>
-                      <p className="text-[10px] text-muted-foreground">Market depth &amp; volume</p>
+                      <p className="text-xs text-muted-foreground font-normal">Market depth &amp; volume</p>
                     </div>
                   </Link>
 
@@ -619,7 +618,7 @@ export function Header() {
                     </div>
                     <div>
                       <p className="text-xs font-semibold text-foreground">Leaderboard</p>
-                      <p className="text-[10px] text-muted-foreground">Rankings &amp; Candle Cup</p>
+                      <p className="text-xs text-muted-foreground font-normal">Rankings &amp; Candle Cup</p>
                     </div>
                   </Link>
                 </div>
@@ -640,7 +639,7 @@ export function Header() {
                     </div>
                     <div>
                       <p className="text-xs font-semibold text-foreground">Goal</p>
-                      <p className="text-[10px] text-muted-foreground">Price Target Calculator</p>
+                      <p className="text-xs text-muted-foreground font-normal">Price Target Calculator</p>
                     </div>
                   </Link>
 
@@ -658,7 +657,7 @@ export function Header() {
                     </div>
                     <div>
                       <p className="text-xs font-semibold text-foreground">Boost</p>
-                      <p className="text-[10px] text-muted-foreground">Boost Multiplier Calculator</p>
+                      <p className="text-xs text-muted-foreground font-normal">Boost Multiplier Calculator</p>
                     </div>
                   </Link>
                 </div>
@@ -677,7 +676,7 @@ export function Header() {
                     </div>
                     <div>
                       <p className="text-xs font-semibold text-foreground">CANDLE Analytics</p>
-                      <p className="text-[10px] text-muted-foreground">Platform tokenomics</p>
+                      <p className="text-xs text-muted-foreground font-normal">Platform tokenomics</p>
                     </div>
                   </Link>
 
@@ -694,7 +693,7 @@ export function Header() {
                     </div>
                     <div>
                       <p className="text-xs font-semibold text-foreground">Staking</p>
-                      <p className="text-[10px] text-muted-foreground">USDC revenue share</p>
+                      <p className="text-xs text-muted-foreground font-normal">USDC revenue share</p>
                     </div>
                   </Link>
                 </div>
@@ -711,7 +710,7 @@ export function Header() {
                     </div>
                     <div>
                       <p className="text-xs font-semibold text-foreground">Docs</p>
-                      <p className="text-[10px] text-muted-foreground">API &amp; terminal guides</p>
+                      <p className="text-xs text-muted-foreground font-normal">API &amp; terminal guides</p>
                     </div>
                   </a>
 
@@ -726,7 +725,7 @@ export function Header() {
                     </div>
                     <div>
                       <p className="text-xs font-semibold text-foreground">Roadmap</p>
-                      <p className="text-[10px] text-muted-foreground">Masterplan phases 0–3</p>
+                      <p className="text-xs text-muted-foreground font-normal">Masterplan phases 0–3</p>
                     </div>
                   </a>
 
@@ -743,7 +742,7 @@ export function Header() {
                     </div>
                     <div>
                       <p className="text-xs font-semibold text-foreground">Settings</p>
-                      <p className="text-[10px] text-muted-foreground">Preferences &amp; RPC</p>
+                      <p className="text-xs text-muted-foreground font-normal">Preferences &amp; RPC</p>
                     </div>
                   </Link>
                 </div>

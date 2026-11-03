@@ -24,9 +24,9 @@ export function WatchlistStrip({
   const displaySymbols = favorites.length > 0 ? favorites : ['BTC', 'ETH', 'SOL', 'HYPE'];
 
   return (
-    <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1 px-1 bg-white border border-border/70 rounded-xl shadow-2xs select-none text-[11px] font-mono">
-      <div className="flex items-center gap-1 text-[10px] uppercase font-bold text-muted-foreground px-1.5 shrink-0">
-        <Star className="size-3 text-[#FFD60A] fill-[#FFD60A]" />
+    <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1.5 px-2 bg-white border border-border/70 rounded-xl shadow-2xs select-none text-xs font-mono">
+      <div className="flex items-center gap-1 text-xs uppercase font-bold text-muted-foreground px-1.5 shrink-0">
+        <Star className="size-3.5 text-[#FFD60A] fill-[#FFD60A]" />
         <span>Watchlist</span>
       </div>
 
@@ -46,20 +46,20 @@ export function WatchlistStrip({
               type="button"
               onClick={() => onSelectMarket(raw)}
               className={cn(
-                "h-6 px-2 rounded-lg flex items-center gap-1.5 transition-all cursor-pointer border tabular-nums",
+                "h-7 px-2.5 rounded-lg flex items-center gap-2 transition-all cursor-pointer border tabular-nums text-xs",
                 isActive
                   ? "bg-foreground text-background font-bold border-foreground shadow-2xs"
                   : "bg-secondary/60 hover:bg-secondary text-foreground border-border/60 hover:border-border"
               )}
             >
-              <MarketLogo symbol={raw as MarketSymbol} size={13} />
-              <span className="font-sans font-bold text-[11px]">{raw}</span>
-              <span className={cn("text-[10px]", isActive ? "text-background/80" : "text-muted-foreground")}>
+              <MarketLogo symbol={raw as MarketSymbol} size={15} />
+              <span className="font-sans font-bold text-xs">{raw}</span>
+              <span className={cn("text-xs font-medium", isActive ? "text-background/90" : "text-muted-foreground")}>
                 ${fmtUsd(price, price >= 100 ? 1 : 2)}
               </span>
               <span
                 className={cn(
-                  "text-[9px] font-semibold",
+                  "text-xs font-bold",
                   isActive
                     ? (isUp ? "text-[#00D964]" : "text-[#FF453A]")
                     : (isUp ? "text-[#06964A]" : "text-[#FF3B30]")
@@ -75,9 +75,9 @@ export function WatchlistStrip({
           type="button"
           onClick={onOpenPicker}
           title="Add or search markets (Cmd+K)"
-          className="h-6 px-2 rounded-lg bg-secondary/80 hover:bg-secondary border border-border/60 text-muted-foreground hover:text-foreground flex items-center gap-1 transition-all cursor-pointer text-[10px]"
+          className="h-7 px-2.5 rounded-lg bg-secondary/80 hover:bg-secondary border border-border/60 text-muted-foreground hover:text-foreground flex items-center gap-1.5 transition-all cursor-pointer text-xs font-medium"
         >
-          <Plus className="size-3" />
+          <Plus className="size-3.5" />
           <span className="hidden sm:inline">Add</span>
         </button>
       </div>
