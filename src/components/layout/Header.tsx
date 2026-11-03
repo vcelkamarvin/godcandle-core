@@ -116,15 +116,12 @@ export function Header() {
               {(typeof process !== "undefined" && process.env?.["NEXT_PUBLIC_HL_NETWORK"]?.toUpperCase()) || "TESTNET"}
             </span>
           </div>
-          <div className="hidden sm:flex items-center gap-4 text-xs text-foreground/80 font-medium">
-            <span className="flex items-center gap-1.5">
-              <span className="size-2 rounded-full bg-[#00D964]" />
-              BUILDER CODE: <span className="text-[#2563EB] font-bold">GODCANDLE</span>
+          <div className="hidden sm:flex items-center gap-3 text-xs text-muted-foreground font-mono">
+            <span>
+              Builder: <span className="text-[#2563EB] font-bold">GODCANDLE</span>
             </span>
-            <span className="text-border">|</span>
-            <span>DIRECT L1 ROUTING</span>
-            <span className="text-border">|</span>
-            <span className="text-[#06964A] font-semibold">14ms LATENCY</span>
+            <span className="text-border">·</span>
+            <span className="text-[#06964A] font-medium">14ms latency</span>
           </div>
         </div>
 

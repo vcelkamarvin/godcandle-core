@@ -13,8 +13,7 @@ import { Button } from '@/components/ui/button';
 import { getMarket, type MarketSymbol } from '@/config/markets';
 import type { FeedSnap } from '@/lib/price-feed';
 import { MarketLogo } from './MarketLogo';
-import { useTrading } from './TradingProvider';
-import { fetchOpenOrders, fetchUserFundingHistory } from '@/lib/hyperliquid/market-data';
+import { fetchOpenOrders, fetchUserFundingHistory, marketStore } from '@/lib/hyperliquid/market-data';
 import { useAccount } from 'wagmi';
 
 interface Props {
@@ -64,7 +63,7 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
   // Total unrealized PnL
   const unrealizedPnl = useMemo(() => {
     return open.reduce((acc, pos) => {
-      const price = feeds[pos.market]?.price ?? pos.entry;
+      const price = feeds[pos.market]?.price ?? marketStore.getMid(pos.market) ?? pos.entry;
       return acc + pnlOf(pos, price);
     }, 0);
   }, [open, feeds]);
@@ -245,13 +244,13 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
                 </thead>
                 <tbody className="divide-y divide-border/40">
                   {open.map((pos) => {
-                    const price = feeds[pos.market]?.price ?? pos.entry;
+                    const price = feeds[pos.market]?.price ?? marketStore.getMid(pos.market) ?? pos.entry;
                     const market = getMarket(pos.market);
                     const pnl = pnlOf(pos, price);
                     const roi = (pnl / pos.stake) * 100;
                     const isUp = pnl >= 0;
-                    const liqP = liquidation(pos);
-                    const sz = (pos.stake * pos.leverage) / pos.entry;
+                    const liqP = (pos as any).liqPrice ?? (pos as any).liquidationPrice ?? liquidation(pos);
+                    const sz = (pos.stake * pos.leverage) / (pos.entry || 1);
 
                     return (
                       <tr key={pos.id} className="hover:bg-secondary/40 transition-colors">

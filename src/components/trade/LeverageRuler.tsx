@@ -128,17 +128,17 @@ export function LeverageRuler({
   const activePct = (clampedValue / maxLeverage) * 100;
 
   return (
-    <div className="space-y-3 font-sans select-none">
+    <div className="space-y-1.5 font-sans select-none">
       {/* White Ruler Box */}
       <div
         ref={rulerRef}
         onPointerDown={handlePointerDown}
         onWheel={handleWheel}
-        className="relative h-16 w-full rounded-xl border border-border/40 bg-white px-3.5 pt-3 pb-2 cursor-ew-resize overflow-hidden touch-none"
+        className="relative h-11 w-full rounded-xl border border-border/40 bg-white px-3.5 pt-2 pb-1.5 cursor-ew-resize overflow-hidden touch-none"
       >
         <div ref={trackRef} className="relative h-full w-full">
           {/* Ticks container */}
-          <div className="relative h-6 w-full">
+          <div className="relative h-4 w-full">
             {ticks.map((t) => {
               const isRightOfActive = t.tickLev > clampedValue;
               return (
@@ -146,7 +146,7 @@ export function LeverageRuler({
                   key={t.index}
                   style={{ left: `${t.pct}%` }}
                   className={`absolute top-0 -translate-x-1/2 rounded-full transition-colors ${
-                    t.isKey ? 'w-[1.5px] h-5' : 'w-[1px] h-2.5'
+                    t.isKey ? 'w-[1.5px] h-3.5' : 'w-[1px] h-2'
                   } ${isRightOfActive ? 'bg-[#00D964]' : 'bg-[#D4D4D8]'}`}
                 />
               );
@@ -155,12 +155,12 @@ export function LeverageRuler({
             {/* Prominent Black Selection Indicator Needle */}
             <div
               style={{ left: `${activePct}%` }}
-              className="absolute -top-1 -translate-x-1/2 w-[3px] h-7 bg-black rounded-full z-10 shadow-xs pointer-events-none"
+              className="absolute -top-0.5 -translate-x-1/2 w-[2.5px] h-5 bg-black rounded-full z-10 shadow-xs pointer-events-none"
             />
           </div>
 
           {/* Numerical Labels beneath key ticks */}
-          <div className="relative h-4 w-full">
+          <div className="relative h-3 w-full">
             {keyValues.map((kv) => {
               const pct = (kv / maxLeverage) * 100;
               const isHighlighted = kv >= clampedValue;
@@ -168,7 +168,7 @@ export function LeverageRuler({
                 <span
                   key={kv}
                   style={{ left: `${pct}%` }}
-                  className={`absolute top-0 -translate-x-1/2 font-mono text-xs font-semibold tabular-nums pointer-events-none transition-colors ${
+                  className={`absolute top-0 -translate-x-1/2 font-mono text-[10px] font-semibold tabular-nums pointer-events-none transition-colors leading-none ${
                     isHighlighted ? 'text-[#00D964]' : 'text-[#71717A]'
                   }`}
                 >
@@ -189,7 +189,7 @@ export function LeverageRuler({
               key={preset}
               type="button"
               onClick={() => onChange(preset)}
-              className={`flex-1 rounded-xl py-1 text-center font-mono text-xs font-semibold transition-all ${
+              className={`flex-1 rounded-lg py-0.5 text-center font-mono text-xs font-semibold transition-all cursor-pointer ${
                 isSelected
                   ? 'bg-black text-white shadow-xs'
                   : 'text-foreground/80 hover:text-foreground hover:bg-black/5'

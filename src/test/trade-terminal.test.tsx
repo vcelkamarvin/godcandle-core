@@ -221,6 +221,32 @@ describe("Trade Execution Mechanics", () => {
     expect(orderFormContent).toContain("sticky bottom-0");
     expect(orderFormContent).toContain("env(safe-area-inset-bottom)");
   });
+
+  it("verifies Tick timeframe uses LightweightCandleChart with AreaSeries and live trades", () => {
+    const fs = require("fs");
+    const path = require("path");
+    const chartContent = fs.readFileSync(path.resolve(__dirname, "../components/trade/LightweightCandleChart.tsx"), "utf-8");
+    const terminalContent = fs.readFileSync(path.resolve(__dirname, "../components/trade/TradeTerminal.tsx"), "utf-8");
+
+    expect(chartContent).toContain("AreaSeries");
+    expect(chartContent).toContain("isTick = interval === 'Tick'");
+    expect(chartContent).toContain("marketStore.subscribeTrades");
+    expect(terminalContent).toContain("interval={selectedTf}");
+  });
+
+  it("verifies 1000x mode unlocks 1000x leverage without duplicate quick chips", () => {
+    const fs = require("fs");
+    const path = require("path");
+    const orderFormContent = fs.readFileSync(path.resolve(__dirname, "../components/trade/OrderForm.tsx"), "utf-8");
+    const terminalContent = fs.readFileSync(path.resolve(__dirname, "../components/trade/TradeTerminal.tsx"), "utf-8");
+
+    // In 1000x mode, max leverage is 1000
+    expect(terminalContent).toContain("t?.mode === 'paper1000x' ? 1000");
+    expect(orderFormContent).toContain("isPaper ? 1000");
+
+    // Duplicate quick leverage presets above ruler are removed
+    expect(orderFormContent).not.toContain("[2, 5, 10, activeMaxLev].map");
+  });
 });
 
 

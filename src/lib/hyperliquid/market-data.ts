@@ -542,6 +542,11 @@ class HyperliquidMarketStore {
       }
     };
   }
+
+  public getMid(coin: string): number | undefined {
+    const raw = coin.replace("-USD", "");
+    return this.latestMids[raw] ?? this.latestMids[coin];
+  }
 }
 
 export const marketStore = new HyperliquidMarketStore();

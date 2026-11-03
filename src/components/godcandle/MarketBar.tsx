@@ -315,43 +315,43 @@ export function MarketBar({
               </span>
             </div>
 
-            {/* Inline Market Telemetry */}
-            <div className="hidden md:flex items-center gap-3 sm:gap-4 text-xs font-mono pl-3 border-l border-border/70 text-foreground select-none">
-              <div className="hidden lg:block" title={`Oracle Price: $${fmtUsd(midPx, getMarket(market).decimals)}`}>
-                <span className="block text-xs uppercase tracking-wider text-muted-foreground font-medium cursor-help">Mark (Oracle ⓘ)</span>
-                <span className="tabular font-bold text-foreground text-xs sm:text-sm">
+            {/* Inline Market Telemetry: Clean Minimalist Strip */}
+            <div className="hidden md:flex items-center gap-3 lg:gap-4 text-xs font-mono pl-3 border-l border-border/70 text-foreground select-none">
+              <div className="hidden lg:block" title={`Oracle / Index: $${fmtUsd(midPx, getMarket(market).decimals)}`}>
+                <span className="block text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Mark</span>
+                <span className="tabular font-semibold text-foreground text-xs">
                   ${fmtUsd(markPx, getMarket(market).decimals)}
                 </span>
               </div>
-              <div className="hidden lg:block">
-                <span className="block text-xs uppercase tracking-wider text-muted-foreground font-medium">Index</span>
-                <span className="tabular font-bold text-foreground text-xs sm:text-sm">
+              <div className="hidden xl:block">
+                <span className="block text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Index</span>
+                <span className="tabular font-semibold text-foreground text-xs">
                   ${fmtUsd(midPx, getMarket(market).decimals)}
                 </span>
               </div>
               <div>
-                <span className="block text-xs uppercase tracking-wider text-muted-foreground font-medium">Funding (Countdown)</span>
-                <span className="tabular font-bold text-[#06964A] text-xs sm:text-sm">
-                  {fundingRate.replace(' / 1h', '')} <span className="text-xs text-muted-foreground font-normal">({Math.floor(60 - (Date.now() / 60000) % 60)}m)</span>
+                <span className="block text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Funding</span>
+                <span className="tabular font-semibold text-[#06964A] text-xs">
+                  {fundingRate.replace(' / 1h', '')} <span className="text-[10px] text-muted-foreground font-normal">({Math.floor(60 - (Date.now() / 60000) % 60)}m)</span>
                 </span>
               </div>
               <div>
-                <span className="block text-xs uppercase tracking-wider text-muted-foreground font-medium">Open Interest</span>
-                <span className="tabular font-bold text-foreground text-xs sm:text-sm">$24.8M</span>
+                <span className="block text-[10px] uppercase tracking-wider text-muted-foreground font-medium">24h Vol</span>
+                <span className="tabular font-semibold text-foreground text-xs">{volume24h}</span>
               </div>
-              <div>
-                <span className="block text-xs uppercase tracking-wider text-muted-foreground font-medium">24h Volume</span>
-                <span className="tabular font-bold text-foreground text-xs sm:text-sm">{volume24h}</span>
+              <div className="hidden lg:block">
+                <span className="block text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Open Interest</span>
+                <span className="tabular font-semibold text-foreground text-xs">$24.8M</span>
               </div>
               <div className="hidden xl:block">
-                <span className="block text-xs uppercase tracking-wider text-muted-foreground font-medium">Max Leverage</span>
-                <span className="tabular font-bold text-foreground text-xs sm:text-sm">
-                  {getMarket(market).maxLeverage}×
+                <span className="block text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Max Leverage</span>
+                <span className="tabular font-semibold text-foreground text-xs">
+                  {is1000x ? '1000×' : `${getMarket(market).maxLeverage}×`}
                 </span>
               </div>
               <div className="hidden 2xl:block">
-                <span className="block text-xs uppercase tracking-wider text-muted-foreground font-medium">24h Low / High</span>
-                <span className="tabular font-bold text-foreground text-xs sm:text-sm">
+                <span className="block text-[10px] uppercase tracking-wider text-muted-foreground font-medium">24h Low / High</span>
+                <span className="tabular font-semibold text-foreground text-xs">
                   ${fmtUsd(low24h, 1)} / ${fmtUsd(high24h, 1)}
                 </span>
               </div>

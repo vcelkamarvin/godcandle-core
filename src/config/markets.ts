@@ -52,8 +52,9 @@ export const MARKETS: Market[] = [
   make("DOGE", "Dogecoin", 0.143, 5, 50, 0.00015),
 ];
 
-export const getMarket = (symbol: MarketSymbol): Market => {
-  const market = MARKETS.find((m) => m.symbol === symbol);
-  if (!market) throw new Error(`Unknown market: ${symbol}`);
-  return market;
+export const getMarket = (symbol: string): Market => {
+  const clean = (symbol || "BTC").replace("-USD", "") as MarketSymbol;
+  const market = MARKETS.find((m) => m.symbol === symbol || m.symbol === clean);
+  if (market) return market;
+  return make(clean, clean, 100, 2, 1000, 0.0001);
 };

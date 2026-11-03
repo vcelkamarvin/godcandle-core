@@ -68,7 +68,7 @@ export function OrderForm({
   const isPaper = mode === 'paper1000x' || t?.mode === 'paper1000x';
 
   // Active leverage clamp & state (1000x in paper mode, up to protocol max in perps mode)
-  const activeMaxLev = propMaxLev ?? t.engine.getMaxLeverage(asset);
+  const activeMaxLev = isPaper ? 1000 : (propMaxLev ?? t.engine.getMaxLeverage(asset));
   const [internalLeverage, setInternalLeverage] = useState(() =>
     clampLeverage(propLeverage || 10, activeMaxLev)
   );
@@ -342,7 +342,7 @@ export function OrderForm({
   }, [isSetupComplete, minNotionalError, numMargin, isPaper]);
 
   return (
-    <div className="w-full rounded-2xl border border-border/80 bg-white p-2.5 sm:p-3 space-y-2 shadow-xs font-sans text-foreground select-none">
+    <div className="w-full rounded-2xl border border-border/80 bg-white p-2 sm:p-2.5 space-y-1.5 shadow-xs font-sans text-foreground select-none">
       {/* 1. Header: Order Types [Market | Limit | Stop] & Margin Mode Toggle [Isolated | Cross] */}
       <div className="flex items-center justify-between pb-1 border-b border-border/60">
         <h2 className="text-xs sm:text-sm font-bold tracking-tight text-foreground font-sans">
@@ -556,37 +556,15 @@ export function OrderForm({
         </div>
       </div>
 
-      {/* 3. LEVERAGE Selector Card with Ruler & Quick Chips (2x, 5x, 10x, MAX) */}
-      <div className="rounded-xl bg-[#F5F5F4] p-2 space-y-1">
-        <div className="flex items-center justify-between">
+      {/* 3. LEVERAGE Selector Card with Ruler & Presets */}
+      <div className="rounded-xl bg-[#F5F5F4] p-1.5 space-y-0.5">
+        <div className="flex items-center justify-between px-0.5">
           <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             LEVERAGE
           </span>
-          {/* Quick leverage presets */}
-          <div className="flex items-center gap-1">
-            {[2, 5, 10, activeMaxLev].map((lev) => {
-              const label = lev === activeMaxLev ? 'MAX' : `${lev}x`;
-              return (
-                <button
-                  key={lev}
-                  type="button"
-                  onClick={() => handleLeverageChange(lev)}
-                  className={`px-2 py-0.5 rounded text-xs font-mono font-semibold cursor-pointer transition-colors ${
-                    internalLeverage === lev
-                      ? 'bg-black text-white'
-                      : 'bg-white text-muted-foreground hover:text-foreground'
-                  }`}
-                >
-                  {label}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Leverage Ruler */}
-        <div className="text-lg font-extrabold tracking-tight text-foreground font-mono leading-none py-0.5">
-          ×{internalLeverage}
+          <span className="text-sm font-extrabold tracking-tight text-foreground font-mono">
+            ×{internalLeverage}
+          </span>
         </div>
 
         <LeverageRuler
@@ -737,7 +715,7 @@ export function OrderForm({
       </div>
 
       {/* 6. Always Visible Preview (6 rows max): Notional, Margin, Impact Px, Liq, Fees, Break-even */}
-      <div className="rounded-xl border border-border/80 bg-white p-2.5 space-y-1.5 font-mono text-xs shadow-2xs">
+      <div className="rounded-xl border border-border/80 bg-white p-2 space-y-1 font-mono text-[11px] shadow-2xs">
         <div className="flex items-center justify-between">
           <span className="text-muted-foreground font-sans font-medium">Notional</span>
           <span className="font-bold text-foreground tabular-nums">${fmtUsd(notional, 2)}</span>
@@ -753,7 +731,7 @@ export function OrderForm({
           <span className="font-bold text-foreground tabular-nums">
             ${fmtUsd(impact.impactPrice, 2)}{' '}
             {impact.slippageBps > 0 && (
-              <span className="text-xs text-muted-foreground font-normal">
+              <span className="text-[10px] text-muted-foreground font-normal">
                 (+{impact.slippageBps.toFixed(1)} bps)
               </span>
             )}
@@ -773,7 +751,7 @@ export function OrderForm({
           </span>
           <span className="text-foreground font-bold tabular-nums">
             ${fmtUsd(feeAmount, 2)}{' '}
-            <span className="text-xs text-muted-foreground font-normal">
+            <span className="text-[10px] text-muted-foreground font-normal">
               (Taker ${fmtUsd(takerFeeUsd, 2)} + Builder ${fmtUsd(builderFeeUsd, 2)})
             </span>
           </span>
@@ -795,24 +773,24 @@ export function OrderForm({
       </div>
 
       {/* 7. Potential Returns (3 Compact Green Cards) */}
-      <div className="grid grid-cols-3 gap-1.5">
-        <div className="rounded-xl border border-[#B2ECC8]/60 bg-[#E8F8EE] p-1.5 text-center flex flex-col justify-center items-center gap-0.5">
-          <span className="font-mono text-xs font-semibold text-[#16A34A] leading-tight">If move +0.1%</span>
-          <span className="font-mono text-xs font-bold text-[#06964A] leading-tight">
+      <div className="grid grid-cols-3 gap-1 py-0.5">
+        <div className="rounded-lg border border-[#B2ECC8]/60 bg-[#E8F8EE] p-1 text-center flex flex-col justify-center items-center">
+          <span className="font-mono text-[10px] font-semibold text-[#16A34A] leading-none">If move +0.1%</span>
+          <span className="font-mono text-xs font-bold text-[#06964A] leading-tight mt-0.5">
             +${fmtUsd(profitAt01, profitAt01 < 10 ? 2 : 0)}
           </span>
         </div>
 
-        <div className="rounded-xl border border-[#B2ECC8]/60 bg-[#E8F8EE] p-1.5 text-center flex flex-col justify-center items-center gap-0.5">
-          <span className="font-mono text-xs font-semibold text-[#16A34A] leading-tight">If move +0.5%</span>
-          <span className="font-mono text-xs font-bold text-[#06964A] leading-tight">
+        <div className="rounded-lg border border-[#B2ECC8]/60 bg-[#E8F8EE] p-1 text-center flex flex-col justify-center items-center">
+          <span className="font-mono text-[10px] font-semibold text-[#16A34A] leading-none">If move +0.5%</span>
+          <span className="font-mono text-xs font-bold text-[#06964A] leading-tight mt-0.5">
             +${fmtUsd(profitAt05, profitAt05 < 10 ? 2 : 0)}
           </span>
         </div>
 
-        <div className="rounded-xl border border-[#B2ECC8]/60 bg-[#E8F8EE] p-1.5 text-center flex flex-col justify-center items-center gap-0.5">
-          <span className="font-mono text-xs font-semibold text-[#16A34A] leading-tight">If move +1%</span>
-          <span className="font-mono text-xs font-bold text-[#06964A] leading-tight">
+        <div className="rounded-lg border border-[#B2ECC8]/60 bg-[#E8F8EE] p-1 text-center flex flex-col justify-center items-center">
+          <span className="font-mono text-[10px] font-semibold text-[#16A34A] leading-none">If move +1%</span>
+          <span className="font-mono text-xs font-bold text-[#06964A] leading-tight mt-0.5">
             +${fmtUsd(profitAt10, profitAt10 < 10 ? 2 : 0)}
           </span>
         </div>
@@ -888,17 +866,17 @@ export function OrderForm({
           onClick={() => handleOrderClick('LONG')}
           disabled={isSubmitting || numMargin <= 0 || (Boolean(minNotionalError) && !isPaper) || (!isSetupComplete && !isPaper)}
           title={!isSetupComplete && !isPaper ? 'Complete wallet & agent setup to trade' : 'Press B to Long'}
-          className="h-11 sm:h-12 rounded-xl bg-[#00D964] text-black hover:bg-[#00C259] active:scale-[0.99] transition-all flex flex-col items-center justify-center shadow-xs cursor-pointer disabled:opacity-40 disabled:pointer-events-none py-0.5"
+          className="h-10 sm:h-11 rounded-xl bg-[#00D964] text-black hover:bg-[#00C259] active:scale-[0.99] transition-all flex flex-col items-center justify-center shadow-xs cursor-pointer disabled:opacity-40 disabled:pointer-events-none py-0.5"
         >
-          <div className="flex items-center gap-1.5">
-            <span className="text-sm sm:text-base font-black tracking-wide uppercase font-sans leading-none">
+          <div className="flex items-center gap-1.5 leading-none">
+            <span className="text-sm font-black tracking-wide uppercase font-sans">
               LONG
             </span>
-            <kbd className="hidden sm:inline px-1 py-0.2 rounded bg-black/15 text-xs font-mono font-bold">
+            <kbd className="hidden sm:inline px-1 py-0.2 rounded bg-black/15 text-[10px] font-mono font-bold">
               B
             </kbd>
           </div>
-          <span className="text-xs font-semibold text-black/80 font-sans leading-tight mt-0.5">
+          <span className="text-[11px] font-semibold text-black/80 font-sans leading-tight mt-0.5">
             Win +${fmtUsd(profitAt10, 0)} at +1%
           </span>
         </button>
@@ -909,17 +887,17 @@ export function OrderForm({
           onClick={() => handleOrderClick('SHORT')}
           disabled={isSubmitting || numMargin <= 0 || (Boolean(minNotionalError) && !isPaper) || (!isSetupComplete && !isPaper)}
           title={!isSetupComplete && !isPaper ? 'Complete wallet & agent setup to trade' : 'Press S to Short'}
-          className="h-11 sm:h-12 rounded-xl bg-[#FF3B30] text-white hover:bg-[#E0342A] active:scale-[0.99] transition-all flex flex-col items-center justify-center shadow-xs cursor-pointer disabled:opacity-40 disabled:pointer-events-none py-0.5"
+          className="h-10 sm:h-11 rounded-xl bg-[#FF3B30] text-white hover:bg-[#E0342A] active:scale-[0.99] transition-all flex flex-col items-center justify-center shadow-xs cursor-pointer disabled:opacity-40 disabled:pointer-events-none py-0.5"
         >
-          <div className="flex items-center gap-1.5">
-            <span className="text-sm sm:text-base font-black tracking-wide uppercase font-sans leading-none">
+          <div className="flex items-center gap-1.5 leading-none">
+            <span className="text-sm font-black tracking-wide uppercase font-sans">
               SHORT
             </span>
-            <kbd className="hidden sm:inline px-1 py-0.2 rounded bg-white/20 text-xs font-mono font-bold">
+            <kbd className="hidden sm:inline px-1 py-0.2 rounded bg-white/20 text-[10px] font-mono font-bold">
               S
             </kbd>
           </div>
-          <span className="text-xs font-semibold text-white/90 font-sans leading-tight mt-0.5">
+          <span className="text-[11px] font-semibold text-white/90 font-sans leading-tight mt-0.5">
             Win +${fmtUsd(profitAt10, 0)} at -1%
           </span>
         </button>

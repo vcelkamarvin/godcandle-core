@@ -3,6 +3,7 @@ import {
   createChart,
   ColorType,
   CandlestickSeries,
+  AreaSeries,
   HistogramSeries,
   LineStyle,
   type IChartApi,
@@ -10,7 +11,7 @@ import {
   type UTCTimestamp,
   type IPriceLine,
 } from 'lightweight-charts';
-import { fetchCandleSnapshot, marketStore, type HlCandle } from '@/lib/hyperliquid/market-data';
+import { fetchCandleSnapshot, marketStore, type HlCandle, type HlTrade } from '@/lib/hyperliquid/market-data';
 import { fmtUsd } from '@/lib/engine';
 
 export interface PriceLineTarget {
@@ -23,7 +24,7 @@ export interface PriceLineTarget {
 
 interface LightweightCandleChartProps {
   coin: string; // e.g. "BTC"
-  interval: string; // "1m" | "5m" | "15m" | "1h" | "4h" | "1D"
+  interval: string; // "1m" | "5m" | "15m" | "1h" | "4h" | "1D" | "Tick"
   entryPrice?: number | null | undefined;
   liquidationPrice?: number | null | undefined;
   takeProfitPrice?: number | null | undefined;
@@ -45,8 +46,11 @@ export function LightweightCandleChart({
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const candleSeriesRef = useRef<ISeriesApi<'Candlestick'> | null>(null);
+  const areaSeriesRef = useRef<ISeriesApi<'Area'> | null>(null);
   const volumeSeriesRef = useRef<ISeriesApi<'Histogram'> | null>(null);
   const priceLinesRef = useRef<IPriceLine[]>([]);
+
+  const isTick = interval === 'Tick';
 
   // Crosshair OHLC state
   const [ohlc, setOhlc] = useState<{
@@ -100,7 +104,7 @@ export function LightweightCandleChart({
       timeScale: {
         borderColor: '#E4E4E7',
         timeVisible: true,
-        secondsVisible: interval === '1m',
+        secondsVisible: interval === '1m' || isTick,
       },
       handleScroll: true,
       handleScale: true,
@@ -108,16 +112,31 @@ export function LightweightCandleChart({
 
     chartRef.current = chart;
 
-    // Add Candlestick series
-    const candleSeries = chart.addSeries(CandlestickSeries, {
-      upColor: '#00D964',
-      downColor: '#FF3B30',
-      borderUpColor: '#00D964',
-      borderDownColor: '#FF3B30',
-      wickUpColor: '#00D964',
-      wickDownColor: '#FF3B30',
-    });
-    candleSeriesRef.current = candleSeries;
+    if (isTick) {
+      // Area series for live Tick feed
+      const areaSeries = chart.addSeries(AreaSeries, {
+        topColor: 'rgba(0, 217, 100, 0.28)',
+        bottomColor: 'rgba(0, 217, 100, 0.00)',
+        lineColor: '#00D964',
+        lineWidth: 2,
+        priceLineVisible: true,
+        lastValueVisible: true,
+      });
+      areaSeriesRef.current = areaSeries;
+      candleSeriesRef.current = null;
+    } else {
+      // Candlestick series
+      const candleSeries = chart.addSeries(CandlestickSeries, {
+        upColor: '#00D964',
+        downColor: '#FF3B30',
+        borderUpColor: '#00D964',
+        borderDownColor: '#FF3B30',
+        wickUpColor: '#00D964',
+        wickDownColor: '#FF3B30',
+      });
+      candleSeriesRef.current = candleSeries;
+      areaSeriesRef.current = null;
+    }
 
     // Add Volume series in lower pane
     const volumeSeries = chart.addSeries(HistogramSeries, {
@@ -137,20 +156,36 @@ export function LightweightCandleChart({
       if (!param || !param.time || !param.seriesData) {
         return;
       }
-      const data = param.seriesData.get(candleSeries) as any;
       const volData = param.seriesData.get(volumeSeries) as any;
-      if (data) {
-        const timeStr = typeof param.time === 'number'
-          ? new Date(param.time * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-          : '';
-        setOhlc({
-          o: data.open,
-          h: data.high,
-          l: data.low,
-          c: data.close,
-          v: volData?.value ?? 0,
-          time: timeStr,
-        });
+      const timeStr = typeof param.time === 'number'
+        ? new Date(param.time * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+        : '';
+
+      if (isTick && areaSeriesRef.current) {
+        const areaData = param.seriesData.get(areaSeriesRef.current) as any;
+        if (areaData) {
+          const val = areaData.value;
+          setOhlc({
+            o: val,
+            h: val,
+            l: val,
+            c: val,
+            v: volData?.value ?? 0,
+            time: timeStr,
+          });
+        }
+      } else if (candleSeriesRef.current) {
+        const data = param.seriesData.get(candleSeriesRef.current) as any;
+        if (data) {
+          setOhlc({
+            o: data.open,
+            h: data.high,
+            l: data.low,
+            c: data.close,
+            v: volData?.value ?? 0,
+            time: timeStr,
+          });
+        }
       }
     });
 
@@ -170,14 +205,110 @@ export function LightweightCandleChart({
       ro.disconnect();
       chart.remove();
       chartRef.current = null;
+      candleSeriesRef.current = null;
+      areaSeriesRef.current = null;
+      volumeSeriesRef.current = null;
     };
-  }, [interval]);
+  }, [interval, isTick]);
 
   // Load snapshot candles and subscribe to live updates
   useEffect(() => {
     let isCancelled = false;
     const rawCoin = coin.replace('-USD', '');
 
+    if (isTick) {
+      // 1. Tick Mode: seed from recent 1m candles then pipe live trades and mids
+      async function loadTickBaseline() {
+        const startTime = Date.now() - 2 * 60 * 60 * 1000;
+        const candles = await fetchCandleSnapshot(rawCoin, '1m', startTime);
+        if (isCancelled || !areaSeriesRef.current || !volumeSeriesRef.current) return;
+
+        if (candles.length > 0) {
+          candles.sort((a, b) => a.t - b.t);
+          const tickData: any[] = [];
+          const volumeData: any[] = [];
+          let lastT = 0;
+          for (const c of candles) {
+            const timeSec = Math.floor(c.t / 1000) as UTCTimestamp;
+            if (timeSec <= lastT) continue;
+            lastT = timeSec;
+            tickData.push({ time: timeSec, value: c.c });
+            volumeData.push({
+              time: timeSec,
+              value: c.v,
+              color: c.c >= c.o ? 'rgba(0, 217, 100, 0.35)' : 'rgba(255, 59, 48, 0.35)',
+            });
+          }
+          areaSeriesRef.current.setData(tickData);
+          volumeSeriesRef.current.setData(volumeData);
+          const last = candles[candles.length - 1];
+          if (last) {
+            setLatestPrice(last.c);
+            setOhlc({
+              o: last.c,
+              h: last.c,
+              l: last.c,
+              c: last.c,
+              v: last.v,
+              time: new Date(last.t).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+            });
+          }
+          chartRef.current?.timeScale().fitContent();
+        }
+      }
+      loadTickBaseline();
+
+      let lastTickSec = 0;
+      const unsubTrades = marketStore.subscribeTrades(rawCoin, (trade: HlTrade) => {
+        if (isCancelled || !areaSeriesRef.current || !volumeSeriesRef.current) return;
+        let timeSec = Math.floor(trade.time / 1000) as UTCTimestamp;
+        if (timeSec < lastTickSec) timeSec = lastTickSec as UTCTimestamp;
+        lastTickSec = timeSec;
+
+        areaSeriesRef.current.update({
+          time: timeSec,
+          value: trade.px,
+        });
+        volumeSeriesRef.current.update({
+          time: timeSec,
+          value: trade.sz,
+          color: trade.side === 'buy' ? 'rgba(0, 217, 100, 0.35)' : 'rgba(255, 59, 48, 0.35)',
+        });
+        setLatestPrice(trade.px);
+        setOhlc({
+          o: trade.px,
+          h: trade.px,
+          l: trade.px,
+          c: trade.px,
+          v: trade.sz,
+          time: new Date(trade.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+        });
+      });
+
+      const unsubMids = marketStore.subscribeMids((mids: Record<string, number>) => {
+        if (isCancelled || !areaSeriesRef.current) return;
+        const px = mids[rawCoin];
+        if (px && px > 0) {
+          let timeSec = Math.floor(Date.now() / 1000) as UTCTimestamp;
+          if (timeSec < lastTickSec) timeSec = lastTickSec as UTCTimestamp;
+          lastTickSec = timeSec;
+
+          areaSeriesRef.current.update({
+            time: timeSec,
+            value: px,
+          });
+          setLatestPrice(px);
+        }
+      });
+
+      return () => {
+        isCancelled = true;
+        unsubTrades();
+        unsubMids();
+      };
+    }
+
+    // 2. Regular Candlestick interval mode
     async function loadData() {
       // 1 day for short TFs, 7-30 days for longer
       const days = interval === '1m' ? 1 : interval === '5m' ? 2 : interval === '15m' ? 5 : 30;
@@ -271,11 +402,11 @@ export function LightweightCandleChart({
       isCancelled = true;
       unsubscribe();
     };
-  }, [coin, interval]);
+  }, [coin, interval, isTick]);
 
   // Update dynamic horizontal price lines: Entry, Liquidation, TP, SL, and Limit orders
   useEffect(() => {
-    const series = candleSeriesRef.current;
+    const series: any = isTick ? areaSeriesRef.current : candleSeriesRef.current;
     if (!series) return;
 
     // Clear old lines
@@ -352,14 +483,30 @@ export function LightweightCandleChart({
         priceLinesRef.current.push(pl);
       }
     }
-  }, [entryPrice, liquidationPrice, takeProfitPrice, stopLossPrice, openOrders]);
+  }, [entryPrice, liquidationPrice, takeProfitPrice, stopLossPrice, openOrders, isTick]);
 
   return (
     <div className="relative w-full h-full min-h-[460px] flex flex-col bg-white select-none">
-      {/* Top Crosshair OHLC readout */}
+      {/* Top Crosshair OHLC / Tick readout */}
       <div className="absolute top-2 left-3 z-20 flex flex-wrap items-center gap-2.5 text-[10px] font-mono pointer-events-none bg-white/80 backdrop-blur-xs px-2 py-0.5 rounded-lg border border-border/40 shadow-2xs">
         <span className="font-bold text-foreground">{coin}-USD</span>
-        {ohlc ? (
+        {isTick ? (
+          <>
+            <span>
+              Tick: <span className="font-bold text-[#06964A]">${fmtUsd(latestPrice ?? ohlc?.c ?? 0, 2)}</span>
+            </span>
+            {ohlc?.v ? (
+              <span className="hidden sm:inline text-muted-foreground">
+                Sz: {ohlc.v.toLocaleString()}
+              </span>
+            ) : null}
+            {ohlc?.time && (
+              <span className="hidden sm:inline text-muted-foreground">
+                {ohlc.time}
+              </span>
+            )}
+          </>
+        ) : ohlc ? (
           <>
             <span>
               O: <span className="font-semibold text-foreground">${fmtUsd(ohlc.o, 2)}</span>
@@ -387,7 +534,7 @@ export function LightweightCandleChart({
             )}
           </>
         ) : (
-          <span className="text-muted-foreground">Loading candle telemetry...</span>
+          <span className="text-muted-foreground">Loading chart telemetry...</span>
         )}
       </div>
 

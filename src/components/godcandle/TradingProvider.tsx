@@ -205,7 +205,7 @@ function useTradingState() {
     tp?: number | null,
     sl?: number | null
   ) {
-    const price = feeds[market]?.price ?? getSnap(market).price;
+    const price = feeds[market]?.price ?? marketStore.getMid(market) ?? getSnap(market)?.price ?? 100;
 
     if (mode === "paper1000x") {
       const res = await paperEngineInstance.placeOrder(
@@ -285,7 +285,7 @@ function useTradingState() {
     const pos = positions.find((p) => p.id === target || p.market === target);
     if (!pos) return;
 
-    const price = feeds[pos.market]?.price ?? getSnap(pos.market).price;
+    const price = feeds[pos.market]?.price ?? marketStore.getMid(pos.market) ?? getSnap(pos.market)?.price ?? pos.entry;
 
     if (mode === "paper1000x") {
       const res = await paperEngineInstance.closePosition(pos.id, price);

@@ -11,8 +11,16 @@ let simulation: Simulation = {volatility:1,tickSpeed:200};
 let started = false;
 const listeners = new Set<()=>void>();
 const emit = () => listeners.forEach(l=>l());
-export function getTicks(symbol: MarketSymbol): Tick[] { return buffers?.[symbol] ?? []; }
-export const getSnap = (symbol: MarketSymbol = "BTC") => snapshots[symbol];
+export function getTicks(symbol: string): Tick[] {
+  const sym = symbol.replace("-USD", "") as MarketSymbol;
+  return buffers?.[sym] ?? [];
+}
+export const getSnap = (symbol: string = "BTC"): FeedSnap => {
+  const sym = symbol.replace("-USD", "") as MarketSymbol;
+  if (snapshots[sym]) return snapshots[sym]!;
+  const base = getMarket(sym).basePrice;
+  return { price: base, prev: base, open24: base * 0.991, lastTick: Date.now(), status: "open" };
+};
 export const getSimulation = () => simulation;
 export function setSimulation(next: Partial<Simulation>) { simulation = {...simulation,...next}; emit(); }
 export function setMarketStatus(symbol: MarketSymbol, status: MarketStatus) { snapshots = {...snapshots,[symbol]:{...snapshots[symbol],status}}; emit(); }
@@ -20,23 +28,29 @@ export function updateHlPrices(mids: Record<string, number>) {
   const now = Date.now();
   let changed = false;
   const next = { ...snapshots };
-  for (const m of MARKETS) {
-    const raw = m.symbol.replace("-USD", "");
-    const price = mids[raw] ?? mids[m.symbol];
+  if (!buffers) buffers = {} as any;
+
+  for (const [key, price] of Object.entries(mids)) {
+    const raw = key.replace("-USD", "") as MarketSymbol;
     if (price && Number.isFinite(price) && price > 0) {
-      const s = snapshots[m.symbol];
-      if (s && s.price !== price) {
-        next[m.symbol] = {
+      const s = next[raw] || {
+        price,
+        prev: price,
+        open24: price * 0.991,
+        lastTick: now,
+        status: "open" as MarketStatus,
+      };
+      if (s.price !== price) {
+        next[raw] = {
           ...s,
           prev: s.price,
           price,
           lastTick: now,
         };
-        const list = buffers?.[m.symbol];
-        if (list) {
-          list.push({ t: now, p: price });
-          while (list[0] && list[0].t < now - 24 * 3600 * 1000 - 60000) list.shift();
-        }
+        if (!buffers[raw]) buffers[raw] = [];
+        const list = buffers[raw]!;
+        list.push({ t: now, p: price });
+        while (list[0] && list[0].t < now - 24 * 3600 * 1000 - 60000) list.shift();
         changed = true;
       }
     }

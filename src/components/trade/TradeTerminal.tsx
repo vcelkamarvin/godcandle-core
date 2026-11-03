@@ -75,8 +75,8 @@ export function TradeTerminal() {
   });
   const rawSymbol = selectedMarket.symbol.replace('-USD', '');
 
-  // Determine dynamic max leverage from meta
-  const activeMaxLev = t.engine.getMaxLeverage(rawSymbol);
+  // Determine dynamic max leverage (1000x when in paper1000x mode)
+  const activeMaxLev = t?.mode === 'paper1000x' ? 1000 : t.engine.getMaxLeverage(rawSymbol);
   const [leverage, setLeverage] = useState(() =>
     Math.min(settings.defaultLeverage ?? 10, activeMaxLev)
   );
@@ -127,11 +127,11 @@ export function TradeTerminal() {
     return 'chart';
   });
 
-  // Clamp leverage when activeMaxLev or selected asset changes
+  // Clamp leverage when activeMaxLev, mode, or selected asset changes
   useEffect(() => {
-    const currentMax = t.engine.getMaxLeverage(rawSymbol);
+    const currentMax = t?.mode === 'paper1000x' ? 1000 : t.engine.getMaxLeverage(rawSymbol);
     setLeverage((prev) => Math.min(prev, currentMax));
-  }, [rawSymbol, t.engine]);
+  }, [rawSymbol, t?.mode, t.engine]);
 
   const currentPrice =
     (t?.feeds as Record<string, any>)?.[rawSymbol]?.price || selectedMarket.defaultPrice;
@@ -352,29 +352,18 @@ export function TradeTerminal() {
           {/* Chart Viewport */}
           <div className="relative flex-1 w-full min-h-[460px] bg-white">
             {chartMode === 'chart' ? (
-              selectedTf === 'Tick' ? (
-                <PriceChart
-                  market={rawSymbol}
-                  windowMs={30000}
-                  position={currentPosition}
-                  pnlLabel={pnlLabel}
-                  pnlPositive={posPnl >= 0}
-                  onClose={() => t?.close && currentPosition && t.close(currentPosition.id)}
-                />
-              ) : (
-                <LightweightCandleChart
-                  coin={rawSymbol}
-                  interval={selectedTf}
-                  entryPrice={currentPosition?.entry}
-                  liquidationPrice={
-                    currentPosition
-                      ? calcLiquidationPrice(currentPosition.entry, currentPosition.leverage, currentPosition.side)
-                      : null
-                  }
-                  takeProfitPrice={currentPosition?.tp}
-                  stopLossPrice={currentPosition?.sl}
-                />
-              )
+              <LightweightCandleChart
+                coin={rawSymbol}
+                interval={selectedTf}
+                entryPrice={currentPosition?.entry}
+                liquidationPrice={
+                  currentPosition
+                    ? calcLiquidationPrice(currentPosition.entry, currentPosition.leverage, currentPosition.side)
+                    : null
+                }
+                takeProfitPrice={currentPosition?.tp}
+                stopLossPrice={currentPosition?.sl}
+              />
             ) : (
               <Suspense
                 fallback={
