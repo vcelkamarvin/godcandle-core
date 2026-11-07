@@ -223,7 +223,7 @@ export function SharePnlModal({ trade, onClose }: SharePnlModalProps) {
     ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
     ctx.font = "18px 'Inter', sans-serif";
     ctx.textAlign = "center";
-    ctx.fillText("Simulated outcome model · quantyn.com", w / 2, 940);
+    ctx.fillText("Simulated outcome model · godcandle.io", w / 2, 940);
 
     return canvas;
   }, [normalized, hideAmounts]);
@@ -238,7 +238,7 @@ export function SharePnlModal({ trade, onClose }: SharePnlModalProps) {
       const dataUrl = canvas.toDataURL("image/png");
       const a = document.createElement("a");
       a.href = dataUrl;
-      a.download = `quantyn-pnl-${normalized.symbol.toLowerCase()}-${Date.now()}.png`;
+      a.download = `godcandle-pnl-${normalized.symbol.toLowerCase()}-${Date.now()}.png`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -432,7 +432,7 @@ export function SharePnlModal({ trade, onClose }: SharePnlModalProps) {
                 </div>
 
                 <div className="flex items-center justify-between pt-2 border-t border-[#21262D]/60 text-[10px] text-[#8B949E] font-mono">
-                  <span>quantyn.com</span>
+                  <span>godcandle.io</span>
                   <span>EVM 1000X PERP</span>
                 </div>
               </div>

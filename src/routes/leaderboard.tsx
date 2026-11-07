@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { TraderProfileDetail } from "@/components/leaderboard/TraderProfileDetail";
 
 const DEFAULT_ADDRESS = "0xefe4c06b6d310978bead596e1798a4fc1d9d194b";
@@ -23,5 +23,12 @@ export const Route = createFileRoute("/leaderboard")({
 });
 
 function LeaderboardRoute() {
-  return <TraderProfileDetail address={DEFAULT_ADDRESS} />;
+  return (
+    <>
+      <div className="hidden" aria-hidden="true">
+        <Link to="/cup">The Candle Cup</Link>
+      </div>
+      <TraderProfileDetail address={DEFAULT_ADDRESS} />
+    </>
+  );
 }

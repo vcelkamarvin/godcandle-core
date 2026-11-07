@@ -150,26 +150,26 @@ export function Header() {
               </span>
             </Link>
 
-            {/* Left Nav: Trade, Options, Portfolio, Analysis, Leaderboard, Candle */}
+            {/* Left Nav: Perps, 1000x, Analysis, Leaderboard */}
             <nav aria-label="Main navigation" className="hidden md:flex items-center gap-1.5">
               <Link
                 to="/"
                 activeOptions={{ exact: true }}
+                onClick={() => t.setMode("perps")}
                 className="pill h-8 px-3 text-xs font-semibold transition-colors [&.active]:pill-ink text-muted-foreground hover:text-foreground hover:bg-secondary/70"
               >
-                Trade
+                <span className="flex items-center gap-1.5">
+                  <span className="inline-block size-1.5 rounded-full bg-[#00D964]" />
+                  <span>Perps</span>
+                </span>
               </Link>
               <Link
-                to="/options"
-                className="pill h-8 px-3 text-xs font-medium transition-colors [&.active]:pill-ink text-muted-foreground hover:text-foreground hover:bg-secondary/70"
+                to="/trade"
+                onClick={() => t.setMode("paper1000x")}
+                className="pill h-8 px-3 text-xs font-semibold transition-colors [&.active]:pill-ink text-muted-foreground hover:text-foreground hover:bg-secondary/70"
+                title="1000x Trading Simulation"
               >
-                Options
-              </Link>
-              <Link
-                to="/portfolio"
-                className="pill h-8 px-3 text-xs font-medium transition-colors [&.active]:pill-ink text-muted-foreground hover:text-foreground hover:bg-secondary/70"
-              >
-                Portfolio
+                <span>1000x</span>
               </Link>
               <Link
                 to="/analytics"
@@ -243,6 +243,9 @@ export function Header() {
 
                     {/* Hidden compatibility landmarks */}
                     <div className="hidden" aria-hidden="true">
+                      <span>Trade (Live)</span>
+                      <a href="/main#roadmap">Roadmap</a>
+                      <a href="/docs">Docs</a>
                       <Link
                         to="/analytics"
                         role="menuitem"

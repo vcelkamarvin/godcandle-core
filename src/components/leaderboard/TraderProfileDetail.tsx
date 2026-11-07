@@ -24,7 +24,8 @@ import { toast } from "sonner";
 import { fetchTraderProfile, isValidEvmAddress } from "@/lib/hyperliquid/client";
 import type { TraderProfile } from "@/lib/hyperliquid/types";
 import { TRACKED_TRADERS } from "@/lib/hyperliquid/trackedTraders";
-import { formatUsd } from "@/lib/options";
+import { fmtUsd } from "@/lib/engine";
+const formatUsd = (val: number) => `$${fmtUsd(val)}`;
 import { cn } from "@/lib/utils";
 
 interface TraderProfileDetailProps {

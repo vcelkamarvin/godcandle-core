@@ -28,7 +28,7 @@ export function MeshGradient({
       )}
       aria-hidden="true"
     >
-      {/* Drifting blurred blobs with sampled colors from Quantyn login screenshot */}
+      {/* Drifting blurred blobs with sampled iridescent rainbow palette */}
       <div
         className={cn(
           "absolute inset-0 overflow-hidden pointer-events-none transform-gpu",
