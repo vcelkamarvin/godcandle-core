@@ -241,6 +241,66 @@ export function Header() {
                       </Link>
                     </div>
 
+                    {/* Tools: Goal, Boost, Teamwork */}
+                    <div className="py-1 space-y-0.5">
+                      <Link
+                        to="/goal"
+                        role="menuitem"
+                        onClick={() => setMoreOpen(false)}
+                        title="Price Target Calculator"
+                        className={`flex items-center gap-2.5 p-2 rounded-xl transition-colors text-left ${
+                          pathname === "/goal" ? "bg-secondary font-medium" : "hover:bg-secondary"
+                        }`}
+                      >
+                        <div className="flex size-7 items-center justify-center rounded-lg bg-[#EFF6FF] text-[#2563EB]">
+                          <Target className="size-3.5" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-semibold text-foreground">Goal</p>
+                          <p className="text-xs text-muted-foreground font-normal">
+                            Price Target Calculator
+                          </p>
+                        </div>
+                      </Link>
+
+                      <Link
+                        to="/boost"
+                        role="menuitem"
+                        onClick={() => setMoreOpen(false)}
+                        title="Boost Multiplier Calculator"
+                        className={`flex items-center gap-2.5 p-2 rounded-xl transition-colors text-left ${
+                          pathname === "/boost" ? "bg-secondary font-medium" : "hover:bg-secondary"
+                        }`}
+                      >
+                        <div className="flex size-7 items-center justify-center rounded-lg bg-[#FAF5FF] text-[#9333EA]">
+                          <Zap className="size-3.5" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-semibold text-foreground">Boost</p>
+                          <p className="text-xs text-muted-foreground font-normal">
+                            Multiplier Calculator
+                          </p>
+                        </div>
+                      </Link>
+
+                      <a
+                        href="/main#teamwork"
+                        role="menuitem"
+                        onClick={() => setMoreOpen(false)}
+                        className="flex items-center gap-2.5 p-2 rounded-xl hover:bg-secondary transition-colors text-left"
+                      >
+                        <div className="flex size-7 items-center justify-center rounded-lg bg-[#F0FDF4] text-[#16A34A]">
+                          <Sparkles className="size-3.5" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-semibold text-foreground">Teamwork</p>
+                          <p className="text-xs text-muted-foreground font-normal">
+                            Collaborative Syndicates
+                          </p>
+                        </div>
+                      </a>
+                    </div>
+
                     {/* Hidden compatibility landmarks */}
                     <div className="hidden" aria-hidden="true">
                       <span>Trade (Live)</span>
@@ -561,6 +621,60 @@ export function Header() {
                       <p className="text-xs text-muted-foreground font-normal">Rankings &amp; Candle Cup</p>
                     </div>
                   </Link>
+                </div>
+
+                {/* Mobile Tools: Goal, Boost, Teamwork */}
+                <div className="py-1 space-y-0.5">
+                  <Link
+                    to="/goal"
+                    role="menuitem"
+                    onClick={() => setMobileMoreOpen(false)}
+                    title="Price Target Calculator"
+                    className={`flex items-center gap-2.5 p-2 rounded-xl transition-colors text-left ${
+                      pathname === "/goal" ? "bg-secondary font-medium" : "hover:bg-secondary"
+                    }`}
+                  >
+                    <div className="flex size-7 items-center justify-center rounded-lg bg-[#EFF6FF] text-[#2563EB]">
+                      <Target className="size-3.5" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-foreground">Goal</p>
+                      <p className="text-xs text-muted-foreground font-normal">Price Target Calculator</p>
+                    </div>
+                  </Link>
+
+                  <Link
+                    to="/boost"
+                    role="menuitem"
+                    onClick={() => setMobileMoreOpen(false)}
+                    title="Boost Multiplier Calculator"
+                    className={`flex items-center gap-2.5 p-2 rounded-xl transition-colors text-left ${
+                      pathname === "/boost" ? "bg-secondary font-medium" : "hover:bg-secondary"
+                    }`}
+                  >
+                    <div className="flex size-7 items-center justify-center rounded-lg bg-[#FAF5FF] text-[#9333EA]">
+                      <Zap className="size-3.5" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-foreground">Boost</p>
+                      <p className="text-xs text-muted-foreground font-normal">Multiplier Calculator</p>
+                    </div>
+                  </Link>
+
+                  <a
+                    href="/main#teamwork"
+                    role="menuitem"
+                    onClick={() => setMobileMoreOpen(false)}
+                    className="flex items-center gap-2.5 p-2 rounded-xl hover:bg-secondary transition-colors text-left"
+                  >
+                    <div className="flex size-7 items-center justify-center rounded-lg bg-[#F0FDF4] text-[#16A34A]">
+                      <Sparkles className="size-3.5" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-foreground">Teamwork</p>
+                      <p className="text-xs text-muted-foreground font-normal">Collaborative Syndicates</p>
+                    </div>
+                  </a>
                 </div>
 
                 {/* Hidden compatibility landmarks */}
