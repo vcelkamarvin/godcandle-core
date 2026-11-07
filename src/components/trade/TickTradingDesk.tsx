@@ -804,8 +804,8 @@ export function FiveHundredXPage() {
               </div>
             </div>
 
-            {/* Position Dock: Compact docked view below chart */}
-            <div className="shrink-0 max-h-[160px] sm:max-h-[175px] overflow-y-auto rounded-[24px] bg-[var(--surface-1,#ffffff)] border border-[var(--border-subtle,rgba(10,10,12,0.08))] shadow-sm">
+            {/* Position Dock: Spacious, high-visibility active positions & orders dock */}
+            <div className="shrink-0 min-h-[220px] max-h-[280px] sm:max-h-[320px] overflow-y-auto rounded-[24px] bg-[var(--surface-1,#ffffff)] border border-[var(--border-subtle,rgba(10,10,12,0.08))] shadow-sm">
               <PositionDock
                 openPositions={openPositions}
                 history={history}
@@ -815,7 +815,7 @@ export function FiveHundredXPage() {
                 onSetTargetPrice={handleSetTargetPrice}
                 onShareTrade={(trade) => setSharedTrade(trade)}
                 liquidatingId={liquidatingId}
-                className="rounded-[24px] p-3 mt-0"
+                className="rounded-[24px] p-3 sm:p-4 mt-0 border-0 shadow-none"
               />
             </div>
           </div>

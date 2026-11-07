@@ -139,7 +139,7 @@ export function Header({ rightSlot }: Props) {
               />
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="font-extrabold text-[17px] tracking-tight text-[var(--text-primary,#0b0b0c)] font-sans">
+              <span className="font-normal text-[17px] tracking-tight text-[var(--text-primary,#0b0b0c)] font-sans">
                 godcandle
               </span>
               <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 font-bold uppercase">

@@ -141,7 +141,7 @@ export function Header() {
               className="group flex shrink-0 items-center gap-2 font-sans"
               aria-label="godcandle home"
             >
-              <span className="text-[19px] sm:text-[20px] font-bold tracking-tight text-foreground transition-opacity group-hover:opacity-85">
+              <span className="text-[19px] sm:text-[20px] font-normal tracking-tight text-foreground transition-opacity group-hover:opacity-85">
                 godcandle
               </span>
               <span className="hidden rounded-full border border-border bg-gradient-to-r from-[#CDC3F0]/40 via-[#FFDAC8]/40 to-[#A0D4CA]/40 px-2 py-0.5 text-xs font-semibold uppercase tracking-wider text-foreground sm:inline-flex items-center gap-1 font-mono">
@@ -150,14 +150,32 @@ export function Header() {
               </span>
             </Link>
 
-            {/* Left Nav: Trade (1000x Live Tick Desk), Leaderboard, Portfolio, Analysis, Candle */}
+            {/* Left Nav: Trade Segmented Switch (Perps / 1000x), Analysis, Leaderboard */}
             <nav aria-label="Main navigation" className="hidden md:flex items-center gap-1.5">
+              {/* Clean Segmented Trade Switch: Perps vs 1000x */}
+              <div className="flex items-center p-0.5 rounded-full bg-secondary/80 border border-border/80 text-xs font-medium mr-1">
+                <Link
+                  to="/"
+                  activeOptions={{ exact: true }}
+                  className="pill h-7 px-3 text-xs transition-all [&.active]:pill-ink [&.active]:shadow-xs text-muted-foreground hover:text-foreground"
+                >
+                  <span>Perps</span>
+                </Link>
+                <Link
+                  to="/trade"
+                  title="1000x Trading Simulation"
+                  className="pill h-7 px-3 text-xs transition-all [&.active]:pill-ink [&.active]:shadow-xs text-muted-foreground hover:text-foreground flex items-center gap-1"
+                >
+                  <span className="size-1.5 rounded-full bg-[#00D964]" />
+                  <span>1000x</span>
+                </Link>
+              </div>
+
               <Link
-                to="/"
-                activeOptions={{ exact: true }}
-                className="pill h-8 px-3 text-xs font-semibold transition-colors [&.active]:pill-ink text-muted-foreground hover:text-foreground hover:bg-secondary/70"
+                to="/analytics"
+                className="pill h-8 px-3 text-xs font-medium transition-colors [&.active]:pill-ink text-muted-foreground hover:text-foreground hover:bg-secondary/70"
               >
-                Trade
+                Analysis
               </Link>
               <Link
                 to="/leaderboard"
@@ -172,19 +190,13 @@ export function Header() {
                 Portfolio
               </Link>
               <Link
-                to="/analytics"
-                className="pill h-8 px-3 text-xs font-medium transition-colors [&.active]:pill-ink text-muted-foreground hover:text-foreground hover:bg-secondary/70"
-              >
-                Analysis
-              </Link>
-              <Link
                 to="/candle"
                 className="pill h-8 px-3 text-xs font-medium transition-colors [&.active]:pill-ink text-muted-foreground hover:text-foreground hover:bg-secondary/70"
               >
                 Candle
               </Link>
 
-              {/* Clean More Menu for secondary links (Docs, Roadmap, Settings) */}
+              {/* Clean More Menu for secondary links (Docs, Roadmap, Settings, Goal, Boost, Teamwork) */}
               <div className="relative" ref={moreRef}>
                 <button
                   type="button"
@@ -527,20 +539,29 @@ export function Header() {
 
         {/* Mobile Navigation Sub-row: Minimalist, intuitive, and uncluttered */}
         <div className="flex md:hidden items-center justify-between gap-1.5 border-t border-border bg-white/95 px-3 py-1.5 text-xs">
-          {/* Mobile Trading Segment */}
-          <div className="flex items-center p-0.5 rounded-full bg-secondary/80 border border-border/80 shrink-0">
+          {/* Mobile Trading Segment: Perps vs 1000x */}
+          <div className="flex items-center p-0.5 rounded-full bg-secondary/80 border border-border/80 shrink-0 text-xs font-medium">
             <Link
               to="/"
               className={
-                pathname === "/" || pathname === "/trade"
-                  ? "pill pill-ink h-7.5 px-3 text-xs font-semibold"
-                  : "pill h-7.5 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-white/60 transition-colors"
+                pathname === "/"
+                  ? "pill pill-ink h-7 px-2.5 text-xs font-semibold shadow-xs"
+                  : "pill h-7 px-2.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
               }
             >
-              <span className="flex items-center gap-1">
-                <span className="inline-block size-1.5 rounded-full bg-[#00D964]" />
-                <span>Trade (1000x)</span>
-              </span>
+              <span>Perps</span>
+            </Link>
+            <Link
+              to="/trade"
+              title="1000x Trading Simulation"
+              className={
+                pathname === "/trade"
+                  ? "pill pill-ink h-7 px-2.5 text-xs font-semibold shadow-xs flex items-center gap-1"
+                  : "pill h-7 px-2.5 text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+              }
+            >
+              <span className="size-1.5 rounded-full bg-[#00D964]" />
+              <span>1000x</span>
             </Link>
           </div>
 
