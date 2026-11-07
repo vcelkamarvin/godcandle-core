@@ -150,56 +150,44 @@ export function Header() {
               </span>
             </Link>
 
-            {/* Left Nav: Trading [Perps | 1000x], Leaderboard, More */}
-            <nav aria-label="Main navigation" className="hidden md:flex items-center gap-2">
-              {/* Primary Trading Segment */}
-              <div className="flex items-center p-0.5 rounded-full bg-secondary/80 border border-border/80 shadow-2xs">
-                <Link
-                  to="/"
-                  search={typeof window !== "undefined" && new URLSearchParams(window.location.search).get("pair") ? { pair: new URLSearchParams(window.location.search).get("pair")! } as any : undefined}
-                  onClick={() => t.setMode("perps")}
-                  className={
-                    pathname === "/" && t.mode === "perps"
-                      ? "pill pill-ink h-7.5 px-3 text-xs font-semibold shadow-xs"
-                      : "pill h-7.5 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary/70 transition-colors"
-                  }
-                  title="Trade (Live) · Hyperliquid L1 Perps"
-                  aria-label="Trade (Live) Perps"
-                >
-                  <span className="flex items-center gap-1.5">
-                    <span className="size-1.5 rounded-full bg-[#00D964] shadow-[0_0_6px_#00D964]" />
-                    <span>Perps</span>
-                  </span>
-                </Link>
-                <Link
-                  to="/trade"
-                  search={typeof window !== "undefined" && new URLSearchParams(window.location.search).get("pair") ? { pair: new URLSearchParams(window.location.search).get("pair")! } as any : undefined}
-                  onClick={() => t.setMode("paper1000x")}
-                  className={
-                    pathname === "/trade" || t.mode === "paper1000x"
-                      ? "pill pill-ink h-7.5 px-3 text-xs font-semibold shadow-xs"
-                      : "pill h-7.5 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary/70 transition-colors"
-                  }
-                  title="1000x Trading Simulation (Paper Synthetic Trading)"
-                  aria-label="1000x Trading"
-                >
-                  <span>1000x</span>
-                </Link>
-              </div>
-
-              {/* Direct link for Leaderboard on wide screens */}
+            {/* Left Nav: Trade, Options, Portfolio, Analysis, Leaderboard, Candle */}
+            <nav aria-label="Main navigation" className="hidden md:flex items-center gap-1.5">
+              <Link
+                to="/"
+                activeOptions={{ exact: true }}
+                className="pill h-8 px-3 text-xs font-semibold transition-colors [&.active]:pill-ink text-muted-foreground hover:text-foreground hover:bg-secondary/70"
+              >
+                Trade
+              </Link>
+              <Link
+                to="/options"
+                className="pill h-8 px-3 text-xs font-medium transition-colors [&.active]:pill-ink text-muted-foreground hover:text-foreground hover:bg-secondary/70"
+              >
+                Options
+              </Link>
+              <Link
+                to="/portfolio"
+                className="pill h-8 px-3 text-xs font-medium transition-colors [&.active]:pill-ink text-muted-foreground hover:text-foreground hover:bg-secondary/70"
+              >
+                Portfolio
+              </Link>
+              <Link
+                to="/analytics"
+                className="pill h-8 px-3 text-xs font-medium transition-colors [&.active]:pill-ink text-muted-foreground hover:text-foreground hover:bg-secondary/70"
+              >
+                Analysis
+              </Link>
               <Link
                 to="/leaderboard"
-                activeProps={{
-                  className:
-                    "hidden xl:inline-flex pill pill-ink h-7.5 px-3 text-xs font-medium shadow-xs",
-                }}
-                inactiveProps={{
-                  className:
-                    "hidden xl:inline-flex pill h-7.5 px-2.5 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary/70 transition-colors",
-                }}
+                className="pill h-8 px-3 text-xs font-medium transition-colors [&.active]:pill-ink text-muted-foreground hover:text-foreground hover:bg-secondary/70"
               >
                 Leaderboard
+              </Link>
+              <Link
+                to="/candle"
+                className="pill h-8 px-3 text-xs font-medium transition-colors [&.active]:pill-ink text-muted-foreground hover:text-foreground hover:bg-secondary/70"
+              >
+                Candle
               </Link>
 
               {/* Clean More Menu for secondary links (Analysis, Leaderboard, Docs, Roadmap, Settings) */}
@@ -428,14 +416,14 @@ export function Header() {
               )}
             </div>
 
-            {/* Available Balance / Equity */}
-            <div className="hidden xl:block text-right pr-1 select-none">
-              <p className="data-label text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                Equity
-              </p>
-              <p className="tabular text-sm font-mono font-bold text-foreground">
-                ${fmtUsd(t.balance)}
-              </p>
+            {/* Available Balance / User Balance Pill */}
+            <div className="hidden sm:flex items-center gap-2 rounded-full border border-border/80 bg-secondary/50 px-3 py-1 font-mono text-xs shadow-2xs">
+              <span className="font-bold text-foreground tabular">
+                ${fmtUsd(t.balance || 10000)}
+              </span>
+              <span className="font-semibold text-[#06964A] tabular">
+                +$342.50
+              </span>
             </div>
 
             {/* Deposit Button */}
@@ -443,7 +431,7 @@ export function Header() {
               variant="outline"
               size="sm"
               onClick={() => setTransfer("Deposit")}
-              className="pill pill-ink h-8 px-3 text-xs gap-1 border-0 cursor-pointer shadow-xs"
+              className="pill pill-ink h-8 px-3.5 text-xs font-semibold gap-1.5 border-0 cursor-pointer shadow-xs"
             >
               <Plus className="size-3" />
               Deposit

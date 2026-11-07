@@ -2,6 +2,7 @@ import { MARKETS, type MarketSymbol } from "@/config/markets";
 import { pnlOf, liquidation, type ClosedTrade, type Position } from "./engine";
 export const INITIAL_BALANCE = 4823;
 export const DEMO_BALANCE = 10000;
+export const SHARED_BTC_PRICE = 64299.60;
 export interface Tick { t: number; p: number }
 // 24h of coarse synthetic history (15s steps) plus a fine 60s tail (200ms steps)
 // so chart timeframes from 1m up to 1D all have data to draw.
