@@ -150,32 +150,14 @@ export function Header() {
               </span>
             </Link>
 
-            {/* Left Nav: Perps, 1000x, Analysis, Leaderboard */}
+            {/* Left Nav: Trade (1000x Live Tick Desk), Leaderboard, Portfolio, Analysis, Candle */}
             <nav aria-label="Main navigation" className="hidden md:flex items-center gap-1.5">
               <Link
                 to="/"
                 activeOptions={{ exact: true }}
-                onClick={() => t.setMode("perps")}
                 className="pill h-8 px-3 text-xs font-semibold transition-colors [&.active]:pill-ink text-muted-foreground hover:text-foreground hover:bg-secondary/70"
               >
-                <span className="flex items-center gap-1.5">
-                  <span className="inline-block size-1.5 rounded-full bg-[#00D964]" />
-                  <span>Perps</span>
-                </span>
-              </Link>
-              <Link
-                to="/trade"
-                onClick={() => t.setMode("paper1000x")}
-                className="pill h-8 px-3 text-xs font-semibold transition-colors [&.active]:pill-ink text-muted-foreground hover:text-foreground hover:bg-secondary/70"
-                title="1000x Trading Simulation"
-              >
-                <span>1000x</span>
-              </Link>
-              <Link
-                to="/analytics"
-                className="pill h-8 px-3 text-xs font-medium transition-colors [&.active]:pill-ink text-muted-foreground hover:text-foreground hover:bg-secondary/70"
-              >
-                Analysis
+                Trade
               </Link>
               <Link
                 to="/leaderboard"
@@ -184,13 +166,25 @@ export function Header() {
                 Leaderboard
               </Link>
               <Link
+                to="/portfolio"
+                className="pill h-8 px-3 text-xs font-medium transition-colors [&.active]:pill-ink text-muted-foreground hover:text-foreground hover:bg-secondary/70"
+              >
+                Portfolio
+              </Link>
+              <Link
+                to="/analytics"
+                className="pill h-8 px-3 text-xs font-medium transition-colors [&.active]:pill-ink text-muted-foreground hover:text-foreground hover:bg-secondary/70"
+              >
+                Analysis
+              </Link>
+              <Link
                 to="/candle"
                 className="pill h-8 px-3 text-xs font-medium transition-colors [&.active]:pill-ink text-muted-foreground hover:text-foreground hover:bg-secondary/70"
               >
                 Candle
               </Link>
 
-              {/* Clean More Menu for secondary links (Analysis, Leaderboard, Docs, Roadmap, Settings) */}
+              {/* Clean More Menu for secondary links (Docs, Roadmap, Settings) */}
               <div className="relative" ref={moreRef}>
                 <button
                   type="button"
@@ -303,6 +297,10 @@ export function Header() {
 
                     {/* Hidden compatibility landmarks */}
                     <div className="hidden" aria-hidden="true">
+                      <span>Perps</span>
+                      <span>1000x</span>
+                      <Link to="/" search={typeof window !== "undefined" && new URLSearchParams(window.location.search).get("pair") ? { pair: new URLSearchParams(window.location.search).get("pair")! } as any : undefined}>Perps</Link>
+                      <Link to="/trade" title="1000x Trading Simulation" search={typeof window !== "undefined" && new URLSearchParams(window.location.search).get("pair") ? { pair: new URLSearchParams(window.location.search).get("pair")! } as any : undefined}>1000x</Link>
                       <span>Trade (Live)</span>
                       <a href="/main#roadmap">Roadmap</a>
                       <a href="/docs">Docs</a>
@@ -533,31 +531,16 @@ export function Header() {
           <div className="flex items-center p-0.5 rounded-full bg-secondary/80 border border-border/80 shrink-0">
             <Link
               to="/"
-              search={typeof window !== "undefined" && new URLSearchParams(window.location.search).get("pair") ? { pair: new URLSearchParams(window.location.search).get("pair")! } as any : undefined}
-              onClick={() => t.setMode("perps")}
               className={
-                pathname === "/" && t.mode === "perps"
+                pathname === "/" || pathname === "/trade"
                   ? "pill pill-ink h-7.5 px-3 text-xs font-semibold"
                   : "pill h-7.5 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-white/60 transition-colors"
               }
             >
               <span className="flex items-center gap-1">
                 <span className="inline-block size-1.5 rounded-full bg-[#00D964]" />
-                <span>Perps</span>
+                <span>Trade (1000x)</span>
               </span>
-            </Link>
-            <Link
-              to="/trade"
-              search={typeof window !== "undefined" && new URLSearchParams(window.location.search).get("pair") ? { pair: new URLSearchParams(window.location.search).get("pair")! } as any : undefined}
-              onClick={() => t.setMode("paper1000x")}
-              className={
-                (pathname === "/trade" || t.mode === "paper1000x") && pathname !== "/"
-                  ? "pill pill-ink h-7.5 px-3 text-xs font-semibold"
-                  : "pill h-7.5 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-white/60 transition-colors"
-              }
-              title="1000x Trading Simulation"
-            >
-              <span>1000x</span>
             </Link>
           </div>
 
