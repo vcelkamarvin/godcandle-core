@@ -102,28 +102,28 @@ export function PositionDock({
   return (
     <div
       className={cn(
-        "w-full bg-[#14161B] border border-white/[0.08] rounded-[24px] p-4 sm:p-6 select-none mt-2",
+        "w-full bg-white border border-border rounded-[24px] p-4 sm:p-5 select-none mt-2 shadow-xs text-foreground",
         className,
       )}
     >
       {/* Dock Tabs Header */}
-      <div className="flex flex-wrap items-center justify-between pb-2.5 border-b border-white/[0.08] gap-2">
-        <div className="flex items-center gap-1 sm:gap-1.5 bg-[#0E0F13] p-0.5 rounded-full border border-white/[0.06]">
+      <div className="flex flex-wrap items-center justify-between pb-2.5 border-b border-border gap-2">
+        <div className="flex items-center gap-1 sm:gap-1.5 bg-secondary/80 p-0.5 rounded-full border border-border/60">
           <button
             type="button"
             onClick={() => setActiveTab("open")}
             className={cn(
               "rounded-full px-3 py-1 text-[12px] font-medium transition-all cursor-pointer flex items-center gap-1.5",
               activeTab === "open"
-                ? "bg-[#1E2028] text-white shadow-sm border border-white/10"
-                : "bg-transparent text-[#9A9CA3] hover:text-white",
+                ? "bg-white text-foreground shadow-xs font-bold"
+                : "bg-transparent text-muted-foreground hover:text-foreground",
             )}
           >
             <span>Open</span>
             <span
               className={cn(
                 "px-1.5 py-0.2 rounded-full text-xs font-mono",
-                openPositions.length > 0 ? "bg-[#3A63E6] text-white" : "bg-white/10 text-[#9A9CA3]",
+                openPositions.length > 0 ? "bg-[#3A63E6] text-white" : "bg-black/5 text-muted-foreground",
               )}
             >
               {openPositions.length}
@@ -136,12 +136,12 @@ export function PositionDock({
             className={cn(
               "rounded-full px-3 py-1 text-[12px] font-medium transition-all cursor-pointer flex items-center gap-1.5",
               activeTab === "history"
-                ? "bg-[#1E2028] text-white shadow-sm border border-white/10"
-                : "bg-transparent text-[#9A9CA3] hover:text-white",
+                ? "bg-white text-foreground shadow-xs font-bold"
+                : "bg-transparent text-muted-foreground hover:text-foreground",
             )}
           >
             <span>History</span>
-            <span className="px-1.5 py-0.2 rounded-full text-xs font-mono bg-white/10 text-[#9A9CA3]">
+            <span className="px-1.5 py-0.2 rounded-full text-xs font-mono bg-black/5 text-muted-foreground">
               {history.length}
             </span>
           </button>
@@ -152,8 +152,8 @@ export function PositionDock({
             className={cn(
               "rounded-full px-3 py-1 text-[12px] font-medium transition-all cursor-pointer flex items-center gap-1.5",
               activeTab === "stats"
-                ? "bg-[#1E2028] text-white shadow-sm border border-white/10"
-                : "bg-transparent text-[#9A9CA3] hover:text-white",
+                ? "bg-white text-foreground shadow-xs font-bold"
+                : "bg-transparent text-muted-foreground hover:text-foreground",
             )}
           >
             <span>Stats</span>
@@ -162,7 +162,7 @@ export function PositionDock({
 
         {/* Live Summary Headline */}
         <div className="flex items-center gap-2">
-          <span className="text-xs font-mono text-[#9A9CA3] hidden md:inline">
+          <span className="text-xs font-mono text-muted-foreground hidden md:inline">
             Cumulative Realized P&amp;L:
           </span>
           <span
@@ -183,17 +183,17 @@ export function PositionDock({
         <div className="pt-2">
           {openPositions.length === 0 ? (
             /* Empty State with Signature Mesh Gradient */
-            <div className="relative rounded-[16px] overflow-hidden border border-white/[0.08] bg-[#0E0F13] p-3 text-center select-none min-h-[90px] flex items-center justify-center">
-              <div className="absolute inset-0 opacity-25 pointer-events-none">
-                <MeshGradient animated={true} grainOpacity={0.07} />
+            <div className="relative rounded-[16px] overflow-hidden border border-border bg-secondary/40 p-3 text-center select-none min-h-[90px] flex items-center justify-center">
+              <div className="absolute inset-0 opacity-20 pointer-events-none">
+                <MeshGradient animated={true} grainOpacity={0.05} />
               </div>
               <div className="relative z-10 max-w-sm flex items-center justify-center gap-3">
-                <div className="size-8 rounded-full bg-[#191B22] border border-white/10 flex items-center justify-center shrink-0 text-[#6FB2F7] shadow-lg">
+                <div className="size-8 rounded-full bg-white border border-border flex items-center justify-center shrink-0 text-[#2563EB] shadow-xs">
                   <Layers className="size-4" />
                 </div>
                 <div className="text-left">
-                  <h3 className="text-[13px] font-semibold text-white">No Open Positions</h3>
-                  <p className="text-xs text-[#9A9CA3] leading-snug">
+                  <h3 className="text-[13px] font-semibold text-foreground">No Open Positions</h3>
+                  <p className="text-xs text-muted-foreground leading-snug">
                     Model an ultra-high leverage scalp above. Use the 1000x chip or 1-tap quick
                     trade to test instantaneous liquidation distance.
                   </p>
@@ -240,26 +240,22 @@ export function PositionDock({
                   <div
                     key={pos.id}
                     className={cn(
-                      "min-w-[85vw] sm:min-w-[320px] md:min-w-0 snap-center rounded-[18px] bg-[#14161B] border border-white/[0.08] overflow-hidden flex flex-col justify-between shadow-lg transition-all duration-300",
+                      "min-w-[85vw] sm:min-w-[320px] md:min-w-0 snap-center rounded-[18px] bg-white border border-border overflow-hidden flex flex-col justify-between shadow-xs transition-all duration-300",
                       isLiquidating && "animate-shatter-out border-[#FF4343]",
                     )}
                   >
                     {/* 1. Header Strip with Signature Blue Mesh Gradient */}
-                    <div className="relative h-8 px-3 flex items-center justify-between overflow-hidden select-none">
-                      <div className="absolute inset-0 pointer-events-none">
-                        <MeshGradient animated={false} grainOpacity={0.06} subtle={true} />
-                      </div>
-
+                    <div className="relative h-8 px-3 flex items-center justify-between overflow-hidden select-none bg-secondary/50 border-b border-border">
                       <div className="relative z-10 flex items-center gap-1.5">
-                        <span className="font-bold text-[13px] text-white tracking-wide">
+                        <span className="font-bold text-[13px] text-foreground tracking-wide">
                           {pos.symbol}/USD
                         </span>
                         <span
                           className={cn(
                             "px-1.5 py-0.2 rounded-full text-xs font-mono font-bold uppercase",
                             pos.side === "long"
-                              ? "bg-[#00E599]/20 text-[#00E599] border border-[#00E599]/40"
-                              : "bg-[#FF4343]/20 text-[#FF4343] border border-[#FF4343]/40",
+                              ? "bg-[#087F4D]/10 text-[#087F4D] border border-[#087F4D]/30"
+                              : "bg-[#D92D45]/10 text-[#D92D45] border border-[#D92D45]/30",
                           )}
                         >
                           {pos.side}
@@ -267,10 +263,10 @@ export function PositionDock({
                       </div>
 
                       <div className="relative z-10 flex items-center gap-1.5">
-                        <span className="px-1.5 py-0.2 rounded-full text-xs font-mono font-bold bg-[#14161B]/80 text-white border border-white/20">
+                        <span className="px-1.5 py-0.2 rounded-full text-xs font-mono font-bold bg-white text-foreground border border-border">
                           {pos.leverage}x
                         </span>
-                        <span className="size-1.5 rounded-full bg-[#3A63E6] shadow-[0_0_8px_#3A63E6]" />
+                        <span className="size-1.5 rounded-full bg-[#2563EB]" />
                       </div>
                     </div>
 
@@ -282,7 +278,7 @@ export function PositionDock({
                           <div
                             className={cn(
                               "text-[22px] sm:text-[24px] font-bold font-mono tracking-tight leading-none",
-                              isProfit ? "text-[#00E599]" : "text-[#FF4343]",
+                              isProfit ? "text-[#087F4D]" : "text-[#D92D45]",
                             )}
                           >
                             {formatPnl(currentPnl)}
@@ -290,7 +286,7 @@ export function PositionDock({
                           <span
                             className={cn(
                               "text-xs font-mono font-semibold",
-                              isProfit ? "text-[#00E599]" : "text-[#FF4343]",
+                              isProfit ? "text-[#087F4D]" : "text-[#D92D45]",
                             )}
                           >
                             {formatPct(pnlPct)} of stake
@@ -298,9 +294,9 @@ export function PositionDock({
                         </div>
 
                         <div className="text-right">
-                          <span className="text-xs text-[#9A9CA3] block">TIME OPEN</span>
-                          <span className="text-xs font-mono text-white flex items-center justify-end gap-1">
-                            <Clock className="size-2.5 text-[#9A9CA3]" />
+                          <span className="text-xs text-muted-foreground block">TIME OPEN</span>
+                          <span className="text-xs font-mono text-foreground flex items-center justify-end gap-1">
+                            <Clock className="size-2.5 text-muted-foreground" />
                             {durationStr}
                           </span>
                         </div>
@@ -309,28 +305,28 @@ export function PositionDock({
                       {/* Liquidation Distance Bar */}
                       <div>
                         <div className="flex items-center justify-between text-xs font-mono mb-1">
-                          <span className="text-[#9A9CA3] flex items-center gap-1 text-xs">
+                          <span className="text-muted-foreground flex items-center gap-1 text-xs">
                             Distance to Liq
                             {isDanger && (
-                              <AlertTriangle className="size-3 text-[#FF4343] animate-pulse" />
+                              <AlertTriangle className="size-3 text-[#D92D45] animate-pulse" />
                             )}
                           </span>
                           <span
                             className={cn(
                               "font-bold tabular-nums text-xs",
-                              isDanger ? "text-[#FF4343]" : "text-white",
+                              isDanger ? "text-[#D92D45]" : "text-foreground",
                             )}
                           >
                             {Math.max(0, currentDistPct).toFixed(2)}% remaining
                           </span>
                         </div>
 
-                        <div className="w-full h-1.5 rounded-full bg-[#1E2028] overflow-hidden p-0.5 border border-white/[0.04]">
+                        <div className="w-full h-1.5 rounded-full bg-secondary overflow-hidden p-0.5 border border-border/40">
                           <div
                             className={cn(
                               "h-full rounded-full transition-all duration-300",
                               isDanger
-                                ? "bg-[#FF4343] animate-soft-pulse"
+                                ? "bg-[#D92D45] animate-soft-pulse"
                                 : remainingPct > 50
                                   ? "bg-[#2563EB]"
                                   : "bg-[#3B82F6]",
@@ -341,52 +337,52 @@ export function PositionDock({
                       </div>
 
                       {/* 6-Metric Details Grid */}
-                      <div className="grid grid-cols-3 gap-1.5 p-2 rounded-[12px] bg-[#0E0F13] border border-white/[0.04] text-xs font-mono">
+                      <div className="grid grid-cols-3 gap-1.5 p-2 rounded-[12px] bg-secondary/50 border border-border/60 text-xs font-mono">
                         <div>
-                          <span className="text-[#8B8D93] block text-xs font-medium">ENTRY</span>
-                          <span className="text-white font-semibold text-xs">
+                          <span className="text-muted-foreground block text-xs font-medium">ENTRY</span>
+                          <span className="text-foreground font-semibold text-xs">
                             ${Math.round(pos.entryPrice).toLocaleString("en-US")}
                           </span>
                         </div>
                         <div>
-                          <span className="text-[#8B8D93] block text-xs font-medium">MARK</span>
-                          <span className="text-white font-semibold text-xs">
+                          <span className="text-muted-foreground block text-xs font-medium">MARK</span>
+                          <span className="text-foreground font-semibold text-xs">
                             ${Math.round(mark).toLocaleString("en-US")}
                           </span>
                         </div>
                         <div>
-                          <span className="text-[#8B8D93] block text-xs font-medium">LIQ PRICE</span>
-                          <span className="text-[#FF4343] font-bold text-xs">
+                          <span className="text-muted-foreground block text-xs font-medium">LIQ PRICE</span>
+                          <span className="text-[#D92D45] font-bold text-xs">
                             ${Math.round(pos.liqPrice).toLocaleString("en-US")}
                           </span>
                         </div>
                         <div>
-                          <span className="text-[#8B8D93] block text-xs font-medium">TARGET</span>
-                          <span className="text-[#00E599] font-semibold text-xs">
+                          <span className="text-muted-foreground block text-xs font-medium">TARGET</span>
+                          <span className="text-[#087F4D] font-semibold text-xs">
                             {pos.targetPrice
                               ? `$${Math.round(pos.targetPrice).toLocaleString("en-US")}`
                               : "None"}
                           </span>
                         </div>
                         <div>
-                          <span className="text-[#8B8D93] block text-xs font-medium">NOTIONAL</span>
-                          <span className="text-white font-semibold text-xs">{formatUsd(notional)}</span>
+                          <span className="text-muted-foreground block text-xs font-medium">NOTIONAL</span>
+                          <span className="text-foreground font-semibold text-xs">{formatUsd(notional)}</span>
                         </div>
                         <div>
-                          <span className="text-[#8B8D93] block text-xs font-medium">STAKE</span>
-                          <span className="text-white font-semibold text-xs">${pos.stake}</span>
+                          <span className="text-muted-foreground block text-xs font-medium">STAKE</span>
+                          <span className="text-foreground font-semibold text-xs">${pos.stake}</span>
                         </div>
                       </div>
 
                       {/* Inline Target Price Form if editing */}
                       {editingTargetId === pos.id && (
-                        <div className="flex items-center gap-1.5 p-1.5 rounded-[12px] bg-[#191B22] border border-white/10 animate-in fade-in duration-150">
+                        <div className="flex items-center gap-1.5 p-1.5 rounded-[12px] bg-secondary border border-border animate-in fade-in duration-150">
                           <input
                             type="number"
                             value={tempTargetInput}
                             onChange={(e) => setTempTargetInput(e.target.value)}
                             placeholder="Target price..."
-                            className="flex-1 bg-transparent text-xs font-mono text-white outline-none px-1.5"
+                            className="flex-1 bg-transparent text-xs font-mono text-foreground outline-none px-1.5"
                           />
                           <button
                             type="button"
@@ -398,14 +394,14 @@ export function PositionDock({
                               }
                               setEditingTargetId(null);
                             }}
-                            className="px-2.5 py-0.5 rounded-full bg-[#3A63E6] text-white text-xs font-semibold cursor-pointer"
+                            className="px-2.5 py-0.5 rounded-full bg-[#2563EB] text-white text-xs font-semibold cursor-pointer"
                           >
                             Save
                           </button>
                           <button
                             type="button"
                             onClick={() => setEditingTargetId(null)}
-                            className="px-1.5 py-0.5 rounded-full text-[#9A9CA3] text-xs cursor-pointer"
+                            className="px-1.5 py-0.5 rounded-full text-muted-foreground text-xs cursor-pointer"
                           >
                             Cancel
                           </button>
@@ -417,7 +413,7 @@ export function PositionDock({
                         <button
                           type="button"
                           onClick={() => onClosePosition(pos.id)}
-                          className="h-7 rounded-full bg-[#FF4343]/15 hover:bg-[#FF4343]/25 border border-[#FF4343]/30 text-[#FF4343] hover:text-white font-medium text-xs flex items-center justify-center gap-1 transition-all cursor-pointer active:scale-95"
+                          className="h-7 rounded-full bg-[#D92D45]/10 hover:bg-[#D92D45]/20 border border-[#D92D45]/30 text-[#D92D45] font-semibold text-xs flex items-center justify-center gap-1 transition-all cursor-pointer active:scale-95"
                           title="Close position at current mark price"
                         >
                           <XCircle className="size-3" />
@@ -427,7 +423,7 @@ export function PositionDock({
                         <button
                           type="button"
                           onClick={() => onReduce50Position(pos.id)}
-                          className="h-7 rounded-full bg-[#191B22] hover:bg-[#23252D] border border-white/[0.08] hover:border-white/20 text-[#F5F5F6] font-medium text-xs flex items-center justify-center gap-1 transition-all cursor-pointer active:scale-95"
+                          className="h-7 rounded-full bg-secondary hover:bg-secondary/80 border border-border text-foreground font-medium text-xs flex items-center justify-center gap-1 transition-all cursor-pointer active:scale-95"
                           title="Reduce position stake and notional by 50%"
                         >
                           <MinusCircle className="size-3" />
@@ -441,10 +437,10 @@ export function PositionDock({
                             setTempTargetInput(pos.targetPrice ? pos.targetPrice.toString() : "");
                             toast.info("Drag the target line on the chart to set take-profit");
                           }}
-                          className="h-7 rounded-full bg-[#191B22] hover:bg-[#23252D] border border-white/[0.08] hover:border-white/20 text-[#F5F5F6] font-medium text-xs flex items-center justify-center gap-1 transition-all cursor-pointer active:scale-95"
+                          className="h-7 rounded-full bg-secondary hover:bg-secondary/80 border border-border text-foreground font-medium text-xs flex items-center justify-center gap-1 transition-all cursor-pointer active:scale-95"
                           title="Add take-profit: drag a line on the chart to set it"
                         >
-                          <Crosshair className="size-3 text-[#00E599]" />
+                          <Crosshair className="size-3 text-[#087F4D]" />
                           <span>{pos.targetPrice ? "Take Profit" : "Add take-profit"}</span>
                         </button>
                       </div>
@@ -463,13 +459,13 @@ export function PositionDock({
       {activeTab === "history" && (
         <div className="pt-2 overflow-x-auto">
           {history.length === 0 ? (
-            <div className="py-6 text-center text-[#9A9CA3] text-[12px]">
+            <div className="py-6 text-center text-muted-foreground text-[12px]">
               No trade history yet. Close a simulated trade to see verified payoff results here.
             </div>
           ) : (
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="border-b border-white/[0.08] text-xs text-[#9A9CA3] font-mono">
+                <tr className="border-b border-border text-xs text-muted-foreground font-mono">
                   <th className="pb-2 font-normal">Asset</th>
                   <th className="pb-2 font-normal">Side</th>
                   <th className="pb-2 font-normal">Leverage</th>
@@ -479,40 +475,40 @@ export function PositionDock({
                   <th className="pb-2 font-normal text-right">Card</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/[0.06] text-[12px] font-mono">
+              <tbody className="divide-y divide-border/60 text-[12px] font-mono">
                 {history.map((row) => {
                   const isProfit = row.pnl >= 0;
                   return (
-                    <tr key={row.id} className="h-10 hover:bg-white/[0.02] transition-colors">
-                      <td className="font-bold text-white">{row.symbol}</td>
+                    <tr key={row.id} className="h-10 hover:bg-secondary/40 transition-colors">
+                      <td className="font-bold text-foreground">{row.symbol}</td>
                       <td>
                         <span
                           className={cn(
                             "px-1.5 py-0.2 rounded-full text-xs font-bold uppercase",
                             row.side === "long"
-                              ? "bg-[#00E599]/20 text-[#00E599]"
-                              : "bg-[#FF4343]/20 text-[#FF4343]",
+                              ? "bg-[#087F4D]/10 text-[#087F4D]"
+                              : "bg-[#D92D45]/10 text-[#D92D45]",
                           )}
                         >
                           {row.side}
                         </span>
                       </td>
-                      <td className="text-white">{row.leverage}x</td>
-                      <td className="text-[#9A9CA3]">
+                      <td className="text-foreground">{row.leverage}x</td>
+                      <td className="text-muted-foreground">
                         ${row.entryPrice.toLocaleString("en-US")} → $
                         {row.exitPrice.toLocaleString("en-US")}
                       </td>
                       <td
-                        className={cn("font-bold", isProfit ? "text-[#00E599]" : "text-[#FF4343]")}
+                        className={cn("font-bold", isProfit ? "text-[#087F4D]" : "text-[#D92D45]")}
                       >
                         {formatPnl(row.pnl)} ({formatPct(row.pnlPct)})
                       </td>
-                      <td className="text-[#9A9CA3]">{row.durationSeconds}s</td>
+                      <td className="text-muted-foreground">{row.durationSeconds}s</td>
                       <td className="text-right">
                         <button
                           type="button"
                           onClick={() => onShareTrade(row)}
-                          className="h-6 px-2.5 rounded-full bg-[#191B22] hover:bg-[#3A63E6] hover:text-white border border-white/[0.08] text-[#9A9CA3] text-xs font-medium transition-all cursor-pointer inline-flex items-center gap-1"
+                          className="h-6 px-2.5 rounded-full bg-secondary hover:bg-[#2563EB] hover:text-white border border-border text-muted-foreground text-xs font-medium transition-all cursor-pointer inline-flex items-center gap-1"
                         >
                           <Share2 className="size-2.5" />
                           <span>Share</span>
@@ -534,47 +530,47 @@ export function PositionDock({
         <div className="pt-2 space-y-3">
           {/* 4 Inset Stat Cards */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-            <div className="p-2.5 rounded-[16px] bg-[#0E0F13] border border-white/[0.06]">
-              <span className="text-xs font-mono text-[#9A9CA3] block mb-0.5">WIN RATE</span>
-              <span className="text-[20px] font-bold font-mono text-white tracking-tight">
+            <div className="p-2.5 rounded-[16px] bg-secondary/50 border border-border/60">
+              <span className="text-xs font-mono text-muted-foreground block mb-0.5">WIN RATE</span>
+              <span className="text-[20px] font-bold font-mono text-foreground tracking-tight">
                 {stats.winRate}%
               </span>
             </div>
 
-            <div className="p-2.5 rounded-[16px] bg-[#0E0F13] border border-white/[0.06]">
-              <span className="text-xs font-mono text-[#9A9CA3] block mb-0.5">
+            <div className="p-2.5 rounded-[16px] bg-secondary/50 border border-border/60">
+              <span className="text-xs font-mono text-muted-foreground block mb-0.5">
                 AVG HOLD TIME
               </span>
-              <span className="text-[20px] font-bold font-mono text-white tracking-tight">
+              <span className="text-[20px] font-bold font-mono text-foreground tracking-tight">
                 {stats.avgHoldSeconds}s
               </span>
             </div>
 
-            <div className="p-2.5 rounded-[16px] bg-[#0E0F13] border border-white/[0.06]">
-              <span className="text-xs font-mono text-[#9A9CA3] block mb-0.5">BEST TRADE</span>
-              <span className="text-[20px] font-bold font-mono text-[#00E599] tracking-tight">
+            <div className="p-2.5 rounded-[16px] bg-secondary/50 border border-border/60">
+              <span className="text-xs font-mono text-muted-foreground block mb-0.5">BEST TRADE</span>
+              <span className="text-[20px] font-bold font-mono text-[#087F4D] tracking-tight">
                 {formatPnl(stats.bestTrade)}
               </span>
             </div>
 
-            <div className="p-2.5 rounded-[16px] bg-[#0E0F13] border border-white/[0.06]">
-              <span className="text-xs font-mono text-[#9A9CA3] block mb-0.5">WORST TRADE</span>
-              <span className="text-[20px] font-bold font-mono text-[#FF4343] tracking-tight">
+            <div className="p-2.5 rounded-[16px] bg-secondary/50 border border-border/60">
+              <span className="text-xs font-mono text-muted-foreground block mb-0.5">WORST TRADE</span>
+              <span className="text-[20px] font-bold font-mono text-[#D92D45] tracking-tight">
                 {formatPnl(stats.worstTrade)}
               </span>
             </div>
           </div>
 
           {/* Cumulative P&L Curve Sparkline */}
-          <div className="p-5 rounded-[20px] bg-[#0E0F13] border border-white/[0.06]">
+          <div className="p-5 rounded-[20px] bg-secondary/40 border border-border/60">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-[13px] font-mono font-medium text-white">
+              <span className="text-[13px] font-mono font-medium text-foreground">
                 Cumulative P&amp;L Curve
               </span>
               <span
                 className={cn(
                   "text-[13px] font-mono font-bold",
-                  stats.totalPnl >= 0 ? "text-[#00E599]" : "text-[#FF4343]",
+                  stats.totalPnl >= 0 ? "text-[#087F4D]" : "text-[#D92D45]",
                 )}
               >
                 Net: {formatPnl(stats.totalPnl)}
@@ -584,7 +580,7 @@ export function PositionDock({
             {/* SVG Sparkline */}
             <div className="h-32 w-full relative">
               {stats.pnlPoints.length < 2 ? (
-                <div className="h-full flex items-center justify-center text-[12px] text-[#6B6D73] font-mono">
+                <div className="h-full flex items-center justify-center text-[12px] text-muted-foreground font-mono">
                   Closed trades will generate live equity sparkline here.
                 </div>
               ) : (
@@ -621,7 +617,7 @@ export function PositionDock({
                           y1={height - 10 - ((0 - min) / range) * (height - 20)}
                           x2={width}
                           y2={height - 10 - ((0 - min) / range) * (height - 20)}
-                          stroke="rgba(255, 255, 255, 0.15)"
+                          stroke="rgba(0, 0, 0, 0.12)"
                           strokeDasharray="4 4"
                         />
                       )}
@@ -629,7 +625,7 @@ export function PositionDock({
                       <path
                         d={pathD}
                         fill="none"
-                        stroke={isNetProfit ? "#00E599" : "#FF4343"}
+                        stroke={isNetProfit ? "#087F4D" : "#D92D45"}
                         strokeWidth="2.5"
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -641,7 +637,7 @@ export function PositionDock({
                           cx={c.x}
                           cy={c.y}
                           r="3"
-                          fill={isNetProfit ? "#00E599" : "#FF4343"}
+                          fill={isNetProfit ? "#087F4D" : "#D92D45"}
                         />
                       ))}
                     </svg>

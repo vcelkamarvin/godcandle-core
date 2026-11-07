@@ -422,12 +422,9 @@ export function TickChart({
         return headX - ((nowMs - t) / 1000) * scrollSpeed;
       };
 
-      // 6. Draw Subtle Vignette Shifting from Royal Blue toward Red as Leverage Rises
+      // 6. Draw Subtle Vignette Shifting smoothly toward warm red only as Leverage Rises
       const levRatio = Math.min(1, Math.max(0, (leverage - 50) / 950));
-      const vigR = Math.round(58 + levRatio * (255 - 58));
-      const vigG = Math.round(99 + levRatio * (67 - 99));
-      const vigB = Math.round(230 + levRatio * (67 - 230));
-      const vigAlpha = 0.05 + levRatio * 0.09;
+      const vigAlpha = 0.02 + levRatio * 0.05;
 
       const vignetteGrad = ctx.createRadialGradient(
         width * 0.45,
@@ -438,7 +435,7 @@ export function TickChart({
         Math.max(width, height) * 0.75,
       );
       vignetteGrad.addColorStop(0, "rgba(0,0,0,0)");
-      vignetteGrad.addColorStop(1, `rgba(${vigR}, ${vigG}, ${vigB}, ${vigAlpha})`);
+      vignetteGrad.addColorStop(1, `rgba(217, 45, 69, ${vigAlpha})`);
       ctx.fillStyle = vignetteGrad;
       ctx.fillRect(0, 0, width, height);
 
@@ -519,7 +516,7 @@ export function TickChart({
 
         // 8.2 Entry Line (Solid/subtle dash with ENTRY tag)
         ctx.setLineDash([6, 4]);
-        ctx.strokeStyle = "rgba(255, 255, 255, 0.4)";
+        ctx.strokeStyle = "rgba(10, 10, 12, 0.35)";
         ctx.lineWidth = 1;
         ctx.beginPath();
         ctx.moveTo(0, entryY);
@@ -528,15 +525,15 @@ export function TickChart({
 
         // Entry tag pill on left
         ctx.setLineDash([]);
-        ctx.fillStyle = "#14161B";
-        ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
+        ctx.fillStyle = "#FFFFFF";
+        ctx.strokeStyle = "rgba(10, 10, 12, 0.18)";
         ctx.lineWidth = 1;
         ctx.beginPath();
         ctx.roundRect(8, entryY - 10, 114, 20, 10);
         ctx.fill();
         ctx.stroke();
 
-        ctx.fillStyle = "rgba(255, 255, 255, 0.95)";
+        ctx.fillStyle = "#0B0B0C";
         ctx.font = "11px 'Inter', monospace";
         ctx.textAlign = "left";
         ctx.textBaseline = "middle";
@@ -544,7 +541,7 @@ export function TickChart({
 
         // 8.3 Red Dashed Liquidation Line
         ctx.setLineDash([4, 4]);
-        ctx.strokeStyle = "#FF4343";
+        ctx.strokeStyle = "#D92D45";
         ctx.lineWidth = 1.5;
         ctx.beginPath();
         ctx.moveTo(0, liqY);
@@ -553,8 +550,8 @@ export function TickChart({
 
         // Liquidation tag pill
         ctx.setLineDash([]);
-        ctx.fillStyle = "#1E1214";
-        ctx.strokeStyle = "rgba(255, 67, 67, 0.6)";
+        ctx.fillStyle = "#FFF5F5";
+        ctx.strokeStyle = "rgba(217, 45, 69, 0.45)";
         ctx.lineWidth = 1;
         ctx.beginPath();
         ctx.roundRect(8, liqY - 10, 136, 20, 10);
@@ -562,7 +559,7 @@ export function TickChart({
         ctx.stroke();
 
         const liqPct = (100 / activePosition.leverage).toFixed(2);
-        ctx.fillStyle = "#FF4343";
+        ctx.fillStyle = "#D92D45";
         ctx.font = "bold 11px 'Inter', monospace";
         ctx.textAlign = "left";
         ctx.textBaseline = "middle";
@@ -572,7 +569,7 @@ export function TickChart({
         if (targetPrice) {
           const tgtY = priceToY(targetPrice);
           ctx.setLineDash([3, 3]);
-          ctx.strokeStyle = "#00E599";
+          ctx.strokeStyle = "#087F4D";
           ctx.lineWidth = 1.25;
           ctx.beginPath();
           ctx.moveTo(0, tgtY);
@@ -581,15 +578,15 @@ export function TickChart({
 
           // Target tag pill
           ctx.setLineDash([]);
-          ctx.fillStyle = "#0F1E19";
-          ctx.strokeStyle = "rgba(0, 229, 153, 0.5)";
+          ctx.fillStyle = "#F0FDF4";
+          ctx.strokeStyle = "rgba(8, 127, 77, 0.4)";
           ctx.lineWidth = 1;
           ctx.beginPath();
           ctx.roundRect(8, tgtY - 10, 122, 20, 10);
           ctx.fill();
           ctx.stroke();
 
-          ctx.fillStyle = "#00E599";
+          ctx.fillStyle = "#087F4D";
           ctx.font = "bold 11px 'Inter', monospace";
           ctx.textAlign = "left";
           ctx.textBaseline = "middle";
@@ -641,9 +638,9 @@ export function TickChart({
         ctx.closePath();
 
         const lineGrad = ctx.createLinearGradient(0, Math.min(headY, height / 2), 0, height - 20);
-        lineGrad.addColorStop(0, "rgba(37, 99, 235, 0.08)");
-        lineGrad.addColorStop(0.5, "rgba(37, 99, 235, 0.02)");
-        lineGrad.addColorStop(1, "rgba(37, 99, 235, 0.00)");
+        lineGrad.addColorStop(0, "rgba(10, 10, 12, 0.06)");
+        lineGrad.addColorStop(0.5, "rgba(10, 10, 12, 0.02)");
+        lineGrad.addColorStop(1, "rgba(10, 10, 12, 0.00)");
 
         ctx.fillStyle = lineGrad;
         ctx.fill();
@@ -689,7 +686,7 @@ export function TickChart({
             ? `rgba(8, 127, 77, ${ripAlpha})`
             : rip.dir === "down"
               ? `rgba(217, 45, 69, ${ripAlpha})`
-              : `rgba(37, 99, 235, ${ripAlpha})`;
+              : `rgba(10, 10, 12, ${ripAlpha * 0.5})`;
         ctx.lineWidth = 1.5;
         ctx.stroke();
         ctx.restore();
@@ -718,9 +715,9 @@ export function TickChart({
         headY,
         pulseRadius * 2.5,
       );
-      meshHeadGlow.addColorStop(0, "rgba(37, 99, 235, 0.4)");
-      meshHeadGlow.addColorStop(0.5, "rgba(37, 99, 235, 0.15)");
-      meshHeadGlow.addColorStop(1, "rgba(37, 99, 235, 0)");
+      meshHeadGlow.addColorStop(0, "rgba(8, 127, 77, 0.25)");
+      meshHeadGlow.addColorStop(0.5, "rgba(205, 195, 240, 0.2)");
+      meshHeadGlow.addColorStop(1, "rgba(255, 255, 255, 0)");
 
       ctx.fillStyle = meshHeadGlow;
       ctx.beginPath();
