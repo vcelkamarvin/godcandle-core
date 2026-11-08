@@ -42,15 +42,37 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
   const t = useTrading();
   const { address } = useAccount();
   const [tab, setTab] = useState<'positions' | 'orders' | 'fills' | 'funding' | 'balances' | 'stats'>('positions');
-  const [openOrders, setOpenOrders] = useState<any[]>([]);
+  const [openOrders, setOpenOrders] = useState<any[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = localStorage.getItem('godcandle_open_orders');
+        if (stored) return JSON.parse(stored);
+      } catch {}
+    }
+    return [];
+  });
   const [fundingHistory, setFundingHistory] = useState<any[]>([]);
 
   // Fetch open orders and funding
   useEffect(() => {
     let mounted = true;
+    const syncLocalOrders = () => {
+      try {
+        const stored = localStorage.getItem('godcandle_open_orders');
+        if (stored && mounted) setOpenOrders(JSON.parse(stored));
+      } catch {}
+    };
+
+    window.addEventListener('godcandle_orders_updated', syncLocalOrders);
+
     if (address) {
       fetchOpenOrders(address).then((orders) => {
-        if (mounted) setOpenOrders(orders);
+        if (mounted && orders?.length > 0) {
+          setOpenOrders((prev) => {
+            const combined = [...orders, ...prev.filter((p: any) => !orders.some((o: any) => o.oid === p.oid))];
+            return combined;
+          });
+        }
       });
       fetchUserFundingHistory(address).then((fundings) => {
         if (mounted) setFundingHistory(fundings);
@@ -58,6 +80,7 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
     }
     return () => {
       mounted = false;
+      window.removeEventListener('godcandle_orders_updated', syncLocalOrders);
     };
   }, [address]);
 
@@ -390,8 +413,21 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
                       <td className="py-2 px-2 text-right">
                         <button
                           type="button"
-                          onClick={() => setOpenOrders((prev) => prev.filter((o) => o !== ord))}
-                          className="px-2 py-0.5 rounded text-xs font-bold text-[#FF3B30] hover:bg-[#FFECEA]"
+                          onClick={() => {
+                            setOpenOrders((prev) => {
+                              const updated = prev.filter((o) => o !== ord);
+                              try {
+                                localStorage.setItem('godcandle_open_orders', JSON.stringify(updated));
+                              } catch {}
+                              return updated;
+                            });
+                            import('sonner').then(({ toast }) => {
+                              toast.info(`Order ${ord.oid || 'cancelled'} removed`, {
+                                description: `${ord.coin}-USD limit order cancelled`,
+                              });
+                            });
+                          }}
+                          className="px-2.5 py-1 rounded bg-[#FF3B30]/10 hover:bg-[#FF3B30]/20 text-[#FF3B30] border border-[#FF3B30]/30 text-xs font-bold transition-all cursor-pointer"
                         >
                           Cancel
                         </button>

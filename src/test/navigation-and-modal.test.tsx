@@ -13,26 +13,19 @@ describe("Header Layout & Navigation Structure", () => {
     expect(headerContent).not.toContain("L1Read: 0x0806");
   });
 
-  it("places Trade, Analysis, and Leaderboard on the left menu", () => {
+  it("prunes main navigation bar to hyper-clean layout with Perps/1000x switch and action buttons", () => {
     expect(headerContent).toContain('to="/"');
-    expect(headerContent).toContain('to="/analytics"');
-    expect(headerContent).toContain('to="/leaderboard"');
-  });
-
-  it("places Portfolio and CANDLE dropdown on the right menu with ONLY Platform Analysis and Staking", () => {
-    expect(headerContent).toContain('to="/portfolio"');
-    expect(headerContent).toContain("CANDLE");
-    expect(headerContent).toContain('to="/candle"');
-    expect(headerContent).toContain("Platform Analysis");
-    expect(headerContent).toContain('to="/staking"');
-    expect(headerContent).toContain("Staking");
+    expect(headerContent).toContain('to="/trade"');
+    expect(headerContent).toContain("Perps");
+    expect(headerContent).toContain("1000x");
     expect(headerContent).toContain("Deposit");
     expect(headerContent).toContain("<ConnectModal />");
 
-    // The rest (Cup, Docs) MUST NOT be in the CANDLE dropdown menu
-    expect(headerContent).not.toContain('role="menuitem"\n                    onClick={() => setCandleOpen(false)}\n                    className="flex items-center gap-2.5 p-2 rounded-xl hover:bg-secondary transition-colors text-left"\n                  >\n                    <div className="flex size-7 items-center justify-center rounded-lg bg-[#FFFBEA]');
-    expect(headerContent).not.toContain('to="/cup"');
-    expect(headerContent).not.toContain('to="/docs"');
+    // Analysis, Leaderboard, Portfolio, CANDLE dropdown, and balance pill are removed from visible navbar
+    expect(headerContent).not.toMatch(/<nav[^>]*>[\s\S]*?<Link[^>]*to="\/analytics"[^>]*className="pill[^>]*>Analysis<\/Link>/);
+    expect(headerContent).not.toMatch(/<nav[^>]*>[\s\S]*?<Link[^>]*to="\/leaderboard"[^>]*className="pill[^>]*>Leaderboard<\/Link>/);
+    expect(headerContent).not.toMatch(/<nav[^>]*>[\s\S]*?<Link[^>]*to="\/portfolio"[^>]*className="pill[^>]*>Portfolio<\/Link>/);
+    expect(headerContent).not.toContain("+$342.50");
   });
 
   it("integrates Candle Cup into Leaderboard and Footer instead of main header menu", () => {
@@ -76,10 +69,7 @@ describe("Header Layout & Navigation Structure", () => {
     expect(headerContent).not.toContain('aria-label="Boost Multiplier"');
   });
 
-  it("houses Goal and Boost under More dropdown menu with proper close handlers", () => {
-    // Both desktop and mobile More dropdowns contain Goal and Boost
-    expect(headerContent).toMatch(/to="\/goal"[\s\S]*?onClick=\{\(\) => setMoreOpen\(false\)\}/);
-    expect(headerContent).toMatch(/to="\/boost"[\s\S]*?onClick=\{\(\) => setMoreOpen\(false\)\}/);
+  it("houses Goal and Boost under mobile More dropdown menu with proper close handlers", () => {
     expect(headerContent).toMatch(/to="\/goal"[\s\S]*?onClick=\{\(\) => setMobileMoreOpen\(false\)\}/);
     expect(headerContent).toMatch(/to="\/boost"[\s\S]*?onClick=\{\(\) => setMobileMoreOpen\(false\)\}/);
     expect(headerContent).toContain('pathname === "/goal" ||');

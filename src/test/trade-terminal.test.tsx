@@ -106,7 +106,7 @@ describe("Trade Execution Mechanics", () => {
     expect(fs.existsSync(imagePath)).toBe(true);
   });
 
-  it("verifies unified form & structure: both index and trade routes mount TradeTerminal", () => {
+  it("verifies route differentiation: index mounts TradeTerminal, trade mounts FiveHundredXPage", () => {
     const fs = require("fs");
     const path = require("path");
     const indexPath = path.resolve(__dirname, "../routes/index.tsx");
@@ -115,7 +115,7 @@ describe("Trade Execution Mechanics", () => {
     const tradeContent = fs.readFileSync(tradePath, "utf-8");
 
     expect(indexContent).toContain("<TradeTerminal />");
-    expect(tradeContent).toContain("<TradeTerminal />");
+    expect(tradeContent).toContain("<FiveHundredXPage />");
   });
 
   it("verifies OrderForm includes 10000 margin option and chips", () => {

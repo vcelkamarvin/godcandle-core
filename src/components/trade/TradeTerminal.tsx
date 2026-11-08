@@ -146,8 +146,34 @@ export function TradeTerminal() {
     margin: number,
     lev: number,
     tp?: number | null,
-    sl?: number | null
+    sl?: number | null,
+    orderType?: 'market' | 'limit' | 'stop',
+    limitPrice?: number
   ) => {
+    if (orderType === 'limit' && limitPrice && limitPrice > 0) {
+      const order = {
+        oid: `limit-${Date.now()}`,
+        coin: rawSymbol,
+        side: side === 'LONG' ? 'B' : 'A',
+        limitPx: limitPrice,
+        sz: ((margin * lev) / limitPrice).toFixed(4),
+        orderType: 'Limit',
+        timestamp: Date.now(),
+      };
+      try {
+        const stored = JSON.parse(localStorage.getItem('godcandle_open_orders') || '[]');
+        stored.unshift(order);
+        localStorage.setItem('godcandle_open_orders', JSON.stringify(stored));
+        window.dispatchEvent(new CustomEvent('godcandle_orders_updated'));
+      } catch {}
+      import('sonner').then(({ toast }) => {
+        toast.success(`Limit order placed for ${rawSymbol}`, {
+          description: `${side} ${order.sz} @ $${limitPrice.toLocaleString()} ($${margin} margin @ ${lev}x)`,
+        });
+      });
+      return;
+    }
+
     if (t?.open) {
       t.open(rawSymbol, side.toLowerCase() as 'long' | 'short', margin, lev, tp, sl);
     }
