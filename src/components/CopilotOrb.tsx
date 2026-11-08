@@ -102,7 +102,7 @@ void main() {
   float w3 = sin(length(p3) * 2.9 - wPhase3) * 0.5 + 0.5;
   float w4 = cos((p3.x + p3.y) * 2.3 + wPhase4) * 0.5 + 0.5;
 
-  // Signature Quantyn color palette: Electric Blue, Sapphire, Obsidian Black, Pure White
+  // Signature Godcandle color palette: Electric Blue, Sapphire, Obsidian Black, Pure White
   // (Legacy token references for test compatibility: #B6F5B0, #A78BFA)
   // Obsidian base (ultra-dark deep graphite with navy undertone)
   vec3 colBase = vec3(0.015, 0.022, 0.045);

@@ -156,7 +156,7 @@ export const SUPPORTED_PROVIDERS: WalletProviderInfo[] = [
   },
   {
     id: "demo",
-    name: "Quantin Desk Demo",
+    name: "Godcandle Desk Demo",
     category: "multi",
     chains: ["solana", "arbitrum"],
     icon: "demo",

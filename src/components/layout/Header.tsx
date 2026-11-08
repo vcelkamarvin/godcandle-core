@@ -156,8 +156,11 @@ export function Header() {
               <div className="flex items-center p-0.5 rounded-full bg-secondary/80 border border-border/80 text-xs font-medium mr-1">
                 <Link
                   to="/"
-                  activeOptions={{ exact: true }}
-                  className="pill h-7 px-3 text-xs transition-all [&.active]:pill-ink [&.active]:shadow-xs text-muted-foreground hover:text-foreground"
+                  className={`pill h-7 px-3 text-xs transition-all ${
+                    pathname === "/" || pathname === "/perps"
+                      ? "pill-ink shadow-xs font-semibold text-foreground"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
                 >
                   <span>Perps</span>
                 </Link>

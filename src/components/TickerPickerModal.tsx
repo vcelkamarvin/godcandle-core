@@ -430,7 +430,7 @@ export function TickerPickerModal({
 
             {/* Inner Content Card with Frosted Dark Overlay for Crisp Contrast */}
             <div className="relative z-10 h-full w-full p-6 sm:p-8 flex flex-col justify-between overflow-y-auto no-scrollbar bg-gradient-to-b from-black/40 via-black/30 to-black/70">
-              {/* Top Status Bar: Mode chip + QUANTIN • LIVE */}
+              {/* Top Status Bar: Mode chip + GODCANDLE • LIVE */}
               <div className="flex items-center justify-between shrink-0">
                 <span className="px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white font-mono text-[11px] font-medium tracking-wide">
                   {type === "perps" ? "PERPETUAL FUTURES · 50×" : "HYPERLIQUID L1 SPOT · ZERO GAS"}

@@ -464,7 +464,7 @@ export function SharePnlModal({ trade, onClose }: SharePnlModalProps) {
                   </div>
                 </div>
 
-                {/* Bottom Floating Plaque (Quantin dark glass aesthetic) */}
+                {/* Bottom Floating Plaque (Godcandle dark glass aesthetic) */}
                 <div
                   className="rounded-2xl bg-[#0D1117]/85 backdrop-blur-md p-4 border border-white/20 shadow-lg text-white"
                   aria-label="Claude Monet, 1885 · The Cliffs at Étretat"
