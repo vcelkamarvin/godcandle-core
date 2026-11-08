@@ -1,36 +1,39 @@
+import { useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { FiveHundredXPage } from "@/components/trade/TickTradingDesk";
+import { TradeTerminal } from "@/components/trade/TradeTerminal";
+import { useTrading } from "@/components/godcandle/TradingProvider";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "godcandle — 1000x Live Tick Trading Desk" },
+      { title: "godcandle — Perpetual Futures Terminal" },
       {
         name: "description",
         content:
-          "Ultra-high leverage crypto tick trading up to 1000x on BTC, ETH, and SPX with instant liquidation boundary calculation and Hyperliquid real-time price feeds.",
+          "Professional high-performance perpetual futures trading terminal on Hyperliquid L1 order books with real-time orderbook, TradingView charting, and pro execution.",
       },
-      { property: "og:title", content: "godcandle — 1000x Live Tick Trading Desk" },
+      { property: "og:title", content: "godcandle — Perpetual Futures Terminal" },
       {
         property: "og:description",
         content:
-          "Ultra-high leverage crypto tick trading up to 1000x with clear liquidation boundary and live outcome dock.",
+          "Professional high-performance perpetual futures trading terminal on Hyperliquid L1 order books.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: GodcandleRootDesk,
+  component: GodcandlePerpsPage,
 });
 
-function GodcandleRootDesk() {
-  // Compatibility: t.setMode("perps")
+function GodcandlePerpsPage() {
+  const t = useTrading();
+  useEffect(() => {
+    t.setMode("perps");
+  }, [t]);
+
   return (
-    <>
-      <div className="hidden" aria-hidden="true">
-        {/* <TradeTerminal /> */}
-      </div>
-      <FiveHundredXPage />
-    </>
+    <div className="py-1.5 sm:py-2 px-2 sm:px-4 md:px-5">
+      <TradeTerminal />
+    </div>
   );
 }
