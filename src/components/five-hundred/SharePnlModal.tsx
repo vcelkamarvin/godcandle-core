@@ -154,7 +154,7 @@ export function SharePnlModal({ trade, onClose }: SharePnlModalProps) {
     ctx.fillStyle = "#FFFFFF";
     ctx.font = "bold 32px 'Inter', sans-serif";
     ctx.textAlign = "left";
-    ctx.fillText("QUANTIN", 80, 110);
+    ctx.fillText("GODCANDLE", 80, 110);
 
     // Glowing dot
     ctx.fillStyle = "#3A63E6";
@@ -274,7 +274,7 @@ export function SharePnlModal({ trade, onClose }: SharePnlModalProps) {
           } catch (e) {
             console.error(e);
             navigator.clipboard.writeText(
-              `Quantin Trade: ${normalized.symbol} ${normalized.side.toUpperCase()} ${normalized.leverage}x | P&L: ${formatPct(normalized.pnlPct)}`,
+              `Godcandle Trade: ${normalized.symbol} ${normalized.side.toUpperCase()} ${normalized.leverage}x | P&L: ${formatPct(normalized.pnlPct)}`,
             );
             toast.success("Trade summary copied to clipboard!");
           } finally {
@@ -283,7 +283,7 @@ export function SharePnlModal({ trade, onClose }: SharePnlModalProps) {
         }, "image/png");
       } else {
         await navigator.clipboard.writeText(
-          `Quantin Trade: ${normalized.symbol} ${normalized.side.toUpperCase()} ${normalized.leverage}x | P&L: ${formatPct(normalized.pnlPct)}`,
+          `Godcandle Trade: ${normalized.symbol} ${normalized.side.toUpperCase()} ${normalized.leverage}x | P&L: ${formatPct(normalized.pnlPct)}`,
         );
         setImageCopied(true);
         toast.success("Trade summary copied to clipboard!");
@@ -299,12 +299,12 @@ export function SharePnlModal({ trade, onClose }: SharePnlModalProps) {
 
   const handleShare = useCallback(async () => {
     if (!normalized) return;
-    const shareText = `Quantin P&L: ${normalized.symbol} ${normalized.side.toUpperCase()} ${normalized.leverage}x (${formatPct(normalized.pnlPct)})`;
+    const shareText = `Godcandle P&L: ${normalized.symbol} ${normalized.side.toUpperCase()} ${normalized.leverage}x (${formatPct(normalized.pnlPct)})`;
 
     if (navigator.share) {
       try {
         await navigator.share({
-          title: "Quantin Trade P&L",
+          title: "Godcandle Trade P&L",
           text: shareText,
           url: window.location.href,
         });
@@ -354,7 +354,7 @@ export function SharePnlModal({ trade, onClose }: SharePnlModalProps) {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className="font-display font-black text-[18px] tracking-wider text-white">
-                      QUANTIN
+                      GODCANDLE
                     </span>
                     <span className="size-2 rounded-full bg-[#00D964] shadow-[0_0_10px_#00D964]" />
                     <span className="rounded-full border border-white/10 bg-gradient-to-r from-[#CDC3F0]/20 via-[#FFDAC8]/20 to-[#A0D4CA]/20 px-2.5 py-0.5 text-[10px] font-mono text-white/90">

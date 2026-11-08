@@ -18,6 +18,7 @@ import { Route as DocsRouteImport } from './routes/docs'
 import { Route as GoalRouteImport } from './routes/goal'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as MainRouteImport } from './routes/main'
+import { Route as PerpsRouteImport } from './routes/perps'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as StakingRouteImport } from './routes/staking'
@@ -71,6 +72,11 @@ const LeaderboardRoute = LeaderboardRouteImport.update({
 const MainRoute = MainRouteImport.update({
   id: '/main',
   path: '/main',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PerpsRoute = PerpsRouteImport.update({
+  id: '/perps',
+  path: '/perps',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PortfolioRoute = PortfolioRouteImport.update({
@@ -129,6 +135,7 @@ export interface FileRoutesByFullPath {
   '/goal': typeof GoalRoute
   '/leaderboard': typeof LeaderboardRouteWithChildren
   '/main': typeof MainRoute
+  '/perps': typeof PerpsRoute
   '/portfolio': typeof PortfolioRoute
   '/settings': typeof SettingsRoute
   '/staking': typeof StakingRoute
@@ -148,6 +155,7 @@ export interface FileRoutesByTo {
   '/goal': typeof GoalRoute
   '/leaderboard': typeof LeaderboardRouteWithChildren
   '/main': typeof MainRoute
+  '/perps': typeof PerpsRoute
   '/portfolio': typeof PortfolioRoute
   '/settings': typeof SettingsRoute
   '/staking': typeof StakingRoute
@@ -169,6 +177,7 @@ export interface FileRoutesById {
   '/goal': typeof GoalRoute
   '/leaderboard': typeof LeaderboardRouteWithChildren
   '/main': typeof MainRoute
+  '/perps': typeof PerpsRoute
   '/portfolio': typeof PortfolioRoute
   '/settings': typeof SettingsRoute
   '/staking': typeof StakingRoute
@@ -191,6 +200,7 @@ export interface FileRouteTypes {
     | '/goal'
     | '/leaderboard'
     | '/main'
+    | '/perps'
     | '/portfolio'
     | '/settings'
     | '/staking'
@@ -210,6 +220,7 @@ export interface FileRouteTypes {
     | '/goal'
     | '/leaderboard'
     | '/main'
+    | '/perps'
     | '/portfolio'
     | '/settings'
     | '/staking'
@@ -230,6 +241,7 @@ export interface FileRouteTypes {
     | '/goal'
     | '/leaderboard'
     | '/main'
+    | '/perps'
     | '/portfolio'
     | '/settings'
     | '/staking'
@@ -251,6 +263,7 @@ export interface RootRouteChildren {
   GoalRoute: typeof GoalRoute
   LeaderboardRoute: typeof LeaderboardRouteWithChildren
   MainRoute: typeof MainRoute
+  PerpsRoute: typeof PerpsRoute
   PortfolioRoute: typeof PortfolioRoute
   SettingsRoute: typeof SettingsRoute
   StakingRoute: typeof StakingRoute
@@ -320,6 +333,13 @@ declare module '@tanstack/react-router' {
       path: '/main'
       fullPath: '/main'
       preLoaderRoute: typeof MainRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/perps': {
+      id: '/perps'
+      path: '/perps'
+      fullPath: '/perps'
+      preLoaderRoute: typeof PerpsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/portfolio': {
@@ -426,6 +446,7 @@ const rootRouteChildren: RootRouteChildren = {
   GoalRoute: GoalRoute,
   LeaderboardRoute: LeaderboardRouteWithChildren,
   MainRoute: MainRoute,
+  PerpsRoute: PerpsRoute,
   PortfolioRoute: PortfolioRoute,
   SettingsRoute: SettingsRoute,
   StakingRoute: StakingRoute,

@@ -171,6 +171,41 @@ export function Header() {
                 </Link>
               </div>
 
+              {/* Goal, Boost, Teamwork Tools */}
+              <Link
+                to="/goal"
+                title="Price Target Calculator"
+                className={`pill h-7 px-3 text-xs transition-all flex items-center gap-1.5 ${
+                  isGoalActive
+                    ? "pill-ink shadow-xs font-semibold"
+                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/60"
+                }`}
+              >
+                <Target className="size-3 text-[#2563EB]" />
+                <span>Goal</span>
+              </Link>
+
+              <Link
+                to="/boost"
+                title="Boost Multiplier Calculator"
+                className={`pill h-7 px-3 text-xs transition-all flex items-center gap-1.5 ${
+                  isBoostActive
+                    ? "pill-ink shadow-xs font-semibold"
+                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/60"
+                }`}
+              >
+                <Zap className="size-3 text-[#9333EA]" />
+                <span>Boost</span>
+              </Link>
+
+              <a
+                href="/main#teamwork"
+                className="pill h-7 px-3 text-xs transition-all flex items-center gap-1.5 text-muted-foreground hover:text-foreground hover:bg-secondary/60"
+              >
+                <Sparkles className="size-3 text-[#16A34A]" />
+                <span>Teamwork</span>
+              </a>
+
 
               {/* Hidden compatibility landmarks for automated tests and SEO */}
               <div className="hidden" aria-hidden="true">

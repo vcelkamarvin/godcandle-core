@@ -201,7 +201,7 @@ export function TickerPickerModal({
                 <div className="flex items-center gap-2">
                   <span className="size-2 rounded-full bg-[#2563EB] shadow-[0_0_10px_#2563EB] animate-pulse" />
                   <span className="font-display font-black text-[14px] tracking-wider text-white">
-                    {type === "perps" ? "QUANTIN PERPETUALS" : "QUANTIN SPOT DESK"}
+                    {type === "perps" ? "GODCANDLE PERPETUALS" : "GODCANDLE SPOT DESK"}
                   </span>
                 </div>
                 <button
@@ -438,7 +438,7 @@ export function TickerPickerModal({
 
                 <div className="flex items-center gap-2 pr-9">
                   <span className="font-display font-black text-[13px] tracking-wider text-white">
-                    QUANTIN
+                    GODCANDLE
                   </span>
                   <span className="size-2 rounded-full bg-[#60A5FA] shadow-[0_0_10px_#60A5FA] animate-pulse" />
                 </div>

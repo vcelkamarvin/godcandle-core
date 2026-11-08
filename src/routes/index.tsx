@@ -3,6 +3,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { TradeTerminal } from "@/components/trade/TradeTerminal";
 import { useTrading } from "@/components/godcandle/TradingProvider";
 
+import { Perps } from "./perps";
+
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
@@ -31,7 +33,14 @@ function GodcandleRootDesk() {
     t.setMode("perps");
   }, []);
 
-  return <TradeTerminal />;
+  return (
+    <>
+      <div className="hidden" aria-hidden="true">
+        <TradeTerminal />
+      </div>
+      <Perps />
+    </>
+  );
 }
 
 
