@@ -233,8 +233,17 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
         {tab === 'orders' && openOrders.length > 0 && (
           <button
             type="button"
-            onClick={() => setOpenOrders([])}
-            className="px-2.5 py-1 rounded-lg text-xs font-bold text-[#FF3B30] hover:bg-[#FFECEA] border border-[#FF3B30]/30 transition-colors"
+            onClick={() => {
+              setOpenOrders([]);
+              try {
+                localStorage.removeItem('godcandle_open_orders');
+                window.dispatchEvent(new CustomEvent('godcandle_orders_updated'));
+              } catch {}
+              import('sonner').then(({ toast }) => {
+                toast.info('All open limit orders cancelled');
+              });
+            }}
+            className="px-2.5 py-1 rounded-lg text-xs font-bold text-[#FF3B30] hover:bg-[#FFECEA] border border-[#FF3B30]/30 transition-colors cursor-pointer"
           >
             Cancel All Orders
           </button>
