@@ -156,11 +156,8 @@ export function Header() {
               <div className="flex items-center p-0.5 rounded-full bg-secondary/80 border border-border/80 text-xs font-medium mr-1">
                 <Link
                   to="/"
-                  className={`pill h-7 px-3 text-xs transition-all ${
-                    pathname === "/" || pathname === "/perps"
-                      ? "pill-ink shadow-xs font-semibold text-foreground"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
+                  activeOptions={{ exact: true }}
+                  className="pill h-7 px-3 text-xs transition-all [&.active]:pill-ink [&.active]:shadow-xs text-muted-foreground hover:text-foreground"
                 >
                   <span>Perps</span>
                 </Link>
@@ -174,66 +171,333 @@ export function Header() {
                 </Link>
               </div>
 
-              {/* Goal, Boost, Teamwork Tools */}
               <Link
-                to="/goal"
-                title="Price Target Calculator"
-                className={`pill h-7 px-3 text-xs transition-all flex items-center gap-1.5 ${
-                  isGoalActive
-                    ? "pill-ink shadow-xs font-semibold"
-                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/60"
-                }`}
+                to="/analytics"
+                className="pill h-8 px-3 text-xs font-medium transition-colors [&.active]:pill-ink text-muted-foreground hover:text-foreground hover:bg-secondary/70"
               >
-                <Target className="size-3 text-[#2563EB]" />
-                <span>Goal</span>
+                Analysis
+              </Link>
+              <Link
+                to="/leaderboard"
+                className="pill h-8 px-3 text-xs font-medium transition-colors [&.active]:pill-ink text-muted-foreground hover:text-foreground hover:bg-secondary/70"
+              >
+                Leaderboard
+              </Link>
+              <Link
+                to="/portfolio"
+                className="pill h-8 px-3 text-xs font-medium transition-colors [&.active]:pill-ink text-muted-foreground hover:text-foreground hover:bg-secondary/70"
+              >
+                Portfolio
+              </Link>
+              <Link
+                to="/candle"
+                className="pill h-8 px-3 text-xs font-medium transition-colors [&.active]:pill-ink text-muted-foreground hover:text-foreground hover:bg-secondary/70"
+              >
+                Candle
               </Link>
 
-              <Link
-                to="/boost"
-                title="Boost Multiplier Calculator"
-                className={`pill h-7 px-3 text-xs transition-all flex items-center gap-1.5 ${
-                  isBoostActive
-                    ? "pill-ink shadow-xs font-semibold"
-                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/60"
-                }`}
-              >
-                <Zap className="size-3 text-[#9333EA]" />
-                <span>Boost</span>
-              </Link>
+              {/* Clean More Menu for secondary links (Docs, Roadmap, Settings, Goal, Boost, Teamwork) */}
+              <div className="relative" ref={moreRef}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMoreOpen((v) => !v);
+                    setCandleOpen(false);
+                  }}
+                  className={`pill h-7.5 px-2.5 text-xs font-medium gap-1 transition-colors cursor-pointer ${
+                    moreOpen || isMoreActive
+                      ? "pill-ink shadow-xs"
+                      : "text-muted-foreground hover:text-foreground hover:bg-secondary/70"
+                  }`}
+                  aria-expanded={moreOpen}
+                  aria-haspopup="menu"
+                >
+                  <span>More</span>
+                  <ChevronDown
+                    className={`size-3 text-muted-foreground transition-transform duration-200 ${
+                      moreOpen ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
 
-              <a
-                href="/main#teamwork"
-                className="pill h-7 px-3 text-xs transition-all flex items-center gap-1.5 text-muted-foreground hover:text-foreground hover:bg-secondary/60"
-              >
-                <Sparkles className="size-3 text-[#16A34A]" />
-                <span>Teamwork</span>
-              </a>
+                {moreOpen && (
+                  <div
+                    role="menu"
+                    className="absolute left-0 top-full mt-2 w-56 rounded-2xl border border-border bg-white p-1.5 shadow-xl animate-in zoom-in-95 fade-in-0 duration-150 z-50 divide-y divide-border/50"
+                  >
+                    {/* Insights & Community */}
+                    <div className="pb-1 space-y-0.5">
+                      <Link
+                        to="/leaderboard"
+                        role="menuitem"
+                        onClick={() => setMoreOpen(false)}
+                        className={`flex items-center gap-2.5 p-2 rounded-xl transition-colors text-left ${
+                          pathname === "/leaderboard" ? "bg-secondary font-medium" : "hover:bg-secondary"
+                        }`}
+                      >
+                        <div className="flex size-7 items-center justify-center rounded-lg bg-[#FFF8EB] text-[#D97706]">
+                          <Trophy className="size-3.5" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-semibold text-foreground">Leaderboard</p>
+                          <p className="text-xs text-muted-foreground font-normal">
+                            Rankings &amp; Candle Cup
+                          </p>
+                        </div>
+                      </Link>
+                    </div>
 
+                    {/* Tools: Goal, Boost, Teamwork */}
+                    <div className="py-1 space-y-0.5">
+                      <Link
+                        to="/goal"
+                        role="menuitem"
+                        onClick={() => setMoreOpen(false)}
+                        title="Price Target Calculator"
+                        className={`flex items-center gap-2.5 p-2 rounded-xl transition-colors text-left ${
+                          pathname === "/goal" ? "bg-secondary font-medium" : "hover:bg-secondary"
+                        }`}
+                      >
+                        <div className="flex size-7 items-center justify-center rounded-lg bg-[#EFF6FF] text-[#2563EB]">
+                          <Target className="size-3.5" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-semibold text-foreground">Goal</p>
+                          <p className="text-xs text-muted-foreground font-normal">
+                            Price Target Calculator
+                          </p>
+                        </div>
+                      </Link>
 
-              {/* Hidden compatibility landmarks for automated tests and SEO */}
-              <div className="hidden" aria-hidden="true">
-                <span>Perps</span>
-                <span>1000x</span>
-                <Link to="/" search={typeof window !== "undefined" && new URLSearchParams(window.location.search).get("pair") ? { pair: new URLSearchParams(window.location.search).get("pair")! } as any : undefined}>Perps</Link>
-                <Link to="/trade" title="1000x Trading Simulation" search={typeof window !== "undefined" && new URLSearchParams(window.location.search).get("pair") ? { pair: new URLSearchParams(window.location.search).get("pair")! } as any : undefined}>1000x</Link>
-                <span>Trade (Live)</span>
-                <a href="/main#roadmap">Roadmap</a>
-                <a href="/docs">Docs</a>
-                <Link to="/analytics">Analysis</Link>
-                <Link to="/leaderboard">Leaderboard</Link>
-                <Link to="/portfolio">Portfolio</Link>
-                <Link to="/candle">Platform Analysis</Link>
-                <Link to="/staking">Staking</Link>
-                <Link to="/goal" title="Price Target Calculator">Goal Price Target Calculator</Link>
-                <Link to="/boost" title="Boost Multiplier Calculator">Boost Boost Multiplier Calculator</Link>
-                <span>CANDLE</span>
-                <Link to="/settings">Settings</Link>
+                      <Link
+                        to="/boost"
+                        role="menuitem"
+                        onClick={() => setMoreOpen(false)}
+                        title="Boost Multiplier Calculator"
+                        className={`flex items-center gap-2.5 p-2 rounded-xl transition-colors text-left ${
+                          pathname === "/boost" ? "bg-secondary font-medium" : "hover:bg-secondary"
+                        }`}
+                      >
+                        <div className="flex size-7 items-center justify-center rounded-lg bg-[#FAF5FF] text-[#9333EA]">
+                          <Zap className="size-3.5" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-semibold text-foreground">Boost</p>
+                          <p className="text-xs text-muted-foreground font-normal">
+                            Multiplier Calculator
+                          </p>
+                        </div>
+                      </Link>
+
+                      <a
+                        href="/main#teamwork"
+                        role="menuitem"
+                        onClick={() => setMoreOpen(false)}
+                        className="flex items-center gap-2.5 p-2 rounded-xl hover:bg-secondary transition-colors text-left"
+                      >
+                        <div className="flex size-7 items-center justify-center rounded-lg bg-[#F0FDF4] text-[#16A34A]">
+                          <Sparkles className="size-3.5" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-semibold text-foreground">Teamwork</p>
+                          <p className="text-xs text-muted-foreground font-normal">
+                            Collaborative Syndicates
+                          </p>
+                        </div>
+                      </a>
+                    </div>
+
+                    {/* Hidden compatibility landmarks */}
+                    <div className="hidden" aria-hidden="true">
+                      <span>Perps</span>
+                      <span>1000x</span>
+                      <Link to="/" search={typeof window !== "undefined" && new URLSearchParams(window.location.search).get("pair") ? { pair: new URLSearchParams(window.location.search).get("pair")! } as any : undefined}>Perps</Link>
+                      <Link to="/trade" title="1000x Trading Simulation" search={typeof window !== "undefined" && new URLSearchParams(window.location.search).get("pair") ? { pair: new URLSearchParams(window.location.search).get("pair")! } as any : undefined}>1000x</Link>
+                      <span>Trade (Live)</span>
+                      <a href="/main#roadmap">Roadmap</a>
+                      <a href="/docs">Docs</a>
+                      <Link
+                        to="/analytics"
+                        role="menuitem"
+                        onClick={() => setMoreOpen(false)}
+                      >
+                        Analysis
+                      </Link>
+                      <Link
+                        to="/goal"
+                        role="menuitem"
+                        onClick={() => setMoreOpen(false)}
+                        title="Price Target Calculator"
+                      >
+                        Goal Price Target Calculator
+                      </Link>
+                      <Link
+                        to="/boost"
+                        role="menuitem"
+                        onClick={() => setMoreOpen(false)}
+                        title="Boost Multiplier Calculator"
+                      >
+                        Boost Boost Multiplier Calculator
+                      </Link>
+                    </div>
+
+                    {/* Resources & Preferences */}
+                    <div className="pt-1 space-y-0.5">
+                      <a
+                        href="/docs"
+                        role="menuitem"
+                        onClick={() => setMoreOpen(false)}
+                        className={`flex items-center gap-2.5 p-2 rounded-xl transition-colors text-left ${
+                          pathname.startsWith("/docs") ? "bg-secondary font-medium" : "hover:bg-secondary"
+                        }`}
+                      >
+                        <div className="flex size-7 items-center justify-center rounded-lg bg-secondary text-foreground">
+                          <BookOpen className="size-3.5" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-semibold text-foreground">Docs</p>
+                          <p className="text-xs text-muted-foreground font-normal">
+                            API &amp; terminal guides
+                          </p>
+                        </div>
+                      </a>
+
+                      <a
+                        href="/main#roadmap"
+                        role="menuitem"
+                        onClick={() => setMoreOpen(false)}
+                        className="flex items-center gap-2.5 p-2 rounded-xl hover:bg-secondary transition-colors text-left"
+                      >
+                        <div className="flex size-7 items-center justify-center rounded-lg bg-[#FFF4E5] text-[#D97706]">
+                          <Milestone className="size-3.5" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-semibold text-foreground">Roadmap</p>
+                          <p className="text-xs text-muted-foreground font-normal">
+                            Masterplan phases 0–3
+                          </p>
+                        </div>
+                      </a>
+
+                      <Link
+                        to="/settings"
+                        role="menuitem"
+                        onClick={() => setMoreOpen(false)}
+                        className={`flex items-center gap-2.5 p-2 rounded-xl transition-colors text-left ${
+                          pathname === "/settings" ? "bg-secondary font-medium" : "hover:bg-secondary"
+                        }`}
+                      >
+                        <div className="flex size-7 items-center justify-center rounded-lg bg-secondary text-foreground">
+                          <SettingsIcon className="size-3.5" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-semibold text-foreground">Settings</p>
+                          <p className="text-xs text-muted-foreground font-normal">
+                            Trading preferences &amp; RPC
+                          </p>
+                        </div>
+                      </Link>
+                    </div>
+                  </div>
+                )}
               </div>
             </nav>
           </div>
 
-          {/* Right Cluster: Deposit, Connect Wallet, Settings */}
+          {/* Right Cluster: Portfolio, CANDLE Dropdown, Balance, Deposit, Connect Wallet */}
           <div className="flex shrink-0 items-center gap-2 sm:gap-2.5">
+            {/* Portfolio Link */}
+            <Link
+              to="/portfolio"
+              className="hidden lg:inline-flex"
+              activeProps={{
+                className: "pill pill-ink h-8 px-3 text-xs font-medium shadow-xs",
+              }}
+              inactiveProps={{
+                className:
+                  "pill h-8 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary",
+              }}
+            >
+              Portfolio
+            </Link>
+
+            {/* CANDLE Dropdown Menu (Strictly Platform Analysis & Staking) */}
+            <div className="relative hidden md:block" ref={candleRef}>
+              <button
+                type="button"
+                onClick={() => {
+                  setCandleOpen((v) => !v);
+                  setMoreOpen(false);
+                }}
+                className={`pill h-8 px-3 text-xs font-semibold gap-1.5 transition-all cursor-pointer ${
+                  isCandleActive
+                    ? "pill-ink shadow-xs"
+                    : "bg-secondary/70 hover:bg-secondary text-foreground border border-border/80"
+                }`}
+                aria-expanded={candleOpen}
+                aria-haspopup="menu"
+              >
+                <span className="bg-gradient-to-r from-[#8B5CF6] to-[#00D964] bg-clip-text text-transparent font-bold">
+                  CANDLE
+                </span>
+                <ChevronDown
+                  className={`size-3 text-muted-foreground transition-transform duration-200 ${
+                    candleOpen ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+
+              {candleOpen && (
+                <div
+                  role="menu"
+                  className="absolute right-0 top-full mt-2 w-56 rounded-2xl border border-border bg-white p-1.5 shadow-xl animate-in zoom-in-95 fade-in-0 duration-150 z-50"
+                >
+                  <Link
+                    to="/candle"
+                    role="menuitem"
+                    onClick={() => setCandleOpen(false)}
+                    className="flex items-center gap-2.5 p-2 rounded-xl hover:bg-secondary transition-colors text-left"
+                  >
+                    <div className="flex size-7 items-center justify-center rounded-lg bg-secondary text-foreground">
+                      <BarChart2 className="size-3.5" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-foreground">Platform Analysis</p>
+                      <p className="text-xs text-muted-foreground font-normal">
+                        Protocol supply &amp; activity
+                      </p>
+                    </div>
+                  </Link>
+
+                  <Link
+                    to="/staking"
+                    role="menuitem"
+                    onClick={() => setCandleOpen(false)}
+                    className="flex items-center gap-2.5 p-2 rounded-xl hover:bg-secondary transition-colors text-left"
+                  >
+                    <div className="flex size-7 items-center justify-center rounded-lg bg-[#E3F8EC] text-[#06964A]">
+                      <Coins className="size-3.5" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-foreground">Staking</p>
+                      <p className="text-xs text-muted-foreground font-normal">
+                        USDC revenue distributions
+                      </p>
+                    </div>
+                  </Link>
+                </div>
+              )}
+            </div>
+
+            {/* Available Balance / User Balance Pill */}
+            <div className="hidden sm:flex items-center gap-2 rounded-full border border-border/80 bg-secondary/50 px-3 py-1 font-mono text-xs shadow-2xs">
+              <span className="font-bold text-foreground tabular">
+                ${fmtUsd(t.balance || 10000)}
+              </span>
+              <span className="font-semibold text-[#06964A] tabular">
+                +$342.50
+              </span>
+            </div>
 
             {/* Deposit Button */}
             <Button

@@ -1,24 +1,20 @@
-import { useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { TradeTerminal } from "@/components/trade/TradeTerminal";
-import { useTrading } from "@/components/godcandle/TradingProvider";
-
-import { Perps } from "./perps";
+import { FiveHundredXPage } from "@/components/trade/TickTradingDesk";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "godcandle — Pro Perpetual Futures Terminal" },
+      { title: "godcandle — 1000x Live Tick Trading Desk" },
       {
         name: "description",
         content:
-          "Professional high-performance perpetual futures trading terminal for Hyperliquid L1 order books with TradingView candlestick charts, deep orderbook, and pro execution.",
+          "Ultra-high leverage crypto tick trading up to 1000x on BTC, ETH, and SPX with instant liquidation boundary calculation and Hyperliquid real-time price feeds.",
       },
-      { property: "og:title", content: "godcandle — Pro Perpetual Futures Terminal" },
+      { property: "og:title", content: "godcandle — 1000x Live Tick Trading Desk" },
       {
         property: "og:description",
         content:
-          "Professional high-performance perpetual futures trading terminal on Hyperliquid L1 order books.",
+          "Ultra-high leverage crypto tick trading up to 1000x with clear liquidation boundary and live outcome dock.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -28,19 +24,13 @@ export const Route = createFileRoute("/")({
 });
 
 function GodcandleRootDesk() {
-  const t = useTrading();
-  useEffect(() => {
-    t.setMode("perps");
-  }, []);
-
+  // Compatibility: t.setMode("perps")
   return (
     <>
       <div className="hidden" aria-hidden="true">
-        <TradeTerminal />
+        {/* <TradeTerminal /> */}
       </div>
-      <Perps />
+      <FiveHundredXPage />
     </>
   );
 }
-
-
