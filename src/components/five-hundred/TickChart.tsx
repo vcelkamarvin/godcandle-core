@@ -265,21 +265,22 @@ export function TickChart({
       const nowMs = Date.now();
       const params = ASSET_PARAMS[state.symbol];
 
-      // 1. Tick generator (runs every 150-250ms)
+      // 1. Tick generator (runs every 100-180ms for lively 1000x micro-volatility)
       if (nowMs - state.lastTickTime >= state.nextTickDelay) {
         state.lastTickTime = nowMs;
-        state.nextTickDelay = 150 + Math.random() * 100;
+        state.nextTickDelay = 100 + Math.random() * 80;
 
         const isJump = Math.random() < params.jumpProb;
         const volMultiplier = Math.max(1, demoVolatility);
         const drift =
           (Math.random() - 0.495) *
           (params.driftMax - params.driftMin) *
+          1.45 *
           (isJump ? params.jumpMultiplier : 1) *
           volMultiplier;
 
-        // Subtle mean-reverting pull toward realAnchorPrice so tick chart faithfully tracks live price
-        const anchorDelta = (state.realAnchorPrice - state.targetHeadPrice) * 0.25;
+        // Rapid mean-reverting pull toward realAnchorPrice so tick chart faithfully dances strictly on live price
+        const anchorDelta = (state.realAnchorPrice - state.targetHeadPrice) * 0.35;
         const newTarget = Number((state.targetHeadPrice + drift + anchorDelta).toFixed(params.decimals));
         const prevPrice = state.targetHeadPrice;
         state.targetHeadPrice = newTarget;
@@ -384,10 +385,10 @@ export function TickChart({
       }
 
       // Smooth Auto-Zoom Requirement:
-      // When no position: y-range tightly hugs the price.
+      // When no position: y-range tightly hugs the price corridor so ticks produce lively vertical action.
       // When a position opens: ease out over ~600ms to include entry, liquidation, target.
       // When position closes: ease back over ~600ms to hug the price.
-      let padFactor = 0.12; // tight hug when no position
+      let padFactor = 0.045; // tight corridor hug to make micro-volatility visibly dynamic
       if (activePosition && activePosition.status === "open") {
         if (activePosition.liqPrice < minP) minP = activePosition.liqPrice;
         if (activePosition.liqPrice > maxP) maxP = activePosition.liqPrice;
