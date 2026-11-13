@@ -10,6 +10,8 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as R1000xRouteImport } from './routes/1000x'
+import { Route as R500xRouteImport } from './routes/500x'
 import { Route as AnalyticsRouteImport } from './routes/analytics'
 import { Route as BoostRouteImport } from './routes/boost'
 import { Route as CandleRouteImport } from './routes/candle'
@@ -33,6 +35,16 @@ import { Route as LeaderboardAddressRouteImport } from './routes/leaderboard.$ad
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const R1000xRoute = R1000xRouteImport.update({
+  id: '/1000x',
+  path: '/1000x',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const R500xRoute = R500xRouteImport.update({
+  id: '/500x',
+  path: '/500x',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AnalyticsRoute = AnalyticsRouteImport.update({
@@ -133,6 +145,8 @@ const LeaderboardAddressRoute = LeaderboardAddressRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/1000x': typeof R1000xRoute
+  '/500x': typeof R500xRoute
   '/analytics': typeof AnalyticsRoute
   '/boost': typeof BoostRoute
   '/candle': typeof CandleRoute
@@ -155,6 +169,8 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/1000x': typeof R1000xRoute
+  '/500x': typeof R500xRoute
   '/analytics': typeof AnalyticsRoute
   '/boost': typeof BoostRoute
   '/candle': typeof CandleRoute
@@ -177,6 +193,8 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/1000x': typeof R1000xRoute
+  '/500x': typeof R500xRoute
   '/analytics': typeof AnalyticsRoute
   '/boost': typeof BoostRoute
   '/candle': typeof CandleRoute
@@ -201,6 +219,8 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/1000x'
+    | '/500x'
     | '/analytics'
     | '/boost'
     | '/candle'
@@ -223,6 +243,8 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/1000x'
+    | '/500x'
     | '/analytics'
     | '/boost'
     | '/candle'
@@ -244,6 +266,8 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/1000x'
+    | '/500x'
     | '/analytics'
     | '/boost'
     | '/candle'
@@ -267,6 +291,8 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  R1000xRoute: typeof R1000xRoute
+  R500xRoute: typeof R500xRoute
   AnalyticsRoute: typeof AnalyticsRoute
   BoostRoute: typeof BoostRoute
   CandleRoute: typeof CandleRoute
@@ -290,6 +316,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/1000x': {
+      id: '/1000x'
+      path: '/1000x'
+      fullPath: '/1000x'
+      preLoaderRoute: typeof R1000xRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/500x': {
+      id: '/500x'
+      path: '/500x'
+      fullPath: '/500x'
+      preLoaderRoute: typeof R500xRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/analytics': {
@@ -458,6 +498,8 @@ const LeaderboardRouteWithChildren = LeaderboardRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  R1000xRoute: R1000xRoute,
+  R500xRoute: R500xRoute,
   AnalyticsRoute: AnalyticsRoute,
   BoostRoute: BoostRoute,
   CandleRoute: CandleRoute,
