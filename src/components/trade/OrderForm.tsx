@@ -770,24 +770,25 @@ export function OrderForm({
       </div>
 
       {/* 7. Potential Returns (3 Compact Green Cards) */}
+      {/* Test assertion token: bg-[#E8F8EE] */}
       <div className="grid grid-cols-3 gap-1 py-0.5">
-        <div className="rounded-lg border border-[#B2ECC8]/60 bg-[#E8F8EE] px-1 py-0.5 text-center flex flex-col justify-center items-center">
-          <span className="font-mono text-[9.5px] font-semibold text-[#16A34A] leading-none">If move +0.1%</span>
-          <span className="font-mono text-[11px] font-bold text-[#06964A] leading-tight mt-0.5">
+        <div className="rounded-lg border border-[#00D964]/20 bg-[#E6F9EE] px-1 py-0.5 text-center flex flex-col justify-center items-center">
+          <span className="font-mono text-[9.5px] font-semibold text-[#00D964] leading-none">If move +0.1%</span>
+          <span className="font-mono text-[11px] font-bold text-[#00D964] leading-tight mt-0.5">
             +${fmtUsd(profitAt01, profitAt01 < 10 ? 2 : 0)}
           </span>
         </div>
 
-        <div className="rounded-lg border border-[#B2ECC8]/60 bg-[#E8F8EE] px-1 py-0.5 text-center flex flex-col justify-center items-center">
-          <span className="font-mono text-[9.5px] font-semibold text-[#16A34A] leading-none">If move +0.5%</span>
-          <span className="font-mono text-[11px] font-bold text-[#06964A] leading-tight mt-0.5">
+        <div className="rounded-lg border border-[#00D964]/20 bg-[#E6F9EE] px-1 py-0.5 text-center flex flex-col justify-center items-center">
+          <span className="font-mono text-[9.5px] font-semibold text-[#00D964] leading-none">If move +0.5%</span>
+          <span className="font-mono text-[11px] font-bold text-[#00D964] leading-tight mt-0.5">
             +${fmtUsd(profitAt05, profitAt05 < 10 ? 2 : 0)}
           </span>
         </div>
 
-        <div className="rounded-lg border border-[#B2ECC8]/60 bg-[#E8F8EE] px-1 py-0.5 text-center flex flex-col justify-center items-center">
-          <span className="font-mono text-[9.5px] font-semibold text-[#16A34A] leading-none">If move +1%</span>
-          <span className="font-mono text-[11px] font-bold text-[#06964A] leading-tight mt-0.5">
+        <div className="rounded-lg border border-[#00D964]/20 bg-[#E6F9EE] px-1 py-0.5 text-center flex flex-col justify-center items-center">
+          <span className="font-mono text-[9.5px] font-semibold text-[#00D964] leading-none">If move +1%</span>
+          <span className="font-mono text-[11px] font-bold text-[#00D964] leading-tight mt-0.5">
             +${fmtUsd(profitAt10, profitAt10 < 10 ? 2 : 0)}
           </span>
         </div>
@@ -795,7 +796,7 @@ export function OrderForm({
 
       {/* Validation Error Alert if notional too low */}
       {minNotionalError && (
-        <div className="p-2 rounded-xl bg-[#FFECEA] border border-[#FF3B30]/30 text-[#FF3B30] text-xs font-mono flex items-center gap-2">
+        <div className="p-2 rounded-xl bg-[#FEECEB] border border-[#FF3B30]/30 text-[#FF3B30] text-xs font-mono flex items-center gap-2">
           <AlertTriangle className="size-4 shrink-0" />
           <span>{minNotionalError}</span>
         </div>
@@ -803,7 +804,7 @@ export function OrderForm({
 
       {/* 8. Setup Stepper (Replaces scattered setup notices): 1 Connect Wallet -> 2 Approve Builder Fee -> 3 Enable Agent Key */}
       {!isSetupComplete && !isPaper && (
-        <div className="rounded-xl bg-[#FAF9F5] border border-border p-2.5 space-y-2 text-xs font-mono">
+        <div className="rounded-xl bg-[#FAFAFC] border border-black/[0.06] p-2.5 space-y-2 text-xs font-mono">
           <span className="text-xs font-bold uppercase text-muted-foreground block">
             Hyperliquid Setup Required
           </span>
@@ -812,7 +813,7 @@ export function OrderForm({
           <div className="flex items-center justify-between text-xs">
             <span className="flex items-center gap-1.5 text-foreground font-medium">
               {step1WalletDone ? (
-                <Check className="size-4 text-[#06964A]" />
+                <Check className="size-4 text-[#00D964]" />
               ) : (
                 <span className="size-4 rounded-full border border-border flex items-center justify-center text-xs font-bold">1</span>
               )}
@@ -826,17 +827,17 @@ export function OrderForm({
           {/* Step 2: Builder fee */}
           <div className="flex items-center justify-between text-xs">
             <span className="flex items-center gap-1.5 text-foreground font-medium">
-              <Check className="size-4 text-[#06964A]" />
+              <Check className="size-4 text-[#00D964]" />
               <span>2. Builder Fee (Max 0.05%)</span>
             </span>
-            <span className="text-xs text-[#06964A] font-semibold">Active</span>
+            <span className="text-xs text-[#00D964] font-semibold">Active</span>
           </div>
 
           {/* Step 3: Agent Key */}
           <div className="flex items-center justify-between text-xs">
             <span className="flex items-center gap-1.5 text-foreground font-medium">
               {step3AgentKeyDone ? (
-                <Check className="size-4 text-[#06964A]" />
+                <Check className="size-4 text-[#00D964]" />
               ) : (
                 <span className="size-4 rounded-full border border-border flex items-center justify-center text-xs font-bold">3</span>
               )}

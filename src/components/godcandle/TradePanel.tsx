@@ -45,14 +45,14 @@ export function TradePanel(p: Props) {
               <div
                 key={pos.id}
                 className={`rounded-xl border p-2 text-xs font-mono transition-all ${
-                  isUp ? "border-[#00D964]/40 bg-[#E3F8EC]/60" : "border-[#FF3B30]/40 bg-[#FFECEA]/60"
+                  isUp ? "border-[#00D964]/40 bg-[#E6F9EE]/60" : "border-[#FF3B30]/40 bg-[#FEECEB]/60"
                 }`}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5 flex-wrap">
                     <span
-                      className={`rounded-md px-1.5 py-0.5 text-xs uppercase font-bold text-white ${
-                        pos.side === "long" ? "bg-[#06964A]" : "bg-[#FF3B30]"
+                      className={`rounded-md px-1.5 py-0.5 text-xs uppercase font-bold ${
+                        pos.side === "long" ? "bg-[#00D964] text-black" : "bg-[#FF3B30] text-white"
                       }`}
                     >
                       {pos.side} {pos.leverage}×
@@ -62,7 +62,7 @@ export function TradePanel(p: Props) {
                     </span>
                     <span
                       className={`tabular font-bold ${
-                        isUp ? "text-[#06964A]" : "text-[#FF3B30]"
+                        isUp ? "text-[#00D964]" : "text-[#FF3B30]"
                       }`}
                     >
                       {fmtSigned(pnl)} ({roi >= 0 ? "+" : ""}{roi.toFixed(1)}%)

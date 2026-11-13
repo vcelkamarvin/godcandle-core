@@ -162,7 +162,7 @@ function AnalyticsPage() {
           <div className="rounded-2xl border border-black/[0.06] bg-white p-3.5 shadow-xs transition-all hover:border-black/20">
             <div className="flex items-center justify-between text-xs font-mono text-muted-foreground">
               <span className="text-[11px] font-semibold uppercase tracking-wider">1000X OPEN INTEREST</span>
-              <span className="rounded bg-[#FFECEA] px-1 py-0.2 text-xs font-bold text-[#FF3B30]">
+              <span className="rounded bg-[#FEECEB] px-1 py-0.2 text-xs font-bold text-[#FF3B30]">
                 MAX LEV
               </span>
             </div>
@@ -478,7 +478,7 @@ function AnalyticsPage() {
                 <p className="text-[11px] font-mono font-semibold uppercase tracking-wider text-muted-foreground">LONG / SHORT RATIO</p>
                 <span className="text-xs font-mono text-muted-foreground">Hyperliquid Perps</span>
               </div>
-              <div className="mt-2.5 h-2 overflow-hidden rounded-full bg-[#FFECEA]">
+              <div className="mt-2.5 h-2 overflow-hidden rounded-full bg-[#FEECEB]">
                 <div className="h-full w-[54.2%] rounded-full bg-[#00D964]" />
               </div>
               <p className="mt-2 flex justify-between tabular text-xs font-mono">

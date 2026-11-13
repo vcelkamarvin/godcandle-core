@@ -158,13 +158,13 @@ export function SettingsView({ isModal = false, onClose }: SettingsViewProps) {
       {/* Top Header / Context */}
       <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-border">
         <div className="flex items-center gap-2.5">
-          <div className="flex size-7 items-center justify-center rounded-lg bg-secondary border border-border text-[#06964A]">
+          <div className="flex size-7 items-center justify-center rounded-lg bg-secondary border border-border text-[#00D964]">
             <Terminal className="size-4" />
           </div>
           <div>
             <div className="flex items-center gap-2">
               <span className="font-bold text-sm tracking-wider text-foreground">TERMINAL CONFIGURATION</span>
-              <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-[#E3F8EC] text-[#06964A] border border-[#00D964]/30">
+              <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-[#E6F9EE] text-[#00D964] border border-[#00D964]/30">
                 PRO-DESK v3
               </span>
             </div>
@@ -219,7 +219,7 @@ export function SettingsView({ isModal = false, onClose }: SettingsViewProps) {
             <div className="flex items-start justify-between gap-4">
               <div className="space-y-1">
                 <div className="flex items-center gap-1.5">
-                  <Key className="size-3.5 text-[#06964A]" />
+                  <Key className="size-3.5 text-[#00D964]" />
                   <span className="font-semibold text-foreground text-xs font-sans">1-Click Trading (Session Keys)</span>
                 </div>
                 <p className="text-[10px] text-muted-foreground leading-relaxed font-sans">
@@ -258,7 +258,7 @@ export function SettingsView({ isModal = false, onClose }: SettingsViewProps) {
           <div className="space-y-2">
             <div className="flex items-center justify-between font-sans">
               <span className="text-[11px] font-semibold text-foreground">Default Margin (USDC)</span>
-              <span className="text-xs font-bold text-[#06964A] font-mono tabular-nums">
+              <span className="text-xs font-bold text-[#00D964] font-mono tabular-nums">
                 ${settings.defaultMargin.toLocaleString()} USDC
               </span>
             </div>
@@ -388,7 +388,7 @@ export function SettingsView({ isModal = false, onClose }: SettingsViewProps) {
         <div className="border border-black/[0.06] bg-white rounded-2xl p-4 space-y-4 shadow-xs">
           <div className="flex items-center justify-between pb-2 border-b border-black/[0.06]">
             <div className="flex items-center gap-2">
-              <Activity className="size-3.5 text-[#06964A]" />
+              <Activity className="size-3.5 text-[#00D964]" />
               <span className="font-bold tracking-wider text-foreground text-[11px]">
                 2. NETWORK & RPC DIAGNOSTICS
               </span>
@@ -436,7 +436,7 @@ export function SettingsView({ isModal = false, onClose }: SettingsViewProps) {
 
             <div className="flex items-center justify-between text-[11px] pt-1.5 border-t border-border/70">
               <span className="text-muted-foreground font-sans">Settlement Consensus</span>
-              <span className="text-[10px] text-[#06964A] font-medium flex items-center gap-1">
+              <span className="text-[10px] text-[#00D964] font-medium flex items-center gap-1">
                 <CheckCircle2 className="size-3" />
                 L1 DIRECT DISPATCH ACTIVE
               </span>
@@ -458,7 +458,7 @@ export function SettingsView({ isModal = false, onClose }: SettingsViewProps) {
             </div>
             <div className="rounded-xl border border-border bg-secondary/30 p-2.5">
               <span className="text-muted-foreground block font-sans">Execution Gas</span>
-              <span className="font-bold text-[#06964A] text-xs">Zero Added (L1 Native)</span>
+              <span className="font-bold text-[#00D964] text-xs">Zero Added (L1 Native)</span>
             </div>
           </div>
         </div>
@@ -534,7 +534,7 @@ export function SettingsView({ isModal = false, onClose }: SettingsViewProps) {
           <div className="space-y-1.5 rounded-xl border border-border/80 bg-secondary/30 p-3.5 text-[10px]">
             <div className="flex items-center justify-between text-foreground font-medium font-sans">
               <span>Theme Enforcement</span>
-              <span className="px-2 py-0.5 rounded-full bg-[#E3F8EC] text-[#06964A] border border-[#00D964]/30 font-bold font-mono">
+              <span className="px-2 py-0.5 rounded-full bg-[#E6F9EE] text-[#00D964] border border-[#00D964]/30 font-bold font-mono">
                 LIGHT MODE AURA (ACTIVE)
               </span>
             </div>
@@ -570,7 +570,7 @@ export function SettingsView({ isModal = false, onClose }: SettingsViewProps) {
               </p>
               <p>
                 Session Key Status:{' '}
-                <span className={t.isAgentApproved ? 'text-[#06964A] font-semibold' : 'text-muted-foreground'}>
+                <span className={t.isAgentApproved ? 'text-[#00D964] font-semibold' : 'text-muted-foreground'}>
                   {t.isAgentApproved ? 'Active (Ready in Browser Storage)' : 'Revoked / Uninitialized'}
                 </span>
               </p>

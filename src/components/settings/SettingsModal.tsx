@@ -72,7 +72,7 @@ export function SettingsModal({
         >
           <div className="flex items-center justify-between pb-2 border-b border-border text-xs text-muted-foreground">
             <DialogTitle className="flex items-center gap-1.5 font-semibold text-foreground text-xs font-mono">
-              <SettingsIcon className="size-3.5 text-[#06964A]" />
+              <SettingsIcon className="size-3.5 text-[#00D964]" />
               QUICK SETTINGS DRAWER · DIALOG
             </DialogTitle>
             <div className="flex items-center gap-3">

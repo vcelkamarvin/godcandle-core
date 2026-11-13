@@ -17,7 +17,7 @@ function DocsOverview() {
       </div>
 
       <div className="border border-border bg-white rounded-2xl p-5 space-y-4 shadow-2xs">
-        <h2 className="text-base font-bold text-[#06964A] flex items-center gap-2">
+        <h2 className="text-base font-bold text-[#00D964] flex items-center gap-2">
           <Zap className="w-4 h-4" />
           Architecture Highlights
         </h2>
@@ -45,7 +45,7 @@ function DocsOverview() {
           to="/docs/rules"
           className="p-4 bg-white rounded-2xl border border-border hover:border-foreground/30 transition-all block group shadow-2xs"
         >
-          <div className="font-bold text-foreground group-hover:text-[#06964A] flex items-center justify-between">
+          <div className="font-bold text-foreground group-hover:text-[#00D964] flex items-center justify-between">
             <span>Trading Rules</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </div>
@@ -58,7 +58,7 @@ function DocsOverview() {
           to="/docs/pool"
           className="p-4 bg-white rounded-2xl border border-border hover:border-foreground/30 transition-all block group shadow-2xs"
         >
-          <div className="font-bold text-foreground group-hover:text-[#06964A] flex items-center justify-between">
+          <div className="font-bold text-foreground group-hover:text-[#00D964] flex items-center justify-between">
             <span>House Pool</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </div>
@@ -71,7 +71,7 @@ function DocsOverview() {
           to="/docs/token"
           className="p-4 bg-white rounded-2xl border border-border hover:border-foreground/30 transition-all block group shadow-2xs"
         >
-          <div className="font-bold text-foreground group-hover:text-[#06964A] flex items-center justify-between">
+          <div className="font-bold text-foreground group-hover:text-[#00D964] flex items-center justify-between">
             <span>CANDLE Tokenomics</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </div>

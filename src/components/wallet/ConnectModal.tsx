@@ -651,7 +651,7 @@ export function ConnectModal({ isDark: isDarkProp }: { isDark?: boolean } = {}) 
                   <div className="space-y-3 my-auto">
                     <div className="p-3.5 rounded-2xl bg-white border border-border/80 shadow-xs flex items-start gap-3">
                       <div className="size-8 rounded-xl bg-[#00D964]/10 border border-[#00D964]/25 flex items-center justify-center shrink-0 mt-0.5">
-                        <Zap className="size-4 text-[#06964A]" />
+                        <Zap className="size-4 text-[#00D964]" />
                       </div>
                       <div>
                         <h4 className="font-sans font-bold text-xs text-[#0A0A0A]">Zero Gas Trading</h4>
@@ -689,7 +689,7 @@ export function ConnectModal({ isDark: isDarkProp }: { isDark?: boolean } = {}) 
                   {/* Bottom Stats Footer */}
                   <div className="pt-3 border-t border-border flex items-center justify-between text-xs font-mono text-muted-foreground">
                     <span>TPS: <strong className="text-foreground">20,000+</strong></span>
-                    <span>Latency: <strong className="text-[#06964A]">14ms</strong></span>
+                    <span>Latency: <strong className="text-[#00D964]">14ms</strong></span>
                     <span>Status: <strong className="text-foreground">Operational</strong></span>
                   </div>
                 </div>
@@ -711,7 +711,7 @@ export function ConnectModal({ isDark: isDarkProp }: { isDark?: boolean } = {}) 
             <div className="relative z-10 w-full max-w-md rounded-3xl border border-border bg-white p-5 sm:p-6 shadow-2xl text-[#0A0A0A] font-sans animate-in zoom-in-95 duration-150">
               <div className="flex items-center justify-between pb-3 border-b border-border">
                 <div className="flex items-center gap-2 font-bold text-sm">
-                  <ShieldCheck className="size-4 text-[#06964A]" />
+                  <ShieldCheck className="size-4 text-[#00D964]" />
                   <span>Connected Account</span>
                 </div>
                 <button
@@ -736,7 +736,7 @@ export function ConnectModal({ isDark: isDarkProp }: { isDark?: boolean } = {}) 
                     title="Copy Address"
                   >
                     {copied ? (
-                      <CheckCircle2 className="size-4 text-[#06964A]" />
+                      <CheckCircle2 className="size-4 text-[#00D964]" />
                     ) : (
                       <Copy className="size-4" />
                     )}
@@ -757,7 +757,7 @@ export function ConnectModal({ isDark: isDarkProp }: { isDark?: boolean } = {}) 
                     <span className="text-muted-foreground text-xs uppercase font-mono block">
                       Settlement
                     </span>
-                    <span className="font-semibold text-[#06964A]">Instant Settlement</span>
+                    <span className="font-semibold text-[#00D964]">Instant Settlement</span>
                   </div>
                 </div>
 
@@ -776,7 +776,7 @@ export function ConnectModal({ isDark: isDarkProp }: { isDark?: boolean } = {}) 
                   <button
                     type="button"
                     onClick={handleDisconnect}
-                    className="px-4 py-1.5 rounded-full bg-[#FFECEA] text-[#FF3B30] hover:bg-[#FFD7D4] text-xs font-semibold transition-colors cursor-pointer"
+                    className="px-4 py-1.5 rounded-full bg-[#FEECEB] text-[#FF3B30] hover:bg-[#FFD7D4] text-xs font-semibold transition-colors cursor-pointer"
                   >
                     Disconnect
                   </button>

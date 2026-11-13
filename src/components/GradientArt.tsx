@@ -30,7 +30,7 @@ export function GradientArt({
       base: "#0B0B0C",
       blobs: [
         {
-          color: "#3DDC97",
+          color: "#00D964",
           size: "w-[340px] h-[340px]",
           pos: "top-[-10%] left-[-15%]",
           delay: "0s",

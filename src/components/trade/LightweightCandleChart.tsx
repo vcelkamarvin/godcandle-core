@@ -584,7 +584,7 @@ export function LightweightCandleChart({
         {isTick ? (
           <>
             <span>
-              Tick: <span className="font-bold text-[#06964A]">${fmtUsd(latestPrice ?? ohlc?.c ?? 0, 2)}</span>
+              Tick: <span className="font-bold text-[#00D964]">${fmtUsd(latestPrice ?? ohlc?.c ?? 0, 2)}</span>
             </span>
             {ohlc?.v ? (
               <span className="hidden sm:inline text-muted-foreground">
@@ -612,7 +612,7 @@ export function LightweightCandleChart({
               C:{' '}
               <span
                 className={`font-bold ${
-                  ohlc.c >= ohlc.o ? 'text-[#06964A]' : 'text-[#FF3B30]'
+                  ohlc.c >= ohlc.o ? 'text-[#00D964]' : 'text-[#FF3B30]'
                 }`}
               >
                 ${fmtUsd(ohlc.c, 2)}

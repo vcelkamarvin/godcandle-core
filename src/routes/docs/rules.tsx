@@ -19,7 +19,7 @@ function DocsRules() {
       {/* Section 1: Execution Pricing */}
       <section className="border border-border bg-white rounded-2xl p-5 space-y-4 shadow-2xs">
         <h2 className="text-base font-bold text-foreground flex items-center gap-2">
-          <Shield className="w-4 h-4 text-[#06964A]" />
+          <Shield className="w-4 h-4 text-[#00D964]" />
           1. Hyperliquid L1 Real-Time Execution
         </h2>
         <p className="text-muted-foreground text-xs leading-relaxed">
@@ -33,14 +33,14 @@ function DocsRules() {
             Pricing rule:
             <ul className="list-disc list-inside pl-4 mt-1 space-y-1">
               <li>Base Price: <code className="text-foreground">P_mid = (P_bid + P_ask) / 2</code></li>
-              <li>Allowed Corridor: <code className="text-[#06964A]">Delta_max = 1.5 bps</code> (0.015%) for Tier 1 majors (BTC, ETH, SOL), <code className="text-[#06964A]">3.0 bps</code> for altcoins.</li>
+              <li>Allowed Corridor: <code className="text-[#00D964]">Delta_max = 1.5 bps</code> (0.015%) for Tier 1 majors (BTC, ETH, SOL), <code className="text-[#00D964]">3.0 bps</code> for altcoins.</li>
             </ul>
           </li>
         </ol>
 
-        <div className="p-4 bg-[#F6F6F4] rounded-xl border border-border font-mono text-xs text-foreground">
+        <div className="p-4 bg-[#F0F2F5] rounded-xl border border-border font-mono text-xs text-foreground">
           <span className="text-muted-foreground block mb-1">// Solidity Pricing Guard Condition</span>
-          <pre className="overflow-x-auto text-[11px] text-[#06964A]">
+          <pre className="overflow-x-auto text-[11px] text-[#00D964]">
 {`P_exec = Math.max(
     P_mark * (10000 - Delta_max) / 10000,
     Math.min(P_mid, P_mark * (10000 + Delta_max) / 10000)
@@ -110,9 +110,9 @@ function DocsRules() {
           </li>
         </ul>
 
-        <div className="p-4 bg-[#F6F6F4] rounded-xl border border-border font-mono text-center">
+        <div className="p-4 bg-[#F0F2F5] rounded-xl border border-border font-mono text-center">
           <span className="text-muted-foreground text-[11px] block mb-1">FINAL PNL FORMULA</span>
-          <div className="text-sm font-bold text-[#06964A]">
+          <div className="text-sm font-bold text-[#00D964]">
             PnL_net = N · d_net · scale(d_net, N) · 0.98
           </div>
         </div>

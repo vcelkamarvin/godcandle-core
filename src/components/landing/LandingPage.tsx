@@ -90,13 +90,13 @@ export function LandingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground font-sans selection:bg-[#00D964]/20 selection:text-[#06964A]">
+    <div className="min-h-screen bg-background text-foreground font-sans selection:bg-[#00D964]/20 selection:text-[#00D964]">
       {/* 1. TOP LIVE TICKER TELEMETRY BAR */}
       <div className="border-b border-border bg-secondary/50 px-4 sm:px-6 py-2 text-xs flex flex-wrap items-center justify-between gap-3 text-muted-foreground font-mono">
         <div className="flex items-center gap-3 overflow-x-auto no-scrollbar">
           <div className="flex items-center gap-1.5 shrink-0">
             <span className="size-2 rounded-full bg-[#00D964] animate-pulse" />
-            <span className="text-[#06964A] font-semibold text-[11px]">HYPERLIQUID L1</span>
+            <span className="text-[#00D964] font-semibold text-[11px]">HYPERLIQUID L1</span>
           </div>
           <span className="text-border">/</span>
           {MARKETS.slice(0, 4).map((m) => {
@@ -119,7 +119,7 @@ export function LandingPage() {
               >
                 <span className={isSelected ? 'text-background font-bold' : 'text-foreground font-semibold'}>{m.symbol}</span>
                 <span className="tabular-nums">${fmtUsd(mFeed.price, m.decimals)}</span>
-                <span className={mChange >= 0 ? 'text-[#06964A] font-medium' : 'text-[#FF3B30] font-medium'}>
+                <span className={mChange >= 0 ? 'text-[#00D964] font-medium' : 'text-[#FF3B30] font-medium'}>
                   {mChange >= 0 ? '+' : ''}
                   {mChange.toFixed(1)}%
                 </span>
@@ -130,7 +130,7 @@ export function LandingPage() {
 
         <div className="hidden lg:flex items-center gap-4 text-[10px] text-muted-foreground">
           <span>BUILDER_CODE: <span className="text-[#2563EB] font-semibold">GODCANDLE</span></span>
-          <span>LATENCY: <span className="text-[#06964A] font-semibold">18ms RPC</span></span>
+          <span>LATENCY: <span className="text-[#00D964] font-semibold">18ms RPC</span></span>
           <span>EXECUTION: <span className="text-foreground font-semibold">DIRECT L1 ORDERBOOK</span></span>
         </div>
       </div>
@@ -162,7 +162,7 @@ export function LandingPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
               <div className="p-4 rounded-2xl border border-border bg-white shadow-2xs space-y-1">
                 <div className="flex items-center gap-2 text-foreground text-xs font-semibold">
-                  <Zap className="size-4 text-[#06964A]" />
+                  <Zap className="size-4 text-[#00D964]" />
                   <span>Zero Latency L1 Routing</span>
                 </div>
                 <p className="text-[11px] text-muted-foreground leading-normal">
@@ -276,7 +276,7 @@ export function LandingPage() {
                 </div>
                 <div
                   className={`text-xs font-semibold px-2 py-0.5 rounded-full tabular-nums border ${
-                    change24 >= 0 ? 'bg-[#E3F8EC] text-[#06964A] border-[#06964A]/30' : 'bg-[#FFECEA] text-[#FF3B30] border-[#FF3B30]/30'
+                    change24 >= 0 ? 'bg-[#E6F9EE] text-[#00D964] border-[#00D964]/30' : 'bg-[#FEECEB] text-[#FF3B30] border-[#FF3B30]/30'
                   }`}
                 >
                   {change24 >= 0 ? '+' : ''}
@@ -298,7 +298,7 @@ export function LandingPage() {
                       onClick={() => setStake(amt)}
                       className={`py-1 text-[11px] rounded-lg border font-semibold transition-all cursor-pointer ${
                         stake === amt
-                          ? 'border-[#00D964] bg-[#E3F8EC] text-[#06964A]'
+                          ? 'border-[#00D964] bg-[#E6F9EE] text-[#00D964]'
                           : 'border-border bg-white text-muted-foreground hover:text-foreground hover:bg-secondary'
                       }`}
                     >
@@ -312,7 +312,7 @@ export function LandingPage() {
               <div className="space-y-1.5 pt-1">
                 <div className="flex items-center justify-between text-[11px]">
                   <span className="text-muted-foreground font-sans">Leverage (Hyperliquid L1 Limit)</span>
-                  <span className="text-[#06964A] font-bold tabular-nums">
+                  <span className="text-[#00D964] font-bold tabular-nums">
                     {leverage}x <span className="text-muted-foreground font-normal">/ {maxLeverage}x max</span>
                   </span>
                 </div>
@@ -415,17 +415,17 @@ export function LandingPage() {
             {/* PHASE 0: LIVE NOW */}
             <div className="rounded-2xl border-2 border-[#00D964]/60 bg-white p-6 space-y-4 relative overflow-hidden group shadow-sm hover:shadow-md transition-all">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-bold text-[#06964A] tracking-wider">
+                <span className="font-bold text-[#00D964] tracking-wider">
                   [PHASE_00 // STATUS: LIVE_NOW]
                 </span>
-                <span className="flex items-center gap-1.5 rounded-full bg-[#E3F8EC] border border-[#06964A]/30 px-2.5 py-0.5 text-[10px] font-bold text-[#06964A]">
-                  <span className="size-1.5 rounded-full bg-[#06964A] animate-pulse" />
+                <span className="flex items-center gap-1.5 rounded-full bg-[#E6F9EE] border border-[#00D964]/30 px-2.5 py-0.5 text-[10px] font-bold text-[#00D964]">
+                  <span className="size-1.5 rounded-full bg-[#00D964] animate-pulse" />
                   PRODUCTION
                 </span>
               </div>
 
               <div>
-                <h3 className="text-xl font-bold text-foreground group-hover:text-[#06964A] transition-colors font-sans">
+                <h3 className="text-xl font-bold text-foreground group-hover:text-[#00D964] transition-colors font-sans">
                   Native Hyperliquid Client
                 </h3>
                 <p className="text-xs text-muted-foreground mt-2 leading-relaxed font-sans">
@@ -435,22 +435,22 @@ export function LandingPage() {
 
               <div className="space-y-2 border-t border-border pt-4 text-xs font-sans">
                 <div className="flex items-start gap-2 text-foreground">
-                  <CheckCircle2 className="size-4 text-[#06964A] shrink-0 mt-0.5" />
+                  <CheckCircle2 className="size-4 text-[#00D964] shrink-0 mt-0.5" />
                   <span>Direct order book routing straight to Hyperliquid L1 validator consensus.</span>
                 </div>
                 <div className="flex items-start gap-2 text-foreground">
-                  <CheckCircle2 className="size-4 text-[#06964A] shrink-0 mt-0.5" />
+                  <CheckCircle2 className="size-4 text-[#00D964] shrink-0 mt-0.5" />
                   <span>UI/UX optimized for power users: fast hotkeys, responsive depth chart, and discrete dock.</span>
                 </div>
                 <div className="flex items-start gap-2 text-foreground">
-                  <CheckCircle2 className="size-4 text-[#06964A] shrink-0 mt-0.5" />
+                  <CheckCircle2 className="size-4 text-[#00D964] shrink-0 mt-0.5" />
                   <span>Sustainable protocol cashflow generated transparently via builder code fee rebates.</span>
                 </div>
               </div>
 
               <div className="p-3 rounded-xl bg-secondary/50 border border-border text-[11px] text-muted-foreground flex items-center justify-between">
                 <span>Current Leverage Limit: <strong className="text-foreground">1x–50x Perps</strong></span>
-                <Link to="/trade" className="text-[#06964A] font-semibold hover:underline flex items-center gap-1">
+                <Link to="/trade" className="text-[#00D964] font-semibold hover:underline flex items-center gap-1">
                   <span>Enter Terminal</span>
                   <ArrowUpRight className="size-3" />
                 </Link>

@@ -211,7 +211,7 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
           <button
             type="button"
             onClick={() => setOpenOrders([])}
-            className="px-2.5 py-1 rounded-lg text-xs font-bold text-[#FF3B30] hover:bg-[#FFECEA] border border-[#FF3B30]/30 transition-colors"
+            className="px-2.5 py-1 rounded-lg text-xs font-bold text-[#FF3B30] hover:bg-[#FEECEB] border border-[#FF3B30]/30 transition-colors"
           >
             Cancel All Orders
           </button>
@@ -391,7 +391,7 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
                         <button
                           type="button"
                           onClick={() => setOpenOrders((prev) => prev.filter((o) => o !== ord))}
-                          className="px-2 py-0.5 rounded text-xs font-bold text-[#FF3B30] hover:bg-[#FFECEA]"
+                          className="px-2 py-0.5 rounded text-xs font-bold text-[#FF3B30] hover:bg-[#FEECEB]"
                         >
                           Cancel
                         </button>

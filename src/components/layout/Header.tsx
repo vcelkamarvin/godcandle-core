@@ -562,7 +562,7 @@ export function Header() {
                       pathname === "/staking" ? "bg-secondary font-medium" : "hover:bg-secondary"
                     }`}
                   >
-                    <div className="flex size-7 items-center justify-center rounded-lg bg-[#E3F8EC] text-[#06964A]">
+                    <div className="flex size-7 items-center justify-center rounded-lg bg-[#E6F9EE] text-[#00D964]">
                       <Coins className="size-3.5" />
                     </div>
                     <div>

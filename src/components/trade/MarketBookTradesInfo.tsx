@@ -197,7 +197,7 @@ export function MarketBookTradesInfo({
 
         {activeTab === 'trades' && (
           <div className="flex items-center gap-2 text-[11px]">
-            <span className={cn("font-bold tabular", cvd >= 0 ? "text-[#06964A]" : "text-[#FF3B30]")}>
+            <span className={cn("font-bold tabular", cvd >= 0 ? "text-[#00D964]" : "text-[#FF3B30]")}>
               CVD {cvd >= 0 ? "+" : ""}${fmtUsd(Math.abs(cvd), 0)}
             </span>
             <div className="flex items-center gap-0.5">
@@ -276,7 +276,7 @@ export function MarketBookTradesInfo({
                     className="absolute right-0 top-0 bottom-0 bg-[#00D964]/10 rounded-sm pointer-events-none"
                     style={{ width: `${depthPct}%` }}
                   />
-                  <span className="text-[#06964A] font-semibold group-hover:underline">
+                  <span className="text-[#00D964] font-semibold group-hover:underline">
                     ${fmtUsd(bid.px, currentPrice >= 100 ? 1 : 2)}
                   </span>
                   <span className="text-right text-muted-foreground">{bid.sz.toFixed(szDecimals)}</span>
@@ -308,7 +308,7 @@ export function MarketBookTradesInfo({
                 <span
                   className={cn(
                     "font-semibold flex items-center gap-0.5",
-                    t.side === 'buy' ? 'text-[#06964A]' : 'text-[#FF3B30]'
+                    t.side === 'buy' ? 'text-[#00D964]' : 'text-[#FF3B30]'
                   )}
                 >
                   {t.side === 'buy' ? (
@@ -358,7 +358,7 @@ export function MarketBookTradesInfo({
 
             <div className="flex justify-between items-center text-[12px] sm:text-[13px] font-mono">
               <span className="text-muted-foreground font-medium">Current 1h Rate</span>
-              <span className="font-bold text-[#06964A]">{(fundingRate * 100).toFixed(4)}%</span>
+              <span className="font-bold text-[#00D964]">{(fundingRate * 100).toFixed(4)}%</span>
             </div>
             <div className="flex justify-between items-center text-[12px] sm:text-[13px] font-mono">
               <span className="text-muted-foreground font-medium">Predicted Next Rate</span>
@@ -380,7 +380,7 @@ export function MarketBookTradesInfo({
               <span className="text-muted-foreground font-medium">Open Interest</span>
               <span className="font-bold text-foreground">
                 ${fmtUsd(openInterest, 0)}{' '}
-                <span className="text-xs text-[#06964A] font-semibold">(+4.2% 24h)</span>
+                <span className="text-xs text-[#00D964] font-semibold">(+4.2% 24h)</span>
               </span>
             </div>
             <div className="flex justify-between items-center text-[12px] sm:text-[13px] font-mono">
@@ -415,7 +415,7 @@ export function MarketBookTradesInfo({
             </div>
             <div className="flex justify-between items-center text-[12px] sm:text-[13px] font-mono">
               <span className="text-muted-foreground font-medium">Settlement Asset</span>
-              <span className="font-bold text-[#06964A]">USDC (Hyperliquid L1)</span>
+              <span className="font-bold text-[#00D964]">USDC (Hyperliquid L1)</span>
             </div>
           </div>
         </div>

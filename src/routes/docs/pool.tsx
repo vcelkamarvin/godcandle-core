@@ -19,7 +19,7 @@ function DocsPool() {
       {/* Section 1: Capital Isolation */}
       <section className="border border-border bg-white rounded-2xl p-5 space-y-4 shadow-2xs">
         <h2 className="text-base font-bold text-foreground flex items-center gap-2">
-          <ShieldCheck className="w-4 h-4 text-[#06964A]" />
+          <ShieldCheck className="w-4 h-4 text-[#00D964]" />
           1. Capital Isolation & Collateral Guarantees
         </h2>
         <ul className="space-y-2 text-xs text-muted-foreground leading-relaxed">
@@ -39,11 +39,11 @@ function DocsPool() {
           2. Settlement Priority Flow
         </h2>
         <div className="space-y-3 text-xs text-muted-foreground">
-          <div className="p-3 bg-[#F6F6F4] rounded-xl border border-border">
-            <span className="text-[#06964A] font-bold block mb-1">SCENARIO A: LIQUID RESERVES &gt; WINNING PAYOUT</span>
+          <div className="p-3 bg-[#F0F2F5] rounded-xl border border-border">
+            <span className="text-[#00D964] font-bold block mb-1">SCENARIO A: LIQUID RESERVES &gt; WINNING PAYOUT</span>
             Full profit is transferred immediately in native USDC to the trader in the execution block.
           </div>
-          <div className="p-3 bg-[#F6F6F4] rounded-xl border border-border">
+          <div className="p-3 bg-[#F0F2F5] rounded-xl border border-border">
             <span className="text-foreground font-bold block mb-1">SCENARIO B: WINNING PAYOUT &gt; LIQUID RESERVES</span>
             Available liquid reserves are paid out immediately. The remaining unbacked profit is converted into an on-chain deterministic FIFO claim ticket in the <strong className="text-foreground">Payout Queue</strong>.
           </div>
@@ -53,7 +53,7 @@ function DocsPool() {
       {/* Section 3: 100% Debt Repayment Priority */}
       <section className="border border-border bg-white rounded-2xl p-5 space-y-4 shadow-2xs">
         <h2 className="text-base font-bold text-foreground flex items-center gap-2">
-          <Database className="w-4 h-4 text-[#06964A]" />
+          <Database className="w-4 h-4 text-[#00D964]" />
           3. 100% Debt Repayment Priority
         </h2>
         <p className="text-muted-foreground text-xs leading-relaxed">

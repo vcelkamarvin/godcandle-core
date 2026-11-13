@@ -44,7 +44,7 @@ function DocsLayout() {
         <div className="mt-8 p-3 bg-secondary/50 rounded-xl border border-border text-[11px] space-y-1">
           <div className="text-muted-foreground">Network: <span className="font-semibold text-foreground">HyperEVM</span></div>
           <div className="text-muted-foreground">Chain ID: <span className="font-semibold text-foreground">999</span></div>
-          <div className="text-muted-foreground">Status: <span className="text-[#06964A] font-bold">Mainnet Alpha</span></div>
+          <div className="text-muted-foreground">Status: <span className="text-[#00D964] font-bold">Mainnet Alpha</span></div>
         </div>
       </aside>
 

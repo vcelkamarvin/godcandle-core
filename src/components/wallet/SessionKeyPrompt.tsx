@@ -37,7 +37,7 @@ export function SessionKeyPrompt() {
     <div className="border border-border bg-surface p-3 font-mono text-xs rounded-xl shadow-2xs">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Key className={`w-4 h-4 ${isEnabled ? 'text-[#06964A]' : 'text-muted-foreground'}`} />
+          <Key className={`w-4 h-4 ${isEnabled ? 'text-[#00D964]' : 'text-muted-foreground'}`} />
           <div>
             <span className="font-semibold text-foreground block">
               1-Click Hyperliquid Agent Key
@@ -67,7 +67,7 @@ export function SessionKeyPrompt() {
 
       {isEnabled && (
         <div className="mt-2.5 pt-2 border-t border-border flex items-center justify-between text-[10px] text-muted-foreground">
-          <span className="flex items-center gap-1 text-[#06964A]">
+          <span className="flex items-center gap-1 text-[#00D964]">
             <CheckCircle2 className="w-3 h-3" />
             Agent Address: {shortAddr}
           </span>

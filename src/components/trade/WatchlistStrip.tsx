@@ -61,8 +61,8 @@ export function WatchlistStrip({
                 className={cn(
                   "text-[11px] font-mono font-semibold",
                   isActive
-                    ? (isUp ? "text-[#00D964]" : "text-[#FF453A]")
-                    : (isUp ? "text-[#06964A]" : "text-[#FF3B30]")
+                    ? (isUp ? "text-[#00D964]" : "text-[#FF3B30]")
+                    : (isUp ? "text-[#00D964]" : "text-[#FF3B30]")
                 )}
               >
                 {isUp ? "+" : ""}{changePct.toFixed(1)}%
