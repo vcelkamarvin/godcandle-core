@@ -638,28 +638,28 @@ export function FiveHundredXPage() {
       <div className="h-[2px] w-full rainbow-bar shrink-0" />
 
       {/* UNIFIED 1000X COMMAND BAR: Balanced, Uncluttered, High-Converting */}
-      <div className="border-b border-[var(--border-subtle,rgba(10,10,12,0.08))] bg-[#FFFFFF]/95 backdrop-blur-md sticky top-12 sm:top-13 z-20 shrink-0">
+      <div className="border-b border-black/[0.06] bg-white/95 backdrop-blur-md sticky top-12 sm:top-13 z-20 shrink-0">
         <div className="flex h-13 sm:h-14 w-full max-w-[1680px] mx-auto items-center justify-between px-3 sm:px-6 gap-3 overflow-x-auto no-scrollbar">
           {/* Left: Market selector button + Watchlist quick pills */}
           <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
             <button
               type="button"
               onClick={() => setTickerModalOpen(true)}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-[var(--surface-2,#f1f2f5)] transition-colors cursor-pointer border border-[var(--border-subtle,rgba(10,10,12,0.08))]"
+              className="flex items-center gap-2 px-3.5 py-1.5 rounded-full hover:bg-[#F0F2F5] transition-colors cursor-pointer border border-black/[0.06]"
             >
               <div className="flex items-baseline gap-1.5">
-                <span className="font-bold text-[13px] sm:text-[14px] text-[var(--text-primary,#0b0b0c)] tracking-tight">
+                <span className="font-bold text-[13px] sm:text-[14px] text-foreground tracking-tight">
                   {marketSymbol}-USD
                 </span>
                 <span className="rounded px-1.5 py-0.2 text-[10px] bg-[#FFD60A]/20 border border-[#FFD60A]/40 text-amber-700 font-bold font-mono">
                   1000X
                 </span>
               </div>
-              <ChevronDown className="size-3.5 text-[var(--text-tertiary,#747482)]" />
+              <ChevronDown className="size-3.5 text-muted-foreground" />
             </button>
 
             {/* Watchlist quick pills: BTC, ETH, SPX, SOL */}
-            <div className="hidden sm:flex items-center gap-1 shrink-0 p-0.5 rounded-full bg-[var(--surface-2,#f1f2f5)] border border-[var(--border-subtle,rgba(10,10,12,0.08))]">
+            <div className="hidden sm:flex items-center gap-1 shrink-0 p-0.5 rounded-full bg-[#F0F2F5] border border-black/[0.04]">
               {(["BTC", "ETH", "SPX", "SOL"] as const).map((sym) => {
                 const isActive = marketSymbol === sym;
                 return (
@@ -674,8 +674,8 @@ export function FiveHundredXPage() {
                     className={cn(
                       "rounded-full px-2.5 py-0.5 text-[11px] font-mono font-medium transition-all cursor-pointer",
                       isActive
-                        ? "bg-[var(--surface-1,#ffffff)] text-[var(--text-primary,#0b0b0c)] shadow-xs font-bold"
-                        : "bg-transparent text-[var(--text-secondary,#5a5a66)] hover:text-[var(--text-primary,#0b0b0c)]",
+                        ? "bg-white text-foreground shadow-xs font-bold"
+                        : "bg-transparent text-muted-foreground hover:text-foreground",
                     )}
                   >
                     <span>{sym}</span>
@@ -691,10 +691,10 @@ export function FiveHundredXPage() {
               className={cn(
                 "font-mono tabular-nums text-[20px] sm:text-[22px] font-bold tracking-tight transition-colors duration-150 leading-none",
                 priceFlashDir === "up"
-                  ? "text-[#087F4D]"
+                  ? "text-[#00D964]"
                   : priceFlashDir === "down"
-                    ? "text-[#D92D45]"
-                    : "text-[var(--text-primary,#0b0b0c)]",
+                    ? "text-[#FF3B30]"
+                    : "text-foreground",
               )}
             >
               {market.formatPrice(livePrice)}
@@ -704,16 +704,16 @@ export function FiveHundredXPage() {
               className={cn(
                 "px-2 py-0.5 rounded-full text-[12px] font-semibold tabular-nums font-mono",
                 change24h >= 0
-                  ? "bg-[#087F4D]/10 text-[#087F4D]"
-                  : "bg-[#D92D45]/10 text-[#D92D45]",
+                  ? "bg-[#00D964]/10 text-[#00D964]"
+                  : "bg-[#FF3B30]/10 text-[#FF3B30]",
               )}
             >
               {change24h >= 0 ? "+" : ""}
               {change24h.toFixed(2)}%
             </span>
 
-            <span className="hidden md:inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[var(--surface-2,#f1f2f5)] text-[11px] font-mono text-[var(--text-secondary,#5a5a66)]">
-              <span className="size-1.5 rounded-full bg-[#087F4D] animate-pulse" />
+            <span className="hidden md:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#F0F2F5] text-[11px] font-mono text-muted-foreground">
+              <span className="size-1.5 rounded-full bg-[#00D964] animate-pulse" />
               <span>Live Tick</span>
             </span>
           </div>
@@ -721,7 +721,7 @@ export function FiveHundredXPage() {
           {/* Right: Timeframe Pills + Paper Balance + Reset Button + Quick */}
           <div className="flex items-center gap-2 shrink-0">
             {/* Timeframe pill group: [Tick | 1m | 5m | 15m] */}
-            <div className="flex items-center gap-0.5 p-0.5 rounded-full bg-[var(--surface-2,#f1f2f5)] border border-[var(--border-subtle,rgba(10,10,12,0.08))]">
+            <div className="flex items-center gap-0.5 p-0.5 rounded-full bg-[#F0F2F5] border border-black/[0.04]">
               {(["Tick", "1m", "5m", "15m"] as const).map((tf) => (
                 <button
                   key={tf}
@@ -730,8 +730,8 @@ export function FiveHundredXPage() {
                   className={cn(
                     "rounded-full px-2.5 py-0.5 text-[11px] font-mono font-medium transition-all cursor-pointer",
                     activeTimeframe === tf
-                      ? "bg-[var(--surface-1,#ffffff)] text-[var(--text-primary,#0b0b0c)] shadow-xs font-bold"
-                      : "bg-transparent text-[var(--text-secondary,#5a5a66)] hover:text-[var(--text-primary,#0b0b0c)]",
+                      ? "bg-white text-foreground shadow-xs font-bold"
+                      : "bg-transparent text-muted-foreground hover:text-foreground",
                   )}
                 >
                   {tf}
@@ -740,9 +740,9 @@ export function FiveHundredXPage() {
             </div>
 
             {/* Paper Balance Badge */}
-            <div className="hidden lg:flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--surface-2,#f1f2f5)] border border-[var(--border-subtle,rgba(10,10,12,0.08))] text-[12px] font-mono">
-              <span className="text-[var(--text-secondary,#5a5a66)]">Paper:</span>
-              <span className="font-bold text-[var(--text-primary,#0b0b0c)] tabular-nums">
+            <div className="hidden lg:flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F0F2F5] border border-black/[0.04] text-[12px] font-mono">
+              <span className="text-muted-foreground">Paper:</span>
+              <span className="font-bold text-foreground tabular-nums">
                 ${paperBalance.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
               </span>
               <button
@@ -760,10 +760,10 @@ export function FiveHundredXPage() {
               type="button"
               onClick={() => setQuickTradeMode((v) => !v)}
               className={cn(
-                "rounded-full border border-[var(--border-subtle,rgba(10,10,12,0.08))] h-7.5 px-2.5 text-[11px] font-medium transition-all flex items-center gap-1 cursor-pointer font-mono",
+                "rounded-full border border-black/[0.06] h-7.5 px-2.5 text-[11px] font-medium transition-all flex items-center gap-1 cursor-pointer font-mono",
                 quickTradeMode
-                  ? "bg-[var(--surface-1,#ffffff)] text-[var(--text-primary,#0b0b0c)] border-[var(--border-default,rgba(10,10,12,0.2))] shadow-xs font-semibold"
-                  : "bg-[var(--surface-2,#f1f2f5)] text-[var(--text-secondary,#5a5a66)] hover:text-[var(--text-primary,#0b0b0c)]",
+                  ? "bg-white text-foreground shadow-xs font-semibold"
+                  : "bg-[#F0F2F5] text-muted-foreground hover:text-foreground",
               )}
               title="Toggle 1-Tap Quick Scalp Mode"
             >

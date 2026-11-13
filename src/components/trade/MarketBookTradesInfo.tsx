@@ -147,17 +147,17 @@ export function MarketBookTradesInfo({
   const fundingPerDayUsd = userPositionNotional > 0 ? userPositionNotional * fundingRate * 24 : 0;
 
   return (
-    <div className="flex flex-col h-full bg-white border border-border rounded-2xl shadow-xs overflow-hidden select-none font-mono text-xs">
+    <div className="flex flex-col h-full bg-white border border-black/[0.06] rounded-2xl shadow-xs overflow-hidden select-none font-mono text-xs">
       {/* Tab Switcher */}
-      <div className="flex items-center justify-between p-1.5 border-b border-border bg-[#FBFBFA]">
-        <div className="flex items-center gap-1">
+      <div className="flex items-center justify-between p-1.5 border-b border-black/[0.06] bg-[#FAFAFC]">
+        <div className="flex items-center p-0.5 rounded-full bg-[#F0F2F5] border border-black/[0.04]">
           <button
             type="button"
             onClick={() => setActiveTab('book')}
             className={cn(
-              "h-7 px-3 rounded-lg text-[12px] font-semibold transition-all cursor-pointer flex items-center justify-center",
+              "h-6.5 px-3 rounded-full text-[11px] font-semibold transition-all cursor-pointer flex items-center justify-center",
               activeTab === 'book'
-                ? "bg-foreground text-background shadow-2xs font-bold"
+                ? "bg-white text-foreground shadow-xs font-bold"
                 : "text-muted-foreground hover:text-foreground"
             )}
           >
@@ -167,9 +167,9 @@ export function MarketBookTradesInfo({
             type="button"
             onClick={() => setActiveTab('trades')}
             className={cn(
-              "h-7 px-3 rounded-lg text-[12px] font-semibold transition-all cursor-pointer flex items-center justify-center",
+              "h-6.5 px-3 rounded-full text-[11px] font-semibold transition-all cursor-pointer flex items-center justify-center",
               activeTab === 'trades'
-                ? "bg-foreground text-background shadow-2xs font-bold"
+                ? "bg-white text-foreground shadow-xs font-bold"
                 : "text-muted-foreground hover:text-foreground"
             )}
           >
@@ -179,9 +179,9 @@ export function MarketBookTradesInfo({
             type="button"
             onClick={() => setActiveTab('info')}
             className={cn(
-              "h-7 px-3 rounded-lg text-[12px] font-semibold transition-all cursor-pointer flex items-center justify-center",
+              "h-6.5 px-3 rounded-full text-[11px] font-semibold transition-all cursor-pointer flex items-center justify-center",
               activeTab === 'info'
-                ? "bg-foreground text-background shadow-2xs font-bold"
+                ? "bg-white text-foreground shadow-xs font-bold"
                 : "text-muted-foreground hover:text-foreground"
             )}
           >
@@ -190,8 +190,8 @@ export function MarketBookTradesInfo({
         </div>
 
         {activeTab === 'book' && (
-          <div className="text-[11px] text-muted-foreground font-medium tabular">
-            Imbalance: <span className="font-bold text-[#06964A]">{bidImbalancePct}% Bids</span>
+          <div className="text-[11px] text-muted-foreground font-medium tabular pr-1">
+            Imbalance: <span className="font-bold text-[#00D964]">{bidImbalancePct}% Bids</span>
           </div>
         )}
 

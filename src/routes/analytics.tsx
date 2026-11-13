@@ -70,7 +70,7 @@ function AnalyticsPage() {
   const currentMarket = (markets as Record<string, any>)[selectedMarket] ?? markets.BTC;
 
   return (
-    <main className="min-h-screen bg-[#F6F6F4] pb-16">
+    <main className="min-h-screen bg-[#FAFAFC] pb-16">
       {/* Top Market Bar */}
       <MarketBar
         market={selectedMarket}
@@ -80,7 +80,7 @@ function AnalyticsPage() {
 
       <div className="page-content space-y-4 pt-3">
         {/* Header Ribbon & Status Bar */}
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-hairline bg-white p-3.5 shadow-2xs">
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-black/[0.06] bg-white p-3.5 shadow-xs">
           <div>
             <div className="flex items-center gap-2">
               <span className="relative flex h-2.5 w-2.5">
@@ -100,10 +100,10 @@ function AnalyticsPage() {
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            <div className="flex items-center gap-1.5 rounded-lg border border-hairline bg-[#F8F8F7] px-2.5 py-1 text-xs font-mono text-muted-foreground">
+            <div className="flex items-center gap-1.5 rounded-lg border border-black/[0.06] bg-[#F8F8F7] px-2.5 py-1 text-xs font-mono text-muted-foreground">
               <Activity className="h-3 w-3 text-emerald-500" />
               <span>{isLive ? "Hyperliquid API Connected" : "Local Telemetry Feed"}</span>
-              <span className="text-hairline">|</span>
+              <span className="text-black/10">|</span>
               <span>{lastUpdated.toLocaleTimeString()}</span>
             </div>
 
@@ -111,7 +111,7 @@ function AnalyticsPage() {
               type="button"
               onClick={() => refresh()}
               disabled={loading}
-              className="pill pill-ink flex h-7 items-center gap-1.5 px-3 text-xs font-semibold"
+              className="flex h-7 items-center gap-1.5 px-3 text-xs font-semibold rounded-lg bg-[#0A0A0A] hover:bg-[#1A1A1A] text-white active:scale-[0.98] transition-all cursor-pointer shadow-xs"
             >
               <RefreshCw className={`h-2.5 w-2.5 ${loading ? "animate-spin" : ""}`} />
               Sync
@@ -122,9 +122,9 @@ function AnalyticsPage() {
         {/* 6 Core Live Protocol Metrics Strip */}
         <section aria-label="Key Protocol Metrics" className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
           {/* 1. TVL (House Pool Balance) */}
-          <div className="rounded-2xl border border-hairline bg-white p-3.5 shadow-2xs transition-all hover:border-foreground/20">
+          <div className="rounded-2xl border border-black/[0.06] bg-white p-3.5 shadow-xs transition-all hover:border-black/20">
             <div className="flex items-center justify-between text-xs font-mono text-muted-foreground">
-              <span>HOUSE POOL TVL</span>
+              <span className="text-[11px] font-semibold uppercase tracking-wider">HOUSE POOL TVL</span>
               <span className="rounded bg-[#EAF2F1] px-1 py-0.2 text-xs font-bold text-[#4A7C75]">
                 {solvency.solvencyRatioPct}% SOLVENT
               </span>
@@ -138,9 +138,9 @@ function AnalyticsPage() {
           </div>
 
           {/* 2. 24h Volume across perps */}
-          <div className="rounded-2xl border border-hairline bg-white p-3.5 shadow-2xs transition-all hover:border-foreground/20">
+          <div className="rounded-2xl border border-black/[0.06] bg-white p-3.5 shadow-xs transition-all hover:border-black/20">
             <div className="flex items-center justify-between text-xs font-mono text-muted-foreground">
-              <span>24H VOLUME (PERPS)</span>
+              <span className="text-[11px] font-semibold uppercase tracking-wider">24H VOLUME (PERPS)</span>
               <Zap className="h-3 w-3 text-amber-500" />
             </div>
             <p className="tabular mt-1.5 text-lg font-bold text-foreground font-mono">
@@ -152,10 +152,10 @@ function AnalyticsPage() {
           </div>
 
           {/* 3. Cumulative Protocol Fees */}
-          <div className="rounded-2xl border border-hairline bg-white p-3.5 shadow-2xs transition-all hover:border-foreground/20">
+          <div className="rounded-2xl border border-black/[0.06] bg-white p-3.5 shadow-xs transition-all hover:border-black/20">
             <div className="flex items-center justify-between text-xs font-mono text-muted-foreground">
-              <span>PROTOCOL FEES</span>
-              <span className="text-xs text-gain font-semibold">+24h</span>
+              <span className="text-[11px] font-semibold uppercase tracking-wider">PROTOCOL FEES</span>
+              <span className="text-xs text-[#00D964] font-semibold">+24h</span>
             </div>
             <p className="tabular mt-1.5 text-lg font-bold text-foreground font-mono">
               ${fmtUsd(solvency.cumulativeFeesAllTimeUsd, 0)}
@@ -166,9 +166,9 @@ function AnalyticsPage() {
           </div>
 
           {/* 4. Active 1000x Open Interest */}
-          <div className="rounded-2xl border border-hairline bg-white p-3.5 shadow-2xs transition-all hover:border-foreground/20">
+          <div className="rounded-2xl border border-black/[0.06] bg-white p-3.5 shadow-xs transition-all hover:border-black/20">
             <div className="flex items-center justify-between text-xs font-mono text-muted-foreground">
-              <span>1000X OPEN INTEREST</span>
+              <span className="text-[11px] font-semibold uppercase tracking-wider">1000X OPEN INTEREST</span>
               <span className="rounded bg-[#FFECEA] px-1 py-0.2 text-xs font-bold text-[#FF3B30]">
                 MAX LEV
               </span>
@@ -182,23 +182,23 @@ function AnalyticsPage() {
           </div>
 
           {/* 5. FIFO Settlement Payout Depth */}
-          <div className="rounded-2xl border border-hairline bg-white p-3.5 shadow-2xs transition-all hover:border-foreground/20">
+          <div className="rounded-2xl border border-black/[0.06] bg-white p-3.5 shadow-xs transition-all hover:border-black/20">
             <div className="flex items-center justify-between text-xs font-mono text-muted-foreground">
-              <span>FIFO PAYOUT QUEUE</span>
+              <span className="text-[11px] font-semibold uppercase tracking-wider">FIFO PAYOUT QUEUE</span>
               <ShieldCheck className="h-3 w-3 text-emerald-500" />
             </div>
-            <p className="tabular mt-1.5 text-lg font-bold text-gain font-mono">
+            <p className="tabular mt-1.5 text-lg font-bold text-[#00D964] font-mono">
               ${fmtUsd(solvency.queueDepthUsd, 2)}
             </p>
             <p className="mt-1 text-xs text-muted-foreground">
-              Instant Payout: <strong className="text-gain">100% (0 Delay)</strong>
+              Instant Payout: <strong className="text-[#00D964]">100% (0 Delay)</strong>
             </p>
           </div>
 
           {/* 6. Hyperliquid L1 Telemetry Compliance */}
-          <div className="rounded-2xl border border-hairline bg-white p-3.5 shadow-2xs transition-all hover:border-foreground/20">
+          <div className="rounded-2xl border border-black/[0.06] bg-white p-3.5 shadow-xs transition-all hover:border-black/20">
             <div className="flex items-center justify-between text-xs font-mono text-muted-foreground">
-              <span>L1 FEED SYNC</span>
+              <span className="text-[11px] font-semibold uppercase tracking-wider">L1 FEED SYNC</span>
               <span className="rounded bg-[#EFEFFC] px-1 py-0.2 text-xs font-bold text-[#5E5CE6]">
                 ACTIVE
               </span>
@@ -213,8 +213,8 @@ function AnalyticsPage() {
         </section>
 
         {/* Hard Protocol Solvency & Settlement Telemetry Table */}
-        <section aria-label="Protocol Quant Telemetry Matrix" className="rounded-2xl border border-hairline bg-white p-4 shadow-2xs font-mono">
-          <div className="flex items-center justify-between pb-2.5 border-b border-border">
+        <section aria-label="Protocol Quant Telemetry Matrix" className="rounded-2xl border border-black/[0.06] bg-white p-4 shadow-xs font-mono">
+          <div className="flex items-center justify-between pb-2.5 border-b border-black/[0.06]">
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-foreground uppercase tracking-wider">
                 Protocol Solvency &amp; L1 Settlement Matrix
@@ -274,8 +274,8 @@ function AnalyticsPage() {
         </section>
 
         {/* Tab Controls Bar */}
-        <div className="flex flex-wrap items-center justify-between gap-2.5 rounded-2xl border border-hairline bg-white p-2 shadow-2xs">
-          <div className="flex flex-wrap gap-1">
+        <div className="flex flex-wrap items-center justify-between gap-2.5 rounded-2xl border border-black/[0.06] bg-white p-2 shadow-xs">
+          <div className="flex flex-wrap gap-1 rounded-xl bg-[#F0F2F5] p-1 border border-black/[0.04]">
             {(
               [
                 ["Matrix", "Rates & Funding Matrix"],
@@ -290,10 +290,10 @@ function AnalyticsPage() {
                 key={tabKey}
                 type="button"
                 onClick={() => setActiveTab(tabKey)}
-                className={`pill h-8 px-3 text-xs font-medium transition-all ${
+                className={`h-7 px-3 text-xs font-semibold rounded-lg transition-all active:scale-[0.98] cursor-pointer ${
                   activeTab === tabKey
-                    ? "pill-ink font-semibold shadow-2xs"
-                    : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                    ? "bg-white text-[#0A0A0A] shadow-xs"
+                    : "text-[#737887] hover:text-[#0A0A0A] hover:bg-white/60"
                 }`}
               >
                 {label}
@@ -302,7 +302,7 @@ function AnalyticsPage() {
           </div>
 
           <div className="flex items-center gap-2 text-xs font-mono text-muted-foreground pr-2">
-            <span>Market focus:</span>
+            <span className="text-[11px] uppercase tracking-wider font-semibold">Market focus:</span>
             <span className="font-bold text-foreground">{selectedMarket} (${fmtUsd(livePrice, 2)})</span>
           </div>
         </div>
@@ -348,24 +348,24 @@ function AnalyticsPage() {
             )}
 
             {activeTab === "Heatmap" && (
-              <section className="rounded-2xl border border-hairline bg-white p-3.5 shadow-2xs">
+              <section className="rounded-2xl border border-black/[0.06] bg-white p-3.5 shadow-xs">
                 <div className="mb-2 flex items-center justify-between">
                   <div>
-                    <h2 className="text-xs font-semibold uppercase tracking-wider font-mono text-muted-foreground">
+                    <h2 className="text-[11px] font-semibold uppercase tracking-wider font-mono text-muted-foreground">
                       Order Book Liquidity Heatmap · {selectedMarket}/USD
                     </h2>
                     <p className="text-xs font-mono text-muted-foreground">
                       Bid/ask depth &amp; liquidation clusters
                     </p>
                   </div>
-                  <div className="flex gap-1">
+                  <div className="flex gap-1 rounded-lg bg-[#F0F2F5] p-0.5 border border-black/[0.04]">
                     {["12h", "1d", "3d", "1w"].map((p) => (
                       <button
                         key={p}
                         type="button"
                         onClick={() => setHeatmapPeriod(p)}
-                        className={`pill h-6 px-2 text-xs font-mono ${
-                          heatmapPeriod === p ? "pill-ink font-bold" : "bg-secondary text-muted-foreground"
+                        className={`h-6 px-2 text-xs font-mono rounded-md transition-all active:scale-[0.98] cursor-pointer ${
+                          heatmapPeriod === p ? "bg-white text-[#0A0A0A] font-bold shadow-xs" : "text-[#737887] hover:text-[#0A0A0A]"
                         }`}
                       >
                         {p}
@@ -374,7 +374,7 @@ function AnalyticsPage() {
                   </div>
                 </div>
 
-                <div className="overflow-hidden rounded-xl border border-hairline p-1 bg-white">
+                <div className="overflow-hidden rounded-xl border border-black/[0.06] p-1 bg-white">
                   <ChartCanvas kind="heatmap" values={analysisSeries} height={280} />
                   <div className="flex justify-between px-3 pb-1 pt-1 text-xs font-mono text-muted-foreground">
                     <span>Low Liquidity Depth</span>
@@ -387,10 +387,10 @@ function AnalyticsPage() {
 
             {/* Quick Secondary Insights Row */}
             <div className="grid gap-2.5 sm:grid-cols-3">
-              <article className="rounded-2xl border border-hairline bg-white p-3 shadow-2xs">
+              <article className="rounded-2xl border border-black/[0.06] bg-white p-3 shadow-xs">
                 <div className="flex justify-between text-xs font-mono text-muted-foreground uppercase">
-                  <span>24h Liquidations</span>
-                  <span className="font-semibold text-loss">$96.4M</span>
+                  <span className="text-[11px] font-semibold tracking-wider">24h Liquidations</span>
+                  <span className="font-semibold text-[#FF3B30]">$96.4M</span>
                 </div>
                 <div className="mt-2">
                   <ChartCanvas
@@ -404,10 +404,10 @@ function AnalyticsPage() {
                 </p>
               </article>
 
-              <article className="rounded-2xl border border-hairline bg-white p-3 shadow-2xs">
+              <article className="rounded-2xl border border-black/[0.06] bg-white p-3 shadow-xs">
                 <div className="flex justify-between text-xs font-mono text-muted-foreground uppercase">
-                  <span>Funding Trend</span>
-                  <span className="font-semibold text-gain">{currentMarket.fundingRatePct}</span>
+                  <span className="text-[11px] font-semibold tracking-wider">Funding Trend</span>
+                  <span className="font-semibold text-[#00D964]">{currentMarket.fundingRatePct}</span>
                 </div>
                 <div className="mt-2">
                   <ChartCanvas
@@ -421,9 +421,9 @@ function AnalyticsPage() {
                 </p>
               </article>
 
-              <article className="rounded-2xl border border-hairline bg-white p-3 shadow-2xs">
+              <article className="rounded-2xl border border-black/[0.06] bg-white p-3 shadow-xs">
                 <div className="flex justify-between text-xs font-mono text-muted-foreground uppercase">
-                  <span>Mark Deviation</span>
+                  <span className="text-[11px] font-semibold tracking-wider">Mark Deviation</span>
                   <span className="font-semibold text-foreground font-mono">
                     {currentMarket.deviationBps >= 0 ? "+" : ""}
                     {currentMarket.deviationBps} bps
@@ -446,23 +446,23 @@ function AnalyticsPage() {
           {/* Right Column: Key Levels, Long/Short Depth, and Setup Card */}
           <aside className="space-y-3">
             {/* Live Market Quick Summary */}
-            <div className="rounded-2xl border border-hairline bg-white p-3.5 shadow-2xs space-y-2.5">
-              <div className="flex items-center justify-between border-b border-hairline pb-2">
-                <span className="text-xs font-mono font-semibold uppercase text-muted-foreground">
+            <div className="rounded-2xl border border-black/[0.06] bg-white p-3.5 shadow-xs space-y-2.5">
+              <div className="flex items-center justify-between border-b border-black/[0.06] pb-2">
+                <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-muted-foreground">
                   {selectedMarket} L1 Mark/Mid Parity
                 </span>
-                <span className="rounded bg-secondary px-1.5 py-0.2 text-xs font-mono font-bold text-foreground">
+                <span className="rounded-md bg-[#F0F2F5] px-1.5 py-0.5 text-xs font-mono font-bold text-foreground">
                   {currentMarket.maxLeverage}x MAX
                 </span>
               </div>
 
               <div className="grid grid-cols-2 gap-2 text-xs font-mono">
                 <div className="rounded-xl bg-[#F8F8F7] p-2">
-                  <span className="text-xs text-muted-foreground block">24H High</span>
+                  <span className="text-[10px] uppercase font-semibold text-muted-foreground block">24H High</span>
                   <span className="font-bold text-foreground">${fmtUsd(currentMarket.high24h, 2)}</span>
                 </div>
                 <div className="rounded-xl bg-[#F8F8F7] p-2">
-                  <span className="text-xs text-muted-foreground block">24H Low</span>
+                  <span className="text-[10px] uppercase font-semibold text-muted-foreground block">24H Low</span>
                   <span className="font-bold text-foreground">${fmtUsd(currentMarket.low24h, 2)}</span>
                 </div>
               </div>
@@ -480,24 +480,24 @@ function AnalyticsPage() {
             </div>
 
             {/* Long / Short Ratio */}
-            <div className="rounded-2xl border border-hairline bg-white p-3.5 shadow-2xs">
+            <div className="rounded-2xl border border-black/[0.06] bg-white p-3.5 shadow-xs">
               <div className="flex justify-between items-center">
-                <p className="data-label text-xs font-mono">LONG / SHORT RATIO</p>
+                <p className="text-[11px] font-mono font-semibold uppercase tracking-wider text-muted-foreground">LONG / SHORT RATIO</p>
                 <span className="text-xs font-mono text-muted-foreground">Hyperliquid Perps</span>
               </div>
               <div className="mt-2.5 h-2 overflow-hidden rounded-full bg-[#FFECEA]">
                 <div className="h-full w-[54.2%] rounded-full bg-[#00D964]" />
               </div>
               <p className="mt-2 flex justify-between tabular text-xs font-mono">
-                <span className="text-gain font-bold">54.2% Long</span>
-                <span className="text-loss font-bold">45.8% Short</span>
+                <span className="text-[#00D964] font-bold">54.2% Long</span>
+                <span className="text-[#FF3B30] font-bold">45.8% Short</span>
               </p>
             </div>
 
             {/* Key Levels Liquidation Clusters */}
-            <div className="rounded-2xl border border-hairline bg-white p-3.5 shadow-2xs">
-              <h2 className="text-xs font-semibold uppercase font-mono text-muted-foreground border-b border-hairline pb-2">
-                Key Liquidity & Liq Levels
+            <div className="rounded-2xl border border-black/[0.06] bg-white p-3.5 shadow-xs">
+              <h2 className="text-[11px] font-semibold uppercase font-mono tracking-wider text-muted-foreground border-b border-black/[0.06] pb-2">
+                Key Liquidity &amp; Liq Levels
               </h2>
               <div className="mt-2.5 space-y-1.5">
                 {[
@@ -508,13 +508,13 @@ function AnalyticsPage() {
                 ].map(([factor, label, volume, tone]) => (
                   <article
                     key={String(label)}
-                    className="rounded-xl border border-hairline p-2 transition-colors hover:bg-[#F8F8F7]"
+                    className="rounded-xl border border-black/[0.06] p-2 transition-colors hover:bg-[#F8F8F7]"
                   >
                     <p className="tabular text-xs font-semibold flex items-center justify-between font-mono">
                       <span>${fmtUsd(livePrice * Number(factor), 2)}</span>
                       <span
                         className={`rounded px-1.5 py-0.2 text-xs font-bold ${
-                          tone === "loss" ? "bg-loss-soft text-loss" : "bg-gain-soft text-gain"
+                          tone === "loss" ? "bg-[#FEECEB] text-[#FF3B30]" : "bg-[#E6F9EE] text-[#00D964]"
                         }`}
                       >
                         {volume}
@@ -527,9 +527,9 @@ function AnalyticsPage() {
             </div>
 
             {/* Trade Setup CTA with Godcandle Rainbow Accent */}
-            <div className="rounded-2xl border border-hairline p-3.5 shadow-xs relative overflow-hidden" style={{ background: "linear-gradient(135deg, rgba(205,195,240,0.2) 0%, rgba(255,218,200,0.2) 50%, rgba(160,212,202,0.2) 100%)" }}>
+            <div className="rounded-2xl border border-black/[0.06] p-3.5 shadow-xs relative overflow-hidden" style={{ background: "linear-gradient(135deg, rgba(205,195,240,0.2) 0%, rgba(255,218,200,0.2) 50%, rgba(160,212,202,0.2) 100%)" }}>
               <div className="relative z-10">
-                <p className="text-xs font-mono font-bold text-muted-foreground uppercase">
+                <p className="text-[11px] font-mono font-bold text-muted-foreground uppercase tracking-wider">
                   Execution Terminal
                 </p>
                 <p className="mt-1 text-xs font-bold text-foreground">
@@ -540,7 +540,7 @@ function AnalyticsPage() {
                 </p>
                 <Link
                   to="/"
-                  className="pill pill-ink mt-3 h-8 w-full text-xs font-semibold flex items-center justify-center gap-1.5 shadow-2xs"
+                  className="mt-3 h-8 w-full text-xs font-semibold flex items-center justify-center gap-1.5 rounded-xl bg-[#0A0A0A] hover:bg-[#1A1A1A] text-white active:scale-[0.98] transition-all cursor-pointer shadow-xs"
                 >
                   Open {selectedMarket} Terminal →
                 </Link>

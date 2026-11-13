@@ -212,13 +212,13 @@ export function TradeTerminal() {
       />
 
       {/* Mobile Segmented Switcher [Perps | 1000x] and [Chart | Trade] */}
-      <div className="flex lg:hidden items-center justify-between gap-2 p-1 bg-white border border-border rounded-xl shadow-2xs">
-        <div className="flex items-center p-0.5 rounded-lg bg-secondary border border-border/70">
+      <div className="flex lg:hidden items-center justify-between gap-2 p-1.5 bg-white border border-black/[0.06] rounded-2xl shadow-xs">
+        <div className="flex items-center p-0.5 rounded-full bg-[#F0F2F5] border border-black/[0.04]">
           <Link
             to="/"
             search={{ pair: selectedMarket.symbol } as any}
             onClick={() => t?.setMode('perps')}
-            className={`h-7 px-3 rounded-md text-xs font-bold flex items-center gap-1.5 transition-colors ${
+            className={`h-7 px-3 rounded-full text-xs font-bold flex items-center gap-1.5 transition-all ${
               t?.mode === 'perps'
                 ? 'bg-black text-white shadow-xs'
                 : 'text-muted-foreground hover:text-foreground'
@@ -231,7 +231,7 @@ export function TradeTerminal() {
             to="/trade"
             search={{ pair: selectedMarket.symbol } as any}
             onClick={() => t?.setMode('paper1000x')}
-            className={`h-7 px-3 rounded-md text-xs font-bold flex items-center gap-1 transition-colors ${
+            className={`h-7 px-3 rounded-full text-xs font-bold flex items-center gap-1 transition-all ${
               t?.mode === 'paper1000x'
                 ? 'bg-black text-white shadow-xs'
                 : 'text-muted-foreground hover:text-foreground'
@@ -242,11 +242,11 @@ export function TradeTerminal() {
           </Link>
         </div>
 
-        <div className="flex items-center p-0.5 rounded-lg bg-secondary border border-border/70">
+        <div className="flex items-center p-0.5 rounded-full bg-[#F0F2F5] border border-black/[0.04]">
           <button
             type="button"
             onClick={() => setMobileTab('chart')}
-            className={`h-7 px-3 rounded-md text-xs font-bold cursor-pointer transition-colors ${
+            className={`h-7 px-3 rounded-full text-xs font-bold cursor-pointer transition-all ${
               mobileTab === 'chart'
                 ? 'bg-white text-foreground shadow-xs font-bold'
                 : 'text-muted-foreground hover:text-foreground'
@@ -257,7 +257,7 @@ export function TradeTerminal() {
           <button
             type="button"
             onClick={() => setMobileTab('trade')}
-            className={`h-7 px-3 rounded-md text-xs font-bold cursor-pointer transition-colors ${
+            className={`h-7 px-3 rounded-full text-xs font-bold cursor-pointer transition-all ${
               mobileTab === 'trade'
                 ? 'bg-white text-foreground shadow-xs font-bold'
                 : 'text-muted-foreground hover:text-foreground'
@@ -272,20 +272,20 @@ export function TradeTerminal() {
       <div className="grid grid-cols-1 lg:grid-cols-12 xl:grid-cols-[1fr_280px_340px] gap-2 items-start min-[1440px]:flex-1 min-[1440px]:min-h-0 min-[1440px]:items-stretch 2xl:flex-1 2xl:min-h-0 2xl:items-stretch">
         {/* Column 1: Chart Panel (flex, min 500px height) */}
         <div
-          className={`lg:col-span-7 xl:col-auto flex flex-col min-h-[500px] min-[1440px]:min-h-0 min-[1440px]:h-full 2xl:min-h-0 2xl:h-full bg-white rounded-2xl border border-border overflow-hidden shadow-xs ${
+          className={`lg:col-span-7 xl:col-auto flex flex-col min-h-[500px] min-[1440px]:min-h-0 min-[1440px]:h-full 2xl:min-h-0 2xl:h-full bg-white rounded-2xl border border-black/[0.06] overflow-hidden shadow-xs ${
             isFullscreen ? 'fixed inset-2 z-50 min-h-[calc(100vh-16px)]' : ''
           } ${mobileTab === 'trade' ? 'hidden lg:flex' : 'flex'}`}
         >
           {/* Chart Header Bar: [Chart | TradingView] + Timeframes + Indicators + Fullscreen */}
-          <div className="flex flex-wrap items-center justify-between gap-2 p-2 border-b border-border bg-[#FBFBFA]">
+          <div className="flex flex-wrap items-center justify-between gap-2 p-2 border-b border-black/[0.06] bg-[#FAFAFC]">
             {/* Chart Mode Switcher */}
-            <div className="flex items-center rounded-xl bg-secondary p-0.5 border border-border/60">
+            <div className="flex items-center rounded-full bg-[#F0F2F5] p-0.5 border border-black/[0.04]">
               <button
                 type="button"
                 onClick={() => setChartMode('chart')}
-                className={`h-7.5 px-3 rounded-lg text-xs font-mono font-medium gap-1.5 flex items-center transition-all cursor-pointer ${
+                className={`h-7.5 px-3 rounded-full text-xs font-mono font-medium gap-1.5 flex items-center transition-all cursor-pointer ${
                   chartMode === 'chart'
-                    ? 'bg-foreground text-background font-bold shadow-2xs'
+                    ? 'bg-white text-foreground font-bold shadow-xs'
                     : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
@@ -295,9 +295,9 @@ export function TradeTerminal() {
               <button
                 type="button"
                 onClick={() => setChartMode('tradingview')}
-                className={`h-7.5 px-3 rounded-lg text-xs font-mono font-medium gap-1.5 flex items-center transition-all cursor-pointer ${
+                className={`h-7.5 px-3 rounded-full text-xs font-mono font-medium gap-1.5 flex items-center transition-all cursor-pointer ${
                   chartMode === 'tradingview'
-                    ? 'bg-foreground text-background font-bold shadow-2xs'
+                    ? 'bg-white text-foreground font-bold shadow-xs'
                     : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
@@ -310,15 +310,15 @@ export function TradeTerminal() {
             {/* Timeframe Interval Pills + Indicators + Fullscreen */}
             {chartMode === 'chart' && (
               <div className="flex items-center gap-1.5">
-                <div className="flex items-center rounded-xl bg-secondary p-0.5 border border-border/60">
+                <div className="flex items-center rounded-full bg-[#F0F2F5] p-0.5 border border-black/[0.04]">
                   {TIMEFRAMES.map((tf) => (
                     <button
                       key={tf.label}
                       type="button"
                       onClick={() => setSelectedTf(tf.interval)}
-                      className={`h-7.5 px-2.5 rounded-lg text-xs font-mono font-semibold transition-all cursor-pointer ${
+                      className={`h-7.5 px-2.5 rounded-full text-xs font-mono font-semibold transition-all cursor-pointer ${
                         selectedTf === tf.interval
-                          ? 'bg-foreground text-background font-bold shadow-2xs'
+                          ? 'bg-white text-foreground font-bold shadow-xs'
                           : 'text-muted-foreground hover:text-foreground'
                       }`}
                     >
@@ -327,13 +327,13 @@ export function TradeTerminal() {
                   ))}
                 </div>
 
-                <div className="flex items-center rounded-xl bg-secondary p-0.5 border border-border/60">
+                <div className="flex items-center rounded-full bg-[#F0F2F5] p-0.5 border border-black/[0.04]">
                   <button
                     type="button"
                     onClick={() => setShowIndicators((prev) => !prev)}
-                    className={`h-7.5 px-2.5 rounded-lg text-xs font-mono flex items-center gap-1 transition-all cursor-pointer ${
+                    className={`h-7.5 px-2.5 rounded-full text-xs font-mono flex items-center gap-1 transition-all cursor-pointer ${
                       showIndicators
-                        ? 'bg-foreground text-background font-bold shadow-2xs'
+                        ? 'bg-white text-foreground font-bold shadow-xs'
                         : 'text-muted-foreground hover:text-foreground'
                     }`}
                     title="Toggle indicators (EMA / SMA)"
@@ -344,9 +344,9 @@ export function TradeTerminal() {
                   <button
                     type="button"
                     onClick={() => setIsFullscreen((prev) => !prev)}
-                    className={`h-7.5 px-2 rounded-lg text-xs font-mono flex items-center gap-1 transition-all cursor-pointer ${
+                    className={`h-7.5 px-2 rounded-full text-xs font-mono flex items-center gap-1 transition-all cursor-pointer ${
                       isFullscreen
-                        ? 'bg-foreground text-background font-bold shadow-2xs'
+                        ? 'bg-white text-foreground font-bold shadow-xs'
                         : 'text-muted-foreground hover:text-foreground'
                     }`}
                     title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen chart'}
@@ -383,13 +383,13 @@ export function TradeTerminal() {
                   showIndicators={showIndicators}
                 />
                 {currentPosition && (
-                  <div className="absolute top-2 right-12 z-20 flex items-center gap-2 bg-white/90 backdrop-blur-xs px-2.5 py-1 rounded-lg border border-border shadow-2xs font-mono text-xs">
-                    <span className="font-bold">{currentPosition.side.toUpperCase()} {currentPosition.leverage}×</span>
-                    <span className={posPnl >= 0 ? "text-[#06964A] font-bold" : "text-[#FF3B30] font-bold"}>{pnlLabel}</span>
+                  <div className="absolute top-2.5 right-12 z-20 flex items-center gap-2.5 bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-xl border border-black/[0.06] shadow-sm font-mono text-xs">
+                    <span className="font-bold tracking-tight">{currentPosition.side.toUpperCase()} {currentPosition.leverage}×</span>
+                    <span className={posPnl >= 0 ? "text-[#00D964] font-bold" : "text-[#FF3B30] font-bold"}>{pnlLabel}</span>
                     <button
                       type="button"
                       onClick={() => t?.close && t.close(currentPosition.id)}
-                      className="px-1.5 py-0.5 rounded bg-secondary hover:bg-secondary/80 text-[10px] font-bold text-foreground cursor-pointer transition-colors"
+                      className="px-2 py-0.5 rounded-lg bg-[#FF3B30]/10 hover:bg-[#FF3B30]/20 text-[#FF3B30] border border-[#FF3B30]/20 text-[10px] font-bold cursor-pointer transition-all active:scale-[0.98]"
                     >
                       Close
                     </button>

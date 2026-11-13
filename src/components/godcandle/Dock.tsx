@@ -137,30 +137,30 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
   };
 
   return (
-    <div className="rounded-2xl border border-border bg-white shadow-xs overflow-hidden select-none font-mono text-xs">
+    <div className="rounded-2xl border border-black/[0.06] bg-white shadow-xs overflow-hidden select-none font-mono text-xs">
       {/* Account Telemetry Strip */}
-      <div className="flex flex-wrap items-center justify-between gap-3 px-3 py-1.5 bg-[#FBFBFA] border-b border-border text-xs">
+      <div className="flex flex-wrap items-center justify-between gap-3 px-3 py-1.5 bg-[#FAFAFC] border-b border-black/[0.06] text-xs">
         <div className="flex items-center gap-3.5 text-muted-foreground">
           <div>
-            <span className="text-[10.5px] uppercase tracking-wider block text-muted-foreground font-semibold">Equity</span>
+            <span className="text-[10px] uppercase tracking-wider block text-muted-foreground font-semibold">Equity</span>
             <span className="font-bold text-foreground tabular text-[13px]">${fmtUsd(t.balance, 2)}</span>
           </div>
-          <div className="h-4 w-px bg-border" />
+          <div className="h-4 w-px bg-black/[0.06]" />
           <div>
-            <span className="text-[10.5px] uppercase tracking-wider block text-muted-foreground font-semibold">Available</span>
-            <span className="font-bold text-[#06964A] tabular text-[13px]">${fmtUsd(t.available, 2)}</span>
+            <span className="text-[10px] uppercase tracking-wider block text-muted-foreground font-semibold">Available</span>
+            <span className="font-bold text-[#00D964] tabular text-[13px]">${fmtUsd(t.available, 2)}</span>
           </div>
-          <div className="h-4 w-px bg-border" />
+          <div className="h-4 w-px bg-black/[0.06]" />
           <div>
-            <span className="text-[10.5px] uppercase tracking-wider block text-muted-foreground font-semibold">Margin Used</span>
+            <span className="text-[10px] uppercase tracking-wider block text-muted-foreground font-semibold">Margin Used</span>
             <span className="font-semibold text-foreground tabular text-[13px]">${fmtUsd(t.marginUsed, 2)}</span>
           </div>
-          <div className="h-4 w-px bg-border" />
+          <div className="h-4 w-px bg-black/[0.06]" />
           <div>
-            <span className="text-[10.5px] uppercase tracking-wider block text-muted-foreground font-semibold">Unrealized PnL</span>
+            <span className="text-[10px] uppercase tracking-wider block text-muted-foreground font-semibold">Unrealized PnL</span>
             <span
               className={`font-bold tabular text-[13px] ${
-                unrealizedPnl >= 0 ? 'text-[#06964A]' : 'text-[#FF3B30]'
+                unrealizedPnl >= 0 ? 'text-[#00D964]' : 'text-[#FF3B30]'
               }`}
             >
               {fmtSigned(unrealizedPnl)}
@@ -171,7 +171,7 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
         <div className="flex items-center gap-3">
           <span className="text-muted-foreground font-medium text-[11.5px]">
             Realized PnL:{' '}
-            <span className={`font-bold text-[12.5px] sm:text-[13px] ${totalRealizedPnl >= 0 ? 'text-[#06964A]' : 'text-[#FF3B30]'}`}>
+            <span className={`font-bold text-[12.5px] sm:text-[13px] ${totalRealizedPnl >= 0 ? 'text-[#00D964]' : 'text-[#FF3B30]'}`}>
               {fmtSigned(totalRealizedPnl)}
             </span>
           </span>
@@ -189,17 +189,17 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
       </div>
 
       {/* Tabs navigation */}
-      <div className="flex items-center justify-between p-1.5 border-b border-border bg-white overflow-x-auto no-scrollbar">
-        <div className="flex items-center gap-1">
+      <div className="flex items-center justify-between p-1.5 border-b border-black/[0.06] bg-[#FAFAFC] overflow-x-auto no-scrollbar">
+        <div className="flex items-center p-0.5 rounded-full bg-[#F0F2F5] border border-black/[0.04]">
           {tabs.map((tItem) => (
             <button
               key={tItem.id}
               type="button"
               onClick={() => setTab(tItem.id as any)}
-              className={`px-3 py-1 rounded-xl text-[12px] font-semibold transition-all cursor-pointer ${
+              className={`px-3 py-1 rounded-full text-[11px] font-semibold transition-all cursor-pointer ${
                 tab === tItem.id
-                  ? 'bg-foreground text-background font-bold shadow-2xs'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-secondary/60'
+                  ? 'bg-white text-foreground font-bold shadow-xs'
+                  : 'text-muted-foreground hover:text-foreground'
               }`}
             >
               {tItem.label}
@@ -318,7 +318,7 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
                                   durationMs: Date.now() - pos.openedAt,
                                 });
                               }}
-                              className="px-2 py-0.5 rounded bg-secondary hover:bg-secondary/80 border border-border text-xs font-medium cursor-pointer"
+                              className="px-2.5 py-1 rounded-lg bg-secondary hover:bg-secondary/80 border border-border text-xs font-medium cursor-pointer active:scale-[0.98] transition-all"
                               title="Share PnL"
                             >
                               Share
@@ -326,7 +326,7 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
                             <button
                               type="button"
                               onClick={() => onClose(pos.id)}
-                              className="px-2 py-0.5 rounded bg-foreground text-background font-bold text-xs hover:opacity-90 shadow-2xs cursor-pointer"
+                              className="px-2.5 py-1 rounded-lg bg-[#0A0A0A] hover:bg-[#1A1A1A] text-white font-bold text-xs shadow-xs cursor-pointer active:scale-[0.98] transition-all"
                               title="Market Close"
                             >
                               Market
@@ -334,7 +334,7 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
                             <button
                               type="button"
                               onClick={() => onClose(pos.id)}
-                              className="px-2 py-0.5 rounded bg-secondary hover:bg-secondary/80 border border-border font-semibold text-xs cursor-pointer"
+                              className="px-2 py-1 rounded-lg bg-secondary hover:bg-secondary/80 border border-border font-semibold text-xs cursor-pointer active:scale-[0.98] transition-all"
                               title="Close 50% Size"
                             >
                               50%
@@ -342,7 +342,7 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
                             <button
                               type="button"
                               onClick={() => onSelect(pos.market)}
-                              className="px-2 py-0.5 rounded bg-secondary hover:bg-secondary/80 border border-border font-semibold text-xs cursor-pointer"
+                              className="px-2 py-1 rounded-lg bg-secondary hover:bg-secondary/80 border border-border font-semibold text-xs cursor-pointer active:scale-[0.98] transition-all"
                               title="Limit Close"
                             >
                               Limit

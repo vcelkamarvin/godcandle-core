@@ -248,12 +248,12 @@ export function PositionDock({
                   <div
                     key={pos.id}
                     className={cn(
-                      "min-w-[85vw] sm:min-w-[320px] md:min-w-0 snap-center rounded-[18px] bg-white border border-border overflow-hidden flex flex-col justify-between shadow-xs transition-all duration-300",
-                      isLiquidating && "animate-shatter-out border-[#FF4343]",
+                      "min-w-[85vw] sm:min-w-[320px] md:min-w-0 snap-center rounded-[20px] bg-white border border-black/[0.06] overflow-hidden flex flex-col justify-between shadow-xs transition-all duration-300",
+                      isLiquidating && "animate-shatter-out border-[#FF3B30]",
                     )}
                   >
-                    {/* 1. Header Strip with Signature Blue Mesh Gradient */}
-                    <div className="relative h-8 px-3 flex items-center justify-between overflow-hidden select-none bg-secondary/50 border-b border-border">
+                    {/* 1. Header Strip */}
+                    <div className="relative h-8 px-3 flex items-center justify-between overflow-hidden select-none bg-[#FAFAFC] border-b border-black/[0.06]">
                       <div className="relative z-10 flex items-center gap-1.5">
                         <span className="font-bold text-[13px] text-foreground tracking-wide">
                           {pos.symbol}/USD
@@ -262,8 +262,8 @@ export function PositionDock({
                           className={cn(
                             "px-1.5 py-0.2 rounded-full text-xs font-mono font-bold uppercase",
                             pos.side === "long"
-                              ? "bg-[#087F4D]/10 text-[#087F4D] border border-[#087F4D]/30"
-                              : "bg-[#D92D45]/10 text-[#D92D45] border border-[#D92D45]/30",
+                              ? "bg-[#00D964]/10 text-[#00D964] border border-[#00D964]/20"
+                              : "bg-[#FF3B30]/10 text-[#FF3B30] border border-[#FF3B30]/20",
                           )}
                         >
                           {pos.side}
@@ -271,10 +271,10 @@ export function PositionDock({
                       </div>
 
                       <div className="relative z-10 flex items-center gap-1.5">
-                        <span className="px-1.5 py-0.2 rounded-full text-xs font-mono font-bold bg-white text-foreground border border-border">
+                        <span className="px-1.5 py-0.2 rounded-full text-xs font-mono font-bold bg-white text-foreground border border-black/[0.06]">
                           {pos.leverage}x
                         </span>
-                        <span className="size-1.5 rounded-full bg-[#2563EB]" />
+                        <span className="size-1.5 rounded-full bg-[#00D964]" />
                       </div>
                     </div>
 
@@ -286,7 +286,7 @@ export function PositionDock({
                           <div
                             className={cn(
                               "text-[22px] sm:text-[24px] font-bold font-mono tracking-tight leading-none",
-                              isProfit ? "text-[#087F4D]" : "text-[#D92D45]",
+                              isProfit ? "text-[#00D964]" : "text-[#FF3B30]",
                             )}
                           >
                             {formatPnl(currentPnl)}
@@ -294,7 +294,7 @@ export function PositionDock({
                           <span
                             className={cn(
                               "text-xs font-mono font-semibold",
-                              isProfit ? "text-[#087F4D]" : "text-[#D92D45]",
+                              isProfit ? "text-[#00D964]" : "text-[#FF3B30]",
                             )}
                           >
                             {formatPct(pnlPct)} of stake
@@ -302,7 +302,7 @@ export function PositionDock({
                         </div>
 
                         <div className="text-right">
-                          <span className="text-xs text-muted-foreground block">TIME OPEN</span>
+                          <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold block">TIME OPEN</span>
                           <span className="text-xs font-mono text-foreground flex items-center justify-end gap-1">
                             <Clock className="size-2.5 text-muted-foreground" />
                             {durationStr}
@@ -313,31 +313,31 @@ export function PositionDock({
                       {/* Liquidation Distance Bar */}
                       <div>
                         <div className="flex items-center justify-between text-xs font-mono mb-1">
-                          <span className="text-muted-foreground flex items-center gap-1 text-xs">
+                          <span className="text-muted-foreground flex items-center gap-1 text-[11px] font-medium">
                             Distance to Liq
                             {isDanger && (
-                              <AlertTriangle className="size-3 text-[#D92D45] animate-pulse" />
+                              <AlertTriangle className="size-3 text-[#FF3B30] animate-pulse" />
                             )}
                           </span>
                           <span
                             className={cn(
                               "font-bold tabular-nums text-xs",
-                              isDanger ? "text-[#D92D45]" : "text-foreground",
+                              isDanger ? "text-[#FF3B30]" : "text-foreground",
                             )}
                           >
                             {Math.max(0, currentDistPct).toFixed(2)}% remaining
                           </span>
                         </div>
 
-                        <div className="w-full h-1.5 rounded-full bg-secondary overflow-hidden p-0.5 border border-border/40">
+                        <div className="w-full h-1.5 rounded-full bg-[#F0F2F5] overflow-hidden p-0.5 border border-black/[0.04]">
                           <div
                             className={cn(
                               "h-full rounded-full transition-all duration-300",
                               isDanger
-                                ? "bg-[#D92D45] animate-soft-pulse"
+                                ? "bg-[#FF3B30] animate-soft-pulse"
                                 : remainingPct > 50
-                                  ? "bg-[#2563EB]"
-                                  : "bg-[#3B82F6]",
+                                  ? "bg-[#00D964]"
+                                  : "bg-[#2563EB]",
                             )}
                             style={{ width: `${Math.round(remainingPct)}%` }}
                           />
@@ -345,7 +345,7 @@ export function PositionDock({
                       </div>
 
                       {/* 6-Metric Details Grid */}
-                      <div className="grid grid-cols-3 gap-1.5 p-2 rounded-[12px] bg-secondary/50 border border-border/60 text-xs font-mono">
+                      <div className="grid grid-cols-3 gap-1.5 p-2 rounded-[14px] bg-[#FAFAFC] border border-black/[0.06] text-xs font-mono">
                         <div>
                           <span className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground block">ENTRY</span>
                           <span className="text-foreground font-semibold text-[12px] sm:text-[13px]">
@@ -360,13 +360,13 @@ export function PositionDock({
                         </div>
                         <div>
                           <span className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground block">LIQ PRICE</span>
-                          <span className="text-[#D92D45] font-bold text-[12px] sm:text-[13px]">
+                          <span className="text-[#FF3B30] font-bold text-[12px] sm:text-[13px]">
                             {formatAssetPrice(pos.symbol, pos.liqPrice)}
                           </span>
                         </div>
                         <div>
                           <span className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground block">TARGET</span>
-                          <span className="text-[#087F4D] font-semibold text-[12px] sm:text-[13px]">
+                          <span className="text-[#00D964] font-semibold text-[12px] sm:text-[13px]">
                             {pos.targetPrice ? formatAssetPrice(pos.symbol, pos.targetPrice) : "None"}
                           </span>
                         </div>
@@ -400,7 +400,7 @@ export function PositionDock({
                               }
                               setEditingTargetId(null);
                             }}
-                            className="px-2.5 py-0.5 rounded-full bg-[#2563EB] text-white text-xs font-semibold cursor-pointer"
+                            className="px-2.5 py-0.5 rounded-full bg-[#0A0A0A] text-white text-xs font-semibold cursor-pointer active:scale-[0.98]"
                           >
                             Save
                           </button>
@@ -419,7 +419,7 @@ export function PositionDock({
                         <button
                           type="button"
                           onClick={() => onClosePosition(pos.id)}
-                          className="h-7 rounded-full bg-[#D92D45]/10 hover:bg-[#D92D45]/20 border border-[#D92D45]/30 text-[#D92D45] font-semibold text-xs flex items-center justify-center gap-1 transition-all cursor-pointer active:scale-95"
+                          className="h-7 rounded-full bg-[#FF3B30]/10 hover:bg-[#FF3B30]/20 border border-[#FF3B30]/20 text-[#FF3B30] font-bold text-xs flex items-center justify-center gap-1 transition-all cursor-pointer active:scale-[0.98]"
                           title="Close position at current mark price"
                         >
                           <XCircle className="size-3" />
@@ -429,7 +429,7 @@ export function PositionDock({
                         <button
                           type="button"
                           onClick={() => onReduce50Position(pos.id)}
-                          className="h-7 rounded-full bg-secondary hover:bg-secondary/80 border border-border text-foreground font-medium text-xs flex items-center justify-center gap-1 transition-all cursor-pointer active:scale-95"
+                          className="h-7 rounded-full bg-[#F0F2F5] hover:bg-[#E4E7EC] border border-black/[0.04] text-foreground font-semibold text-xs flex items-center justify-center gap-1 transition-all cursor-pointer active:scale-[0.98]"
                           title="Reduce position stake and notional by 50%"
                         >
                           <MinusCircle className="size-3" />
@@ -443,10 +443,10 @@ export function PositionDock({
                             setTempTargetInput(pos.targetPrice ? pos.targetPrice.toString() : "");
                             toast.info("Drag the target line on the chart to set take-profit");
                           }}
-                          className="h-7 rounded-full bg-secondary hover:bg-secondary/80 border border-border text-foreground font-medium text-xs flex items-center justify-center gap-1 transition-all cursor-pointer active:scale-95"
+                          className="h-7 rounded-full bg-[#F0F2F5] hover:bg-[#E4E7EC] border border-black/[0.04] text-foreground font-semibold text-xs flex items-center justify-center gap-1 transition-all cursor-pointer active:scale-[0.98]"
                           title="Add take-profit: drag a line on the chart to set it"
                         >
-                          <Crosshair className="size-3 text-[#087F4D]" />
+                          <Crosshair className="size-3 text-[#00D964]" />
                           <span>{pos.targetPrice ? "Take Profit" : "Add take-profit"}</span>
                         </button>
                       </div>

@@ -57,38 +57,38 @@ function Portfolio() {
     <main className="page-content space-y-4">
       {/* Protocol Solvency & Settlement Telemetry Strip */}
       <section aria-label="Protocol Status Strip" className="grid grid-cols-2 gap-2.5 lg:grid-cols-4">
-        <div className="rounded-2xl border border-border bg-white p-3.5 shadow-2xs font-mono">
-          <span className="text-xs text-muted-foreground uppercase block font-medium">House Pool Liquid Reserve</span>
+        <div className="rounded-2xl border border-black/[0.06] bg-white p-3.5 shadow-xs font-mono">
+          <span className="text-[11px] text-muted-foreground uppercase tracking-wider block font-semibold">House Pool Liquid Reserve</span>
           <p className="tabular mt-1 text-base font-bold text-foreground">$10,000.00</p>
-          <span className="text-xs text-[#06964A] font-semibold">100% Solvent</span>
+          <span className="text-xs text-[#00D964] font-semibold">100% Solvent</span>
         </div>
 
-        <div className="rounded-2xl border border-border bg-white p-3.5 shadow-2xs font-mono">
-          <span className="text-xs text-muted-foreground uppercase block font-medium">FIFO Payout Queue Depth</span>
-          <p className="tabular mt-1 text-base font-bold text-[#06964A]">$0.00</p>
+        <div className="rounded-2xl border border-black/[0.06] bg-white p-3.5 shadow-xs font-mono">
+          <span className="text-[11px] text-muted-foreground uppercase tracking-wider block font-semibold">FIFO Payout Queue Depth</span>
+          <p className="tabular mt-1 text-base font-bold text-[#00D964]">$0.00</p>
           <span className="text-xs text-muted-foreground">0 Backlog · Block Payout</span>
         </div>
 
-        <div className="rounded-2xl border border-border bg-white p-3.5 shadow-2xs font-mono">
-          <span className="text-xs text-muted-foreground uppercase block font-medium">Net Open Interest</span>
+        <div className="rounded-2xl border border-black/[0.06] bg-white p-3.5 shadow-xs font-mono">
+          <span className="text-[11px] text-muted-foreground uppercase tracking-wider block font-semibold">Net Open Interest</span>
           <p className="tabular mt-1 text-base font-bold text-foreground">Long $1.84M / Short $1.40M</p>
-          <span className="text-xs text-[#06964A] font-semibold">Net Long +$440,300</span>
+          <span className="text-xs text-[#00D964] font-semibold">Net Long +$440,300</span>
         </div>
 
-        <div className="rounded-2xl border border-border bg-white p-3.5 shadow-2xs font-mono">
-          <span className="text-xs text-muted-foreground uppercase block font-medium">Execution Telemetry</span>
-          <p className="tabular mt-1 text-base font-bold text-[#06964A]">Optimal L1 Routing</p>
+        <div className="rounded-2xl border border-black/[0.06] bg-white p-3.5 shadow-xs font-mono">
+          <span className="text-[11px] text-muted-foreground uppercase tracking-wider block font-semibold">Execution Telemetry</span>
+          <p className="tabular mt-1 text-base font-bold text-[#00D964]">Optimal L1 Routing</p>
           <span className="text-xs text-muted-foreground">99.98% Fill Quality</span>
         </div>
       </section>
 
       <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_300px]">
-        <section className="min-w-0 rounded-2xl border p-3.5 bg-white">
+        <section className="min-w-0 rounded-2xl border border-black/[0.06] p-3.5 bg-white shadow-xs">
           <div className="flex flex-wrap items-start justify-between gap-2.5">
             <div>
-              <h1 className="data-label font-mono">Account Equity</h1>
+              <h1 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider font-mono">Account Equity</h1>
               <p className="tabular mt-1 text-3xl font-semibold font-mono">${fmtUsd(t.balance + unrealized)}</p>
-              <p className={`tabular mt-1 text-xs font-mono ${realized + unrealized >= 0 ? "text-gain font-semibold" : "text-loss font-semibold"}`}>
+              <p className={`tabular mt-1 text-xs font-mono ${realized + unrealized >= 0 ? "text-[#00D964] font-semibold" : "text-[#FF3B30] font-semibold"}`}>
                 {fmtSigned(realized + unrealized)} <span className="text-muted-foreground font-normal">Session</span>
               </p>
             </div>
@@ -112,27 +112,39 @@ function Portfolio() {
           </div>
         </section>
 
-        <aside className="reward-panel p-3.5">
-          <h2 className="data-label text-foreground font-mono">Wallet Margin</h2>
-          <div className="mt-2 grid grid-cols-2 gap-2">
-            <div className="rounded-xl bg-card p-2.5">
-              <p className="text-xs text-muted-foreground font-mono">Available</p>
-              <p className="tabular mt-0.5 text-sm font-semibold font-mono">${fmtUsd(t.available)}</p>
-            </div>
-            <div className="rounded-xl bg-card p-2.5">
-              <p className="text-xs text-muted-foreground font-mono">In positions</p>
-              <p className="tabular mt-0.5 text-sm font-semibold font-mono">${fmtUsd(t.balance - t.available)}</p>
+        <aside className="rounded-2xl border border-black/[0.06] bg-white p-3.5 shadow-xs flex flex-col justify-between">
+          <div>
+            <h2 className="text-[11px] font-semibold text-foreground uppercase tracking-wider font-mono">Wallet Margin</h2>
+            <div className="mt-2.5 grid grid-cols-2 gap-2">
+              <div className="rounded-xl bg-[#F8F8F7] p-2.5">
+                <p className="text-[10px] uppercase font-semibold text-muted-foreground font-mono">Available</p>
+                <p className="tabular mt-0.5 text-sm font-semibold font-mono">${fmtUsd(t.available)}</p>
+              </div>
+              <div className="rounded-xl bg-[#F8F8F7] p-2.5">
+                <p className="text-[10px] uppercase font-semibold text-muted-foreground font-mono">In positions</p>
+                <p className="tabular mt-0.5 text-sm font-semibold font-mono">${fmtUsd(t.balance - t.available)}</p>
+              </div>
             </div>
           </div>
-          <div className="mt-2.5 grid grid-cols-2 gap-2">
-            <Button variant="terminal" className="pill pill-ink h-9 text-xs" onClick={() => setTransfer("Deposit")}>
-              Deposit
-            </Button>
-            <Button variant="terminal" className="pill h-9 bg-card text-xs" onClick={() => setTransfer("Withdraw")}>
-              Withdraw
-            </Button>
+          <div className="mt-3">
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                className="h-9 text-xs rounded-xl bg-[#0A0A0A] hover:bg-[#1A1A1A] text-white active:scale-[0.98] font-semibold transition-all cursor-pointer shadow-xs flex items-center justify-center"
+                onClick={() => setTransfer("Deposit")}
+              >
+                Deposit
+              </button>
+              <button
+                type="button"
+                className="h-9 text-xs rounded-xl bg-[#F0F2F5] hover:bg-[#E4E7EC] text-[#0A0A0A] active:scale-[0.98] font-semibold transition-all cursor-pointer flex items-center justify-center"
+                onClick={() => setTransfer("Withdraw")}
+              >
+                Withdraw
+              </button>
+            </div>
+            <p className="tabular mt-2.5 text-xs text-muted-foreground text-center font-mono">Native USDC · HyperEVM (999)</p>
           </div>
-          <p className="tabular mt-2 text-xs text-muted-foreground text-center font-mono">Native USDC · HyperEVM (999)</p>
         </aside>
       </div>
 
@@ -148,10 +160,10 @@ function Portfolio() {
 
       {/* Technical Quant Performance Matrix & Ledger */}
       <div className="grid gap-2.5 md:grid-cols-[1fr_1fr_240px]">
-        <section className="rounded-2xl border p-3 bg-white font-mono text-xs">
-          <div className="flex justify-between items-center pb-2 border-b border-border">
-            <h2 className="text-xs font-semibold text-muted-foreground uppercase">Risk & Execution Ledger</h2>
-            <span className="text-xs text-[#06964A] font-semibold">Pure FIFO Block Settlement</span>
+        <section className="rounded-2xl border border-black/[0.06] p-3.5 bg-white font-mono text-xs shadow-xs">
+          <div className="flex justify-between items-center pb-2 border-b border-black/[0.06]">
+            <h2 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Risk &amp; Execution Ledger</h2>
+            <span className="text-xs text-[#00D964] font-semibold">Pure FIFO Block Settlement</span>
           </div>
           <div className="space-y-2 mt-2.5 text-xs">
             <div className="flex justify-between">
@@ -168,20 +180,20 @@ function Portfolio() {
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Payout Queue Position:</span>
-              <span className="font-semibold text-[#06964A]">#1 Immediate ($0.00 backlog)</span>
+              <span className="font-semibold text-[#00D964]">#1 Immediate ($0.00 backlog)</span>
             </div>
           </div>
         </section>
 
-        <section className="rounded-2xl border p-3 bg-white">
-          <h2 className="text-xs font-semibold text-muted-foreground uppercase font-mono">PnL Distribution (Last 30)</h2>
+        <section className="rounded-2xl border border-black/[0.06] p-3.5 bg-white shadow-xs">
+          <h2 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider font-mono">PnL Distribution (Last 30)</h2>
           <div className="mt-2">
             <ChartCanvas kind="bars" height={80} values={t.history.length ? t.history.slice(0, 30).reverse().map((h) => h.pnl) : Array(30).fill(0)} />
           </div>
         </section>
 
-        <section className="rounded-2xl border p-3 bg-white font-mono">
-          <h2 className="text-xs font-semibold text-muted-foreground uppercase">Volume by Market</h2>
+        <section className="rounded-2xl border border-black/[0.06] p-3.5 bg-white font-mono shadow-xs">
+          <h2 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Volume by Market</h2>
           <div className="space-y-1.5 mt-2">
             {MARKETS.map((m) => {
               const v = t.history.filter((h) => h.market === m.symbol).reduce((s, h) => s + h.stake * h.leverage, 0);

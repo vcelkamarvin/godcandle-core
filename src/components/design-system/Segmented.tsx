@@ -27,7 +27,7 @@ export function Segmented<T extends string>({
   return (
     <div
       className={cn(
-        "inline-flex items-center rounded-full bg-[#1E1E22] p-1 border border-white/[0.06] select-none h-9",
+        "inline-flex items-center rounded-xl bg-[#F0F2F5] p-1 border border-black/[0.04] select-none h-9",
         className,
       )}
       role="tablist"
@@ -42,12 +42,10 @@ export function Segmented<T extends string>({
             aria-selected={isSelected}
             onClick={() => onChange(opt.value)}
             className={cn(
-              "relative flex items-center justify-center gap-1.5 rounded-full px-3.5 text-[12px] font-medium transition-all duration-150 cursor-pointer outline-none focus-visible:ring-1 focus-visible:ring-[#2563EB]/40 h-7",
+              "relative flex items-center justify-center gap-1.5 rounded-lg px-3.5 text-[12px] font-medium transition-all duration-150 cursor-pointer outline-none focus-visible:ring-1 focus-visible:ring-black/10 h-7 active:scale-[0.98]",
               isSelected
-                ? variant === "lime"
-                  ? "bg-[#2563EB] text-white font-semibold shadow-[0_4px_20px_rgba(37,99,235,0.4)]"
-                  : "bg-[#F5F5F6] text-[#0B0B0C] font-semibold shadow-xs"
-                : "text-[#A8A8B3] hover:text-[#F5F5F6]",
+                ? "bg-white text-[#0A0A0A] font-semibold shadow-xs"
+                : "text-[#737887] hover:text-[#0A0A0A] hover:bg-white/60",
             )}
           >
             {opt.icon ? <span className="shrink-0">{opt.icon}</span> : null}

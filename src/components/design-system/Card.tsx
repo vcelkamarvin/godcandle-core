@@ -11,8 +11,8 @@ export function Card({ children, className, hero = false, ...props }: CardProps)
   return (
     <div
       className={cn(
-        "rounded-[24px] bg-[#14161B] border border-white/[0.06] text-[#F5F5F6] overflow-hidden",
-        "shadow-[inset_0_1px_0_0_rgba(255,255,255,0.04)]",
+        "rounded-[20px] bg-white border border-black/[0.06] text-[#0A0A0A] overflow-hidden",
+        "shadow-xs",
         hero ? "p-6" : "p-6",
         className,
       )}
@@ -31,7 +31,7 @@ export function CardHeader({
   return (
     <div
       className={cn(
-        "flex items-center justify-between pb-4 mb-4 border-b border-white/[0.06] shrink-0",
+        "flex items-center justify-between pb-3.5 mb-3.5 border-b border-black/[0.06] shrink-0",
         className,
       )}
       {...props}
@@ -49,7 +49,7 @@ export function CardTitle({
   return (
     <h3
       className={cn(
-        "text-[16px] leading-[24px] font-semibold text-[#F5F5F6] tracking-tight",
+        "text-[15px] leading-[22px] font-bold text-[#0A0A0A] tracking-tight",
         className,
       )}
       {...props}
@@ -66,7 +66,7 @@ export function CardDescription({
   children: ReactNode;
   className?: string;
 }) {
-  return <p className={cn("text-[12px] leading-[16px] text-[#A8A8B3]", className)}>{children}</p>;
+  return <p className={cn("text-[12px] leading-[16px] text-[#737887]", className)}>{children}</p>;
 }
 
 export function CardBody({

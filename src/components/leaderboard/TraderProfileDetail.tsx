@@ -657,9 +657,9 @@ export function TraderProfileDetail({ address }: TraderProfileDetailProps) {
                         key={tf}
                         onClick={() => setTimeframe(tf)}
                         className={cn(
-                          "px-2.5 py-0.5 rounded-lg transition-all cursor-pointer",
+                          "px-2.5 py-0.5 rounded-lg transition-all cursor-pointer active:scale-[0.98]",
                           timeframe === tf
-                            ? "bg-emerald-500 text-black font-bold shadow-xs"
+                            ? "bg-white text-[var(--text-primary,#0b0b0c)] font-bold shadow-xs"
                             : "text-[var(--text-secondary,#5a5a66)] hover:text-[var(--text-primary,#0b0b0c)]"
                         )}
                       >

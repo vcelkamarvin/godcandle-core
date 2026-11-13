@@ -25,22 +25,22 @@ export function Button({
   }[size];
 
   const variantStyles = {
-    // Primary non-trade CTA: electric blue fill, white text
+    // Primary non-trade CTA: Revolut obsidian black, crisp white text
     primary:
-      "bg-[#2563EB] text-white font-semibold hover:bg-[#1D4ED8] active:scale-[0.98] shadow-[0_4px_20px_rgba(37,99,235,0.35)] border border-[#2563EB]",
-    // Buy / Long: profit fill (#3DDC97), dark text
-    buy: "bg-[#3DDC97] text-[#0B0B0C] font-semibold hover:bg-[#34c987] active:scale-[0.98] border border-[#3DDC97]",
-    // Sell / Short: loss fill (#FF5C6C), white text
-    sell: "bg-[#FF5C6C] text-white font-semibold hover:bg-[#e64c5c] active:scale-[0.98] border border-[#FF5C6C]",
-    // Secondary: surface-2 with border-default
+      "bg-[#0A0A0A] text-white font-semibold hover:bg-[#1A1A1A] active:scale-[0.98] shadow-xs border border-transparent",
+    // Buy / Long: Revolut neon mint (#00D964), dark text
+    buy: "bg-[#00D964] text-[#0A0A0A] font-semibold hover:bg-[#05C168] active:scale-[0.98] border border-transparent",
+    // Sell / Short: Revolut electric crimson (#FF3B30), white text
+    sell: "bg-[#FF3B30] text-white font-semibold hover:bg-[#F04438] active:scale-[0.98] border border-transparent",
+    // Secondary: soft track #F0F2F5 with dark text
     secondary:
-      "bg-[#1E1E22] text-[#F5F5F6] font-medium hover:bg-[#26262B] border border-white/10 active:scale-[0.98]",
-    // Ghost: transparent, hover surface-3
+      "bg-[#F0F2F5] text-[#0A0A0A] font-medium hover:bg-[#E4E7EC] border border-black/[0.04] active:scale-[0.98]",
+    // Ghost: transparent, hover soft track
     ghost:
-      "bg-transparent text-[#A8A8B3] hover:text-[#F5F5F6] hover:bg-[#26262B] border border-transparent",
-    // Danger: subtle red
+      "bg-transparent text-[#737887] hover:text-[#0A0A0A] hover:bg-[#F0F2F5] border border-transparent",
+    // Danger: soft red pill
     danger:
-      "bg-[rgba(255,92,108,0.12)] text-[#FF5C6C] hover:bg-[rgba(255,92,108,0.2)] border border-[rgba(255,92,108,0.25)]",
+      "bg-[#FEECEB] text-[#FF3B30] hover:bg-[#FCD8D6] border border-[#FF3B30]/20 active:scale-[0.98]",
   }[variant];
 
   return (

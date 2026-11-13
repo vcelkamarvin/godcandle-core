@@ -106,9 +106,9 @@ export function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 border-b border-border bg-white/95 text-foreground font-sans backdrop-blur-md">
+      <header className="sticky top-0 z-40 border-b border-black/[0.06] bg-white/95 text-foreground font-sans backdrop-blur-md">
         {/* Status Bar */}
-        <div className="hidden sm:flex border-b border-border/60 bg-secondary/50 text-foreground px-4 sm:px-6 py-1 items-center justify-between text-xs font-mono tracking-tight select-none">
+        <div className="hidden sm:flex border-b border-black/[0.04] bg-[#FAFAFC] text-foreground px-4 sm:px-6 py-1 items-center justify-between text-xs font-mono tracking-tight select-none">
           <div className="flex items-center gap-2">
             <span className="inline-block size-2 rounded-full bg-[#00D964] animate-pulse" />
             <span className="font-bold text-foreground tracking-wide">
@@ -139,10 +139,10 @@ export function Header() {
               className="group flex shrink-0 items-center gap-2 font-sans"
               aria-label="godcandle home"
             >
-              <span className="text-[19px] sm:text-[20px] font-normal tracking-tight text-foreground transition-opacity group-hover:opacity-85">
+              <span className="text-[19px] sm:text-[20px] font-bold tracking-tight text-foreground transition-opacity group-hover:opacity-85">
                 godcandle
               </span>
-              <span className="hidden rounded-full border border-border bg-gradient-to-r from-[#CDC3F0]/40 via-[#FFDAC8]/40 to-[#A0D4CA]/40 px-2 py-0.5 text-xs font-semibold uppercase tracking-wider text-foreground sm:inline-flex items-center gap-1 font-mono">
+              <span className="hidden rounded-full border border-black/[0.06] bg-gradient-to-r from-[#CDC3F0]/30 via-[#FFDAC8]/30 to-[#A0D4CA]/30 px-2 py-0.5 text-xs font-semibold uppercase tracking-wider text-foreground sm:inline-flex items-center gap-1 font-mono">
                 <Sparkles className="size-2.5 text-[#0A0A0A]/70" />
                 Light
               </span>
@@ -151,18 +151,18 @@ export function Header() {
             {/* Left Nav: Clean Trade Switch [Perps | 1000x] */}
             <nav aria-label="Main navigation" className="hidden md:flex items-center gap-2">
               {/* Clean Segmented Trade Switch: Perps vs 1000x */}
-              <div className="flex items-center p-0.5 rounded-full bg-secondary/80 border border-border/80 text-xs font-medium">
+              <div className="flex items-center p-0.5 rounded-full bg-[#F0F2F5] border border-black/[0.04] text-xs font-medium">
                 <Link
                   to="/"
                   activeOptions={{ exact: true }}
-                  className="pill h-7.5 px-3.5 text-xs transition-all [&.active]:pill-ink [&.active]:shadow-xs text-muted-foreground hover:text-foreground font-semibold"
+                  className="pill h-7.5 px-3.5 text-xs transition-all [&.active]:pill-ink [&.active]:bg-white [&.active]:text-[#0A0A0A] [&.active]:shadow-xs text-muted-foreground hover:text-foreground font-semibold rounded-full"
                 >
                   <span>Perps</span>
                 </Link>
                 <Link
                   to="/trade"
                   title="1000x Trading Simulation"
-                  className="pill h-7.5 px-3.5 text-xs transition-all [&.active]:pill-ink [&.active]:shadow-xs text-muted-foreground hover:text-foreground flex items-center gap-1.5 font-semibold"
+                  className="pill h-7.5 px-3.5 text-xs transition-all [&.active]:pill-ink [&.active]:bg-white [&.active]:text-[#0A0A0A] [&.active]:shadow-xs text-muted-foreground hover:text-foreground flex items-center gap-1.5 font-semibold rounded-full"
                 >
                   <span className="size-1.5 rounded-full bg-[#00D964]" />
                   <span>1000x</span>
@@ -377,7 +377,7 @@ export function Header() {
               variant="outline"
               size="sm"
               onClick={() => setTransfer("Deposit")}
-              className="pill pill-ink h-8 px-3.5 text-xs font-semibold gap-1.5 border-0 cursor-pointer shadow-xs"
+              className="pill pill-ink h-8 px-3.5 text-xs font-semibold gap-1.5 border-0 cursor-pointer shadow-xs bg-[#0A0A0A] hover:bg-[#1A1A1A] text-white active:scale-[0.98] transition-transform"
             >
               <Plus className="size-3" />
               Deposit
@@ -392,7 +392,7 @@ export function Header() {
                 to="/settings"
                 title="Settings Page"
                 aria-label="Settings"
-                className="hidden sm:flex size-8 items-center justify-center rounded-full bg-[#00D964] text-black shadow-xs font-bold transition-all cursor-pointer shrink-0"
+                className="hidden sm:flex size-8 items-center justify-center rounded-full bg-[#00D964] text-black shadow-xs font-bold transition-all cursor-pointer shrink-0 active:scale-[0.98]"
               >
                 <SettingsIcon className="size-3.5" />
               </Link>
@@ -402,7 +402,7 @@ export function Header() {
                 onClick={() => setSettingsModalOpen(true)}
                 title="Settings (Cmd+,)"
                 aria-label="Settings"
-                className="hidden sm:flex size-8 items-center justify-center rounded-full border border-border/80 bg-secondary/70 text-muted-foreground hover:text-foreground hover:bg-secondary transition-all cursor-pointer shrink-0"
+                className="hidden sm:flex size-8 items-center justify-center rounded-full border border-black/[0.06] bg-[#F0F2F5] text-muted-foreground hover:text-foreground hover:bg-[#E4E7EC] transition-all cursor-pointer shrink-0 active:scale-[0.98]"
               >
                 <SettingsIcon className="size-3.5" />
               </button>
@@ -411,15 +411,15 @@ export function Header() {
         </div>
 
         {/* Mobile Navigation Sub-row: Minimalist, intuitive, and uncluttered */}
-        <div className="flex md:hidden items-center justify-between gap-1.5 border-t border-border bg-white/95 px-3 py-1.5 text-xs">
+        <div className="flex md:hidden items-center justify-between gap-1.5 border-t border-black/[0.06] bg-white/95 px-3 py-1.5 text-xs">
           {/* Mobile Trading Segment: Perps vs 1000x */}
-          <div className="flex items-center p-0.5 rounded-full bg-secondary/80 border border-border/80 shrink-0 text-xs font-medium">
+          <div className="flex items-center p-0.5 rounded-full bg-[#F0F2F5] border border-black/[0.04] shrink-0 text-xs font-medium">
             <Link
               to="/"
               className={
                 pathname === "/"
-                  ? "pill pill-ink h-7 px-2.5 text-xs font-semibold shadow-xs"
-                  : "pill h-7 px-2.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                  ? "pill pill-ink h-7 px-3 text-xs font-semibold shadow-xs bg-white text-[#0A0A0A] rounded-full"
+                  : "pill h-7 px-3 text-xs text-muted-foreground hover:text-foreground transition-colors rounded-full"
               }
             >
               <span>Perps</span>
@@ -429,8 +429,8 @@ export function Header() {
               title="1000x Trading Simulation"
               className={
                 pathname === "/trade"
-                  ? "pill pill-ink h-7 px-2.5 text-xs font-semibold shadow-xs flex items-center gap-1"
-                  : "pill h-7 px-2.5 text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+                  ? "pill pill-ink h-7 px-3 text-xs font-semibold shadow-xs bg-white text-[#0A0A0A] rounded-full flex items-center gap-1"
+                  : "pill h-7 px-3 text-xs text-muted-foreground hover:text-foreground transition-colors rounded-full flex items-center gap-1"
               }
             >
               <span className="size-1.5 rounded-full bg-[#00D964]" />

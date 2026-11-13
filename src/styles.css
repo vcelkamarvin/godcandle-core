@@ -8,7 +8,7 @@
    mono numerals, grain mesh gradient art (mint / lime / cream, no blue). */
 
 @theme inline {
-  --font-sans: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, "Inter", Arial, sans-serif;
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Helvetica, Arial, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
   --radius-sm: 8px;
   --radius-md: 12px;
@@ -57,32 +57,32 @@
 
 :root {
   --radius: 20px;
-  --background: #F6F6F4;
+  --background: #FAFAFC;
   --foreground: #0A0A0A;
   --surface: #FFFFFF;
-  --surface-elevated: #F0F0EE;
+  --surface-elevated: #F0F2F5;
   --card: #FFFFFF;
   --card-foreground: #0A0A0A;
   --popover: #FFFFFF;
   --popover-foreground: #0A0A0A;
   --primary: #0A0A0A;
   --primary-foreground: #FFFFFF;
-  --secondary: #F0F0EE;
+  --secondary: #F0F2F5;
   --secondary-foreground: #0A0A0A;
-  --muted: #F0F0EE;
-  --muted-foreground: #8A8A86;
+  --muted: #F0F2F5;
+  --muted-foreground: #737887;
   --accent: #0A0A0A;
   --accent-foreground: #FFFFFF;
   --destructive: #FF3B30;
   --destructive-foreground: #FFFFFF;
-  --border: #E6E6E3;
-  --border-active: #D2D2CE;
-  --input: #E6E6E3;
+  --border: rgba(0, 0, 0, 0.06);
+  --border-active: #D1D5DB;
+  --input: #E9EBEF;
   --ring: #0A0A0A;
   --bull: #00D964;
   --bear: #FF3B30;
-  --subtle: #8A8A86;
-  --gain: #06964A;
+  --subtle: #737887;
+  --gain: #00D964;
   --loss: #FF3B30;
   --trade-gain: #00D964;
   --chart-lavender: #CBCBE8;
@@ -93,10 +93,18 @@
   --reward-gradient: linear-gradient(135deg, #CBCBE8 0%, #EBD0C6 50%, #8FB0AB 100%);
   --rainbow-gradient: linear-gradient(135deg, #CDC3F0 0%, #FFDAC8 55%, #A0D4CA 100%);
   --rainbow-glow: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(205, 195, 240, 0.45) 0%, rgba(255, 218, 200, 0.3) 45%, rgba(160, 212, 202, 0.25) 75%, transparent 100%);
-  --gain-soft: #E3F8EC;
-  --loss-soft: #FFECEA;
+  --gain-soft: #E6F9EE;
+  --loss-soft: #FEECEB;
+  --surface-1: #FFFFFF;
+  --surface-2: #F0F2F5;
+  --surface-3: #E4E7EC;
+  --border-subtle: rgba(0, 0, 0, 0.06);
+  --border-default: rgba(0, 0, 0, 0.08);
+  --text-primary: #0A0A0A;
+  --text-secondary: #737887;
+  --text-tertiary: #9AA0AE;
   --chart-1: #0A0A0A;
-  --chart-2: #8A8A86;
+  --chart-2: #737887;
   --chart-3: #00D964;
   --chart-4: #FF3B30;
   --chart-5: #CBCBE8;
@@ -113,6 +121,7 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
     -webkit-font-smoothing: antialiased;
+    letter-spacing: -0.011em;
   }
   b,
   strong {
@@ -126,12 +135,19 @@
   letter-spacing: 0;
 }
 @utility tight {
-  letter-spacing: 0;
+  letter-spacing: -0.02em;
 }
 @utility gc-card {
-  border-radius: 24px;
+  border-radius: 20px;
   border: 1px solid var(--color-border);
   background: var(--color-card);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03), 0 6px 24px rgba(0, 0, 0, 0.04);
+}
+@utility revolut-card {
+  border-radius: 20px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: #FFFFFF;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03), 0 6px 24px rgba(0, 0, 0, 0.04);
 }
 @utility pill {
   display: inline-flex;
@@ -139,11 +155,12 @@
   justify-content: center;
   gap: 6px;
   border-radius: 9999px;
-  font-weight: 500;
+  font-weight: 600;
   transition:
     background-color 150ms,
     color 150ms,
-    border-color 150ms;
+    border-color 150ms,
+    transform 100ms;
   white-space: nowrap;
 }
 @utility pill-outline {
@@ -265,4 +282,45 @@
 .metric-value { font-family: var(--font-mono); font-size: 20px; font-weight: 600; line-height: 1.25; }
 .chart-surface { min-height: 130px; width: 100%; }
 @media (max-width: 640px) { .page-content { padding: 10px 12px; } .metric-value { font-size: 16px; } }
+
+/* Signature Revolut Fintech Controls */
+.revolut-segmented {
+  background-color: #F0F2F5;
+  padding: 3px;
+  border-radius: 9999px;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+.revolut-pill-active {
+  background-color: #FFFFFF;
+  color: #0A0A0A;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  font-weight: 600;
+  border-radius: 9999px;
+}
+.revolut-btn-obsidian {
+  background-color: #0A0A0A;
+  color: #FFFFFF;
+  font-weight: 600;
+  border-radius: 14px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.revolut-btn-obsidian:hover {
+  background-color: #1A1A1A;
+}
+.revolut-btn-obsidian:active {
+  transform: scale(0.98);
+}
+.revolut-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted-foreground);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: var(--font-sans);
+}
+
 

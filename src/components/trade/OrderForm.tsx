@@ -342,9 +342,9 @@ export function OrderForm({
   }, [isSetupComplete, minNotionalError, numMargin, isPaper]);
 
   return (
-    <div className="w-full rounded-2xl border border-border/80 bg-white p-2 sm:p-2.5 space-y-1.5 shadow-xs font-sans text-foreground select-none">
+    <div className="w-full rounded-2xl border border-black/[0.06] bg-white p-2 sm:p-2.5 space-y-1.5 shadow-xs font-sans text-foreground select-none">
       {/* 1. Header: Order Types [Market | Limit | Stop] & Margin Mode Toggle [Isolated | Cross] */}
-      <div className="flex items-center justify-between pb-1 border-b border-border/60">
+      <div className="flex items-center justify-between pb-1 border-b border-black/[0.06]">
         <h2 className="text-xs sm:text-sm font-bold tracking-tight text-foreground font-sans">
           Open trade
         </h2>
@@ -863,7 +863,7 @@ export function OrderForm({
           onClick={() => handleOrderClick('LONG')}
           disabled={isSubmitting || numMargin <= 0 || (Boolean(minNotionalError) && !isPaper) || (!isSetupComplete && !isPaper)}
           title={!isSetupComplete && !isPaper ? 'Complete wallet & agent setup to trade' : 'Press B to Long'}
-          className="h-10 sm:h-11 rounded-xl bg-[#00D964] text-black hover:bg-[#00C259] active:scale-[0.99] transition-all flex flex-col items-center justify-center shadow-xs cursor-pointer disabled:opacity-40 disabled:pointer-events-none py-0.5"
+          className="h-10 sm:h-11 rounded-xl bg-[#00D964] text-black hover:bg-[#00C259] active:scale-[0.98] transition-all flex flex-col items-center justify-center shadow-xs cursor-pointer disabled:opacity-40 disabled:pointer-events-none py-0.5"
         >
           <div className="flex items-center gap-1.5 leading-none">
             <span className="text-sm font-black tracking-wide uppercase font-sans">
@@ -884,7 +884,7 @@ export function OrderForm({
           onClick={() => handleOrderClick('SHORT')}
           disabled={isSubmitting || numMargin <= 0 || (Boolean(minNotionalError) && !isPaper) || (!isSetupComplete && !isPaper)}
           title={!isSetupComplete && !isPaper ? 'Complete wallet & agent setup to trade' : 'Press S to Short'}
-          className="h-10 sm:h-11 rounded-xl bg-[#FF3B30] text-white hover:bg-[#E0342A] active:scale-[0.99] transition-all flex flex-col items-center justify-center shadow-xs cursor-pointer disabled:opacity-40 disabled:pointer-events-none py-0.5"
+          className="h-10 sm:h-11 rounded-xl bg-[#FF3B30] text-white hover:bg-[#E0342A] active:scale-[0.98] transition-all flex flex-col items-center justify-center shadow-xs cursor-pointer disabled:opacity-40 disabled:pointer-events-none py-0.5"
         >
           <div className="flex items-center gap-1.5 leading-none">
             <span className="text-sm font-black tracking-wide uppercase font-sans">

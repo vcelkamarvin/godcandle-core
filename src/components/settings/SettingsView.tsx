@@ -203,8 +203,8 @@ export function SettingsView({ isModal = false, onClose }: SettingsViewProps) {
       {/* Main 2-Column Rigid Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
         {/* SECTION 1: TRADING PREFERENCES (EXECUTION) */}
-        <div className="border border-border bg-white rounded-xl p-4 space-y-4 shadow-2xs">
-          <div className="flex items-center justify-between pb-2 border-b border-border">
+        <div className="border border-black/[0.06] bg-white rounded-2xl p-4 space-y-4 shadow-xs">
+          <div className="flex items-center justify-between pb-2 border-b border-black/[0.06]">
             <div className="flex items-center gap-2">
               <Zap className="size-3.5 text-[#2563EB]" />
               <span className="font-bold tracking-wider text-foreground text-[11px]">
@@ -385,8 +385,8 @@ export function SettingsView({ isModal = false, onClose }: SettingsViewProps) {
         </div>
 
         {/* SECTION 2: NETWORK & RPC DIAGNOSTICS */}
-        <div className="border border-border bg-white rounded-xl p-4 space-y-4 shadow-2xs">
-          <div className="flex items-center justify-between pb-2 border-b border-border">
+        <div className="border border-black/[0.06] bg-white rounded-2xl p-4 space-y-4 shadow-xs">
+          <div className="flex items-center justify-between pb-2 border-b border-black/[0.06]">
             <div className="flex items-center gap-2">
               <Activity className="size-3.5 text-[#06964A]" />
               <span className="font-bold tracking-wider text-foreground text-[11px]">
@@ -465,8 +465,8 @@ export function SettingsView({ isModal = false, onClose }: SettingsViewProps) {
       </div>
 
       {/* SECTION 3: LAYOUT & UI COMPACTNESS */}
-      <div className="border border-border bg-white rounded-xl p-4 space-y-3 shadow-2xs">
-        <div className="flex items-center justify-between pb-2 border-b border-border">
+      <div className="border border-black/[0.06] bg-white rounded-2xl p-4 space-y-3 shadow-xs">
+        <div className="flex items-center justify-between pb-2 border-b border-black/[0.06]">
           <div className="flex items-center gap-2">
             <Sliders className="size-3.5 text-[#7C3AED]" />
             <span className="font-bold tracking-wider text-foreground text-[11px]">
@@ -488,7 +488,7 @@ export function SettingsView({ isModal = false, onClose }: SettingsViewProps) {
               </div>
 
               {/* Segmented density switcher */}
-              <div className="flex items-center rounded-lg bg-white p-0.5 border border-border shadow-2xs">
+              <div className="flex items-center rounded-lg bg-[#F0F2F5] p-0.5 border border-black/[0.04]">
                 <button
                   type="button"
                   onClick={() => {
@@ -497,7 +497,7 @@ export function SettingsView({ isModal = false, onClose }: SettingsViewProps) {
                   }}
                   className={`h-6 px-2.5 rounded text-[10px] font-mono font-medium transition-colors cursor-pointer ${
                     settings.terminalDensity === 'standard'
-                      ? 'bg-foreground text-background font-bold shadow-xs'
+                      ? 'bg-white text-[#0A0A0A] font-bold shadow-xs'
                       : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
@@ -547,7 +547,7 @@ export function SettingsView({ isModal = false, onClose }: SettingsViewProps) {
       </div>
 
       {/* SECTION 4: DANGER ZONE (WALLET MANAGEMENT) */}
-      <div className="border border-[#FF3B30]/30 bg-[#FFF5F5] rounded-xl p-4 space-y-3 shadow-2xs">
+      <div className="border border-[#FF3B30]/20 bg-[#FFF8F8] rounded-2xl p-4 space-y-3 shadow-xs">
         <div className="flex items-center justify-between pb-2 border-b border-[#FF3B30]/20">
           <div className="flex items-center gap-2">
             <ShieldAlert className="size-3.5 text-[#FF3B30]" />
