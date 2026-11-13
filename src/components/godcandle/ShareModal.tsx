@@ -641,9 +641,9 @@ export function ShareModal({
               {/* Header: Logo, Precompile/Mode, and Side/Leverage Pill */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-1.5 font-bold tracking-tight text-white font-mono text-sm">
+                  <div className="flex items-center gap-1.5 font-normal tracking-tight text-white font-mono text-sm">
                     <span className="inline-block w-1.5 h-3.5 bg-[#00D964] rounded-xs" />
-                    <span className="font-bold text-[18px] tracking-tight font-sans text-white">godcandle</span>
+                    <span className="font-normal text-[18px] tracking-tight font-sans text-white">godcandle</span>
                   </div>
                   <span className="text-[10px] font-mono text-white/50 tracking-wider">
                     {mode === "pnl" ? "PRECOMPILE v1" : `${mode.toUpperCase()} v1`}

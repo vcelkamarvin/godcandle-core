@@ -6,38 +6,30 @@ import { useTrading } from "@/components/godcandle/TradingProvider";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "godcandle — Pro Perpetual Terminal" },
+      { title: "godcandle — Perpetual Futures Terminal" },
       {
         name: "description",
         content:
-          "Pro trading terminal for Hyperliquid L1 order books with zero added latency. Powered by native Builder Code GODCANDLE and 1000x synthetic roadmap.",
+          "Professional high-performance perpetual futures trading terminal on Hyperliquid L1 order books with real-time orderbook, TradingView charting, and pro execution.",
       },
-      { property: "og:title", content: "godcandle — Pro Perpetual Terminal" },
+      { property: "og:title", content: "godcandle — Perpetual Futures Terminal" },
       {
         property: "og:description",
         content:
-          "Trade directly on Hyperliquid L1 with zero added latency. Standard 1x-50x perps & the 1000x Masterplan.",
+          "Professional high-performance perpetual futures trading terminal on Hyperliquid L1 order books.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: IndexPage,
+  component: GodcandlePerpsPage,
 });
 
-function IndexPage() {
+function GodcandlePerpsPage() {
   const t = useTrading();
-
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const param = new URLSearchParams(window.location.search).get("mode");
-      if (param === "paper1000x") {
-        t.setMode("paper1000x");
-      } else if (param === "perps") {
-        t.setMode("perps");
-      }
-    }
-  }, []);
+    t.setMode("perps");
+  }, [t]);
 
   return (
     <div className="py-1 sm:py-1.5 px-2.5 sm:px-4 md:px-5 2xl:h-[calc(100vh-66px)] 2xl:overflow-hidden 2xl:flex 2xl:flex-col">

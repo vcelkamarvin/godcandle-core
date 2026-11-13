@@ -13,8 +13,8 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pb-8 border-b border-border">
           {/* Col 1: Protocol Overview */}
           <div className="space-y-3">
-            <div className="flex items-center gap-2 font-bold text-sm">
-              <span className="text-base font-bold tracking-tight text-foreground font-sans">godcandle</span>
+            <div className="flex items-center gap-2 text-sm">
+              <span className="text-base font-normal tracking-tight text-foreground font-sans">godcandle</span>
               <span className="rounded-full bg-secondary px-2 py-0.5 text-xs font-semibold uppercase text-foreground border border-border font-mono">
                 HyperEVM 999
               </span>

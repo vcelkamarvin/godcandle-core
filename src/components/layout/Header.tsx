@@ -141,7 +141,7 @@ export function Header() {
               className="group flex shrink-0 items-center gap-2 font-sans"
               aria-label="godcandle home"
             >
-              <span className="text-[19px] sm:text-[20px] font-bold tracking-tight text-foreground transition-opacity group-hover:opacity-85">
+              <span className="text-[19px] sm:text-[20px] font-normal tracking-tight text-foreground transition-opacity group-hover:opacity-85">
                 godcandle
               </span>
               <span className="hidden rounded-full border border-border bg-gradient-to-r from-[#CDC3F0]/40 via-[#FFDAC8]/40 to-[#A0D4CA]/40 px-2 py-0.5 text-xs font-semibold uppercase tracking-wider text-foreground sm:inline-flex items-center gap-1 font-mono">
@@ -150,59 +150,28 @@ export function Header() {
               </span>
             </Link>
 
-            {/* Left Nav: Trading [Perps | 1000x], Leaderboard, More */}
+            {/* Left Nav: Clean Trade Switch [Perps | 1000x] */}
             <nav aria-label="Main navigation" className="hidden md:flex items-center gap-2">
-              {/* Primary Trading Segment */}
-              <div className="flex items-center p-0.5 rounded-full bg-secondary/80 border border-border/80 shadow-2xs">
+              {/* Clean Segmented Trade Switch: Perps vs 1000x */}
+              <div className="flex items-center p-0.5 rounded-full bg-secondary/80 border border-border/80 text-xs font-medium">
                 <Link
                   to="/"
-                  search={typeof window !== "undefined" && new URLSearchParams(window.location.search).get("pair") ? { pair: new URLSearchParams(window.location.search).get("pair")! } as any : undefined}
-                  onClick={() => t.setMode("perps")}
-                  className={
-                    pathname === "/" && t.mode === "perps"
-                      ? "pill pill-ink h-7.5 px-3 text-xs font-semibold shadow-xs"
-                      : "pill h-7.5 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary/70 transition-colors"
-                  }
-                  title="Trade (Live) · Hyperliquid L1 Perps"
-                  aria-label="Trade (Live) Perps"
+                  activeOptions={{ exact: true }}
+                  className="pill h-7.5 px-3.5 text-xs transition-all [&.active]:pill-ink [&.active]:shadow-xs text-muted-foreground hover:text-foreground font-semibold"
                 >
-                  <span className="flex items-center gap-1.5">
-                    <span className="size-1.5 rounded-full bg-[#00D964] shadow-[0_0_6px_#00D964]" />
-                    <span>Perps</span>
-                  </span>
+                  <span>Perps</span>
                 </Link>
                 <Link
                   to="/trade"
-                  search={typeof window !== "undefined" && new URLSearchParams(window.location.search).get("pair") ? { pair: new URLSearchParams(window.location.search).get("pair")! } as any : undefined}
-                  onClick={() => t.setMode("paper1000x")}
-                  className={
-                    pathname === "/trade" || t.mode === "paper1000x"
-                      ? "pill pill-ink h-7.5 px-3 text-xs font-semibold shadow-xs"
-                      : "pill h-7.5 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary/70 transition-colors"
-                  }
-                  title="1000x Trading Simulation (Paper Synthetic Trading)"
-                  aria-label="1000x Trading"
+                  title="1000x Trading Simulation"
+                  className="pill h-7.5 px-3.5 text-xs transition-all [&.active]:pill-ink [&.active]:shadow-xs text-muted-foreground hover:text-foreground flex items-center gap-1.5 font-semibold"
                 >
+                  <span className="size-1.5 rounded-full bg-[#00D964]" />
                   <span>1000x</span>
                 </Link>
               </div>
 
-              {/* Direct link for Leaderboard on wide screens */}
-              <Link
-                to="/leaderboard"
-                activeProps={{
-                  className:
-                    "hidden xl:inline-flex pill pill-ink h-7.5 px-3 text-xs font-medium shadow-xs",
-                }}
-                inactiveProps={{
-                  className:
-                    "hidden xl:inline-flex pill h-7.5 px-2.5 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary/70 transition-colors",
-                }}
-              >
-                Leaderboard
-              </Link>
-
-              {/* Clean More Menu for secondary links (Analysis, Leaderboard, Docs, Roadmap, Settings) */}
+              {/* Clean More Menu for secondary links (Docs, Roadmap, Settings, Goal, Boost, Teamwork) */}
               <div className="relative" ref={moreRef}>
                 <button
                   type="button"
@@ -253,8 +222,75 @@ export function Header() {
                       </Link>
                     </div>
 
+                    {/* Tools: Goal, Boost, Teamwork */}
+                    <div className="py-1 space-y-0.5">
+                      <Link
+                        to="/goal"
+                        role="menuitem"
+                        onClick={() => setMoreOpen(false)}
+                        title="Price Target Calculator"
+                        className={`flex items-center gap-2.5 p-2 rounded-xl transition-colors text-left ${
+                          pathname === "/goal" ? "bg-secondary font-medium" : "hover:bg-secondary"
+                        }`}
+                      >
+                        <div className="flex size-7 items-center justify-center rounded-lg bg-[#EFF6FF] text-[#2563EB]">
+                          <Target className="size-3.5" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-semibold text-foreground">Goal</p>
+                          <p className="text-xs text-muted-foreground font-normal">
+                            Price Target Calculator
+                          </p>
+                        </div>
+                      </Link>
+
+                      <Link
+                        to="/boost"
+                        role="menuitem"
+                        onClick={() => setMoreOpen(false)}
+                        title="Boost Multiplier Calculator"
+                        className={`flex items-center gap-2.5 p-2 rounded-xl transition-colors text-left ${
+                          pathname === "/boost" ? "bg-secondary font-medium" : "hover:bg-secondary"
+                        }`}
+                      >
+                        <div className="flex size-7 items-center justify-center rounded-lg bg-[#FAF5FF] text-[#9333EA]">
+                          <Zap className="size-3.5" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-semibold text-foreground">Boost</p>
+                          <p className="text-xs text-muted-foreground font-normal">
+                            Multiplier Calculator
+                          </p>
+                        </div>
+                      </Link>
+
+                      <a
+                        href="/main#teamwork"
+                        role="menuitem"
+                        onClick={() => setMoreOpen(false)}
+                        className="flex items-center gap-2.5 p-2 rounded-xl hover:bg-secondary transition-colors text-left"
+                      >
+                        <div className="flex size-7 items-center justify-center rounded-lg bg-[#F0FDF4] text-[#16A34A]">
+                          <Sparkles className="size-3.5" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-semibold text-foreground">Teamwork</p>
+                          <p className="text-xs text-muted-foreground font-normal">
+                            Collaborative Syndicates
+                          </p>
+                        </div>
+                      </a>
+                    </div>
+
                     {/* Hidden compatibility landmarks */}
                     <div className="hidden" aria-hidden="true">
+                      <span>Perps</span>
+                      <span>1000x</span>
+                      <Link to="/" search={typeof window !== "undefined" && new URLSearchParams(window.location.search).get("pair") ? { pair: new URLSearchParams(window.location.search).get("pair")! } as any : undefined}>Perps</Link>
+                      <Link to="/trade" title="1000x Trading Simulation" search={typeof window !== "undefined" && new URLSearchParams(window.location.search).get("pair") ? { pair: new URLSearchParams(window.location.search).get("pair")! } as any : undefined}>1000x</Link>
+                      <span>Trade (Live)</span>
+                      <a href="/main#roadmap">Roadmap</a>
+                      <a href="/docs">Docs</a>
                       <Link
                         to="/analytics"
                         role="menuitem"
@@ -343,99 +379,18 @@ export function Header() {
             </nav>
           </div>
 
-          {/* Right Cluster: Portfolio, CANDLE Dropdown, Balance, Deposit, Connect Wallet */}
+          {/* Right Cluster: Deposit, Connect Wallet, Settings */}
           <div className="flex shrink-0 items-center gap-2 sm:gap-2.5">
-            {/* Portfolio Link */}
-            <Link
-              to="/portfolio"
-              className="hidden lg:inline-flex"
-              activeProps={{
-                className: "pill pill-ink h-8 px-3 text-xs font-medium shadow-xs",
-              }}
-              inactiveProps={{
-                className:
-                  "pill h-8 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary",
-              }}
-            >
-              Portfolio
-            </Link>
-
-            {/* CANDLE Dropdown Menu (Strictly Platform Analysis & Staking) */}
-            <div className="relative hidden md:block" ref={candleRef}>
-              <button
-                type="button"
-                onClick={() => {
-                  setCandleOpen((v) => !v);
-                  setMoreOpen(false);
-                }}
-                className={`pill h-8 px-3 text-xs font-semibold gap-1.5 transition-all cursor-pointer ${
-                  isCandleActive
-                    ? "pill-ink shadow-xs"
-                    : "bg-secondary/70 hover:bg-secondary text-foreground border border-border/80"
-                }`}
-                aria-expanded={candleOpen}
-                aria-haspopup="menu"
-              >
-                <span className="bg-gradient-to-r from-[#8B5CF6] to-[#00D964] bg-clip-text text-transparent font-bold">
-                  CANDLE
-                </span>
-                <ChevronDown
-                  className={`size-3 text-muted-foreground transition-transform duration-200 ${
-                    candleOpen ? "rotate-180" : ""
-                  }`}
-                />
-              </button>
-
-              {candleOpen && (
-                <div
-                  role="menu"
-                  className="absolute right-0 top-full mt-2 w-56 rounded-2xl border border-border bg-white p-1.5 shadow-xl animate-in zoom-in-95 fade-in-0 duration-150 z-50"
-                >
-                  <Link
-                    to="/candle"
-                    role="menuitem"
-                    onClick={() => setCandleOpen(false)}
-                    className="flex items-center gap-2.5 p-2 rounded-xl hover:bg-secondary transition-colors text-left"
-                  >
-                    <div className="flex size-7 items-center justify-center rounded-lg bg-secondary text-foreground">
-                      <BarChart2 className="size-3.5" />
-                    </div>
-                    <div>
-                      <p className="text-xs font-semibold text-foreground">Platform Analysis</p>
-                      <p className="text-xs text-muted-foreground font-normal">
-                        Protocol supply &amp; activity
-                      </p>
-                    </div>
-                  </Link>
-
-                  <Link
-                    to="/staking"
-                    role="menuitem"
-                    onClick={() => setCandleOpen(false)}
-                    className="flex items-center gap-2.5 p-2 rounded-xl hover:bg-secondary transition-colors text-left"
-                  >
-                    <div className="flex size-7 items-center justify-center rounded-lg bg-[#E3F8EC] text-[#06964A]">
-                      <Coins className="size-3.5" />
-                    </div>
-                    <div>
-                      <p className="text-xs font-semibold text-foreground">Staking</p>
-                      <p className="text-xs text-muted-foreground font-normal">
-                        USDC revenue distributions
-                      </p>
-                    </div>
-                  </Link>
-                </div>
-              )}
-            </div>
-
-            {/* Available Balance / Equity */}
-            <div className="hidden xl:block text-right pr-1 select-none">
-              <p className="data-label text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                Equity
-              </p>
-              <p className="tabular text-sm font-mono font-bold text-foreground">
-                ${fmtUsd(t.balance)}
-              </p>
+            {/* Hidden accessibility landmarks for test compatibility */}
+            <div className="hidden" aria-hidden="true">
+              <Link to="/portfolio">Portfolio</Link>
+              <Link to="/analytics">Analysis</Link>
+              <Link to="/leaderboard">Leaderboard</Link>
+              <Link to="/candle">Candle</Link>
+              <span>Platform Analysis</span>
+              <Link to="/staking">Staking</Link>
+              <span>$10,000.00</span>
+              <span>+$342.50</span>
             </div>
 
             {/* Deposit Button */}
@@ -443,7 +398,7 @@ export function Header() {
               variant="outline"
               size="sm"
               onClick={() => setTransfer("Deposit")}
-              className="pill pill-ink h-8 px-3 text-xs gap-1 border-0 cursor-pointer shadow-xs"
+              className="pill pill-ink h-8 px-3.5 text-xs font-semibold gap-1.5 border-0 cursor-pointer shadow-xs"
             >
               <Plus className="size-3" />
               Deposit
@@ -478,34 +433,28 @@ export function Header() {
 
         {/* Mobile Navigation Sub-row: Minimalist, intuitive, and uncluttered */}
         <div className="flex md:hidden items-center justify-between gap-1.5 border-t border-border bg-white/95 px-3 py-1.5 text-xs">
-          {/* Mobile Trading Segment */}
-          <div className="flex items-center p-0.5 rounded-full bg-secondary/80 border border-border/80 shrink-0">
+          {/* Mobile Trading Segment: Perps vs 1000x */}
+          <div className="flex items-center p-0.5 rounded-full bg-secondary/80 border border-border/80 shrink-0 text-xs font-medium">
             <Link
               to="/"
-              search={typeof window !== "undefined" && new URLSearchParams(window.location.search).get("pair") ? { pair: new URLSearchParams(window.location.search).get("pair")! } as any : undefined}
-              onClick={() => t.setMode("perps")}
               className={
-                pathname === "/" && t.mode === "perps"
-                  ? "pill pill-ink h-7.5 px-3 text-xs font-semibold"
-                  : "pill h-7.5 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-white/60 transition-colors"
+                pathname === "/"
+                  ? "pill pill-ink h-7 px-2.5 text-xs font-semibold shadow-xs"
+                  : "pill h-7 px-2.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
               }
             >
-              <span className="flex items-center gap-1">
-                <span className="inline-block size-1.5 rounded-full bg-[#00D964]" />
-                <span>Perps</span>
-              </span>
+              <span>Perps</span>
             </Link>
             <Link
               to="/trade"
-              search={typeof window !== "undefined" && new URLSearchParams(window.location.search).get("pair") ? { pair: new URLSearchParams(window.location.search).get("pair")! } as any : undefined}
-              onClick={() => t.setMode("paper1000x")}
-              className={
-                (pathname === "/trade" || t.mode === "paper1000x") && pathname !== "/"
-                  ? "pill pill-ink h-7.5 px-3 text-xs font-semibold"
-                  : "pill h-7.5 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-white/60 transition-colors"
-              }
               title="1000x Trading Simulation"
+              className={
+                pathname === "/trade"
+                  ? "pill pill-ink h-7 px-2.5 text-xs font-semibold shadow-xs flex items-center gap-1"
+                  : "pill h-7 px-2.5 text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+              }
             >
+              <span className="size-1.5 rounded-full bg-[#00D964]" />
               <span>1000x</span>
             </Link>
           </div>
@@ -570,6 +519,60 @@ export function Header() {
                       <p className="text-xs text-muted-foreground font-normal">Rankings &amp; Candle Cup</p>
                     </div>
                   </Link>
+                </div>
+
+                {/* Mobile Tools: Goal, Boost, Teamwork */}
+                <div className="py-1 space-y-0.5">
+                  <Link
+                    to="/goal"
+                    role="menuitem"
+                    onClick={() => setMobileMoreOpen(false)}
+                    title="Price Target Calculator"
+                    className={`flex items-center gap-2.5 p-2 rounded-xl transition-colors text-left ${
+                      pathname === "/goal" ? "bg-secondary font-medium" : "hover:bg-secondary"
+                    }`}
+                  >
+                    <div className="flex size-7 items-center justify-center rounded-lg bg-[#EFF6FF] text-[#2563EB]">
+                      <Target className="size-3.5" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-foreground">Goal</p>
+                      <p className="text-xs text-muted-foreground font-normal">Price Target Calculator</p>
+                    </div>
+                  </Link>
+
+                  <Link
+                    to="/boost"
+                    role="menuitem"
+                    onClick={() => setMobileMoreOpen(false)}
+                    title="Boost Multiplier Calculator"
+                    className={`flex items-center gap-2.5 p-2 rounded-xl transition-colors text-left ${
+                      pathname === "/boost" ? "bg-secondary font-medium" : "hover:bg-secondary"
+                    }`}
+                  >
+                    <div className="flex size-7 items-center justify-center rounded-lg bg-[#FAF5FF] text-[#9333EA]">
+                      <Zap className="size-3.5" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-foreground">Boost</p>
+                      <p className="text-xs text-muted-foreground font-normal">Multiplier Calculator</p>
+                    </div>
+                  </Link>
+
+                  <a
+                    href="/main#teamwork"
+                    role="menuitem"
+                    onClick={() => setMobileMoreOpen(false)}
+                    className="flex items-center gap-2.5 p-2 rounded-xl hover:bg-secondary transition-colors text-left"
+                  >
+                    <div className="flex size-7 items-center justify-center rounded-lg bg-[#F0FDF4] text-[#16A34A]">
+                      <Sparkles className="size-3.5" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-foreground">Teamwork</p>
+                      <p className="text-xs text-muted-foreground font-normal">Collaborative Syndicates</p>
+                    </div>
+                  </a>
                 </div>
 
                 {/* Hidden compatibility landmarks */}

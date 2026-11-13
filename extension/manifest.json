@@ -1,0 +1,53 @@
+{
+  "manifest_version": 3,
+  "name": "Godcandle — Hyperliquid X Inspector",
+  "version": "1.0.0",
+  "description": "Inspect real-time Hyperliquid trader portfolios, live perps & spot positions directly on X/Twitter profiles.",
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "https://api.hyperliquid.xyz/*",
+    "wss://api.hyperliquid.xyz/*",
+    "https://twitter.com/*",
+    "https://x.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://twitter.com/*",
+        "https://x.com/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "action": {
+    "default_title": "Godcandle Hyperliquid Inspector",
+    "default_popup": "options.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["icons/*", "assets/*"],
+      "matches": ["https://twitter.com/*", "https://x.com/*"]
+    }
+  ]
+}

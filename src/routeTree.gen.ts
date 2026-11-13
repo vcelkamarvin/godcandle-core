@@ -18,6 +18,7 @@ import { Route as DocsRouteImport } from './routes/docs'
 import { Route as GoalRouteImport } from './routes/goal'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as MainRouteImport } from './routes/main'
+import { Route as PerpsRouteImport } from './routes/perps'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as StakingRouteImport } from './routes/staking'
@@ -26,6 +27,7 @@ import { Route as DocsIndexRouteImport } from './routes/docs/index'
 import { Route as DocsPoolRouteImport } from './routes/docs/pool'
 import { Route as DocsRulesRouteImport } from './routes/docs/rules'
 import { Route as DocsTokenRouteImport } from './routes/docs/token'
+import { Route as LeaderboardAddressRouteImport } from './routes/leaderboard.$address'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -72,6 +74,11 @@ const MainRoute = MainRouteImport.update({
   path: '/main',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PerpsRoute = PerpsRouteImport.update({
+  id: '/perps',
+  path: '/perps',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PortfolioRoute = PortfolioRouteImport.update({
   id: '/portfolio',
   path: '/portfolio',
@@ -112,6 +119,11 @@ const DocsTokenRoute = DocsTokenRouteImport.update({
   path: '/token',
   getParentRoute: () => DocsRoute,
 } as any)
+const LeaderboardAddressRoute = LeaderboardAddressRouteImport.update({
+  id: '/$address',
+  path: '/$address',
+  getParentRoute: () => LeaderboardRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -121,8 +133,9 @@ export interface FileRoutesByFullPath {
   '/cup': typeof CupRoute
   '/docs': typeof DocsRouteWithChildren
   '/goal': typeof GoalRoute
-  '/leaderboard': typeof LeaderboardRoute
+  '/leaderboard': typeof LeaderboardRouteWithChildren
   '/main': typeof MainRoute
+  '/perps': typeof PerpsRoute
   '/portfolio': typeof PortfolioRoute
   '/settings': typeof SettingsRoute
   '/staking': typeof StakingRoute
@@ -130,6 +143,7 @@ export interface FileRoutesByFullPath {
   '/docs/pool': typeof DocsPoolRoute
   '/docs/rules': typeof DocsRulesRoute
   '/docs/token': typeof DocsTokenRoute
+  '/leaderboard/$address': typeof LeaderboardAddressRoute
   '/docs/': typeof DocsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -139,8 +153,9 @@ export interface FileRoutesByTo {
   '/candle': typeof CandleRoute
   '/cup': typeof CupRoute
   '/goal': typeof GoalRoute
-  '/leaderboard': typeof LeaderboardRoute
+  '/leaderboard': typeof LeaderboardRouteWithChildren
   '/main': typeof MainRoute
+  '/perps': typeof PerpsRoute
   '/portfolio': typeof PortfolioRoute
   '/settings': typeof SettingsRoute
   '/staking': typeof StakingRoute
@@ -148,6 +163,7 @@ export interface FileRoutesByTo {
   '/docs/pool': typeof DocsPoolRoute
   '/docs/rules': typeof DocsRulesRoute
   '/docs/token': typeof DocsTokenRoute
+  '/leaderboard/$address': typeof LeaderboardAddressRoute
   '/docs': typeof DocsIndexRoute
 }
 export interface FileRoutesById {
@@ -159,8 +175,9 @@ export interface FileRoutesById {
   '/cup': typeof CupRoute
   '/docs': typeof DocsRouteWithChildren
   '/goal': typeof GoalRoute
-  '/leaderboard': typeof LeaderboardRoute
+  '/leaderboard': typeof LeaderboardRouteWithChildren
   '/main': typeof MainRoute
+  '/perps': typeof PerpsRoute
   '/portfolio': typeof PortfolioRoute
   '/settings': typeof SettingsRoute
   '/staking': typeof StakingRoute
@@ -168,6 +185,7 @@ export interface FileRoutesById {
   '/docs/pool': typeof DocsPoolRoute
   '/docs/rules': typeof DocsRulesRoute
   '/docs/token': typeof DocsTokenRoute
+  '/leaderboard/$address': typeof LeaderboardAddressRoute
   '/docs/': typeof DocsIndexRoute
 }
 export interface FileRouteTypes {
@@ -182,6 +200,7 @@ export interface FileRouteTypes {
     | '/goal'
     | '/leaderboard'
     | '/main'
+    | '/perps'
     | '/portfolio'
     | '/settings'
     | '/staking'
@@ -189,6 +208,7 @@ export interface FileRouteTypes {
     | '/docs/pool'
     | '/docs/rules'
     | '/docs/token'
+    | '/leaderboard/$address'
     | '/docs/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -200,6 +220,7 @@ export interface FileRouteTypes {
     | '/goal'
     | '/leaderboard'
     | '/main'
+    | '/perps'
     | '/portfolio'
     | '/settings'
     | '/staking'
@@ -207,6 +228,7 @@ export interface FileRouteTypes {
     | '/docs/pool'
     | '/docs/rules'
     | '/docs/token'
+    | '/leaderboard/$address'
     | '/docs'
   id:
     | '__root__'
@@ -219,6 +241,7 @@ export interface FileRouteTypes {
     | '/goal'
     | '/leaderboard'
     | '/main'
+    | '/perps'
     | '/portfolio'
     | '/settings'
     | '/staking'
@@ -226,6 +249,7 @@ export interface FileRouteTypes {
     | '/docs/pool'
     | '/docs/rules'
     | '/docs/token'
+    | '/leaderboard/$address'
     | '/docs/'
   fileRoutesById: FileRoutesById
 }
@@ -237,8 +261,9 @@ export interface RootRouteChildren {
   CupRoute: typeof CupRoute
   DocsRoute: typeof DocsRouteWithChildren
   GoalRoute: typeof GoalRoute
-  LeaderboardRoute: typeof LeaderboardRoute
+  LeaderboardRoute: typeof LeaderboardRouteWithChildren
   MainRoute: typeof MainRoute
+  PerpsRoute: typeof PerpsRoute
   PortfolioRoute: typeof PortfolioRoute
   SettingsRoute: typeof SettingsRoute
   StakingRoute: typeof StakingRoute
@@ -310,6 +335,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MainRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/perps': {
+      id: '/perps'
+      path: '/perps'
+      fullPath: '/perps'
+      preLoaderRoute: typeof PerpsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/portfolio': {
       id: '/portfolio'
       path: '/portfolio'
@@ -366,6 +398,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DocsTokenRouteImport
       parentRoute: typeof DocsRoute
     }
+    '/leaderboard/$address': {
+      id: '/leaderboard/$address'
+      path: '/$address'
+      fullPath: '/leaderboard/$address'
+      preLoaderRoute: typeof LeaderboardAddressRouteImport
+      parentRoute: typeof LeaderboardRoute
+    }
   }
 }
 
@@ -385,6 +424,18 @@ const DocsRouteChildren: DocsRouteChildren = {
 
 const DocsRouteWithChildren = DocsRoute._addFileChildren(DocsRouteChildren)
 
+interface LeaderboardRouteChildren {
+  LeaderboardAddressRoute: typeof LeaderboardAddressRoute
+}
+
+const LeaderboardRouteChildren: LeaderboardRouteChildren = {
+  LeaderboardAddressRoute: LeaderboardAddressRoute,
+}
+
+const LeaderboardRouteWithChildren = LeaderboardRoute._addFileChildren(
+  LeaderboardRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AnalyticsRoute: AnalyticsRoute,
@@ -393,8 +444,9 @@ const rootRouteChildren: RootRouteChildren = {
   CupRoute: CupRoute,
   DocsRoute: DocsRouteWithChildren,
   GoalRoute: GoalRoute,
-  LeaderboardRoute: LeaderboardRoute,
+  LeaderboardRoute: LeaderboardRouteWithChildren,
   MainRoute: MainRoute,
+  PerpsRoute: PerpsRoute,
   PortfolioRoute: PortfolioRoute,
   SettingsRoute: SettingsRoute,
   StakingRoute: StakingRoute,
