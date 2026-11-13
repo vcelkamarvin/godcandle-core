@@ -135,7 +135,7 @@ export function CorridorDeviationChart({
 
         {/* Market Switcher */}
         <div className="flex flex-wrap items-center gap-1.5">
-          {(["BTC", "ETH", "SOL", "HYPE", "SPX", "DOGE"] as MarketSymbol[]).map((sym) => (
+          {(["BTC", "ETH", "SOL", "HYPE", "SUI", "AVAX", "BNB", "LINK", "ARB", "DOGE", "OP", "TIA", "APT", "SPX"] as MarketSymbol[]).map((sym) => (
             <button
               key={sym}
               type="button"

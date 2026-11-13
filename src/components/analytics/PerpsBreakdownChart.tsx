@@ -13,9 +13,17 @@ const MARKET_COLORS: Record<MarketSymbol, string> = {
   BTC: "#0A0A0A",
   ETH: "#627EEA",
   SOL: "#14F195",
-  HYPE: "#CDC3F0",
+  HYPE: "#00E599",
   SPX: "#FF9500",
-  DOGE: "#FFD60A",
+  DOGE: "#C2A633",
+  SUI: "#2A82E4",
+  AVAX: "#E84142",
+  BNB: "#F3BA2F",
+  LINK: "#375BD2",
+  ARB: "#28A0F0",
+  OP: "#FF0420",
+  TIA: "#7B2BF9",
+  APT: "#111827",
 };
 
 export function PerpsBreakdownChart({

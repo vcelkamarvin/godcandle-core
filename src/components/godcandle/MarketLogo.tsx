@@ -9,6 +9,12 @@ export type SupportedCryptoSymbol =
   | "DOGE"
   | "AVAX"
   | "BNB"
+  | "SUI"
+  | "LINK"
+  | "ARB"
+  | "OP"
+  | "TIA"
+  | "APT"
   | string;
 
 interface MarketLogoProps {
@@ -187,6 +193,114 @@ export function MarketLogo({ symbol, size = 20, className = "" }: MarketLogoProp
               fill="#FFFFFF"
               d="M16 8l3.18 3.18-3.18 3.19-3.18-3.19L16 8zm-5.3 5.3l3.18 3.19-3.18 3.18-3.19-3.18 3.19-3.19zm10.6 0l3.19 3.19-3.19 3.18-3.18-3.18 3.18-3.19zM16 18.57l3.18 3.18L16 24.94l-3.18-3.19 3.18-3.18zm-2.08-2.08l2.08-2.08 2.08 2.08-2.08 2.08-2.08-2.08z"
             />
+          </svg>
+        </span>
+      );
+
+    case "SUI":
+      return (
+        <span
+          style={sizeStyle}
+          className={`inline-flex shrink-0 items-center justify-center rounded-full shadow-2xs overflow-hidden ${sizeClass} ${className}`}
+          title="Sui (SUI)"
+        >
+          <svg viewBox="0 0 32 32" className="size-full">
+            <defs>
+              <linearGradient id="sui-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#4DA2FF" />
+                <stop offset="100%" stopColor="#1E6FD9" />
+              </linearGradient>
+            </defs>
+            <circle cx="16" cy="16" r="16" fill="url(#sui-grad)" />
+            <path
+              fill="#FFFFFF"
+              d="M16 6.5c-3.8 5.8-6.5 10.5-6.5 14.3 0 3.7 2.9 6.7 6.5 6.7s6.5-3 6.5-6.7c0-3.8-2.7-8.5-6.5-14.3zm0 3.8c2.4 4.1 4.3 7.8 4.3 10.5 0 2.5-1.9 4.5-4.3 4.5s-4.3-2-4.3-4.5c0-2.7 1.9-6.4 4.3-10.5z"
+            />
+            <circle cx="16" cy="19.8" r="2.2" fill="#FFFFFF" />
+          </svg>
+        </span>
+      );
+
+    case "LINK":
+      return (
+        <span
+          style={sizeStyle}
+          className={`inline-flex shrink-0 items-center justify-center rounded-full shadow-2xs overflow-hidden ${sizeClass} ${className}`}
+          title="Chainlink (LINK)"
+        >
+          <svg viewBox="0 0 32 32" className="size-full">
+            <circle cx="16" cy="16" r="16" fill="#375BD2" />
+            <path
+              fill="#FFFFFF"
+              fillRule="evenodd"
+              d="M16 6.5l8.2 4.75v9.5L16 25.5l-8.2-4.75v-9.5L16 6.5zm0 3.5l-5.2 3v6l5.2 3 5.2-3v-6l-5.2-3z"
+            />
+          </svg>
+        </span>
+      );
+
+    case "ARB":
+      return (
+        <span
+          style={sizeStyle}
+          className={`inline-flex shrink-0 items-center justify-center rounded-full shadow-2xs overflow-hidden ${sizeClass} ${className}`}
+          title="Arbitrum (ARB)"
+        >
+          <svg viewBox="0 0 32 32" className="size-full">
+            <circle cx="16" cy="16" r="16" fill="#12AAFF" />
+            <path
+              fill="#FFFFFF"
+              d="M15.2 7.8a1 1 0 0 1 1.6 0l7.8 11.2a1 1 0 0 1-.8 1.5h-3.4a1 1 0 0 1-.8-.4l-3.6-5.2-3.6 5.2a1 1 0 0 1-.8.4H8.2a1 1 0 0 1-.8-1.5l7.8-11.2z"
+            />
+            <path fill="#28A0F0" d="M16 11.2l3.4 4.9h-6.8l3.4-4.9z" />
+          </svg>
+        </span>
+      );
+
+    case "OP":
+      return (
+        <span
+          style={sizeStyle}
+          className={`inline-flex shrink-0 items-center justify-center rounded-full shadow-2xs overflow-hidden ${sizeClass} ${className}`}
+          title="Optimism (OP)"
+        >
+          <svg viewBox="0 0 32 32" className="size-full">
+            <circle cx="16" cy="16" r="16" fill="#FF0420" />
+            <circle cx="11.5" cy="16" r="4.5" stroke="#FFFFFF" strokeWidth="2.5" fill="none" />
+            <path
+              fill="#FFFFFF"
+              d="M18.5 11.5h3.6a3.8 3.8 0 0 1 0 7.6h-2.1v3.4h-1.5v-11zm1.5 2.2v3.2h2.1a1.6 1.6 0 0 0 0-3.2H20z"
+            />
+          </svg>
+        </span>
+      );
+
+    case "TIA":
+      return (
+        <span
+          style={sizeStyle}
+          className={`inline-flex shrink-0 items-center justify-center rounded-full shadow-2xs overflow-hidden ${sizeClass} ${className}`}
+          title="Celestia (TIA)"
+        >
+          <svg viewBox="0 0 32 32" className="size-full">
+            <circle cx="16" cy="16" r="16" fill="#7B2BF9" />
+            <circle cx="16" cy="16" r="2.8" fill="#FFFFFF" />
+            <circle cx="16" cy="16" r="6" stroke="#FFFFFF" strokeWidth="1.8" strokeDasharray="3 2" fill="none" />
+            <circle cx="16" cy="16" r="9.5" stroke="#FFFFFF" strokeWidth="1.8" strokeDasharray="5 3" fill="none" />
+          </svg>
+        </span>
+      );
+
+    case "APT":
+      return (
+        <span
+          style={sizeStyle}
+          className={`inline-flex shrink-0 items-center justify-center rounded-full shadow-2xs overflow-hidden ${sizeClass} ${className}`}
+          title="Aptos (APT)"
+        >
+          <svg viewBox="0 0 32 32" className="size-full">
+            <circle cx="16" cy="16" r="16" fill="#111827" />
+            <path fill="#FFFFFF" d="M7 10.5h18a1 1 0 0 1 0 2H7a1 1 0 0 1 0-2zm2 5h14a1 1 0 0 1 0 2H9a1 1 0 0 1 0-2zm3 5h8a1 1 0 0 1 0 2h-8a1 1 0 0 1 0-2z" />
           </svg>
         </span>
       );

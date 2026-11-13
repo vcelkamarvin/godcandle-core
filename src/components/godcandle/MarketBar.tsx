@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { MARKETS, getMarket, type MarketSymbol, type Market } from "@/config/markets";
+import { MARKETS, ALL_MARKETS, getMarket, type MarketSymbol, type Market } from "@/config/markets";
 import { useTrading } from "./TradingProvider";
 import { MarketLogo } from "./MarketLogo";
 import { fmtUsd } from "@/lib/engine";
@@ -31,6 +31,14 @@ const VOLUMES_24H: Record<MarketSymbol, string> = {
   HYPE: "$168.2M",
   SPX: "$3.42B",
   DOGE: "$84.6M",
+  SUI: "$195.4M",
+  AVAX: "$124.8M",
+  BNB: "$210.6M",
+  LINK: "$78.2M",
+  ARB: "$64.5M",
+  OP: "$52.1M",
+  TIA: "$46.8M",
+  APT: "$58.3M",
 };
 
 const VOLUME_NUMERIC: Record<MarketSymbol, number> = {
@@ -40,6 +48,14 @@ const VOLUME_NUMERIC: Record<MarketSymbol, number> = {
   HYPE: 168200000,
   SPX: 3420000000,
   DOGE: 84600000,
+  SUI: 195400000,
+  AVAX: 124800000,
+  BNB: 210600000,
+  LINK: 78200000,
+  ARB: 64500000,
+  OP: 52100000,
+  TIA: 46800000,
+  APT: 58300000,
 };
 
 const OPEN_INTERESTS: Record<MarketSymbol, string> = {
@@ -49,6 +65,14 @@ const OPEN_INTERESTS: Record<MarketSymbol, string> = {
   HYPE: "$85M",
   SPX: "$1.4B",
   DOGE: "$42M",
+  SUI: "$98M",
+  AVAX: "$64M",
+  BNB: "$112M",
+  LINK: "$39M",
+  ARB: "$31M",
+  OP: "$26M",
+  TIA: "$22M",
+  APT: "$28M",
 };
 
 const OI_NUMERIC: Record<MarketSymbol, number> = {
@@ -58,6 +82,14 @@ const OI_NUMERIC: Record<MarketSymbol, number> = {
   HYPE: 85000000,
   SPX: 1400000000,
   DOGE: 42000000,
+  SUI: 98000000,
+  AVAX: 64000000,
+  BNB: 112000000,
+  LINK: 39000000,
+  ARB: 31000000,
+  OP: 26000000,
+  TIA: 22000000,
+  APT: 28000000,
 };
 
 const FUNDING_RATES: Record<MarketSymbol, string> = {
@@ -67,6 +99,14 @@ const FUNDING_RATES: Record<MarketSymbol, string> = {
   HYPE: "+0.0150% / 1h",
   SPX: "+0.0050% / 1h",
   DOGE: "+0.0100% / 1h",
+  SUI: "+0.0112% / 1h",
+  AVAX: "+0.0094% / 1h",
+  BNB: "+0.0068% / 1h",
+  LINK: "+0.0088% / 1h",
+  ARB: "+0.0105% / 1h",
+  OP: "+0.0098% / 1h",
+  TIA: "+0.0142% / 1h",
+  APT: "+0.0118% / 1h",
 };
 
 export interface MarketBarProps {
@@ -183,13 +223,13 @@ export function MarketBar({
   };
 
   const rows = useMemo(() => {
-    const filtered = MARKETS.filter((m) =>
+    const filtered = ALL_MARKETS.filter((m) =>
       `${m.symbol} ${m.name}`.toLowerCase().includes(query.trim().toLowerCase())
     ).filter((m) => {
       if (filter === "Favorites") return favorites.includes(m.symbol);
-      if (filter === "Majors") return ["BTC", "ETH", "SOL", "SPX"].includes(m.symbol);
+      if (filter === "Majors") return ["BTC", "ETH", "SOL", "SPX", "BNB", "AVAX"].includes(m.symbol);
       if (filter === "Memes") return ["DOGE"].includes(m.symbol);
-      if (filter === "New") return ["HYPE"].includes(m.symbol);
+      if (filter === "New") return ["HYPE", "SUI", "TIA", "APT", "ARB", "OP"].includes(m.symbol);
       return true;
     });
 

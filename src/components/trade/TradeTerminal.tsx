@@ -40,6 +40,14 @@ export const MARKETS: MarketDef[] = [
   { symbol: 'HYPE-USD', name: 'Hyperliquid', index: 3, maxLev: 10, corridorBps: 3.0, defaultPrice: 42.8 },
   { symbol: 'SPX-USD', name: 'S&P 500', index: 4, maxLev: 20, corridorBps: 1.5, defaultPrice: 6120.0 },
   { symbol: 'DOGE-USD', name: 'Dogecoin', index: 5, maxLev: 10, corridorBps: 3.0, defaultPrice: 0.164 },
+  { symbol: 'SUI-USD', name: 'Sui', index: 6, maxLev: 20, corridorBps: 1.5, defaultPrice: 2.15 },
+  { symbol: 'AVAX-USD', name: 'Avalanche', index: 7, maxLev: 20, corridorBps: 1.5, defaultPrice: 28.6 },
+  { symbol: 'BNB-USD', name: 'BNB', index: 8, maxLev: 20, corridorBps: 1.5, defaultPrice: 620.5 },
+  { symbol: 'LINK-USD', name: 'Chainlink', index: 9, maxLev: 20, corridorBps: 1.5, defaultPrice: 14.8 },
+  { symbol: 'ARB-USD', name: 'Arbitrum', index: 10, maxLev: 20, corridorBps: 1.5, defaultPrice: 0.62 },
+  { symbol: 'OP-USD', name: 'Optimism', index: 11, maxLev: 20, corridorBps: 1.5, defaultPrice: 1.75 },
+  { symbol: 'TIA-USD', name: 'Celestia', index: 12, maxLev: 20, corridorBps: 1.5, defaultPrice: 5.4 },
+  { symbol: 'APT-USD', name: 'Aptos', index: 13, maxLev: 20, corridorBps: 1.5, defaultPrice: 9.8 },
 ];
 
 const TIMEFRAMES = [
@@ -178,7 +186,7 @@ export function TradeTerminal() {
   };
 
   return (
-    <div className="mx-auto font-sans text-foreground space-y-1.5 max-w-[1920px] text-xs">
+    <div className="mx-auto font-sans text-foreground space-y-1.5 max-w-[1920px] text-xs 2xl:h-full 2xl:flex 2xl:flex-col 2xl:overflow-hidden">
       {/* 1. Market Bar: mark, 24h%, funding+countdown, OI, 24h vol, max lev, index/oracle on hover */}
       <MarketBar
         market={rawSymbol}
@@ -261,10 +269,10 @@ export function TradeTerminal() {
       </div>
 
       {/* 3 Columns: Chart (flex) | Book/Trades/Info (≈280px) | Order panel (≈340px) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 xl:grid-cols-[1fr_280px_340px] gap-2 items-start">
-        {/* Column 1: Chart Panel (flex, min 520px height) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 xl:grid-cols-[1fr_280px_340px] gap-2 items-start 2xl:flex-1 2xl:min-h-0 2xl:items-stretch">
+        {/* Column 1: Chart Panel (flex, min 500px height) */}
         <div
-          className={`lg:col-span-4 xl:col-auto flex flex-col min-h-[520px] bg-white rounded-2xl border border-border overflow-hidden shadow-xs ${
+          className={`lg:col-span-7 xl:col-auto flex flex-col min-h-[500px] 2xl:min-h-0 2xl:h-full bg-white rounded-2xl border border-border overflow-hidden shadow-xs ${
             isFullscreen ? 'fixed inset-2 z-50 min-h-[calc(100vh-16px)]' : ''
           } ${mobileTab === 'trade' ? 'hidden lg:flex' : 'flex'}`}
         >
@@ -404,8 +412,8 @@ export function TradeTerminal() {
 
         {/* Column 2: Book / Trades / Info (≈280px) */}
         <div
-          className={`lg:col-span-3 xl:col-auto w-full xl:w-[280px] h-[520px] shrink-0 ${
-            mobileTab === 'trade' ? 'hidden lg:block' : 'hidden lg:block'
+          className={`hidden xl:block w-full xl:w-[280px] h-[520px] 2xl:h-full 2xl:min-h-0 shrink-0 ${
+            mobileTab === 'trade' ? 'hidden' : 'hidden xl:block'
           }`}
         >
           <MarketBookTradesInfo
@@ -421,7 +429,7 @@ export function TradeTerminal() {
 
         {/* Column 3: Order Panel (≈340px) */}
         <div
-          className={`lg:col-span-5 xl:col-auto w-full xl:w-[340px] shrink-0 ${
+          className={`lg:col-span-5 xl:col-auto w-full xl:w-[340px] shrink-0 2xl:h-full 2xl:overflow-y-auto 2xl:min-h-0 ${
             mobileTab === 'chart' ? 'hidden lg:block' : 'block'
           }`}
         >
@@ -442,7 +450,7 @@ export function TradeTerminal() {
       </div>
 
       {/* 4. Bottom Tabs: Positions · Orders · Fills · Funding · Balances · Account Strip */}
-      <div className="mt-2">
+      <div className="mt-2 shrink-0 2xl:max-h-[220px] 2xl:overflow-y-auto">
         <Dock
           feeds={t?.feeds || ({} as any)}
           open={t?.positions || []}

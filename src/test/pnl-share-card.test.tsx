@@ -28,7 +28,7 @@ describe("PnL Share Card Structure & Specification", () => {
   const modalPath = path.resolve(__dirname, "../components/godcandle/ShareModal.tsx");
   const modalContent = fs.readFileSync(modalPath, "utf-8");
 
-  it("features Apple 16:10 aspect ratio and refined Quantyn aesthetic", () => {
+  it("features Apple 16:10 aspect ratio and refined godcandle aesthetic", () => {
     expect(modalContent).toContain("aspect-[16/10]");
     expect(modalContent).toContain("1600 × 1000 px");
     expect(modalContent).toContain("Editorial 16:10 Apple-inspired outcome card");

@@ -106,6 +106,14 @@ const BASELINE_PRICES: Record<MarketSymbol, { mark: number; vlm: number; oi: num
   HYPE: { mark: 38.4, vlm: 145900000, oi: 94200000, funding: 0.00002 },
   SPX: { mark: 6120.0, vlm: 104200000, oi: 56300000, funding: 0.000005 },
   DOGE: { mark: 0.164, vlm: 68400000, oi: 42100000, funding: 0.000018 },
+  SUI: { mark: 2.15, vlm: 195400000, oi: 98000000, funding: 0.0000112 },
+  AVAX: { mark: 28.6, vlm: 124800000, oi: 64000000, funding: 0.0000094 },
+  BNB: { mark: 620.5, vlm: 210600000, oi: 112000000, funding: 0.0000068 },
+  LINK: { mark: 14.8, vlm: 78200000, oi: 39000000, funding: 0.0000088 },
+  ARB: { mark: 0.62, vlm: 64500000, oi: 31000000, funding: 0.0000105 },
+  OP: { mark: 1.75, vlm: 52100000, oi: 26000000, funding: 0.0000098 },
+  TIA: { mark: 5.4, vlm: 46800000, oi: 22000000, funding: 0.0000142 },
+  APT: { mark: 9.8, vlm: 58300000, oi: 28000000, funding: 0.0000118 },
 };
 
 export function generateCorridorTicks(

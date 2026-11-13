@@ -1,11 +1,11 @@
-import { MARKETS, type MarketSymbol } from "@/config/markets";
+import { MARKETS, ALL_MARKETS, type MarketSymbol } from "@/config/markets";
 import { pnlOf, liquidation, type ClosedTrade, type Position } from "./engine";
 export const INITIAL_BALANCE = 4823;
 export const DEMO_BALANCE = 10000;
 export interface Tick { t: number; p: number }
 // 24h of coarse synthetic history (15s steps) plus a fine 60s tail (200ms steps)
 // so chart timeframes from 1m up to 1D all have data to draw.
-export const createBuffers = (now: number) => Object.fromEntries(MARKETS.map(m => {
+export const createBuffers = (now: number) => Object.fromEntries(ALL_MARKETS.map(m => {
   const ticks: Tick[] = [];
   let p = m.basePrice * (1 + (Math.random() - .5) * .02);
   for (let t = now - 24 * 3600 * 1000; t <= now - 60000; t += 15000) {

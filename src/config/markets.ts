@@ -1,7 +1,21 @@
 import { createElement, type ReactNode } from "react";
 import { MarketLogo } from "@/components/godcandle/MarketLogo";
 
-export type MarketSymbol = "BTC" | "ETH" | "SPX" | "SOL" | "HYPE" | "DOGE";
+export type MarketSymbol =
+  | "BTC"
+  | "ETH"
+  | "SPX"
+  | "SOL"
+  | "HYPE"
+  | "DOGE"
+  | "SUI"
+  | "AVAX"
+  | "BNB"
+  | "LINK"
+  | "ARB"
+  | "OP"
+  | "TIA"
+  | "APT";
 export type MarketStatus = "open" | "closed" | "paused";
 
 export interface Market {
@@ -43,7 +57,7 @@ const make = (
   status: "open",
 });
 
-export const MARKETS: Market[] = [
+export const CORE_MARKETS: Market[] = [
   make("BTC", "Bitcoin", 64300, 2, 1000, 0.000028),
   make("ETH", "Ethereum", 3450, 2, 1000, 0.00004),
   make("SPX", "S&P 500", 6120, 2, 500, 0.00002),
@@ -52,9 +66,23 @@ export const MARKETS: Market[] = [
   make("DOGE", "Dogecoin", 0.143, 5, 50, 0.00015),
 ];
 
+export const MARKETS: Market[] = CORE_MARKETS;
+
+export const ALL_MARKETS: Market[] = [
+  ...CORE_MARKETS,
+  make("SUI", "Sui", 2.15, 4, 50, 0.00018),
+  make("AVAX", "Avalanche", 28.6, 3, 50, 0.00015),
+  make("BNB", "BNB", 620.5, 2, 50, 0.00008),
+  make("LINK", "Chainlink", 14.8, 3, 50, 0.00012),
+  make("ARB", "Arbitrum", 0.62, 4, 50, 0.0002),
+  make("OP", "Optimism", 1.75, 4, 50, 0.00018),
+  make("TIA", "Celestia", 5.4, 3, 50, 0.00022),
+  make("APT", "Aptos", 9.8, 3, 50, 0.00018),
+];
+
 export const getMarket = (symbol: string): Market => {
   const clean = (symbol || "BTC").replace("-USD", "") as MarketSymbol;
-  const market = MARKETS.find((m) => m.symbol === symbol || m.symbol === clean);
+  const market = ALL_MARKETS.find((m) => m.symbol === symbol || m.symbol === clean);
   if (market) return market;
   return make(clean, clean, 100, 2, 1000, 0.0001);
 };

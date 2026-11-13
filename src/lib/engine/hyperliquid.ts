@@ -240,6 +240,14 @@ export class HyperliquidEngine implements TradingEngine {
         { symbol: "HYPE-USD", name: "Hyperliquid", index: 3, maxLeverage: 10, szDecimals: 2, corridorBps: 3.0, defaultPrice: 42.8 },
         { symbol: "SPX-USD", name: "S&P 500", index: 4, maxLeverage: 20, szDecimals: 2, corridorBps: 1.5, defaultPrice: 6120.0 },
         { symbol: "DOGE-USD", name: "Dogecoin", index: 5, maxLeverage: 10, szDecimals: 0, corridorBps: 3.0, defaultPrice: 0.164 },
+        { symbol: "SUI-USD", name: "Sui", index: 6, maxLeverage: 20, szDecimals: 1, corridorBps: 1.5, defaultPrice: 2.15 },
+        { symbol: "AVAX-USD", name: "Avalanche", index: 7, maxLeverage: 20, szDecimals: 2, corridorBps: 1.5, defaultPrice: 28.6 },
+        { symbol: "BNB-USD", name: "BNB", index: 8, maxLeverage: 20, szDecimals: 3, corridorBps: 1.5, defaultPrice: 620.5 },
+        { symbol: "LINK-USD", name: "Chainlink", index: 9, maxLeverage: 20, szDecimals: 2, corridorBps: 1.5, defaultPrice: 14.8 },
+        { symbol: "ARB-USD", name: "Arbitrum", index: 10, maxLeverage: 20, szDecimals: 1, corridorBps: 1.5, defaultPrice: 0.62 },
+        { symbol: "OP-USD", name: "Optimism", index: 11, maxLeverage: 20, szDecimals: 1, corridorBps: 1.5, defaultPrice: 1.75 },
+        { symbol: "TIA-USD", name: "Celestia", index: 12, maxLeverage: 20, szDecimals: 1, corridorBps: 1.5, defaultPrice: 5.4 },
+        { symbol: "APT-USD", name: "Aptos", index: 13, maxLeverage: 20, szDecimals: 2, corridorBps: 1.5, defaultPrice: 9.8 },
       ];
     }
 

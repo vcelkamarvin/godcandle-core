@@ -124,13 +124,13 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link to="/goal" className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5">
-                  <span>Price Target Goal</span>
+                <Link to="/analytics" className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5">
+                  <span>Protocol Analytics</span>
                 </Link>
               </li>
               <li>
-                <Link to="/boost" className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5">
-                  <span>Boost Multiplier</span>
+                <Link to="/trade" className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5">
+                  <span>Perpetual Terminal</span>
                 </Link>
               </li>
               <li>

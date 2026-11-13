@@ -11,6 +11,7 @@ import { HousePoolSolvencyChart } from "@/components/analytics/HousePoolSolvency
 import { CorridorDeviationChart } from "@/components/analytics/CorridorDeviationChart";
 import { PerpsBreakdownChart } from "@/components/analytics/PerpsBreakdownChart";
 import { FeeWaterfallChart } from "@/components/analytics/FeeWaterfallChart";
+import { FundingMatrix } from "@/components/analytics/FundingMatrix";
 import { analysisSeries, revenueSeries } from "@/lib/design-data";
 import { fmtUsd } from "@/lib/engine";
 import { RefreshCw, ShieldCheck, Zap, Activity } from "lucide-react";
@@ -38,6 +39,7 @@ export const Route = createFileRoute("/analytics")({
 });
 
 type AnalyticsTab =
+  | "Matrix"
   | "Solvency"
   | "Corridor"
   | "Perps"
@@ -46,7 +48,7 @@ type AnalyticsTab =
 
 function AnalyticsPage() {
   const [selectedMarket, setSelectedMarket] = useState<MarketSymbol>("BTC");
-  const [activeTab, setActiveTab] = useState<AnalyticsTab>("Solvency");
+  const [activeTab, setActiveTab] = useState<AnalyticsTab>("Matrix");
   const [heatmapPeriod, setHeatmapPeriod] = useState("1d");
 
   const t = useTrading();
@@ -276,11 +278,12 @@ function AnalyticsPage() {
           <div className="flex flex-wrap gap-1">
             {(
               [
+                ["Matrix", "Rates & Funding Matrix"],
                 ["Solvency", "House Pool & Solvency"],
                 ["Corridor", "Telemetry & Deviation"],
-                ["Perps", "Perps Volume & OI Breakdown"],
-                ["Waterfall", "Fee Waterfall Distribution"],
-                ["Heatmap", "Liquidity Heatmap & Depth"],
+                ["Perps", "Volume & OI Breakdown"],
+                ["Waterfall", "Fee Waterfall"],
+                ["Heatmap", "Liquidity Depth"],
               ] as const
             ).map(([tabKey, label]) => (
               <button
@@ -308,6 +311,13 @@ function AnalyticsPage() {
         <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_310px]">
           {/* Left Column: Active Technical Chart */}
           <div className="min-w-0 space-y-3">
+            {activeTab === "Matrix" && (
+              <FundingMatrix
+                feeds={t.feeds || {}}
+                onSelectMarket={(sym) => setSelectedMarket(sym)}
+              />
+            )}
+
             {activeTab === "Solvency" && (
               <HousePoolSolvencyChart
                 currentTvl={solvency.tvlUsd}
