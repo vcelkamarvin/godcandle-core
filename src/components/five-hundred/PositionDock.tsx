@@ -16,8 +16,10 @@ import {
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import {
+  type MarketSymbol,
   type PositionRecord,
   type TradeHistoryRecord,
+  MARKETS,
   formatPnl,
   formatPct,
   formatUsd,
@@ -52,6 +54,12 @@ export function PositionDock({
   const [activeTab, setActiveTab] = useState<"open" | "history" | "stats">("open");
   const [editingTargetId, setEditingTargetId] = useState<string | null>(null);
   const [tempTargetInput, setTempTargetInput] = useState<string>("");
+
+  const formatAssetPrice = (symbol: MarketSymbol, price: number): string => {
+    const m = MARKETS[symbol];
+    if (m) return m.formatPrice(price);
+    return `$${price.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  };
 
   // Live timer tick for "Time Open" display
   const [, setTimerTick] = useState(0);
@@ -341,27 +349,25 @@ export function PositionDock({
                         <div>
                           <span className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground block">ENTRY</span>
                           <span className="text-foreground font-semibold text-[12px] sm:text-[13px]">
-                            ${Math.round(pos.entryPrice).toLocaleString("en-US")}
+                            {formatAssetPrice(pos.symbol, pos.entryPrice)}
                           </span>
                         </div>
                         <div>
                           <span className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground block">MARK</span>
                           <span className="text-foreground font-semibold text-[12px] sm:text-[13px]">
-                            ${Math.round(mark).toLocaleString("en-US")}
+                            {formatAssetPrice(pos.symbol, mark)}
                           </span>
                         </div>
                         <div>
                           <span className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground block">LIQ PRICE</span>
                           <span className="text-[#D92D45] font-bold text-[12px] sm:text-[13px]">
-                            ${Math.round(pos.liqPrice).toLocaleString("en-US")}
+                            {formatAssetPrice(pos.symbol, pos.liqPrice)}
                           </span>
                         </div>
                         <div>
                           <span className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground block">TARGET</span>
                           <span className="text-[#087F4D] font-semibold text-[12px] sm:text-[13px]">
-                            {pos.targetPrice
-                              ? `$${Math.round(pos.targetPrice).toLocaleString("en-US")}`
-                              : "None"}
+                            {pos.targetPrice ? formatAssetPrice(pos.symbol, pos.targetPrice) : "None"}
                           </span>
                         </div>
                         <div>
@@ -495,8 +501,8 @@ export function PositionDock({
                       </td>
                       <td className="text-foreground">{row.leverage}x</td>
                       <td className="text-muted-foreground">
-                        ${row.entryPrice.toLocaleString("en-US")} → $
-                        {row.exitPrice.toLocaleString("en-US")}
+                        {formatAssetPrice(row.symbol, row.entryPrice)} →{" "}
+                        {formatAssetPrice(row.symbol, row.exitPrice)}
                       </td>
                       <td
                         className={cn("font-bold", isProfit ? "text-[#087F4D]" : "text-[#D92D45]")}

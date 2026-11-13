@@ -1218,10 +1218,12 @@ export function FiveHundredXPage() {
                         disabled={isMarketClosed}
                         onClick={() => handleOpenPosition("long")}
                         className={cn(
-                          "group relative h-[48px] rounded-full text-[13px] font-bold overflow-hidden flex flex-col items-center justify-center transition-all shadow-[0_2px_12px_rgba(8,127,77,0.25)] active:scale-98 cursor-pointer",
+                          "group relative h-[48px] rounded-full text-[13px] font-bold overflow-hidden flex flex-col items-center justify-center transition-all active:scale-98 cursor-pointer",
                           isMarketClosed
                             ? "bg-[var(--surface-3,#e6e8ec)] text-[var(--text-tertiary,#747482)] cursor-not-allowed opacity-60 shadow-none"
-                            : "bg-[#087F4D] hover:bg-[#076B41] text-white",
+                            : side === "long"
+                              ? "bg-[#087F4D] hover:bg-[#076B41] text-white shadow-[0_4px_16px_rgba(8,127,77,0.35)] ring-2 ring-[#087F4D] ring-offset-2"
+                              : "bg-[#087F4D]/10 hover:bg-[#087F4D]/20 text-[#087F4D] border border-[#087F4D]/30 shadow-none",
                         )}
                         title={`Execute 1-Click Long ${marketSymbol} with $${stake} stake`}
                       >
@@ -1229,7 +1231,12 @@ export function FiveHundredXPage() {
                           <ArrowUpRight className="size-4" />
                           <span>Buy / Long</span>
                         </div>
-                        <span className="text-[10px] font-normal opacity-90 font-mono mt-0.5">
+                        <span
+                          className={cn(
+                            "text-[10px] font-normal font-mono mt-0.5",
+                            side === "long" ? "text-white/90" : "text-[#087F4D]/80",
+                          )}
+                        >
                           +1% move = +${(stake * leverage * 0.01).toFixed(0)}
                         </span>
                       </button>
@@ -1239,10 +1246,12 @@ export function FiveHundredXPage() {
                         disabled={isMarketClosed}
                         onClick={() => handleOpenPosition("short")}
                         className={cn(
-                          "group relative h-[48px] rounded-full text-[13px] font-bold overflow-hidden flex flex-col items-center justify-center transition-all shadow-[0_2px_12px_rgba(217,45,69,0.25)] active:scale-98 cursor-pointer",
+                          "group relative h-[48px] rounded-full text-[13px] font-bold overflow-hidden flex flex-col items-center justify-center transition-all active:scale-98 cursor-pointer",
                           isMarketClosed
                             ? "bg-[var(--surface-3,#e6e8ec)] text-[var(--text-tertiary,#747482)] cursor-not-allowed opacity-60 shadow-none"
-                            : "bg-[#D92D45] hover:bg-[#B91C33] text-white",
+                            : side === "short"
+                              ? "bg-[#D92D45] hover:bg-[#B91C33] text-white shadow-[0_4px_16px_rgba(217,45,69,0.35)] ring-2 ring-[#D92D45] ring-offset-2"
+                              : "bg-[#D92D45]/10 hover:bg-[#D92D45]/20 text-[#D92D45] border border-[#D92D45]/30 shadow-none",
                         )}
                         title={`Execute 1-Click Short ${marketSymbol} with $${stake} stake`}
                       >
@@ -1250,7 +1259,12 @@ export function FiveHundredXPage() {
                           <ArrowDownRight className="size-4" />
                           <span>Sell / Short</span>
                         </div>
-                        <span className="text-[10px] font-normal opacity-90 font-mono mt-0.5">
+                        <span
+                          className={cn(
+                            "text-[10px] font-normal font-mono mt-0.5",
+                            side === "short" ? "text-white/90" : "text-[#D92D45]/80",
+                          )}
+                        >
                           -1% move = +${(stake * leverage * 0.01).toFixed(0)}
                         </span>
                       </button>
@@ -1339,69 +1353,69 @@ export function FiveHundredXPage() {
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-[12px] animate-in fade-in duration-150"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-md animate-in fade-in duration-150"
           onClick={() => setReviewModalOpen(false)}
         >
           <div
-            className="w-full max-w-[420px] rounded-[24px] bg-[#14161B] border border-white/[0.08] p-6 shadow-2xl space-y-4 text-white animate-in zoom-in-95 duration-150"
+            className="w-full max-w-[420px] rounded-[24px] bg-white border border-border p-6 shadow-2xl space-y-4 text-foreground animate-in zoom-in-95 duration-150"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
-              <h3 className="text-[18px] font-semibold">Confirm order</h3>
-              <span className="text-[13px] text-[#6FB2F7] uppercase tracking-wider font-mono font-bold">
+            <div className="flex items-center justify-between border-b border-border/80 pb-3">
+              <h3 className="text-[17px] font-bold text-foreground">Confirm order</h3>
+              <span className="text-[12px] text-[#2563EB] bg-[#EFF6FF] px-2.5 py-0.5 rounded-full border border-[#2563EB]/20 uppercase tracking-wider font-mono font-bold">
                 {leverage}x
               </span>
             </div>
 
-            <div className="divide-y divide-white/[0.06] text-[14px]">
+            <div className="divide-y divide-border/60 text-[13px] font-mono">
               <div className="flex items-center justify-between py-2">
-                <span className="text-[#9A9CA3]">Market</span>
-                <span className="font-medium">{market.symbol} / USD</span>
+                <span className="text-muted-foreground font-sans">Market</span>
+                <span className="font-semibold text-foreground">{market.symbol} / USD</span>
               </div>
               <div className="flex items-center justify-between py-2">
-                <span className="text-[#9A9CA3]">Side</span>
+                <span className="text-muted-foreground font-sans">Side</span>
                 <span
                   className={cn(
                     "font-bold capitalize font-mono",
-                    side === "long" ? "text-[#00E599]" : "text-[#FF4343]",
+                    side === "long" ? "text-[#087F4D]" : "text-[#D92D45]",
                   )}
                 >
                   {side}
                 </span>
               </div>
               <div className="flex items-center justify-between py-2">
-                <span className="text-[#9A9CA3]">Stake</span>
-                <span className="font-medium tabular-nums font-mono">${stake}</span>
+                <span className="text-muted-foreground font-sans">Stake</span>
+                <span className="font-semibold tabular-nums text-foreground">${stake}</span>
               </div>
               <div className="flex items-center justify-between py-2">
-                <span className="text-[#9A9CA3]">Leverage</span>
-                <span className="font-bold tabular-nums font-mono text-[#3A63E6]">{leverage}x</span>
+                <span className="text-muted-foreground font-sans">Leverage</span>
+                <span className="font-bold tabular-nums text-[#2563EB]">{leverage}x</span>
               </div>
               <div className="flex items-center justify-between py-2">
-                <span className="text-[#9A9CA3]">Notional</span>
-                <span className="font-medium tabular-nums font-mono">{formatUsd(notional)}</span>
+                <span className="text-muted-foreground font-sans">Notional</span>
+                <span className="font-semibold tabular-nums text-foreground">{formatUsd(notional)}</span>
               </div>
               <div className="flex items-center justify-between py-2">
-                <span className="text-[#9A9CA3]">Liquidates at</span>
-                <span className="font-bold tabular-nums font-mono text-[#FF4343]">
-                  {market.symbol} {market.formatPrice(liqPrice)} · {liqDistancePct.toFixed(2)}%
+                <span className="text-muted-foreground font-sans">Liquidates at</span>
+                <span className="font-bold tabular-nums text-[#D92D45]">
+                  {market.symbol} {market.formatPrice(liqPrice)} · ±{liqDistancePct.toFixed(2)}%
                 </span>
               </div>
               <div className="flex items-center justify-between py-2">
-                <span className="text-[#9A9CA3]">Fee / spread</span>
-                <span className="font-medium tabular-nums font-mono">0.04% (simulated)</span>
+                <span className="text-muted-foreground font-sans">Fee / spread</span>
+                <span className="font-medium tabular-nums text-foreground">0.04% (simulated)</span>
               </div>
             </div>
 
             {/* Risk Checkbox */}
-            <label className="flex items-start gap-3 pt-2 cursor-pointer select-none">
+            <label className="flex items-start gap-3 pt-1 cursor-pointer select-none">
               <input
                 type="checkbox"
                 checked={confirmedRiskCheck}
                 onChange={(e) => setConfirmedRiskCheck(e.target.checked)}
-                className="mt-0.5 size-4 rounded bg-[#191B22] border-white/20 text-[#3A63E6] focus:ring-0 cursor-pointer"
+                className="mt-0.5 size-4 rounded border-border text-[#2563EB] focus:ring-0 cursor-pointer accent-[#2563EB]"
               />
-              <span className="text-[13px] text-[#9A9CA3] leading-snug">
+              <span className="text-[12px] text-muted-foreground leading-snug">
                 I understand I can lose my full stake (${stake}) if the price moves{" "}
                 {liqDistancePct.toFixed(2)}% against me.
               </span>
@@ -1417,10 +1431,12 @@ export function FiveHundredXPage() {
                   handleOpenPosition();
                 }}
                 className={cn(
-                  "w-full h-[50px] rounded-full text-[15px] font-bold transition-all flex items-center justify-center",
+                  "w-full h-[46px] rounded-full text-[14px] font-bold transition-all flex items-center justify-center shadow-xs",
                   confirmedRiskCheck
-                    ? "bg-[#3A63E6] hover:bg-[#2B52D4] text-white cursor-pointer shadow-[0_4px_20px_rgba(58,99,230,0.5)]"
-                    : "bg-[#1E2028] text-[#6B6D73] cursor-not-allowed opacity-50",
+                    ? side === "long"
+                      ? "bg-[#087F4D] hover:bg-[#076B41] text-white cursor-pointer shadow-[0_2px_12px_rgba(8,127,77,0.25)]"
+                      : "bg-[#D92D45] hover:bg-[#B91C33] text-white cursor-pointer shadow-[0_2px_12px_rgba(217,45,69,0.25)]"
+                    : "bg-secondary text-muted-foreground cursor-not-allowed opacity-50",
                 )}
               >
                 Place order
@@ -1428,7 +1444,7 @@ export function FiveHundredXPage() {
               <button
                 type="button"
                 onClick={() => setReviewModalOpen(false)}
-                className="w-full text-center py-2 text-[14px] text-[#9A9CA3] hover:text-white transition-colors cursor-pointer"
+                className="w-full text-center py-1.5 text-[13px] text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
               >
                 Cancel
               </button>

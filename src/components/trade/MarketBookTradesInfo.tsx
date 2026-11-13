@@ -85,13 +85,13 @@ export function MarketBookTradesInfo({
     return { bids, asks };
   }, [book, currentPrice, szDecimals]);
 
-  // 12 levels per side
+  // Balanced levels per side to fit container cleanly
   const topAsks = useMemo(() => {
-    return displayBook.asks.slice(0, 12).reverse();
+    return displayBook.asks.slice(0, 9).reverse();
   }, [displayBook.asks]);
 
   const topBids = useMemo(() => {
-    return displayBook.bids.slice(0, 12);
+    return displayBook.bids.slice(0, 9);
   }, [displayBook.bids]);
 
   // Cumulative depth and totals

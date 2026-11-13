@@ -317,7 +317,7 @@ export function MarketBar({
               variant="terminal"
               onClick={() => setOpen(true)}
               aria-label="Choose market"
-              className="pill pill-ink h-9.5 shrink-0 rounded-xl px-3 gap-2 hover:opacity-90 transition-opacity cursor-pointer shadow-xs"
+              className="pill pill-ink h-9 shrink-0 rounded-xl px-3 gap-2 hover:opacity-90 transition-opacity cursor-pointer shadow-xs"
             >
               <MarketLogo symbol={market} size={18} />
               <div className="flex items-center gap-1.5 text-left">
@@ -356,30 +356,30 @@ export function MarketBar({
             </div>
 
             {/* Inline Market Telemetry: Clean Balanced Strip with Generous Breathing Room */}
-            <div className="hidden md:flex items-center gap-4 lg:gap-6 text-xs font-mono pl-3.5 border-l border-border/70 text-foreground select-none">
+            <div className="hidden md:flex items-center gap-4 lg:gap-5 text-xs font-mono pl-3.5 border-l border-border/70 text-foreground select-none">
               <div>
-                <span className="block text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">Funding</span>
-                <span className="tabular font-semibold text-[#06964A] text-[13px]">
+                <span className="block text-[10.5px] uppercase tracking-wider text-muted-foreground font-semibold">Funding</span>
+                <span className="tabular font-semibold text-[#06964A] text-[12.5px] sm:text-[13px]">
                   {fundingRate.replace(' / 1h', '')} <span className="text-[10px] text-muted-foreground font-normal">({Math.floor(60 - (Date.now() / 60000) % 60)}m)</span>
                 </span>
               </div>
               <div>
-                <span className="block text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">24h Vol</span>
-                <span className="tabular font-semibold text-foreground text-[13px]">{volume24h}</span>
+                <span className="block text-[10.5px] uppercase tracking-wider text-muted-foreground font-semibold">24h Vol</span>
+                <span className="tabular font-semibold text-foreground text-[12.5px] sm:text-[13px]">{volume24h}</span>
               </div>
               <div className="hidden lg:block">
-                <span className="block text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">Open Interest</span>
-                <span className="tabular font-semibold text-foreground text-[13px]">{OPEN_INTERESTS[market] || "$120M"}</span>
+                <span className="block text-[10.5px] uppercase tracking-wider text-muted-foreground font-semibold">Open Interest</span>
+                <span className="tabular font-semibold text-foreground text-[12.5px] sm:text-[13px]">{OPEN_INTERESTS[market] || "$120M"}</span>
               </div>
               <div className="hidden xl:block">
-                <span className="block text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">Max Leverage</span>
-                <span className="tabular font-semibold text-foreground text-[13px]">
+                <span className="block text-[10.5px] uppercase tracking-wider text-muted-foreground font-semibold">Max Leverage</span>
+                <span className="tabular font-semibold text-foreground text-[12.5px] sm:text-[13px]">
                   {is1000x ? '1000×' : `${getMarket(market).maxLeverage}×`}
                 </span>
               </div>
               <div className="hidden 2xl:block">
-                <span className="block text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">24h Low / High</span>
-                <span className="tabular font-semibold text-foreground text-[13px]">
+                <span className="block text-[10.5px] uppercase tracking-wider text-muted-foreground font-semibold">24h Low / High</span>
+                <span className="tabular font-semibold text-foreground text-[12.5px] sm:text-[13px]">
                   ${fmtUsd(low24h, 1)} / ${fmtUsd(high24h, 1)}
                 </span>
               </div>

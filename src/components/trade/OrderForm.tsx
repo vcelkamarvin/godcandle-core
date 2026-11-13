@@ -559,10 +559,10 @@ export function OrderForm({
       {/* 3. LEVERAGE Selector Card with Ruler & Presets */}
       <div className="rounded-xl bg-[#F5F5F4] p-2 space-y-1">
         <div className="flex items-center justify-between px-0.5">
-          <span className="text-[12px] font-semibold uppercase tracking-wide text-muted-foreground">
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
             LEVERAGE
           </span>
-          <span className="text-[15px] sm:text-[16px] font-extrabold tracking-tight text-foreground font-mono">
+          <span className="text-[13px] sm:text-[14px] font-bold tracking-tight text-foreground font-mono">
             ×{internalLeverage}
           </span>
         </div>
@@ -715,19 +715,19 @@ export function OrderForm({
       </div>
 
       {/* 6. Always Visible Preview (6 rows max): Notional, Margin, Impact Px, Liq, Fees, Break-even */}
-      <div className="rounded-xl border border-border/80 bg-white p-2.5 space-y-1.5 font-mono text-[12px] shadow-2xs">
+      <div className="rounded-xl border border-border/80 bg-white p-2 space-y-1 font-mono text-[11px] sm:text-[12px] shadow-2xs">
         <div className="flex items-center justify-between">
-          <span className="text-muted-foreground font-sans font-medium text-[11px] sm:text-[12px]">Notional</span>
+          <span className="text-muted-foreground font-sans font-medium text-[11px]">Notional</span>
           <span className="font-bold text-foreground tabular-nums text-[12px] sm:text-[13px]">${fmtUsd(notional, 2)}</span>
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="text-muted-foreground font-sans font-medium text-[11px] sm:text-[12px]">Required Margin</span>
+          <span className="text-muted-foreground font-sans font-medium text-[11px]">Required Margin</span>
           <span className="font-bold text-foreground tabular-nums text-[12px] sm:text-[13px]">${fmtUsd(numMargin, 2)}</span>
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="text-muted-foreground font-sans font-medium text-[11px] sm:text-[12px]">Est. Entry / Impact Price</span>
+          <span className="text-muted-foreground font-sans font-medium text-[11px]">Est. Entry / Impact Price</span>
           <span className="font-bold text-foreground tabular-nums text-[12px] sm:text-[13px]">
             ${fmtUsd(impact.impactPrice, 2)}{' '}
             {impact.slippageBps > 0 && (
@@ -739,14 +739,14 @@ export function OrderForm({
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="text-muted-foreground font-sans text-[11px] sm:text-[12px] font-medium">Liquidation price</span>
+          <span className="text-muted-foreground font-sans text-[11px] font-medium">Liquidation price</span>
           <span className="text-[#FF3B30] font-bold tabular-nums text-[12px] sm:text-[13px]" title={`${calcLiquidationDistanceAtr(effectivePrice, longBustPrice, effectivePrice * 0.015)}× 1h ATR`}>
             ${fmtUsd(longBustPrice, 2)} (-{bustDistancePct.toFixed(2)}%)
           </span>
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="text-muted-foreground font-sans text-[11px] sm:text-[12px] font-medium">
+          <span className="text-muted-foreground font-sans text-[11px] font-medium">
             Fee ({(feeRate * 100).toFixed(2)}%)
           </span>
           <span className="text-foreground font-bold tabular-nums text-[12px] sm:text-[13px]" title={`Taker $${fmtUsd(takerFeeUsd, 2)} + Builder $${fmtUsd(builderFeeUsd, 2)}`}>
@@ -755,7 +755,7 @@ export function OrderForm({
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="text-muted-foreground font-sans font-medium text-[11px] sm:text-[12px]">Break-even Price</span>
+          <span className="text-muted-foreground font-sans font-medium text-[11px]">Break-even Price</span>
           <span className="font-bold text-foreground tabular-nums text-[12px] sm:text-[13px]">
             ${fmtUsd(breakEvenPriceLong, 2)}
           </span>
@@ -770,24 +770,24 @@ export function OrderForm({
       </div>
 
       {/* 7. Potential Returns (3 Compact Green Cards) */}
-      <div className="grid grid-cols-3 gap-1.5 py-1">
-        <div className="rounded-xl border border-[#B2ECC8]/60 bg-[#E8F8EE] p-1.5 text-center flex flex-col justify-center items-center">
-          <span className="font-mono text-[10.5px] font-semibold text-[#16A34A] leading-none">If move +0.1%</span>
-          <span className="font-mono text-[12px] sm:text-[13px] font-bold text-[#06964A] leading-tight mt-0.5">
+      <div className="grid grid-cols-3 gap-1.5 py-0.5">
+        <div className="rounded-lg border border-[#B2ECC8]/60 bg-[#E8F8EE] p-1 text-center flex flex-col justify-center items-center">
+          <span className="font-mono text-[10px] font-semibold text-[#16A34A] leading-none">If move +0.1%</span>
+          <span className="font-mono text-[11.5px] sm:text-[12px] font-bold text-[#06964A] leading-tight mt-0.5">
             +${fmtUsd(profitAt01, profitAt01 < 10 ? 2 : 0)}
           </span>
         </div>
 
-        <div className="rounded-xl border border-[#B2ECC8]/60 bg-[#E8F8EE] p-1.5 text-center flex flex-col justify-center items-center">
-          <span className="font-mono text-[10.5px] font-semibold text-[#16A34A] leading-none">If move +0.5%</span>
-          <span className="font-mono text-[12px] sm:text-[13px] font-bold text-[#06964A] leading-tight mt-0.5">
+        <div className="rounded-lg border border-[#B2ECC8]/60 bg-[#E8F8EE] p-1 text-center flex flex-col justify-center items-center">
+          <span className="font-mono text-[10px] font-semibold text-[#16A34A] leading-none">If move +0.5%</span>
+          <span className="font-mono text-[11.5px] sm:text-[12px] font-bold text-[#06964A] leading-tight mt-0.5">
             +${fmtUsd(profitAt05, profitAt05 < 10 ? 2 : 0)}
           </span>
         </div>
 
-        <div className="rounded-xl border border-[#B2ECC8]/60 bg-[#E8F8EE] p-1.5 text-center flex flex-col justify-center items-center">
-          <span className="font-mono text-[10.5px] font-semibold text-[#16A34A] leading-none">If move +1%</span>
-          <span className="font-mono text-[12px] sm:text-[13px] font-bold text-[#06964A] leading-tight mt-0.5">
+        <div className="rounded-lg border border-[#B2ECC8]/60 bg-[#E8F8EE] p-1 text-center flex flex-col justify-center items-center">
+          <span className="font-mono text-[10px] font-semibold text-[#16A34A] leading-none">If move +1%</span>
+          <span className="font-mono text-[11.5px] sm:text-[12px] font-bold text-[#06964A] leading-tight mt-0.5">
             +${fmtUsd(profitAt10, profitAt10 < 10 ? 2 : 0)}
           </span>
         </div>

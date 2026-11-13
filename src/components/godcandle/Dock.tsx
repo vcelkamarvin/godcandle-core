@@ -139,27 +139,27 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
   return (
     <div className="rounded-2xl border border-border bg-white shadow-xs overflow-hidden select-none font-mono text-xs">
       {/* Account Telemetry Strip */}
-      <div className="flex flex-wrap items-center justify-between gap-3 px-3.5 py-2.5 bg-[#FBFBFA] border-b border-border text-xs">
-        <div className="flex items-center gap-4 text-muted-foreground">
+      <div className="flex flex-wrap items-center justify-between gap-3 px-3 py-1.5 bg-[#FBFBFA] border-b border-border text-xs">
+        <div className="flex items-center gap-3.5 text-muted-foreground">
           <div>
-            <span className="text-[11px] uppercase tracking-wider block text-muted-foreground font-semibold">Equity</span>
-            <span className="font-bold text-foreground tabular text-[13px] sm:text-[14px]">${fmtUsd(t.balance, 2)}</span>
+            <span className="text-[10.5px] uppercase tracking-wider block text-muted-foreground font-semibold">Equity</span>
+            <span className="font-bold text-foreground tabular text-[13px]">${fmtUsd(t.balance, 2)}</span>
           </div>
           <div className="h-4 w-px bg-border" />
           <div>
-            <span className="text-[11px] uppercase tracking-wider block text-muted-foreground font-semibold">Available</span>
-            <span className="font-bold text-[#06964A] tabular text-[13px] sm:text-[14px]">${fmtUsd(t.available, 2)}</span>
+            <span className="text-[10.5px] uppercase tracking-wider block text-muted-foreground font-semibold">Available</span>
+            <span className="font-bold text-[#06964A] tabular text-[13px]">${fmtUsd(t.available, 2)}</span>
           </div>
           <div className="h-4 w-px bg-border" />
           <div>
-            <span className="text-[11px] uppercase tracking-wider block text-muted-foreground font-semibold">Margin Used</span>
-            <span className="font-semibold text-foreground tabular text-[13px] sm:text-[14px]">${fmtUsd(t.marginUsed, 2)}</span>
+            <span className="text-[10.5px] uppercase tracking-wider block text-muted-foreground font-semibold">Margin Used</span>
+            <span className="font-semibold text-foreground tabular text-[13px]">${fmtUsd(t.marginUsed, 2)}</span>
           </div>
           <div className="h-4 w-px bg-border" />
           <div>
-            <span className="text-[11px] uppercase tracking-wider block text-muted-foreground font-semibold">Unrealized PnL</span>
+            <span className="text-[10.5px] uppercase tracking-wider block text-muted-foreground font-semibold">Unrealized PnL</span>
             <span
-              className={`font-bold tabular text-[13px] sm:text-[14px] ${
+              className={`font-bold tabular text-[13px] ${
                 unrealizedPnl >= 0 ? 'text-[#06964A]' : 'text-[#FF3B30]'
               }`}
             >
@@ -169,9 +169,9 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
         </div>
 
         <div className="flex items-center gap-3">
-          <span className="text-muted-foreground font-medium text-[12px]">
+          <span className="text-muted-foreground font-medium text-[11.5px]">
             Realized PnL:{' '}
-            <span className={`font-bold text-[13px] ${totalRealizedPnl >= 0 ? 'text-[#06964A]' : 'text-[#FF3B30]'}`}>
+            <span className={`font-bold text-[12.5px] sm:text-[13px] ${totalRealizedPnl >= 0 ? 'text-[#06964A]' : 'text-[#FF3B30]'}`}>
               {fmtSigned(totalRealizedPnl)}
             </span>
           </span>
@@ -257,7 +257,7 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
 
                     return (
                       <tr key={pos.id} className="hover:bg-secondary/40 transition-colors">
-                        <td className="py-2.5 px-2">
+                        <td className="py-1.5 px-2">
                           <button
                             type="button"
                             onClick={() => onSelect(pos.market)}
@@ -270,25 +270,25 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
                             </span>
                           </button>
                         </td>
-                        <td className="py-2.5 px-2">
+                        <td className="py-1.5 px-2">
                           <SideBadge side={pos.side} />
                         </td>
-                        <td className="py-2.5 px-2 text-right font-medium">
+                        <td className="py-1.5 px-2 text-right font-medium">
                           {sz.toFixed(market.decimals > 2 ? 4 : 2)}
                         </td>
-                        <td className="py-2.5 px-2 text-right">
+                        <td className="py-1.5 px-2 text-right">
                           ${fmtUsd(pos.entry, market.decimals)}
                         </td>
-                        <td className="py-2.5 px-2 text-right font-semibold">
+                        <td className="py-1.5 px-2 text-right font-semibold">
                           ${fmtUsd(price, market.decimals)}
                         </td>
-                        <td className="py-2.5 px-2 text-right font-semibold text-[#FF3B30]">
+                        <td className="py-1.5 px-2 text-right font-semibold text-[#FF3B30]">
                           ${fmtUsd(liqP, market.decimals)}
                         </td>
-                        <td className="py-2.5 px-2 text-right font-medium">
+                        <td className="py-1.5 px-2 text-right font-medium">
                           ${fmtUsd(pos.stake, 2)}
                         </td>
-                        <td className="py-2.5 px-2 text-right">
+                        <td className="py-1.5 px-2 text-right">
                           <div className={isUp ? 'text-[#06964A] font-bold' : 'text-[#FF3B30] font-bold'}>
                             {fmtSigned(pnl)}
                           </div>
@@ -296,7 +296,7 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
                             {roi >= 0 ? '+' : ''}{roi.toFixed(1)}%
                           </div>
                         </td>
-                        <td className="py-2.5 px-2 text-right text-muted-foreground">
+                        <td className="py-1.5 px-2 text-right text-muted-foreground">
                           $0.00
                         </td>
                         <td className="py-2.5 px-2 text-right text-xs text-muted-foreground">
