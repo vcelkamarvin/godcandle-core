@@ -155,7 +155,7 @@ export function MarketBookTradesInfo({
             type="button"
             onClick={() => setActiveTab('book')}
             className={cn(
-              "px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer",
+              "h-7 px-3 rounded-lg text-[12px] font-semibold transition-all cursor-pointer flex items-center justify-center",
               activeTab === 'book'
                 ? "bg-foreground text-background shadow-2xs font-bold"
                 : "text-muted-foreground hover:text-foreground"
@@ -167,7 +167,7 @@ export function MarketBookTradesInfo({
             type="button"
             onClick={() => setActiveTab('trades')}
             className={cn(
-              "px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer",
+              "h-7 px-3 rounded-lg text-[12px] font-semibold transition-all cursor-pointer flex items-center justify-center",
               activeTab === 'trades'
                 ? "bg-foreground text-background shadow-2xs font-bold"
                 : "text-muted-foreground hover:text-foreground"
@@ -179,7 +179,7 @@ export function MarketBookTradesInfo({
             type="button"
             onClick={() => setActiveTab('info')}
             className={cn(
-              "px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer",
+              "h-7 px-3 rounded-lg text-[12px] font-semibold transition-all cursor-pointer flex items-center justify-center",
               activeTab === 'info'
                 ? "bg-foreground text-background shadow-2xs font-bold"
                 : "text-muted-foreground hover:text-foreground"
@@ -190,13 +190,13 @@ export function MarketBookTradesInfo({
         </div>
 
         {activeTab === 'book' && (
-          <div className="text-xs text-muted-foreground font-medium tabular">
+          <div className="text-[11px] text-muted-foreground font-medium tabular">
             Imbalance: <span className="font-bold text-[#06964A]">{bidImbalancePct}% Bids</span>
           </div>
         )}
 
         {activeTab === 'trades' && (
-          <div className="flex items-center gap-2 text-xs">
+          <div className="flex items-center gap-2 text-[11px]">
             <span className={cn("font-bold tabular", cvd >= 0 ? "text-[#06964A]" : "text-[#FF3B30]")}>
               CVD {cvd >= 0 ? "+" : ""}${fmtUsd(Math.abs(cvd), 0)}
             </span>
@@ -205,7 +205,7 @@ export function MarketBookTradesInfo({
               <select
                 value={tradeFilter}
                 onChange={(e) => setTradeFilter(e.target.value as any)}
-                className="bg-transparent text-muted-foreground hover:text-foreground border-none outline-none font-mono text-xs cursor-pointer"
+                className="bg-transparent text-muted-foreground hover:text-foreground border-none outline-none font-mono text-[11px] cursor-pointer"
               >
                 <option value="all">All Sizes</option>
                 <option value="1k">&gt; $1k</option>
@@ -220,7 +220,7 @@ export function MarketBookTradesInfo({
       {activeTab === 'book' && (
         <div className="flex flex-col flex-1 p-2 min-h-0 overflow-hidden">
           {/* Header */}
-          <div className="grid grid-cols-3 text-xs uppercase text-muted-foreground font-semibold pb-1.5 border-b border-border/60">
+          <div className="grid grid-cols-3 text-[11px] uppercase tracking-wider text-muted-foreground font-semibold pb-1.5 border-b border-border/60">
             <span>Price</span>
             <span className="text-right">Size ({rawCoin})</span>
             <span className="text-right">Total ($)</span>
@@ -234,7 +234,7 @@ export function MarketBookTradesInfo({
                 <div
                   key={`ask-${idx}`}
                   onClick={() => onSelectPrice(ask.px)}
-                  className="relative grid grid-cols-3 py-0.5 px-1 rounded hover:bg-secondary cursor-pointer transition-colors group tabular"
+                  className="relative grid grid-cols-3 py-0.5 px-1 rounded hover:bg-secondary cursor-pointer transition-colors group tabular text-[12px] sm:text-[13px]"
                 >
                   <div
                     className="absolute right-0 top-0 bottom-0 bg-[#FF3B30]/10 rounded-sm pointer-events-none"
@@ -253,7 +253,7 @@ export function MarketBookTradesInfo({
           </div>
 
           {/* Spread Bar */}
-          <div className="my-1 py-1.5 px-2 bg-secondary/70 border-y border-border/70 flex items-center justify-between text-xs">
+          <div className="my-1 py-1.5 px-2 bg-secondary/70 border-y border-border/70 flex items-center justify-between text-[11px]">
             <span className="font-bold text-foreground tabular">
               Spread ${fmtUsd(spreadUsd, 2)} ({spreadBps} bps)
             </span>
@@ -270,7 +270,7 @@ export function MarketBookTradesInfo({
                 <div
                   key={`bid-${idx}`}
                   onClick={() => onSelectPrice(bid.px)}
-                  className="relative grid grid-cols-3 py-0.5 px-1 rounded hover:bg-secondary cursor-pointer transition-colors group tabular"
+                  className="relative grid grid-cols-3 py-0.5 px-1 rounded hover:bg-secondary cursor-pointer transition-colors group tabular text-[12px] sm:text-[13px]"
                 >
                   <div
                     className="absolute right-0 top-0 bottom-0 bg-[#00D964]/10 rounded-sm pointer-events-none"

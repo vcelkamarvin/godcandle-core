@@ -2165,7 +2165,7 @@ export function Perps() {
           {/* Center: Large Mark Price & 24h change */}
           <div className="flex items-center gap-3 shrink-0">
             <div className="flex items-center gap-2">
-              <span className="font-mono text-[16px] font-semibold text-[var(--text-primary,#0b0b0c)] tracking-tight tabular-nums">
+              <span className="font-mono text-[22px] sm:text-[24px] font-bold text-[var(--text-primary,#0b0b0c)] tracking-tight tabular-nums">
                 $
                 {activePairMeta.mark.toLocaleString(undefined, {
                   minimumFractionDigits: 1,

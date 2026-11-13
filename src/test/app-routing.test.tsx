@@ -24,6 +24,7 @@ describe("App routing", () => {
       "/settings",
       "/goal",
       "/boost",
+      "/teamwork",
     ];
 
     for (const path of routesToTest) {

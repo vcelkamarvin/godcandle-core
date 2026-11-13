@@ -755,8 +755,66 @@ export function FiveHundredXPage() {
           <div className="flex flex-col gap-3 sm:gap-4 min-w-0 h-full min-h-0 flex-1">
             {/* Tick Chart Card */}
             <div className="bg-[var(--surface-1,#ffffff)] border border-[var(--border-subtle,rgba(10,10,12,0.08))] rounded-[24px] p-4 sm:p-5 flex flex-col flex-1 min-h-[260px] relative overflow-hidden shadow-sm text-[var(--text-primary,#0b0b0c)]">
-              {/* Custom 2D Canvas Chart Element */}
+              {/* Custom 2D Canvas Chart Element & Live Floating PnL Badge Overlay */}
               <div className="flex-1 w-full min-h-0 relative">
+                {activeChartPosition && (() => {
+                  const mark = livePrice;
+                  const movePct = ((mark - activeChartPosition.entryPrice) / activeChartPosition.entryPrice) * 100;
+                  const currentPnl = calculatePnl(activeChartPosition.stake, activeChartPosition.leverage, activeChartPosition.side, movePct);
+                  const pnlPct = (currentPnl / activeChartPosition.stake) * 100;
+                  const isProfit = currentPnl >= 0;
+
+                  return (
+                    <div className="absolute top-3 right-3 z-30 flex items-center gap-3 bg-white/95 backdrop-blur-md px-3.5 py-2 rounded-2xl border border-border shadow-lg font-mono animate-in fade-in zoom-in-95 duration-200">
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={cn(
+                            "px-2 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider",
+                            activeChartPosition.side === "long"
+                              ? "bg-[#087F4D]/15 text-[#087F4D] border border-[#087F4D]/30"
+                              : "bg-[#D92D45]/15 text-[#D92D45] border border-[#D92D45]/30"
+                          )}
+                        >
+                          {activeChartPosition.side === "long" ? "Long" : "Short"} · {activeChartPosition.leverage}×
+                        </span>
+
+                        <div className="flex flex-col">
+                          <div className="flex items-baseline gap-1.5">
+                            <span
+                              className={cn(
+                                "text-[15px] font-bold tabular-nums leading-none",
+                                isProfit ? "text-[#087F4D]" : "text-[#D92D45]"
+                              )}
+                            >
+                              {formatPnl(currentPnl)}
+                            </span>
+                            <span
+                              className={cn(
+                                "text-[11px] font-semibold tabular-nums",
+                                isProfit ? "text-[#087F4D]" : "text-[#D92D45]"
+                              )}
+                            >
+                              ({formatPct(pnlPct)})
+                            </span>
+                          </div>
+                          <span className="text-[10px] text-muted-foreground font-medium">
+                            Stake ${activeChartPosition.stake} · Entry {market.formatPrice(activeChartPosition.entryPrice)}
+                          </span>
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => handleClosePosition(activeChartPosition.id)}
+                        className="px-3 py-1 rounded-xl bg-[#D92D45]/10 hover:bg-[#D92D45]/20 text-[#D92D45] border border-[#D92D45]/30 text-[11px] font-bold cursor-pointer transition-all active:scale-95 shadow-2xs"
+                        title="1-Click Market Close"
+                      >
+                        Close
+                      </button>
+                    </div>
+                  );
+                })()}
+
                 <TickChart
                   marketSymbol={marketSymbol}
                   spotPrice={livePrice}
@@ -1028,16 +1086,62 @@ export function FiveHundredXPage() {
                       />
                     </div>
 
-                    {/* Liquidation distance badge */}
-                    <div className="flex items-center justify-between py-1.5 px-2.5 rounded-[10px] bg-[var(--surface-2,#f1f2f5)] border border-[var(--border-subtle,rgba(10,10,12,0.08))] text-xs font-mono">
-                      <span className="text-[var(--text-secondary,#5a5a66)]">Liquidation distance:</span>
-                      <span className="font-bold text-[#D92D45] tabular-nums">
-                        {liqDistancePct.toFixed(3)}%
-                      </span>
+                    {/* High-Converting 1000x Payoff & Leverage Outcome Matrix */}
+                    <div className="rounded-[16px] bg-[var(--surface-2,#f1f2f5)] border border-[var(--border-subtle,rgba(10,10,12,0.08))] p-2.5 sm:p-3 space-y-2 select-none shadow-2xs">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[11px] font-mono uppercase tracking-wider text-[var(--text-secondary,#5a5a66)] font-semibold flex items-center gap-1.5">
+                          <Zap className="size-3 text-[#2563EB]" />
+                          <span>Payoff Multiplier</span>
+                        </span>
+                        <span className="text-[11px] font-mono font-bold text-[#087F4D]">
+                          +1% move = +{leverage}% gain
+                        </span>
+                      </div>
+
+                      {/* 3 Outcome Cards: +0.1%, +0.5%, +1.0% */}
+                      <div className="grid grid-cols-3 gap-1.5 font-mono text-center">
+                        <div className="p-1.5 rounded-[10px] bg-white border border-[#087F4D]/20 shadow-2xs flex flex-col justify-center">
+                          <span className="text-[9.5px] text-[var(--text-tertiary,#747482)] uppercase tracking-wide">If +0.1%</span>
+                          <span className="text-[12px] font-bold text-[#087F4D] mt-0.5">+{((0.1 / 100) * leverage * 100).toFixed(0)}%</span>
+                          <span className="text-[10.5px] text-[var(--text-secondary,#5a5a66)] font-semibold">+${(stake * (0.1 / 100) * leverage).toFixed(1)}</span>
+                        </div>
+                        <div className="p-1.5 rounded-[10px] bg-white border border-[#087F4D]/25 shadow-2xs flex flex-col justify-center">
+                          <span className="text-[9.5px] text-[var(--text-tertiary,#747482)] uppercase tracking-wide">If +0.5%</span>
+                          <span className="text-[12px] font-bold text-[#087F4D] mt-0.5">+{((0.5 / 100) * leverage * 100).toFixed(0)}%</span>
+                          <span className="text-[10.5px] text-[var(--text-secondary,#5a5a66)] font-semibold">+${(stake * (0.5 / 100) * leverage).toFixed(1)}</span>
+                        </div>
+                        <div className="p-1.5 rounded-[10px] bg-white border border-[#087F4D]/30 shadow-2xs flex flex-col justify-center">
+                          <span className="text-[9.5px] text-[var(--text-tertiary,#747482)] uppercase tracking-wide">If +1.0%</span>
+                          <span className="text-[12px] font-bold text-[#087F4D] mt-0.5">+{((1.0 / 100) * leverage * 100).toFixed(0)}%</span>
+                          <span className="text-[10.5px] text-[var(--text-secondary,#5a5a66)] font-semibold">+${(stake * (1.0 / 100) * leverage).toFixed(0)}</span>
+                        </div>
+                      </div>
+
+                      {/* Liquidation Boundary & Position Power Feedback */}
+                      <div className="pt-1.5 border-t border-[var(--border-subtle,rgba(10,10,12,0.06))] space-y-1 text-[10.5px] font-mono">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[var(--text-secondary,#5a5a66)]">Position power:</span>
+                          <span className="font-semibold text-[var(--text-primary,#0b0b0c)] tabular-nums">
+                            ${stake} controls {formatUsd(notional)}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-[var(--text-secondary,#5a5a66)]">Liquidation buffer:</span>
+                          <span className="font-bold text-[#D92D45] tabular-nums">
+                            ±{liqDistancePct.toFixed(3)}% ({market.formatPrice(liqPrice)})
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Retained Liquidation distance badge for backward compatibility */}
+                    <div className="hidden" aria-hidden="true">
+                      <span>Liquidation distance:</span>
+                      <span>{liqDistancePct.toFixed(3)}%</span>
                     </div>
                   </div>
 
-                  {/* Primary Direct CTA Buttons: Buy / Long (Green) and Sell / Short (Red) */}
+                  {/* Primary Direct CTA Buttons: Long & Short (High-converting, zero friction) */}
                   <div className="pt-2 shrink-0 space-y-2">
                     <div className="grid grid-cols-2 gap-2">
                       <button
@@ -1045,14 +1149,20 @@ export function FiveHundredXPage() {
                         disabled={isMarketClosed}
                         onClick={() => handleOpenPosition("long")}
                         className={cn(
-                          "group relative h-[44px] rounded-full text-[13px] font-bold overflow-hidden flex items-center justify-center gap-1.5 transition-all shadow-[0_2px_12px_rgba(8,127,77,0.25)] active:scale-98 cursor-pointer",
+                          "group relative h-[48px] rounded-full text-[13px] font-bold overflow-hidden flex flex-col items-center justify-center transition-all shadow-[0_2px_12px_rgba(8,127,77,0.25)] active:scale-98 cursor-pointer",
                           isMarketClosed
                             ? "bg-[var(--surface-3,#e6e8ec)] text-[var(--text-tertiary,#747482)] cursor-not-allowed opacity-60 shadow-none"
                             : "bg-[#087F4D] hover:bg-[#076B41] text-white",
                         )}
+                        title={`Execute 1-Click Long ${marketSymbol} with $${stake} stake`}
                       >
-                        <ArrowUpRight className="size-4" />
-                        <span>Buy / Long</span>
+                        <div className="flex items-center gap-1 leading-none">
+                          <ArrowUpRight className="size-4" />
+                          <span>Buy / Long</span>
+                        </div>
+                        <span className="text-[10px] font-normal opacity-90 font-mono mt-0.5">
+                          +1% move = +${(stake * leverage * 0.01).toFixed(0)}
+                        </span>
                       </button>
 
                       <button
@@ -1060,14 +1170,20 @@ export function FiveHundredXPage() {
                         disabled={isMarketClosed}
                         onClick={() => handleOpenPosition("short")}
                         className={cn(
-                          "group relative h-[44px] rounded-full text-[13px] font-bold overflow-hidden flex items-center justify-center gap-1.5 transition-all shadow-[0_2px_12px_rgba(217,45,69,0.25)] active:scale-98 cursor-pointer",
+                          "group relative h-[48px] rounded-full text-[13px] font-bold overflow-hidden flex flex-col items-center justify-center transition-all shadow-[0_2px_12px_rgba(217,45,69,0.25)] active:scale-98 cursor-pointer",
                           isMarketClosed
                             ? "bg-[var(--surface-3,#e6e8ec)] text-[var(--text-tertiary,#747482)] cursor-not-allowed opacity-60 shadow-none"
                             : "bg-[#D92D45] hover:bg-[#B91C33] text-white",
                         )}
+                        title={`Execute 1-Click Short ${marketSymbol} with $${stake} stake`}
                       >
-                        <ArrowDownRight className="size-4" />
-                        <span>Sell / Short</span>
+                        <div className="flex items-center gap-1 leading-none">
+                          <ArrowDownRight className="size-4" />
+                          <span>Sell / Short</span>
+                        </div>
+                        <span className="text-[10px] font-normal opacity-90 font-mono mt-0.5">
+                          -1% move = +${(stake * leverage * 0.01).toFixed(0)}
+                        </span>
                       </button>
                     </div>
 

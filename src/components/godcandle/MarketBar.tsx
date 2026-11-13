@@ -337,13 +337,13 @@ export function MarketBar({
             </Button>
 
             {/* Current Price & 24h Change */}
-            <div className="flex items-baseline gap-2 pl-2 border-l border-border/70">
-              <span className="tabular text-sm sm:text-base font-bold font-mono tracking-tight text-foreground">
+            <div className="flex items-center gap-2.5 pl-3 border-l border-border/70">
+              <span className="tabular text-[20px] sm:text-[22px] font-bold font-mono tracking-tight text-foreground leading-none">
                 ${fmtUsd(activePrice, getMarket(market).decimals)}
               </span>
               <span
                 className={cn(
-                  "flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-mono font-semibold",
+                  "flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[12px] font-mono font-semibold",
                   isPositive ? "bg-[#E3F8EC] text-[#06964A]" : "bg-[#FFECEA] text-[#FF3B30]"
                 )}
               >
@@ -355,43 +355,43 @@ export function MarketBar({
               </span>
             </div>
 
-            {/* Inline Market Telemetry: Clean Minimalist Strip */}
-            <div className="hidden md:flex items-center gap-3 lg:gap-4 text-xs font-mono pl-3 border-l border-border/70 text-foreground select-none">
-              <div className="hidden lg:block" title={`Oracle / Index: $${fmtUsd(midPx, getMarket(market).decimals)}`}>
-                <span className="block text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Mark</span>
-                <span className="tabular font-semibold text-foreground text-xs">
-                  ${fmtUsd(markPx, getMarket(market).decimals)}
-                </span>
-              </div>
-              <div className="hidden xl:block">
-                <span className="block text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Index</span>
-                <span className="tabular font-semibold text-foreground text-xs">
-                  ${fmtUsd(midPx, getMarket(market).decimals)}
-                </span>
-              </div>
+            {/* Inline Market Telemetry: Clean Balanced Strip with Generous Breathing Room */}
+            <div className="hidden md:flex items-center gap-4 lg:gap-5 text-xs font-mono pl-3.5 border-l border-border/70 text-foreground select-none">
               <div>
-                <span className="block text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Funding</span>
-                <span className="tabular font-semibold text-[#06964A] text-xs">
+                <span className="block text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">Funding</span>
+                <span className="tabular font-semibold text-[#06964A] text-[13px]">
                   {fundingRate.replace(' / 1h', '')} <span className="text-[10px] text-muted-foreground font-normal">({Math.floor(60 - (Date.now() / 60000) % 60)}m)</span>
                 </span>
               </div>
               <div>
-                <span className="block text-[10px] uppercase tracking-wider text-muted-foreground font-medium">24h Vol</span>
-                <span className="tabular font-semibold text-foreground text-xs">{volume24h}</span>
+                <span className="block text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">24h Vol</span>
+                <span className="tabular font-semibold text-foreground text-[13px]">{volume24h}</span>
               </div>
               <div className="hidden lg:block">
-                <span className="block text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Open Interest</span>
-                <span className="tabular font-semibold text-foreground text-xs">{OPEN_INTERESTS[market] || "$120M"}</span>
+                <span className="block text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">Open Interest</span>
+                <span className="tabular font-semibold text-foreground text-[13px]">{OPEN_INTERESTS[market] || "$120M"}</span>
+              </div>
+              <div className="hidden lg:block" title={`Oracle / Index: $${fmtUsd(midPx, getMarket(market).decimals)}`}>
+                <span className="block text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">Mark</span>
+                <span className="tabular font-semibold text-foreground text-[13px]">
+                  ${fmtUsd(markPx, getMarket(market).decimals)}
+                </span>
               </div>
               <div className="hidden xl:block">
-                <span className="block text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Max Leverage</span>
-                <span className="tabular font-semibold text-foreground text-xs">
+                <span className="block text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">Index</span>
+                <span className="tabular font-semibold text-foreground text-[13px]">
+                  ${fmtUsd(midPx, getMarket(market).decimals)}
+                </span>
+              </div>
+              <div className="hidden xl:block">
+                <span className="block text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">Max Leverage</span>
+                <span className="tabular font-semibold text-foreground text-[13px]">
                   {is1000x ? '1000×' : `${getMarket(market).maxLeverage}×`}
                 </span>
               </div>
               <div className="hidden 2xl:block">
-                <span className="block text-[10px] uppercase tracking-wider text-muted-foreground font-medium">24h Low / High</span>
-                <span className="tabular font-semibold text-foreground text-xs">
+                <span className="block text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">24h Low / High</span>
+                <span className="tabular font-semibold text-foreground text-[13px]">
                   ${fmtUsd(low24h, 1)} / ${fmtUsd(high24h, 1)}
                 </span>
               </div>

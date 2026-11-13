@@ -22,6 +22,7 @@ import { Route as PerpsRouteImport } from './routes/perps'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as StakingRouteImport } from './routes/staking'
+import { Route as TeamworkRouteImport } from './routes/teamwork'
 import { Route as TradeRouteImport } from './routes/trade'
 import { Route as DocsIndexRouteImport } from './routes/docs/index'
 import { Route as DocsPoolRouteImport } from './routes/docs/pool'
@@ -94,6 +95,11 @@ const StakingRoute = StakingRouteImport.update({
   path: '/staking',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TeamworkRoute = TeamworkRouteImport.update({
+  id: '/teamwork',
+  path: '/teamwork',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TradeRoute = TradeRouteImport.update({
   id: '/trade',
   path: '/trade',
@@ -139,6 +145,7 @@ export interface FileRoutesByFullPath {
   '/portfolio': typeof PortfolioRoute
   '/settings': typeof SettingsRoute
   '/staking': typeof StakingRoute
+  '/teamwork': typeof TeamworkRoute
   '/trade': typeof TradeRoute
   '/docs/pool': typeof DocsPoolRoute
   '/docs/rules': typeof DocsRulesRoute
@@ -159,6 +166,7 @@ export interface FileRoutesByTo {
   '/portfolio': typeof PortfolioRoute
   '/settings': typeof SettingsRoute
   '/staking': typeof StakingRoute
+  '/teamwork': typeof TeamworkRoute
   '/trade': typeof TradeRoute
   '/docs/pool': typeof DocsPoolRoute
   '/docs/rules': typeof DocsRulesRoute
@@ -181,6 +189,7 @@ export interface FileRoutesById {
   '/portfolio': typeof PortfolioRoute
   '/settings': typeof SettingsRoute
   '/staking': typeof StakingRoute
+  '/teamwork': typeof TeamworkRoute
   '/trade': typeof TradeRoute
   '/docs/pool': typeof DocsPoolRoute
   '/docs/rules': typeof DocsRulesRoute
@@ -204,6 +213,7 @@ export interface FileRouteTypes {
     | '/portfolio'
     | '/settings'
     | '/staking'
+    | '/teamwork'
     | '/trade'
     | '/docs/pool'
     | '/docs/rules'
@@ -224,6 +234,7 @@ export interface FileRouteTypes {
     | '/portfolio'
     | '/settings'
     | '/staking'
+    | '/teamwork'
     | '/trade'
     | '/docs/pool'
     | '/docs/rules'
@@ -245,6 +256,7 @@ export interface FileRouteTypes {
     | '/portfolio'
     | '/settings'
     | '/staking'
+    | '/teamwork'
     | '/trade'
     | '/docs/pool'
     | '/docs/rules'
@@ -267,6 +279,7 @@ export interface RootRouteChildren {
   PortfolioRoute: typeof PortfolioRoute
   SettingsRoute: typeof SettingsRoute
   StakingRoute: typeof StakingRoute
+  TeamworkRoute: typeof TeamworkRoute
   TradeRoute: typeof TradeRoute
 }
 
@@ -363,6 +376,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StakingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/teamwork': {
+      id: '/teamwork'
+      path: '/teamwork'
+      fullPath: '/teamwork'
+      preLoaderRoute: typeof TeamworkRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/trade': {
       id: '/trade'
       path: '/trade'
@@ -450,6 +470,7 @@ const rootRouteChildren: RootRouteChildren = {
   PortfolioRoute: PortfolioRoute,
   SettingsRoute: SettingsRoute,
   StakingRoute: StakingRoute,
+  TeamworkRoute: TeamworkRoute,
   TradeRoute: TradeRoute,
 }
 export const routeTree = rootRouteImport
