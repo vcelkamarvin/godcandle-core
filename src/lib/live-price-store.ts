@@ -119,8 +119,8 @@ class LivePriceManager {
             const p = parseFloat(data.lastPrice);
             const ch = parseFloat(data.priceChangePercent);
             if (!isNaN(p) && p > 1000) {
-              this.prices.BTC = p;
-              if (!isNaN(ch)) this.changes24h.BTC = ch;
+              this.prices["BTC"] = p;
+              if (!isNaN(ch)) this.changes24h["BTC"] = ch;
               this.notify();
             }
           }
@@ -147,7 +147,7 @@ export function useLiveBtcPrice(): {
 
   useEffect(() => {
     const unsub = livePriceManager.subscribe((prices) => {
-      if (prices.BTC) setPrice(prices.BTC);
+      if (prices["BTC"]) setPrice(prices["BTC"]);
     });
     return unsub;
   }, []);

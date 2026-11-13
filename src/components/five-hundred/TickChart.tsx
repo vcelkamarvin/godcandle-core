@@ -303,7 +303,7 @@ export function TickChart({
 
         // Prune ticks older than 90 seconds
         const pruneThreshold = nowMs - 90000;
-        while (state.ticks.length > 50 && state.ticks[0].time < pruneThreshold) {
+        while (state.ticks.length > 50 && (state.ticks[0]?.time ?? 0) < pruneThreshold) {
           state.ticks.shift();
         }
 
@@ -378,7 +378,7 @@ export function TickChart({
 
       for (let i = 0; i < state.ticks.length; i++) {
         const t = state.ticks[i];
-        if (t.time >= minVisibleTime - 2000) {
+        if (t && t.time >= minVisibleTime - 2000) {
           if (t.price < minP) minP = t.price;
           if (t.price > maxP) maxP = t.price;
         }
@@ -602,20 +602,22 @@ export function TickChart({
       const ticks = state.ticks;
 
       for (let i = 0; i < ticks.length; i++) {
-        const x = timeToX(ticks[i].time);
+        const tick = ticks[i];
+        if (!tick) continue;
+        const x = timeToX(tick.time);
         if (x >= -40 && x <= headX) {
-          visibleTicks.push({ x, y: priceToY(ticks[i].price) });
+          visibleTicks.push({ x, y: priceToY(tick.price) });
         }
       }
 
       const headY = priceToY(state.liveHeadPrice);
 
-      if (visibleTicks.length > 0) {
+      const first = visibleTicks[0];
+      if (first) {
         ctx.save();
 
         // 9.1 Construct stepped path
         ctx.beginPath();
-        const first = visibleTicks[0];
         ctx.moveTo(Math.max(0, first.x), first.y);
 
         let prevX = first.x;
@@ -623,6 +625,7 @@ export function TickChart({
 
         for (let i = 1; i < visibleTicks.length; i++) {
           const curr = visibleTicks[i];
+          if (!curr) continue;
           ctx.lineTo(curr.x, prevY);
           ctx.lineTo(curr.x, curr.y);
           prevX = curr.x;
@@ -653,6 +656,7 @@ export function TickChart({
         prevY = first.y;
         for (let i = 1; i < visibleTicks.length; i++) {
           const curr = visibleTicks[i];
+          if (!curr) continue;
           ctx.lineTo(curr.x, prevY);
           ctx.lineTo(curr.x, curr.y);
           prevY = curr.y;
@@ -670,6 +674,7 @@ export function TickChart({
       // 10. Heartbeat Ripple Rings from Head Dot on New Ticks
       for (let i = state.ripples.length - 1; i >= 0; i--) {
         const rip = state.ripples[i];
+        if (!rip) continue;
         const age = nowMs - rip.time;
         if (age > 600) {
           state.ripples.splice(i, 1);

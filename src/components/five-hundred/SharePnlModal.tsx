@@ -41,7 +41,7 @@ export function SharePnlModal({ trade, onClose }: SharePnlModalProps) {
   // Normalizing trade properties
   const normalized = useMemo(() => {
     if (!trade) return null;
-    const raw = trade as unknown as Record<string, unknown>;
+    const raw = trade as any;
     const parseNum = (v: unknown): number => {
       if (typeof v === "number") return v;
       if (!v) return 0;
@@ -139,9 +139,12 @@ export function SharePnlModal({ trade, onClose }: SharePnlModalProps) {
     const data = imgData.data;
     for (let i = 0; i < data.length; i += 4) {
       const noise = (Math.random() - 0.5) * 16;
-      data[i] = Math.min(255, Math.max(0, data[i] + noise));
-      data[i + 1] = Math.min(255, Math.max(0, data[i + 1] + noise));
-      data[i + 2] = Math.min(255, Math.max(0, data[i + 2] + noise));
+      const d0 = data[i] ?? 0;
+      const d1 = data[i + 1] ?? 0;
+      const d2 = data[i + 2] ?? 0;
+      data[i] = Math.min(255, Math.max(0, d0 + noise));
+      data[i + 1] = Math.min(255, Math.max(0, d1 + noise));
+      data[i + 2] = Math.min(255, Math.max(0, d2 + noise));
     }
     ctx.putImageData(imgData, 0, 0);
 

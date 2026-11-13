@@ -2702,7 +2702,7 @@ export function Perps() {
                           onClick={() => {
                             const presets = [500, 1000, 2500, 5000];
                             const next =
-                              presets[(presets.indexOf(marginPreset) + 1) % presets.length];
+                              presets[(presets.indexOf(marginPreset) + 1) % presets.length] ?? 500;
                             setMarginPreset(next);
                           }}
                           className="h-8 rounded-[10px] bg-[#14161B] hover:bg-[#1A1D24] border border-white/[0.08] text-white font-mono text-[11px] font-semibold flex items-center justify-between px-2 cursor-pointer transition-colors"
@@ -2723,7 +2723,7 @@ export function Perps() {
                               "Swing",
                               "Scalp",
                             ];
-                            const next = styles[(styles.indexOf(tradeStyle) + 1) % styles.length];
+                            const next = styles[(styles.indexOf(tradeStyle) + 1) % styles.length] ?? "Day";
                             setTradeStyle(next);
                           }}
                           className="h-8 rounded-[10px] bg-[#14161B] hover:bg-[#1A1D24] border border-white/[0.08] text-white font-mono text-[11px] font-semibold flex items-center justify-between px-2 cursor-pointer transition-colors"
@@ -2745,7 +2745,7 @@ export function Perps() {
                               "High R:R",
                             ];
                             const next =
-                              strats[(strats.indexOf(tradeStrategy) + 1) % strats.length];
+                              strats[(strats.indexOf(tradeStrategy) + 1) % strats.length] ?? "Max Gain";
                             setTradeStrategy(next);
                           }}
                           className="h-8 rounded-[10px] bg-[#14161B] hover:bg-[#1A1D24] border border-white/[0.08] text-white font-mono text-[11px] font-semibold flex items-center justify-between px-2 cursor-pointer transition-colors"

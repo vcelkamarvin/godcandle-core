@@ -1,4 +1,3 @@
-import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { toast } from "sonner";
 import {
@@ -37,31 +36,7 @@ import { walletStore, useWallet } from "@/lib/wallet-store";
 import { SHARED_BTC_PRICE } from "@/lib/mock-data";
 import { livePriceManager } from "@/lib/live-price-store";
 
-export const Route = createFileRoute("/500x")({
-  head: () => ({
-    meta: [
-      { title: "Godcandle 1000x — Ultra-high leverage live tick desk" },
-      {
-        name: "description",
-        content:
-          "Model ultra-high leverage crypto trades up to 1000x with real-time liquidation distance, dynamic tick charts, and institutional risk sizing.",
-      },
-      {
-        property: "og:title",
-        content: "Godcandle 1000x — Ultra-high leverage live tick desk",
-      },
-      {
-        property: "og:description",
-        content:
-          "Model ultra-high leverage crypto trades up to 1000x with clear liquidation boundary and live outcome dock.",
-      },
-      { name: "desk", content: "Godcandle 1000x" },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
-  component: FiveHundredXPage,
-});
+
 
 export {
   type MarketSymbol,

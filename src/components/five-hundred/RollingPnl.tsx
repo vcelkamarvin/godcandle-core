@@ -28,6 +28,7 @@ export function RollingPnl({ pnl, stake, isLiquidated = false, className = "" }:
       }, 300);
       return () => clearTimeout(timer);
     }
+    return undefined;
   }, [pnl, isLiquidated]);
 
   const pnlPercent = stake > 0 ? (pnl / stake) * 100 : 0;

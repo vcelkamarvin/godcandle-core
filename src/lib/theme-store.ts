@@ -14,7 +14,7 @@ const COOKIE_NAME = "quantin-theme";
 function getCookie(name: string): string | null {
   if (typeof document === "undefined") return null;
   const match = document.cookie.match(new RegExp(`(?:^|;\\s*)${name}=([^;]+)`));
-  return match ? decodeURIComponent(match[1]) : null;
+  return match && match[1] ? decodeURIComponent(match[1]) : null;
 }
 
 function setCookie(name: string, value: string) {
@@ -110,8 +110,9 @@ async function syncProfileTheme(theme: ThemeChoice) {
     // 2. Dynamic Supabase check (if global or injected client exists)
     const win =
       typeof window !== "undefined" ? (window as unknown as Record<string, unknown>) : null;
-    if (win && win.supabase && typeof win.supabase === "object") {
-      const sb = win.supabase as {
+    const winSb = win ? (win["supabase"] as any) : null;
+    if (winSb && typeof winSb === "object") {
+      const sb = winSb as {
         auth?: { getUser?: () => Promise<{ data?: { user?: { id?: string } } }> };
         from?: (table: string) => {
           update: (data: Record<string, unknown>) => {
@@ -136,8 +137,9 @@ export async function loadProfileTheme(): Promise<ThemeChoice | null> {
   try {
     const win =
       typeof window !== "undefined" ? (window as unknown as Record<string, unknown>) : null;
-    if (win && win.supabase && typeof win.supabase === "object") {
-      const sb = win.supabase as {
+    const winSb = win ? (win["supabase"] as any) : null;
+    if (winSb && typeof winSb === "object") {
+      const sb = winSb as {
         auth?: { getUser?: () => Promise<{ data?: { user?: { id?: string } } }> };
         from?: (table: string) => {
           select: (cols: string) => {
