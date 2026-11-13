@@ -337,6 +337,7 @@ export function LightweightCandleChart({
             value: sz,
             color: isBuy ? 'rgba(0, 217, 100, 0.35)' : 'rgba(255, 59, 48, 0.35)',
           });
+          chartRef.current?.timeScale().scrollToRealTime();
         } catch {
           // Guard against internal time-order assertions
         }

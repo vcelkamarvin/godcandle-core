@@ -1,6 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { MarketBar } from "@/components/godcandle/MarketBar";
 import { ChartCanvas } from "@/components/godcandle/ChartCanvas";
 import { useTrading } from "@/components/godcandle/TradingProvider";
 import {
@@ -19,13 +18,13 @@ import { RefreshCw, ShieldCheck, Zap, Activity } from "lucide-react";
 export const Route = createFileRoute("/analytics")({
   head: () => ({
     meta: [
-      { title: "godcandle — Protocol Analytics & Hyperliquid L1 Telemetry" },
+      { title: "godcandle — Market & Protocol Analytics" },
       {
         name: "description",
         content:
           "Real-time House Pool solvency, market statistics, perps volume, and FIFO settlement depth.",
       },
-      { property: "og:title", content: "godcandle — Protocol Analytics" },
+      { property: "og:title", content: "godcandle — Market & Protocol Analytics" },
       {
         property: "og:description",
         content:
@@ -70,39 +69,32 @@ function AnalyticsPage() {
   const currentMarket = (markets as Record<string, any>)[selectedMarket] ?? markets.BTC;
 
   return (
-    <main className="min-h-screen bg-[#FAFAFC] pb-16">
-      {/* Top Market Bar */}
-      <MarketBar
-        market={selectedMarket}
-        onSelect={setSelectedMarket}
-        compact
-      />
-
-      <div className="page-content space-y-4 pt-3">
+    <main className="min-h-screen bg-[#FAFAFC] pb-16 font-sans">
+      <div className="page-content space-y-4 pt-4 max-w-7xl mx-auto">
         {/* Header Ribbon & Status Bar */}
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-black/[0.06] bg-white p-3.5 shadow-xs">
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-3xl border border-black/[0.06] bg-white p-5 sm:p-6 shadow-xs">
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2.5">
               <span className="relative flex h-2.5 w-2.5">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
               </span>
-              <h1 className="text-base font-bold tracking-tight text-foreground">
-                Protocol Analytics & Hyperliquid L1 Telemetry
+              <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-foreground">
+                Protocol &amp; Market Analytics
               </h1>
-              <span className="rounded-full bg-[#EFEFFC] px-2 py-0.5 text-xs font-mono font-bold text-[#5E5CE6]">
-                MAINNET LIVE
+              <span className="rounded-full bg-[#E6F9EE] px-2.5 py-0.5 text-xs font-mono font-bold text-[#00D964]">
+                HYPEREVM MAINNET
               </span>
             </div>
-            <p className="mt-0.5 text-xs font-mono text-muted-foreground">
-              Solvency, Market Telemetry, and FIFO Settlement Queue
+            <p className="mt-1 text-xs text-muted-foreground font-mono">
+              Live House Pool Solvency, Funding Rates &amp; FIFO Settlement Telemetry
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            <div className="flex items-center gap-1.5 rounded-lg border border-black/[0.06] bg-[#F8F8F7] px-2.5 py-1 text-xs font-mono text-muted-foreground">
-              <Activity className="h-3 w-3 text-emerald-500" />
-              <span>{isLive ? "Hyperliquid API Connected" : "Local Telemetry Feed"}</span>
+            <div className="flex items-center gap-1.5 rounded-xl border border-black/[0.06] bg-[#FAFAFC] px-3 py-1.5 text-xs font-mono text-muted-foreground">
+              <Activity className="h-3.5 w-3.5 text-emerald-500" />
+              <span>{isLive ? "Hyperliquid L1 Connected" : "Local Telemetry Feed"}</span>
               <span className="text-black/10">|</span>
               <span>{lastUpdated.toLocaleTimeString()}</span>
             </div>
@@ -111,13 +103,14 @@ function AnalyticsPage() {
               type="button"
               onClick={() => refresh()}
               disabled={loading}
-              className="flex h-7 items-center gap-1.5 px-3 text-xs font-semibold rounded-lg bg-[#0A0A0A] hover:bg-[#1A1A1A] text-white active:scale-[0.98] transition-all cursor-pointer shadow-xs"
+              className="flex h-8 items-center gap-1.5 px-3.5 text-xs font-semibold rounded-xl bg-[#0A0A0A] hover:bg-[#1A1A1A] text-white active:scale-[0.98] transition-all cursor-pointer shadow-xs"
             >
-              <RefreshCw className={`h-2.5 w-2.5 ${loading ? "animate-spin" : ""}`} />
-              Sync
+              <RefreshCw className={`h-3 w-3 ${loading ? "animate-spin" : ""}`} />
+              <span>Sync</span>
             </button>
           </div>
         </div>
+
 
         {/* 6 Core Live Protocol Metrics Strip */}
         <section aria-label="Key Protocol Metrics" className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">

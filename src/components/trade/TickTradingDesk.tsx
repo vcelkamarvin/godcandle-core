@@ -151,14 +151,17 @@ export function FiveHundredXPage() {
   const [priceFlashDir, setPriceFlashDir] = useState<"up" | "down" | "flat">("flat");
   const flashTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const ALL_SYMBOLS: MarketSymbol[] = [
+    "BTC", "ETH", "SPX", "SOL", "HYPE", "DOGE", "SUI", "AVAX", "BNB", "LINK", "ARB", "OP", "TIA", "APT"
+  ];
+
   // Live prices per market symbol for multi-position tracking
-  const [livePrices, setLivePrices] = useState<Record<MarketSymbol, number>>({
-    BTC: livePriceManager.getPrice("BTC"),
-    ETH: livePriceManager.getPrice("ETH"),
-    SPX: livePriceManager.getPrice("SPX"),
-    SOL: livePriceManager.getPrice("SOL"),
-    HYPE: livePriceManager.getPrice("HYPE"),
-    DOGE: livePriceManager.getPrice("DOGE"),
+  const [livePrices, setLivePrices] = useState<Record<MarketSymbol, number>>(() => {
+    const init: Record<string, number> = {};
+    for (const s of ALL_SYMBOLS) {
+      init[s] = livePriceManager.getPrice(s) || 100;
+    }
+    return init as Record<MarketSymbol, number>;
   });
 
   // Sync initial livePrice when market changes
@@ -174,7 +177,7 @@ export function FiveHundredXPage() {
       setLivePrices((prev) => {
         let changed = false;
         const next = { ...prev };
-        for (const s of ["BTC", "ETH", "SPX", "SOL", "HYPE", "DOGE"] as MarketSymbol[]) {
+        for (const s of ALL_SYMBOLS) {
           if (prices[s] && prices[s] !== prev[s]) {
             next[s] = prices[s];
             changed = true;
@@ -242,17 +245,11 @@ export function FiveHundredXPage() {
   );
 
   // Map of live prices per symbol for multi-position tracking
-  const livePriceMap = useMemo(
-    () => ({
-      BTC: marketSymbol === "BTC" ? livePrice : livePrices.BTC,
-      ETH: marketSymbol === "ETH" ? livePrice : livePrices.ETH,
-      SPX: marketSymbol === "SPX" ? livePrice : livePrices.SPX,
-      SOL: marketSymbol === "SOL" ? livePrice : livePrices.SOL,
-      HYPE: marketSymbol === "HYPE" ? livePrice : livePrices.HYPE,
-      DOGE: marketSymbol === "DOGE" ? livePrice : livePrices.DOGE,
-    }),
-    [marketSymbol, livePrice, livePrices],
-  );
+  const livePriceMap = useMemo<Record<MarketSymbol, number>>(() => {
+    const map: Record<string, number> = { ...livePrices };
+    map[marketSymbol] = livePrice;
+    return map as Record<MarketSymbol, number>;
+  }, [marketSymbol, livePrice, livePrices]);
 
   // Multiple Open Positions State
   const [openPositions, setOpenPositions] = useState<PositionRecord[]>([

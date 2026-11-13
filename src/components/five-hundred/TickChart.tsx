@@ -29,17 +29,16 @@ interface TickChartProps {
   className?: string;
 }
 
-const ASSET_PARAMS: Record<
-  MarketSymbol,
-  {
-    basePrice: number;
-    driftMin: number;
-    driftMax: number;
-    jumpProb: number;
-    jumpMultiplier: number;
-    decimals: number;
-  }
-> = {
+interface AssetParam {
+  basePrice: number;
+  driftMin: number;
+  driftMax: number;
+  jumpProb: number;
+  jumpMultiplier: number;
+  decimals: number;
+}
+
+const ASSET_PARAMS: Partial<Record<MarketSymbol, AssetParam>> = {
   BTC: {
     basePrice: SHARED_BTC_PRICE,
     driftMin: -6,
@@ -88,7 +87,87 @@ const ASSET_PARAMS: Record<
     jumpMultiplier: 4,
     decimals: 4,
   },
+  SUI: {
+    basePrice: 2.15,
+    driftMin: -0.008,
+    driftMax: 0.008,
+    jumpProb: 0.08,
+    jumpMultiplier: 4,
+    decimals: 2,
+  },
+  AVAX: {
+    basePrice: 28.6,
+    driftMin: -0.05,
+    driftMax: 0.05,
+    jumpProb: 0.08,
+    jumpMultiplier: 4,
+    decimals: 2,
+  },
+  BNB: {
+    basePrice: 620.5,
+    driftMin: -0.3,
+    driftMax: 0.3,
+    jumpProb: 0.08,
+    jumpMultiplier: 4,
+    decimals: 1,
+  },
+  LINK: {
+    basePrice: 14.8,
+    driftMin: -0.03,
+    driftMax: 0.03,
+    jumpProb: 0.08,
+    jumpMultiplier: 4,
+    decimals: 2,
+  },
+  ARB: {
+    basePrice: 0.62,
+    driftMin: -0.002,
+    driftMax: 0.002,
+    jumpProb: 0.08,
+    jumpMultiplier: 4,
+    decimals: 3,
+  },
+  OP: {
+    basePrice: 1.75,
+    driftMin: -0.005,
+    driftMax: 0.005,
+    jumpProb: 0.08,
+    jumpMultiplier: 4,
+    decimals: 2,
+  },
+  TIA: {
+    basePrice: 5.4,
+    driftMin: -0.015,
+    driftMax: 0.015,
+    jumpProb: 0.08,
+    jumpMultiplier: 4,
+    decimals: 2,
+  },
+  APT: {
+    basePrice: 9.8,
+    driftMin: -0.02,
+    driftMax: 0.02,
+    jumpProb: 0.08,
+    jumpMultiplier: 4,
+    decimals: 2,
+  },
 };
+
+export function getAssetParams(symbol: string, spotPrice?: number): AssetParam {
+  const found = ASSET_PARAMS[symbol as MarketSymbol];
+  if (found) return found;
+  const base = spotPrice && spotPrice > 0 ? spotPrice : 10;
+  const decimals = base < 1 ? 4 : base < 10 ? 3 : 2;
+  const drift = base * 0.0008;
+  return {
+    basePrice: base,
+    driftMin: -drift,
+    driftMax: drift,
+    jumpProb: 0.08,
+    jumpMultiplier: 3.5,
+    decimals,
+  };
+}
 
 export function TickChart({
   marketSymbol,
@@ -152,7 +231,7 @@ export function TickChart({
 
   // Seed initial history for an asset so chart is full upon mounting
   const seedTicks = useCallback((symbol: MarketSymbol, base: number) => {
-    const params = ASSET_PARAMS[symbol];
+    const params = getAssetParams(symbol, base);
     const ticks: Tick[] = [];
     const now = Date.now();
     const count = 180;
@@ -224,7 +303,7 @@ export function TickChart({
     }
 
     // Initialize new asset ticks using spotPrice
-    const base = spotPrice > 0 ? spotPrice : ASSET_PARAMS[marketSymbol].basePrice;
+    const base = spotPrice > 0 ? spotPrice : getAssetParams(marketSymbol, spotPrice).basePrice;
     const { ticks, currentPrice } = seedTicks(marketSymbol, base);
     state.symbol = marketSymbol;
     state.ticks = ticks;
@@ -263,7 +342,7 @@ export function TickChart({
 
       const state = stateRef.current;
       const nowMs = Date.now();
-      const params = ASSET_PARAMS[state.symbol];
+      const params = getAssetParams(state.symbol, state.realAnchorPrice);
 
       // 1. Tick generator (runs every 100-180ms for lively 1000x micro-volatility)
       if (nowMs - state.lastTickTime >= state.nextTickDelay) {
@@ -834,7 +913,7 @@ export function TickChart({
     const price = yMin + norm * (yMax - yMin);
 
     isDraggingTargetRef.current = true;
-    onSetTargetPrice(Number(price.toFixed(ASSET_PARAMS[marketSymbol].decimals)));
+    onSetTargetPrice(Number(price.toFixed(getAssetParams(marketSymbol, spotPrice).decimals)));
   };
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -849,7 +928,7 @@ export function TickChart({
     const norm = (height - 32 - y) / (height - 64);
     const price = yMin + norm * (yMax - yMin);
 
-    onSetTargetPrice(Number(price.toFixed(ASSET_PARAMS[marketSymbol].decimals)));
+    onSetTargetPrice(Number(price.toFixed(getAssetParams(marketSymbol, spotPrice).decimals)));
   };
 
   const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
