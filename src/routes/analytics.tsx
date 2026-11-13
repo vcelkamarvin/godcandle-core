@@ -147,7 +147,7 @@ function AnalyticsPage() {
               ${fmtUsd(totalVolume24h, 0)}
             </p>
             <p className="mt-1 text-xs font-mono text-muted-foreground">
-              6 Markets Total
+              {Object.keys(markets).length || 14} Markets Total
             </p>
           </div>
 

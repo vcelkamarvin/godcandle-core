@@ -186,7 +186,7 @@ export function TradeTerminal() {
   };
 
   return (
-    <div className="mx-auto font-sans text-foreground space-y-1.5 max-w-[1920px] text-xs 2xl:h-full 2xl:flex 2xl:flex-col 2xl:overflow-hidden">
+    <div className="mx-auto font-sans text-foreground space-y-1.5 max-w-[1920px] w-full overflow-x-hidden text-xs min-[1440px]:h-full min-[1440px]:flex min-[1440px]:flex-col min-[1440px]:overflow-hidden 2xl:h-full 2xl:flex 2xl:flex-col 2xl:overflow-hidden">
       {/* 1. Market Bar: mark, 24h%, funding+countdown, OI, 24h vol, max lev, index/oracle on hover */}
       <MarketBar
         market={rawSymbol}
@@ -269,10 +269,10 @@ export function TradeTerminal() {
       </div>
 
       {/* 3 Columns: Chart (flex) | Book/Trades/Info (≈280px) | Order panel (≈340px) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 xl:grid-cols-[1fr_280px_340px] gap-2 items-start 2xl:flex-1 2xl:min-h-0 2xl:items-stretch">
+      <div className="grid grid-cols-1 lg:grid-cols-12 xl:grid-cols-[1fr_280px_340px] gap-2 items-start min-[1440px]:flex-1 min-[1440px]:min-h-0 min-[1440px]:items-stretch 2xl:flex-1 2xl:min-h-0 2xl:items-stretch">
         {/* Column 1: Chart Panel (flex, min 500px height) */}
         <div
-          className={`lg:col-span-7 xl:col-auto flex flex-col min-h-[500px] 2xl:min-h-0 2xl:h-full bg-white rounded-2xl border border-border overflow-hidden shadow-xs ${
+          className={`lg:col-span-7 xl:col-auto flex flex-col min-h-[500px] min-[1440px]:min-h-0 min-[1440px]:h-full 2xl:min-h-0 2xl:h-full bg-white rounded-2xl border border-border overflow-hidden shadow-xs ${
             isFullscreen ? 'fixed inset-2 z-50 min-h-[calc(100vh-16px)]' : ''
           } ${mobileTab === 'trade' ? 'hidden lg:flex' : 'flex'}`}
         >
@@ -412,7 +412,7 @@ export function TradeTerminal() {
 
         {/* Column 2: Book / Trades / Info (≈280px) */}
         <div
-          className={`hidden xl:block w-full xl:w-[280px] h-[520px] 2xl:h-full 2xl:min-h-0 shrink-0 ${
+          className={`hidden xl:block w-full xl:w-[280px] h-[520px] min-[1440px]:h-full min-[1440px]:min-h-0 2xl:h-full 2xl:min-h-0 shrink-0 ${
             mobileTab === 'trade' ? 'hidden' : 'hidden xl:block'
           }`}
         >
@@ -429,7 +429,7 @@ export function TradeTerminal() {
 
         {/* Column 3: Order Panel (≈340px) */}
         <div
-          className={`lg:col-span-5 xl:col-auto w-full xl:w-[340px] shrink-0 2xl:h-full 2xl:overflow-y-auto 2xl:min-h-0 ${
+          className={`lg:col-span-5 xl:col-auto w-full xl:w-[340px] shrink-0 min-[1440px]:h-full min-[1440px]:overflow-y-auto min-[1440px]:min-h-0 2xl:h-full 2xl:overflow-y-auto 2xl:min-h-0 ${
             mobileTab === 'chart' ? 'hidden lg:block' : 'block'
           }`}
         >
@@ -450,7 +450,7 @@ export function TradeTerminal() {
       </div>
 
       {/* 4. Bottom Tabs: Positions · Orders · Fills · Funding · Balances · Account Strip */}
-      <div className="mt-2 shrink-0 2xl:max-h-[220px] 2xl:overflow-y-auto">
+      <div className="mt-2 shrink-0 min-[1440px]:max-h-[220px] min-[1440px]:overflow-y-auto 2xl:max-h-[220px] 2xl:overflow-y-auto">
         <Dock
           feeds={t?.feeds || ({} as any)}
           open={t?.positions || []}

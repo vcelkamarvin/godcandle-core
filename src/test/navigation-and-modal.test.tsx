@@ -63,10 +63,10 @@ describe("Header Layout & Navigation Structure", () => {
     expect(headerContent).toContain("HYPERLIQUID L1 CONNECTED");
     expect(headerContent).not.toContain("Synthetic Engine Simulation");
     expect(headerContent).toContain("1000x Trading Simulation");
-    expect(headerContent).toContain('to="/goal"');
-    expect(headerContent).toContain('to="/boost"');
-    expect(headerContent).toContain("Price Target Calculator");
-    expect(headerContent).toContain("Boost Multiplier Calculator");
+    expect(headerContent).not.toContain('to="/goal"');
+    expect(headerContent).not.toContain('to="/boost"');
+    expect(headerContent).not.toContain("Price Target Calculator");
+    expect(headerContent).not.toContain("Boost Multiplier Calculator");
   });
 
   it("removes Goal and Boost pill segment from the main desktop and mobile navigation bar", () => {
@@ -76,14 +76,15 @@ describe("Header Layout & Navigation Structure", () => {
     expect(headerContent).not.toContain('aria-label="Boost Multiplier"');
   });
 
-  it("houses Goal and Boost under More dropdown menu with proper close handlers", () => {
-    // Both desktop and mobile More dropdowns contain Goal and Boost
-    expect(headerContent).toMatch(/to="\/goal"[\s\S]*?onClick=\{\(\) => setMoreOpen\(false\)\}/);
-    expect(headerContent).toMatch(/to="\/boost"[\s\S]*?onClick=\{\(\) => setMoreOpen\(false\)\}/);
-    expect(headerContent).toMatch(/to="\/goal"[\s\S]*?onClick=\{\(\) => setMobileMoreOpen\(false\)\}/);
-    expect(headerContent).toMatch(/to="\/boost"[\s\S]*?onClick=\{\(\) => setMobileMoreOpen\(false\)\}/);
-    expect(headerContent).toContain('pathname === "/goal" ||');
-    expect(headerContent).toContain('pathname === "/boost" ||');
+  it("houses clean institutional links under More dropdown menu with proper close handlers", () => {
+    // Both desktop and mobile More dropdowns contain Protocol Analytics and Leaderboard
+    expect(headerContent).toMatch(/to="\/analytics"[\s\S]*?onClick=\{\(\) => setMoreOpen\(false\)\}/);
+    expect(headerContent).toMatch(/to="\/leaderboard"[\s\S]*?onClick=\{\(\) => setMoreOpen\(false\)\}/);
+    expect(headerContent).toMatch(/to="\/analytics"[\s\S]*?onClick=\{\(\) => setMobileMoreOpen\(false\)\}/);
+    expect(headerContent).toContain('pathname === "/analytics" ||');
+    expect(headerContent).toContain('pathname === "/leaderboard" ||');
+    expect(headerContent).not.toContain('pathname === "/goal" ||');
+    expect(headerContent).not.toContain('pathname === "/boost" ||');
   });
 });
 

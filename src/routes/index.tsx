@@ -32,7 +32,7 @@ function GodcandlePerpsPage() {
   }, [t]);
 
   return (
-    <div className="py-1 sm:py-1.5 px-2.5 sm:px-4 md:px-5 2xl:h-[calc(100vh-66px)] 2xl:overflow-hidden 2xl:flex 2xl:flex-col">
+    <div className="py-1 sm:py-1.5 px-2.5 sm:px-4 md:px-5 min-[1440px]:h-[calc(100vh-66px)] min-[1440px]:overflow-hidden min-[1440px]:flex min-[1440px]:flex-col">
       <TradeTerminal />
     </div>
   );

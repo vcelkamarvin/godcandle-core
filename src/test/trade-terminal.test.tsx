@@ -187,14 +187,14 @@ describe("Trade Execution Mechanics", () => {
     expect(content).not.toContain('<RotateCcw');
   });
 
-  it("verifies Goal and Boost routes forward active asset to the trading terminal", () => {
+  it("verifies Goal and Boost routes redirect cleanly to the unified perpetual trading terminal", () => {
     const fs = require("fs");
     const path = require("path");
     const goalContent = fs.readFileSync(path.resolve(__dirname, "../routes/goal.tsx"), "utf-8");
     const boostContent = fs.readFileSync(path.resolve(__dirname, "../routes/boost.tsx"), "utf-8");
 
-    expect(goalContent).toContain('search={{ pair: `${underlying}-USD` } as any}');
-    expect(boostContent).toContain('search={{ pair: `${underlying}-USD` } as any}');
+    expect(goalContent).toContain('redirect({ to: "/"');
+    expect(boostContent).toContain('redirect({ to: "/"');
   });
 
   it("verifies mobile 1-tap Perps ↔ 1000x switcher preserves active market pair in TradeTerminal and Header", () => {

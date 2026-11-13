@@ -53,7 +53,8 @@ describe("PnL Share Card Structure & Specification", () => {
     expect(modalContent).not.toContain("Target Goal Price:");
     expect(modalContent).not.toContain("Convex Boost Multiplier:");
     expect(modalContent).not.toContain("CONVEX BOOST ROI");
-    expect(modalContent).toContain("BOOST MULTIPLIER ROI");
+    expect(modalContent).not.toContain("BOOST MULTIPLIER ROI");
+    expect(modalContent).toContain("ACCELERATED RETURN ROI");
     expect(modalContent).toContain("Perps. Options. Up to 1000x.");
     expect(modalContent).toContain("One terminal. Institutional-grade liquidity.");
   });
@@ -118,14 +119,14 @@ describe("PnL Share Card Interactive Component (DOM & State)", () => {
     container.remove();
   });
 
-  it("renders programmatic /goal mode with calculated target goal ROI", async () => {
+  it("renders programmatic target mode with calculated target ROI", async () => {
     const root = createRoot(container);
     await act(async () => {
       root.render(<ShareModal trade={sampleTrade} onOpenChange={onOpenChangeMock} initialMode="goal" />);
     });
 
-    expect(container.textContent).toContain("TARGET GOAL ROI");
-    expect(container.textContent).toContain("TARGET GOAL");
+    expect(container.textContent).toContain("TARGET RETURN ROI");
+    expect(container.textContent).toContain("PRICE TARGET");
 
     await act(async () => {
       root.unmount();
@@ -133,14 +134,14 @@ describe("PnL Share Card Interactive Component (DOM & State)", () => {
     container.remove();
   });
 
-  it("renders programmatic /boost mode with calculated convex boosted ROI", async () => {
+  it("renders programmatic accelerated leverage mode with calculated ROI", async () => {
     const root = createRoot(container);
     await act(async () => {
       root.render(<ShareModal trade={sampleTrade} onOpenChange={onOpenChangeMock} initialMode="boost" />);
     });
 
-    expect(container.textContent).toContain("BOOST MULTIPLIER ROI");
-    expect(container.textContent).toContain("BOOSTED LEVERAGE");
+    expect(container.textContent).toContain("ACCELERATED RETURN ROI");
+    expect(container.textContent).toContain("ACCELERATED LEV");
 
     await act(async () => {
       root.unmount();

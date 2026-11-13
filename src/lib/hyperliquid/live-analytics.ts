@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { MARKETS, type MarketSymbol, getMarket } from "@/config/markets";
+import { ALL_MARKETS, type MarketSymbol, getMarket } from "@/config/markets";
 import { computeClampedPrice } from "./index";
 
 export interface HyperliquidMarketData {
@@ -298,7 +298,7 @@ export function useHyperliquidAnalytics() {
   const markets = useMemo(() => {
     const result: Record<MarketSymbol, HyperliquidMarketData> = {} as Record<MarketSymbol, HyperliquidMarketData>;
 
-    for (const m of MARKETS) {
+    for (const m of ALL_MARKETS) {
       const live = rawHlData[m.symbol];
       const base = BASELINE_PRICES[m.symbol];
 

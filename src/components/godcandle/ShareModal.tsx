@@ -166,11 +166,11 @@ export function ShareModal({
       return {
         displayRoiPct: goalRoi,
         displayDollar: goalPnl,
-        pnlHeadingLabel: "TARGET GOAL ROI",
+        pnlHeadingLabel: "TARGET RETURN ROI",
         statCols: [
           { label: "ENTRY PRICE", value: `$${fmtUsd(rawEntry, market.decimals)}` },
           { label: isClosed ? "EXIT PRICE" : "MARK PRICE", value: `$${fmtUsd(rawExit, market.decimals)}` },
-          { label: "TARGET GOAL", value: `$${fmtUsd(targetGoal, market.decimals)}` },
+          { label: "PRICE TARGET", value: `$${fmtUsd(targetGoal, market.decimals)}` },
         ],
       };
     }
@@ -186,11 +186,11 @@ export function ShareModal({
       return {
         displayRoiPct: boostedRoi,
         displayDollar: boostedPnl,
-        pnlHeadingLabel: "BOOST MULTIPLIER ROI",
+        pnlHeadingLabel: "ACCELERATED RETURN ROI",
         statCols: [
           { label: "BASE ENTRY", value: `$${fmtUsd(rawEntry, market.decimals)}` },
           { label: isClosed ? "EXIT PRICE" : "MARK PRICE", value: `$${fmtUsd(rawExit, market.decimals)}` },
-          { label: "BOOSTED LEVERAGE", value: `${effectiveLev}×` },
+          { label: "ACCELERATED LEV", value: `${effectiveLev}×` },
         ],
       };
     }

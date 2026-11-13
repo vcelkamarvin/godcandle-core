@@ -166,19 +166,20 @@ function getAgentReply(
   const isHype = pair.startsWith("HYPE") || q.includes("hype");
   const activeAsset = isEth ? "ETH-PERP" : isSol ? "SOL-PERP" : isHype ? "HYPE-PERP" : "BTC-PERP";
 
-  // Goal query (/goal or goal or target)
+  // Price target query (target, take profit, resistance, milestone)
   if (
-    q.includes("goal") ||
-    q.includes("/goal") ||
+    q.includes("target") ||
+    q.includes("tp") ||
+    q.includes("take profit") ||
+    q.includes("resistance") ||
     q.includes("cíl") ||
-    q.includes("cil") ||
-    q.includes("target")
+    q.includes("cil")
   ) {
     if (activeAsset === "ETH-PERP") {
       return {
         text: "Target milestone: $3,580 (+3.47%). Momentum structure aligns for long continuation toward dynamic resistance.",
         tradeSetup: {
-          id: "setup-eth-goal",
+          id: "setup-eth-target",
           asset: "ETH-PERP",
           bias: "long",
           leverage: 10,
@@ -192,7 +193,7 @@ function getAgentReply(
           targetGain: "+$120 (+3.47%)",
           riskReward: "2.4R",
           invalidation: "15m close below $3,410",
-          setupType: "Target Goal",
+          setupType: "Price Target",
         },
       };
     }
@@ -200,7 +201,7 @@ function getAgentReply(
       return {
         text: "Target milestone: $152.00 (+6.97%). Momentum structure aligns for long continuation toward dynamic resistance.",
         tradeSetup: {
-          id: "setup-sol-goal",
+          id: "setup-sol-target",
           asset: "SOL-PERP",
           bias: "long",
           leverage: 10,
@@ -214,7 +215,7 @@ function getAgentReply(
           targetGain: "+$10.00 (+7.04%)",
           riskReward: "2.8R",
           invalidation: "15m close below $138.50",
-          setupType: "Target Goal",
+          setupType: "Price Target",
         },
       };
     }
@@ -222,7 +223,7 @@ function getAgentReply(
       return {
         text: "Target milestone: $21.50 (+16.53%). Momentum structure aligns for long continuation toward dynamic resistance.",
         tradeSetup: {
-          id: "setup-hype-goal",
+          id: "setup-hype-target",
           asset: "HYPE-PERP",
           bias: "long",
           leverage: 10,
@@ -236,14 +237,14 @@ function getAgentReply(
           targetGain: "+$3.05 (+16.53%)",
           riskReward: "3.05R",
           invalidation: "1h close below $17.45",
-          setupType: "Target Goal",
+          setupType: "Price Target",
         },
       };
     }
     return {
       text: "Target milestone: $64,720 (+0.58%). Momentum structure aligns for long continuation toward dynamic resistance.",
       tradeSetup: {
-        id: "setup-btc-goal",
+        id: "setup-btc-target",
         asset: "BTC-PERP",
         bias: "long",
         leverage: 10,
@@ -257,15 +258,16 @@ function getAgentReply(
         targetGain: "+$370 (+0.58%)",
         riskReward: "1.5R",
         invalidation: "15m close below $64,100",
-        setupType: "Target Goal",
+        setupType: "Price Target",
       },
     };
   }
 
-  // Boost query (/boost or boost or leverage)
+  // Momentum query (momentum, scalp, leverage, breakout)
   if (
-    q.includes("boost") ||
-    q.includes("/boost") ||
+    q.includes("momentum") ||
+    q.includes("scalp") ||
+    q.includes("breakout") ||
     q.includes("convex") ||
     q.includes("páka") ||
     q.includes("paka") ||
@@ -275,7 +277,7 @@ function getAgentReply(
       return {
         text: "10× leverage scalp setup primed for high capital efficiency with tight invalidation.",
         tradeSetup: {
-          id: "setup-eth-boost",
+          id: "setup-eth-momentum",
           asset: "ETH-PERP",
           bias: "long",
           leverage: 10,
@@ -289,7 +291,7 @@ function getAgentReply(
           targetGain: "+$120 (+3.47%)",
           riskReward: "2.4R",
           invalidation: "15m close below $3,410",
-          setupType: "10× Boost",
+          setupType: "10× Momentum Scalp",
         },
       };
     }
@@ -297,7 +299,7 @@ function getAgentReply(
       return {
         text: "10× leverage scalp setup primed for high capital efficiency with tight invalidation.",
         tradeSetup: {
-          id: "setup-sol-boost",
+          id: "setup-sol-momentum",
           asset: "SOL-PERP",
           bias: "long",
           leverage: 10,
@@ -311,7 +313,7 @@ function getAgentReply(
           targetGain: "+$10.00 (+7.04%)",
           riskReward: "2.8R",
           invalidation: "15m close below $138.50",
-          setupType: "10× Boost",
+          setupType: "10× Momentum Scalp",
         },
       };
     }
@@ -319,7 +321,7 @@ function getAgentReply(
       return {
         text: "10× leverage scalp setup primed for high capital efficiency with tight invalidation on HYPE-PERP.",
         tradeSetup: {
-          id: "setup-hype-boost",
+          id: "setup-hype-momentum",
           asset: "HYPE-PERP",
           bias: "long",
           leverage: 10,
@@ -333,14 +335,14 @@ function getAgentReply(
           targetGain: "+$0.65 (+3.52%)",
           riskReward: "2.17R",
           invalidation: "15m close below $18.15",
-          setupType: "10× Boost",
+          setupType: "10× Momentum Scalp",
         },
       };
     }
     return {
       text: "10× leverage scalp setup primed for high capital efficiency with tight invalidation.",
       tradeSetup: {
-        id: "setup-btc-boost",
+        id: "setup-btc-momentum",
         asset: "BTC-PERP",
         bias: "long",
         leverage: 10,
@@ -354,7 +356,7 @@ function getAgentReply(
         targetGain: "+$370 (+0.58%)",
         riskReward: "1.5R",
         invalidation: "15m close below $64,100",
-        setupType: "10× Boost",
+        setupType: "10× Momentum Scalp",
       },
     };
   }

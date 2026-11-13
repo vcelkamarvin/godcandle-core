@@ -44,13 +44,11 @@ export function Header() {
 
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const isCandleActive = pathname.startsWith("/candle") || pathname.startsWith("/staking");
-  const isGoalActive = pathname === "/goal";
-  const isBoostActive = pathname === "/boost";
   const isMoreActive =
     pathname === "/analytics" ||
     pathname === "/leaderboard" ||
-    pathname === "/goal" ||
-    pathname === "/boost" ||
+    pathname === "/portfolio" ||
+    pathname === "/staking" ||
     pathname === "/docs" ||
     pathname.startsWith("/docs") ||
     pathname === "/settings" ||
@@ -171,7 +169,7 @@ export function Header() {
                 </Link>
               </div>
 
-              {/* Clean More Menu for secondary links (Docs, Roadmap, Settings, Goal, Boost, Teamwork) */}
+              {/* Clean More Menu for secondary links (Analytics, Leaderboard, Docs, Roadmap, Settings) */}
               <div className="relative" ref={moreRef}>
                 <button
                   type="button"
@@ -200,8 +198,27 @@ export function Header() {
                     role="menu"
                     className="absolute left-0 top-full mt-2 w-56 rounded-2xl border border-border bg-white p-1.5 shadow-xl animate-in zoom-in-95 fade-in-0 duration-150 z-50 divide-y divide-border/50"
                   >
-                    {/* Insights & Community */}
+                    {/* Primary Analytics & Terminal Links */}
                     <div className="pb-1 space-y-0.5">
+                      <Link
+                        to="/analytics"
+                        role="menuitem"
+                        onClick={() => setMoreOpen(false)}
+                        className={`flex items-center gap-2.5 p-2 rounded-xl transition-colors text-left ${
+                          pathname === "/analytics" ? "bg-secondary font-medium" : "hover:bg-secondary"
+                        }`}
+                      >
+                        <div className="flex size-7 items-center justify-center rounded-lg bg-[#EFF6FF] text-[#2563EB]">
+                          <BarChart2 className="size-3.5" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-semibold text-foreground">Protocol Analytics</p>
+                          <p className="text-xs text-muted-foreground font-normal">
+                            Telemetry &amp; Funding
+                          </p>
+                        </div>
+                      </Link>
+
                       <Link
                         to="/leaderboard"
                         role="menuitem"
@@ -220,66 +237,44 @@ export function Header() {
                           </p>
                         </div>
                       </Link>
-                    </div>
 
-                    {/* Tools: Goal, Boost, Teamwork */}
-                    <div className="py-1 space-y-0.5">
                       <Link
-                        to="/goal"
+                        to="/portfolio"
                         role="menuitem"
                         onClick={() => setMoreOpen(false)}
-                        title="Price Target Calculator"
                         className={`flex items-center gap-2.5 p-2 rounded-xl transition-colors text-left ${
-                          pathname === "/goal" ? "bg-secondary font-medium" : "hover:bg-secondary"
+                          pathname === "/portfolio" ? "bg-secondary font-medium" : "hover:bg-secondary"
                         }`}
                       >
-                        <div className="flex size-7 items-center justify-center rounded-lg bg-[#EFF6FF] text-[#2563EB]">
-                          <Target className="size-3.5" />
+                        <div className="flex size-7 items-center justify-center rounded-lg bg-[#F0FDF4] text-[#16A34A]">
+                          <PieChart className="size-3.5" />
                         </div>
                         <div>
-                          <p className="text-xs font-semibold text-foreground">Goal</p>
+                          <p className="text-xs font-semibold text-foreground">Portfolio</p>
                           <p className="text-xs text-muted-foreground font-normal">
-                            Price Target Calculator
+                            Positions &amp; Balances
                           </p>
                         </div>
                       </Link>
 
                       <Link
-                        to="/boost"
+                        to="/staking"
                         role="menuitem"
                         onClick={() => setMoreOpen(false)}
-                        title="Boost Multiplier Calculator"
                         className={`flex items-center gap-2.5 p-2 rounded-xl transition-colors text-left ${
-                          pathname === "/boost" ? "bg-secondary font-medium" : "hover:bg-secondary"
+                          pathname === "/staking" ? "bg-secondary font-medium" : "hover:bg-secondary"
                         }`}
                       >
                         <div className="flex size-7 items-center justify-center rounded-lg bg-[#FAF5FF] text-[#9333EA]">
                           <Zap className="size-3.5" />
                         </div>
                         <div>
-                          <p className="text-xs font-semibold text-foreground">Boost</p>
+                          <p className="text-xs font-semibold text-foreground">Staking</p>
                           <p className="text-xs text-muted-foreground font-normal">
-                            Multiplier Calculator
+                            House Pool Yield
                           </p>
                         </div>
                       </Link>
-
-                      <a
-                        href="/main#teamwork"
-                        role="menuitem"
-                        onClick={() => setMoreOpen(false)}
-                        className="flex items-center gap-2.5 p-2 rounded-xl hover:bg-secondary transition-colors text-left"
-                      >
-                        <div className="flex size-7 items-center justify-center rounded-lg bg-[#F0FDF4] text-[#16A34A]">
-                          <Sparkles className="size-3.5" />
-                        </div>
-                        <div>
-                          <p className="text-xs font-semibold text-foreground">Teamwork</p>
-                          <p className="text-xs text-muted-foreground font-normal">
-                            Collaborative Syndicates
-                          </p>
-                        </div>
-                      </a>
                     </div>
 
                     {/* Hidden compatibility landmarks */}
@@ -297,22 +292,6 @@ export function Header() {
                         onClick={() => setMoreOpen(false)}
                       >
                         Analysis
-                      </Link>
-                      <Link
-                        to="/goal"
-                        role="menuitem"
-                        onClick={() => setMoreOpen(false)}
-                        title="Price Target Calculator"
-                      >
-                        Goal Price Target Calculator
-                      </Link>
-                      <Link
-                        to="/boost"
-                        role="menuitem"
-                        onClick={() => setMoreOpen(false)}
-                        title="Boost Multiplier Calculator"
-                      >
-                        Boost Boost Multiplier Calculator
                       </Link>
                     </div>
 
@@ -521,58 +500,41 @@ export function Header() {
                   </Link>
                 </div>
 
-                {/* Mobile Tools: Goal, Boost, Teamwork */}
+                {/* Mobile Tools & Protocol Links */}
                 <div className="py-1 space-y-0.5">
                   <Link
-                    to="/goal"
+                    to="/analytics"
                     role="menuitem"
                     onClick={() => setMobileMoreOpen(false)}
-                    title="Price Target Calculator"
                     className={`flex items-center gap-2.5 p-2 rounded-xl transition-colors text-left ${
-                      pathname === "/goal" ? "bg-secondary font-medium" : "hover:bg-secondary"
+                      pathname === "/analytics" ? "bg-secondary font-medium" : "hover:bg-secondary"
                     }`}
                   >
                     <div className="flex size-7 items-center justify-center rounded-lg bg-[#EFF6FF] text-[#2563EB]">
-                      <Target className="size-3.5" />
+                      <BarChart2 className="size-3.5" />
                     </div>
                     <div>
-                      <p className="text-xs font-semibold text-foreground">Goal</p>
-                      <p className="text-xs text-muted-foreground font-normal">Price Target Calculator</p>
+                      <p className="text-xs font-semibold text-foreground">Protocol Analytics</p>
+                      <p className="text-xs text-muted-foreground font-normal">Telemetry &amp; Funding</p>
                     </div>
                   </Link>
 
                   <Link
-                    to="/boost"
+                    to="/portfolio"
                     role="menuitem"
                     onClick={() => setMobileMoreOpen(false)}
-                    title="Boost Multiplier Calculator"
                     className={`flex items-center gap-2.5 p-2 rounded-xl transition-colors text-left ${
-                      pathname === "/boost" ? "bg-secondary font-medium" : "hover:bg-secondary"
+                      pathname === "/portfolio" ? "bg-secondary font-medium" : "hover:bg-secondary"
                     }`}
                   >
-                    <div className="flex size-7 items-center justify-center rounded-lg bg-[#FAF5FF] text-[#9333EA]">
-                      <Zap className="size-3.5" />
+                    <div className="flex size-7 items-center justify-center rounded-lg bg-[#F0FDF4] text-[#16A34A]">
+                      <PieChart className="size-3.5" />
                     </div>
                     <div>
-                      <p className="text-xs font-semibold text-foreground">Boost</p>
-                      <p className="text-xs text-muted-foreground font-normal">Multiplier Calculator</p>
+                      <p className="text-xs font-semibold text-foreground">Portfolio</p>
+                      <p className="text-xs text-muted-foreground font-normal">Positions &amp; Balances</p>
                     </div>
                   </Link>
-
-                  <a
-                    href="/main#teamwork"
-                    role="menuitem"
-                    onClick={() => setMobileMoreOpen(false)}
-                    className="flex items-center gap-2.5 p-2 rounded-xl hover:bg-secondary transition-colors text-left"
-                  >
-                    <div className="flex size-7 items-center justify-center rounded-lg bg-[#F0FDF4] text-[#16A34A]">
-                      <Sparkles className="size-3.5" />
-                    </div>
-                    <div>
-                      <p className="text-xs font-semibold text-foreground">Teamwork</p>
-                      <p className="text-xs text-muted-foreground font-normal">Collaborative Syndicates</p>
-                    </div>
-                  </a>
                 </div>
 
                 {/* Hidden compatibility landmarks */}
@@ -583,22 +545,6 @@ export function Header() {
                     onClick={() => setMobileMoreOpen(false)}
                   >
                     Analysis
-                  </Link>
-                  <Link
-                    to="/goal"
-                    role="menuitem"
-                    onClick={() => setMobileMoreOpen(false)}
-                    title="Price Target Calculator"
-                  >
-                    Goal Price Target Calculator
-                  </Link>
-                  <Link
-                    to="/boost"
-                    role="menuitem"
-                    onClick={() => setMobileMoreOpen(false)}
-                    title="Boost Multiplier Calculator"
-                  >
-                    Boost Boost Multiplier Calculator
                   </Link>
                 </div>
 
