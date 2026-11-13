@@ -48,10 +48,10 @@ export function PnLText({
   }[size];
 
   const colorClass = isPositive
-    ? "text-[#3DDC97]"
+    ? "text-[#00D964]"
     : isNegative
-      ? "text-[#FF5C6C]"
-      : "text-[#A8A8B3]";
+      ? "text-[#FF3B30]"
+      : "text-muted-foreground";
 
   return (
     <span

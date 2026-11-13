@@ -344,7 +344,7 @@ export function MarketBar({
               <span
                 className={cn(
                   "flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[12px] font-mono font-semibold",
-                  isPositive ? "bg-[#E3F8EC] text-[#06964A]" : "bg-[#FFECEA] text-[#FF3B30]"
+                  isPositive ? "bg-[#E6F9EE] text-[#00D964]" : "bg-[#FEECEB] text-[#FF3B30]"
                 )}
               >
                 {isPositive ? <TrendingUp className="size-3" /> : <TrendingDown className="size-3" />}
@@ -359,7 +359,7 @@ export function MarketBar({
             <div className="hidden md:flex items-center gap-4 lg:gap-5 text-xs font-mono pl-3.5 border-l border-border/70 text-foreground select-none">
               <div>
                 <span className="block text-[10.5px] uppercase tracking-wider text-muted-foreground font-semibold">Funding</span>
-                <span className="tabular font-semibold text-[#06964A] text-[12.5px] sm:text-[13px]">
+                <span className="tabular font-semibold text-[#00D964] text-[12.5px] sm:text-[13px]">
                   {fundingRate.replace(' / 1h', '')} <span className="text-[10px] text-muted-foreground font-normal">({Math.floor(60 - (Date.now() / 60000) % 60)}m)</span>
                 </span>
               </div>
@@ -649,8 +649,8 @@ export function MarketBar({
                         className={cn(
                           "tabular text-xs font-semibold px-1 py-0.2 rounded-md inline-block",
                           ch >= 0
-                            ? "bg-[#E3F8EC] text-[#06964A]"
-                            : "bg-[#FFECEA] text-[#FF3B30]"
+                            ? "bg-[#E6F9EE] text-[#00D964]"
+                            : "bg-[#FEECEB] text-[#FF3B30]"
                         )}
                       >
                         {ch >= 0 ? "+" : ""}
@@ -669,7 +669,7 @@ export function MarketBar({
                     </div>
 
                     {/* Funding */}
-                    <div className="hidden md:block text-right text-[#06964A] font-medium text-xs">
+                    <div className="hidden md:block text-right text-[#00D964] font-medium text-xs">
                       {FUNDING_RATES[m.symbol]?.replace(' / 1h', '') || '0.01%'}
                     </div>
 
@@ -731,7 +731,7 @@ export function MarketBar({
                 <span className="rounded-full bg-white border border-border px-2.5 py-0.5 text-xs font-mono font-semibold tracking-wider uppercase text-muted-foreground shadow-2xs">
                   {previewMarket.maxLeverage === 1000 ? "1000x Synthetic Perp" : "Perpetual Futures"}
                 </span>
-                <span className="flex items-center gap-1.5 text-xs font-mono font-medium text-[#06964A]">
+                <span className="flex items-center gap-1.5 text-xs font-mono font-medium text-[#00D964]">
                   <span className="size-1.5 rounded-full bg-[#00D964] animate-pulse" />
                   Live Feed
                 </span>
@@ -762,8 +762,8 @@ export function MarketBar({
                   className={cn(
                     "flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-mono font-bold border",
                     previewChange >= 0
-                      ? "bg-[#E3F8EC] text-[#06964A] border-[#A0D4CA]/50"
-                      : "bg-[#FFECEA] text-[#FF3B30] border-[#FFDAC8]/50"
+                      ? "bg-[#E6F9EE] text-[#00D964] border-[#00D964]/30"
+                      : "bg-[#FEECEB] text-[#FF3B30] border-[#FF3B30]/30"
                   )}
                 >
                   {previewChange >= 0 ? (
@@ -807,7 +807,7 @@ export function MarketBar({
                   <span className="text-xs font-mono uppercase text-muted-foreground block font-medium">
                     Funding Rate
                   </span>
-                  <span className="text-xs font-mono font-semibold text-[#06964A]">
+                  <span className="text-xs font-mono font-semibold text-[#00D964]">
                     {FUNDING_RATES[previewMarket.symbol]}
                   </span>
                 </div>
@@ -825,7 +825,7 @@ export function MarketBar({
                   <span className="text-xs font-mono uppercase text-muted-foreground block font-medium">
                     Order Type
                   </span>
-                  <span className="text-xs font-mono font-semibold text-[#06964A]">
+                  <span className="text-xs font-mono font-semibold text-[#00D964]">
                     Market / Limit
                   </span>
                 </div>
@@ -843,7 +843,7 @@ export function MarketBar({
                   <span className="text-xs font-mono uppercase text-muted-foreground block font-medium">
                     Settlement
                   </span>
-                  <span className="text-xs font-mono font-semibold text-[#06964A]">
+                  <span className="text-xs font-mono font-semibold text-[#00D964]">
                     Instant Block FIFO
                   </span>
                 </div>

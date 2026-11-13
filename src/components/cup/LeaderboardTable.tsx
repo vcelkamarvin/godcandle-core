@@ -57,13 +57,13 @@ export function LeaderboardTable() {
             <div>
               <span className="text-[9px] text-muted-foreground block">SEASON ENDS IN</span>
               <span className="text-foreground font-bold text-xs tabular flex items-center gap-1 justify-end">
-                <Timer className="w-3 h-3 text-[#06964A]" />
+                <Timer className="w-3 h-3 text-[#00D964]" />
                 2d 14h 22m
               </span>
             </div>
             <div className="pl-3.5 border-l border-border">
               <span className="text-[9px] text-muted-foreground block">PRIZE POOL</span>
-              <span className="text-[#06964A] font-bold text-sm sm:text-base tabular">$53,500 USDC</span>
+              <span className="text-[#00D964] font-bold text-sm sm:text-base tabular">$53,500 USDC</span>
             </div>
           </div>
         </div>
@@ -78,7 +78,7 @@ export function LeaderboardTable() {
                 className={`p-3 rounded-2xl border relative transition-all shadow-xs ${
                   isFirst
                     ? 'border-foreground/20 bg-gradient-to-b from-[#CDC3F0]/10 via-[#FFDAC8]/5 to-white'
-                    : 'border-border bg-[#F6F6F4]/50'
+                    : 'border-black/[0.06] bg-[#FAFAFC]'
                 }`}
               >
                 <div className="flex justify-between items-start mb-1.5">
@@ -86,12 +86,12 @@ export function LeaderboardTable() {
                     className={`px-2 py-0.5 text-[10px] font-bold rounded-full ${
                       isFirst
                         ? 'bg-gradient-to-r from-[#CDC3F0] via-[#FFDAC8] to-[#A0D4CA] text-foreground shadow-xs'
-                        : 'bg-white text-muted-foreground border border-border'
+                        : 'bg-white text-muted-foreground border border-black/[0.06]'
                     }`}
                   >
                     RANK #{item.rank}
                   </span>
-                  <span className="text-[#06964A] font-bold tabular text-xs sm:text-sm">
+                  <span className="text-[#00D964] font-bold tabular text-xs sm:text-sm">
                     ${item.prizeUsdc.toLocaleString()} USDC
                   </span>
                 </div>
@@ -102,7 +102,7 @@ export function LeaderboardTable() {
 
                 <div className="mt-2 flex items-baseline justify-between">
                   <span className="text-[10px] text-muted-foreground">NET ROI</span>
-                  <span className="text-[#06964A] font-bold tabular text-base">
+                  <span className="text-[#00D964] font-bold tabular text-base">
                     +{item.roi}%
                   </span>
                 </div>
@@ -118,9 +118,9 @@ export function LeaderboardTable() {
       </div>
 
       {/* Standings Table */}
-      <div className="rounded-2xl border border-border bg-white overflow-hidden shadow-xs">
+      <div className="rounded-2xl border border-black/[0.06] bg-white overflow-hidden shadow-xs">
         <table className="w-full min-w-[700px] text-left">
-          <thead className="bg-[#F6F6F4] text-muted-foreground text-[10px] uppercase border-b border-border">
+          <thead className="bg-[#FAFAFC] text-muted-foreground text-[10px] uppercase border-b border-black/[0.06]">
             <tr>
               <th className="py-2 px-3">Rank</th>
               <th className="py-2 px-3">Trader</th>
@@ -132,17 +132,17 @@ export function LeaderboardTable() {
               <th className="py-2 px-3 text-right">Prize</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-border/70">
+          <tbody className="divide-y divide-black/[0.04]">
             {CUP_STANDINGS.map((row) => (
-              <tr key={row.rank} className="hover:bg-[#F6F6F4]/50 transition-colors">
+              <tr key={row.rank} className="hover:bg-[#FAFAFC] transition-colors">
                 <td className="py-2 px-3 font-bold tabular text-foreground">#{row.rank}</td>
                 <td className="py-2 px-3 text-foreground font-semibold tabular">{row.trader}</td>
-                <td className="py-2 px-3 text-[#06964A] font-bold tabular">+{row.roi}%</td>
+                <td className="py-2 px-3 text-[#00D964] font-bold tabular">+{row.roi}%</td>
                 <td className="py-2 px-3 text-foreground tabular">${row.pnl.toLocaleString()}</td>
                 <td className="py-2 px-3 text-muted-foreground tabular">{row.volume}</td>
                 <td className="py-2 px-3 text-foreground tabular">{row.winRate}</td>
                 <td className="py-2 px-3 text-muted-foreground text-[11px]">{row.trophy}</td>
-                <td className="py-2 px-3 text-right font-bold text-[#06964A] tabular">
+                <td className="py-2 px-3 text-right font-bold text-[#00D964] tabular">
                   ${row.prizeUsdc.toLocaleString()} USDC
                 </td>
               </tr>

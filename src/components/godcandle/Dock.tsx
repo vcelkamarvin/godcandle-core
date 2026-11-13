@@ -289,10 +289,10 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
                           ${fmtUsd(pos.stake, 2)}
                         </td>
                         <td className="py-1.5 px-2 text-right">
-                          <div className={isUp ? 'text-[#06964A] font-bold' : 'text-[#FF3B30] font-bold'}>
+                          <div className={isUp ? 'text-[#00D964] font-bold' : 'text-[#FF3B30] font-bold'}>
                             {fmtSigned(pnl)}
                           </div>
-                          <div className={`text-xs ${isUp ? 'text-[#06964A]' : 'text-[#FF3B30]'}`}>
+                          <div className={`text-xs ${isUp ? 'text-[#00D964]' : 'text-[#FF3B30]'}`}>
                             {roi >= 0 ? '+' : ''}{roi.toFixed(1)}%
                           </div>
                         </td>
@@ -300,7 +300,7 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
                           $0.00
                         </td>
                         <td className="py-2.5 px-2 text-right text-xs text-muted-foreground">
-                          {pos.tp && <span className="text-[#06964A] block">TP ${fmtUsd(pos.tp, 1)}</span>}
+                          {pos.tp && <span className="text-[#00D964] block">TP ${fmtUsd(pos.tp, 1)}</span>}
                           {pos.sl && <span className="text-[#FF3B30] block">SL ${fmtUsd(pos.sl, 1)}</span>}
                           {!pos.tp && !pos.sl && <span>—</span>}
                         </td>
@@ -435,7 +435,7 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
                       </td>
                       <td className="py-2 px-2 text-right">${fmtUsd(h.entry, 2)}</td>
                       <td className="py-2 px-2 text-right">${fmtUsd(h.exit, 2)}</td>
-                      <td className={`py-2 px-2 text-right font-bold ${h.pnl >= 0 ? 'text-[#06964A]' : 'text-[#FF3B30]'}`}>
+                      <td className={`py-2 px-2 text-right font-bold ${h.pnl >= 0 ? 'text-[#00D964]' : 'text-[#FF3B30]'}`}>
                         {fmtSigned(h.pnl)}
                       </td>
                       <td className="py-2 px-2 text-right text-muted-foreground">{fmtDuration(h.durationMs)}</td>
@@ -493,19 +493,19 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
         {/* Balances Tab */}
         {tab === 'balances' && (
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
-            <div className="p-3.5 rounded-xl bg-[#FBFBFA] border border-border">
+            <div className="p-3.5 rounded-xl bg-[#FAFAFC] border border-black/[0.06]">
               <span className="text-xs text-muted-foreground uppercase font-semibold block">Account Equity</span>
               <span className="text-base font-bold text-foreground">${fmtUsd(t.balance, 2)}</span>
             </div>
-            <div className="p-3.5 rounded-xl bg-[#FBFBFA] border border-border">
+            <div className="p-3.5 rounded-xl bg-[#FAFAFC] border border-black/[0.06]">
               <span className="text-xs text-muted-foreground uppercase font-semibold block">Available Margin</span>
-              <span className="text-base font-bold text-[#06964A]">${fmtUsd(t.available, 2)}</span>
+              <span className="text-base font-bold text-[#00D964]">${fmtUsd(t.available, 2)}</span>
             </div>
-            <div className="p-3.5 rounded-xl bg-[#FBFBFA] border border-border">
+            <div className="p-3.5 rounded-xl bg-[#FAFAFC] border border-black/[0.06]">
               <span className="text-xs text-muted-foreground uppercase font-semibold block">Margin In Use</span>
               <span className="text-base font-bold text-foreground">${fmtUsd(t.marginUsed, 2)}</span>
             </div>
-            <div className="p-3.5 rounded-xl bg-[#FBFBFA] border border-border">
+            <div className="p-3.5 rounded-xl bg-[#FAFAFC] border border-black/[0.06]">
               <span className="text-xs text-muted-foreground uppercase font-semibold block">Settlement Layer</span>
               <span className="text-xs font-semibold text-foreground">Hyperliquid L1 Clearinghouse</span>
             </div>
@@ -516,7 +516,7 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
         {tab === 'stats' && (
           <div className="space-y-4">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
-              <div className="p-3.5 rounded-xl bg-[#FBFBFA] border border-border">
+              <div className="p-3.5 rounded-xl bg-[#FAFAFC] border border-black/[0.06]">
                 <span className="text-xs text-muted-foreground uppercase font-semibold block">Win Rate</span>
                 <span className="text-lg font-bold text-foreground">
                   {history.length ? `${Math.round((wins / history.length) * 100)}%` : '—'}
@@ -526,10 +526,10 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
                 </span>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-[#FBFBFA] border border-border">
+              <div className="p-3.5 rounded-xl bg-[#FAFAFC] border border-black/[0.06]">
                 <span className="text-xs text-muted-foreground uppercase font-semibold block">Avg Win / Avg Loss</span>
                 <div className="text-xs font-bold mt-1">
-                  <span className="text-[#06964A]">+{fmtUsd(avgWin, 2)}</span>
+                  <span className="text-[#00D964]">+{fmtUsd(avgWin, 2)}</span>
                   <span className="text-muted-foreground mx-1">/</span>
                   <span className="text-[#FF3B30]">-${fmtUsd(avgLoss, 2)}</span>
                 </div>
@@ -538,7 +538,7 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
                 </span>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-[#FBFBFA] border border-border">
+              <div className="p-3.5 rounded-xl bg-[#FAFAFC] border border-black/[0.06]">
                 <span className="text-xs text-muted-foreground uppercase font-semibold block">Fees &amp; Builder Fees</span>
                 <span className="text-base font-bold text-foreground">
                   ${fmtUsd(estTotalFees + estBuilderFees, 2)}
@@ -548,9 +548,9 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
                 </span>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-[#FBFBFA] border border-border">
+              <div className="p-3.5 rounded-xl bg-[#FAFAFC] border border-black/[0.06]">
                 <span className="text-xs text-muted-foreground uppercase font-semibold block">Total Session PnL</span>
-                <span className={`text-lg font-bold ${totalRealizedPnl >= 0 ? 'text-[#06964A]' : 'text-[#FF3B30]'}`}>
+                <span className={`text-lg font-bold ${totalRealizedPnl >= 0 ? 'text-[#00D964]' : 'text-[#FF3B30]'}`}>
                   {fmtSigned(totalRealizedPnl)}
                 </span>
                 <span className="text-xs text-muted-foreground block mt-0.5 font-medium">
@@ -565,23 +565,23 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
                 <span className="text-xs uppercase font-bold text-muted-foreground tracking-wider block">
                   PnL by Market
                 </span>
-                <div className="overflow-x-auto rounded-xl border border-border">
+                <div className="overflow-x-auto rounded-xl border border-black/[0.06]">
                   <table className="w-full text-xs font-mono tabular">
                     <thead>
-                      <tr className="text-left text-xs uppercase text-muted-foreground font-semibold bg-[#FBFBFA] border-b border-border">
+                      <tr className="text-left text-xs uppercase text-muted-foreground font-semibold bg-[#FAFAFC] border-b border-black/[0.06]">
                         <th className="py-2 px-3">Market</th>
                         <th className="py-2 px-3 text-right">Trades</th>
                         <th className="py-2 px-3 text-right">Win Rate</th>
                         <th className="py-2 px-3 text-right">Net Realized PnL</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-border/50">
+                    <tbody className="divide-y divide-black/[0.04]">
                       {pnlByMarket.map((m) => (
                         <tr key={m.market} className="hover:bg-secondary/40">
                           <td className="py-2 px-3 font-bold">{m.market}-USD</td>
                           <td className="py-2 px-3 text-right text-muted-foreground">{m.count}</td>
                           <td className="py-2 px-3 text-right font-medium">{m.winRate}%</td>
-                          <td className={`py-2 px-3 text-right font-bold ${m.pnl >= 0 ? 'text-[#06964A]' : 'text-[#FF3B30]'}`}>
+                          <td className={`py-2 px-3 text-right font-bold ${m.pnl >= 0 ? 'text-[#00D964]' : 'text-[#FF3B30]'}`}>
                             {fmtSigned(m.pnl)}
                           </td>
                         </tr>

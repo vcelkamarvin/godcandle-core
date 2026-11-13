@@ -153,7 +153,7 @@ export function FundingMatrix({ feeds, onSelectMarket }: Props) {
             <h2 className="text-sm font-bold tracking-tight text-foreground uppercase tracking-wider font-mono">
               Perpetuals Funding &amp; Rates Matrix
             </h2>
-            <span className="rounded-full bg-[#E3F8EC] px-2 py-0.5 text-[11px] font-mono font-bold text-[#06964A]">
+            <span className="rounded-full bg-[#E6F9EE] px-2 py-0.5 text-[11px] font-mono font-bold text-[#00D964]">
               14 TICKERS LIVE
             </span>
           </div>
@@ -273,7 +273,7 @@ export function FundingMatrix({ feeds, onSelectMarket }: Props) {
                   <td className="py-2.5 pr-4 text-right tabular font-bold">
                     <span
                       className={`inline-flex items-center gap-0.5 ${
-                        isPositiveChange ? "text-[#06964A]" : "text-[#FF3B30]"
+                        isPositiveChange ? "text-[#00D964]" : "text-[#FF3B30]"
                       }`}
                     >
                       {isPositiveChange ? (
@@ -293,8 +293,8 @@ export function FundingMatrix({ feeds, onSelectMarket }: Props) {
                     <span
                       className={`inline-block px-1.5 py-0.5 rounded text-[11px] font-bold ${
                         isPositiveFunding
-                          ? "bg-[#E3F8EC] text-[#06964A]"
-                          : "bg-[#FFECEA] text-[#FF3B30]"
+                          ? "bg-[#E6F9EE] text-[#00D964]"
+                          : "bg-[#FEECEB] text-[#FF3B30]"
                       }`}
                     >
                       {isPositiveFunding ? "+" : ""}
@@ -320,14 +320,14 @@ export function FundingMatrix({ feeds, onSelectMarket }: Props) {
                   {/* Long / Short Skew Bar */}
                   <td className="py-2.5 pr-4 text-center">
                     <div className="w-28 mx-auto">
-                      <div className="h-1.5 w-full rounded-full bg-[#FFECEA] overflow-hidden flex">
+                      <div className="h-1.5 w-full rounded-full bg-[#FEECEB] overflow-hidden flex">
                         <div
                           className="h-full bg-[#00D964] transition-all"
                           style={{ width: `${r.longBiasPct}%` }}
                         />
                       </div>
                       <div className="flex justify-between text-[9px] text-muted-foreground mt-0.5">
-                        <span className="text-[#06964A] font-bold">
+                        <span className="text-[#00D964] font-bold">
                           {r.longBiasPct.toFixed(0)}% L
                         </span>
                         <span className="text-[#FF3B30] font-bold">

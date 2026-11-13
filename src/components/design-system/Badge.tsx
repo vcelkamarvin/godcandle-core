@@ -13,11 +13,11 @@ export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
 
 export function Badge({ children, variant = "neutral", className, icon, ...props }: BadgeProps) {
   const variantStyles: Record<BadgeVariant, string> = {
-    profit: "bg-[rgba(61,220,151,0.12)] text-[#3DDC97] border border-[rgba(61,220,151,0.25)]",
-    loss: "bg-[rgba(255,92,108,0.12)] text-[#FF5C6C] border border-[rgba(255,92,108,0.25)]",
+    profit: "bg-[#E6F9EE] text-[#00D964] border border-[#00D964]/20",
+    loss: "bg-[#FEECEB] text-[#FF3B30] border border-[#FF3B30]/20",
     lime: "bg-[rgba(37,99,235,0.15)] text-[#60A5FA] border border-[rgba(37,99,235,0.3)]",
     warning: "bg-[rgba(255,209,102,0.15)] text-[#FFD166] border border-[rgba(255,209,102,0.3)]",
-    neutral: "bg-[#1E1E22] text-[#A8A8B3] border border-white/10",
+    neutral: "bg-[#F0F2F5] text-foreground border border-black/[0.06]",
     options: "bg-[#A78BFA]/15 text-[#A78BFA] border border-[#A78BFA]/30",
     perps: "bg-[#5B9DFF]/15 text-[#5B9DFF] border border-[#5B9DFF]/30",
     predict: "bg-[#F472B6]/15 text-[#F472B6] border border-[#F472B6]/30",

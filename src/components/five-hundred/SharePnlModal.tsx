@@ -176,13 +176,13 @@ export function SharePnlModal({ trade, onClose }: SharePnlModalProps) {
     ctx.font = "bold 44px 'Inter', sans-serif";
     ctx.fillText(normalized.symbol, 80, 230);
 
-    const sideColor = normalized.side === "long" ? "#00E599" : "#FF4343";
+    const sideColor = normalized.side === "long" ? "#00D964" : "#FF3B30";
     ctx.fillStyle = sideColor;
     ctx.font = "bold 26px 'Inter', monospace";
     ctx.fillText(`${normalized.side.toUpperCase()} ${normalized.leverage}X LEVERAGE`, 80, 280);
 
     // 6. Huge P&L % with optional $ Amount
-    const pnlColor = normalized.isProfit ? "#00E599" : "#FF4343";
+    const pnlColor = normalized.isProfit ? "#00D964" : "#FF3B30";
     ctx.fillStyle = pnlColor;
     ctx.font = "bold 96px 'Inter', monospace";
     ctx.fillText(formatPct(normalized.pnlPct), 80, 420);

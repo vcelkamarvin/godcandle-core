@@ -22,7 +22,7 @@ export function Footer() {
             <p className="text-xs leading-relaxed text-muted-foreground">
               Streamlined derivatives trading client routing directly to Hyperliquid L1 order books. Native Builder Code: <span className="text-[#2563EB] font-semibold">GODCANDLE</span>.
             </p>
-            <div className="text-xs text-[#06964A] flex items-center gap-1.5 font-semibold font-mono">
+            <div className="text-xs text-[#00D964] flex items-center gap-1.5 font-semibold font-mono">
               <ShieldCheck className="w-3.5 h-3.5" />
               <span>Direct L1 Consensus · Zero Added Latency</span>
             </div>
@@ -36,7 +36,7 @@ export function Footer() {
             <div className="p-3.5 bg-secondary/40 border border-border/80 rounded-xl space-y-2 text-xs font-mono">
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">Phase 0: L1 Client</span>
-                <span className="text-[#06964A] font-bold text-xs">● LIVE (1x–50x)</span>
+                <span className="text-[#00D964] font-bold text-xs">● LIVE (1x–50x)</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">Phase 1: House Pool</span>
@@ -172,7 +172,7 @@ export function Footer() {
           </div>
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1">
-              <Activity className="w-3 h-3 text-[#06964A]" />
+              <Activity className="w-3 h-3 text-[#00D964]" />
               <span>Execution Engine: Active (Hyperliquid L1 Consensus)</span>
             </span>
             <span>Zero Protocol Surcharge</span>

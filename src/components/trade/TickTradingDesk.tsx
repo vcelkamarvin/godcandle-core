@@ -1306,7 +1306,7 @@ export function FiveHundredXPage() {
 
                     {/* Disclaimer */}
                     {leverage >= 1000 && (
-                      <p className="text-[11px] text-[#FF4343] font-medium leading-tight text-center pt-0.5">
+                      <p className="text-[11px] text-[#FF3B30] font-medium leading-tight text-center pt-0.5">
                         Moves smaller than the spread can liquidate you.
                       </p>
                     )}

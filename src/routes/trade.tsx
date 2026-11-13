@@ -33,7 +33,7 @@ function GodcandleTradeDesk() {
   }, [t]);
 
   return (
-    <div className="py-1 sm:py-1.5 px-2.5 sm:px-4 md:px-5 min-[1440px]:h-[calc(100vh-66px)] min-[1440px]:overflow-hidden min-[1440px]:flex min-[1440px]:flex-col">
+    <div className="py-1 sm:py-1.5 px-2 sm:px-3 md:px-4 lg:h-[calc(100vh-64px)] lg:overflow-hidden lg:flex lg:flex-col">
       <div className="hidden" aria-hidden="true">
         <TradeTerminal />
       </div>

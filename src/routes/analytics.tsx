@@ -212,7 +212,7 @@ function AnalyticsPage() {
               <span className="text-xs font-bold text-foreground uppercase tracking-wider">
                 Protocol Solvency &amp; L1 Settlement Matrix
               </span>
-              <span className="rounded bg-[#E3F8EC] text-[#06964A] px-2 py-0.5 text-xs font-bold">
+              <span className="rounded bg-[#E6F9EE] text-[#00D964] px-2 py-0.5 text-xs font-bold">
                 Deterministic Cash FIFO
               </span>
             </div>
@@ -238,14 +238,14 @@ function AnalyticsPage() {
                   <td className="py-2.5 pr-4 tabular font-bold text-foreground">$10,000.00 base / $12,177,196 pool</td>
                   <td className="py-2.5 pr-4 text-muted-foreground">≥ $10,000 baseline vault</td>
                   <td className="py-2.5 pr-4 text-muted-foreground">100% immediate liquid cash</td>
-                  <td className="py-2.5 text-right font-semibold text-[#06964A]">Solvent (342%)</td>
+                  <td className="py-2.5 text-right font-semibold text-[#00D964]">Solvent (342%)</td>
                 </tr>
                 <tr>
                   <td className="py-2.5 pr-4 font-semibold text-foreground">FIFO Payout Queue Depth</td>
-                  <td className="py-2.5 pr-4 tabular font-bold text-[#06964A]">$0.00 (Zero Backlog)</td>
+                  <td className="py-2.5 pr-4 tabular font-bold text-[#00D964]">$0.00 (Zero Backlog)</td>
                   <td className="py-2.5 pr-4 text-muted-foreground">0 pending tickets</td>
                   <td className="py-2.5 pr-4 text-muted-foreground">Atomic block-level payout</td>
-                  <td className="py-2.5 text-right font-semibold text-[#06964A]">Active (0 delay)</td>
+                  <td className="py-2.5 text-right font-semibold text-[#00D964]">Active (0 delay)</td>
                 </tr>
                 <tr>
                   <td className="py-2.5 pr-4 font-semibold text-foreground">Net Open Interest (Long vs Short)</td>

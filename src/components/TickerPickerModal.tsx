@@ -225,8 +225,8 @@ export function TickerPickerModal({
                   className={cn(
                     "text-[13px] font-mono font-bold px-2 py-0.5 rounded-full border",
                     previewItem.isUp
-                      ? "bg-[#3DDC97]/20 text-[#3DDC97] border-[#3DDC97]/30"
-                      : "bg-[#FF5C6C]/20 text-[#FF5C6C] border-[#FF5C6C]/30",
+                      ? "bg-[#E6F9EE] text-[#00D964] border-[#00D964]/30"
+                      : "bg-[#FEECEB] text-[#FF3B30] border-[#FF3B30]/30",
                   )}
                 >
                   {previewItem.change24h}
@@ -389,8 +389,8 @@ export function TickerPickerModal({
                         className={cn(
                           "px-2 py-0.5 rounded-[6px] text-[11px] font-bold tabular-nums min-w-[56px] text-center border",
                           item.isUp
-                            ? "bg-[#3DDC97]/15 text-[#3DDC97] border-[#3DDC97]/25"
-                            : "bg-[#FF5C6C]/15 text-[#FF5C6C] border-[#FF5C6C]/25",
+                            ? "bg-[#E6F9EE] text-[#00D964] border-[#00D964]/25"
+                            : "bg-[#FEECEB] text-[#FF3B30] border-[#FF3B30]/25",
                         )}
                       >
                         {item.change24h}
@@ -465,8 +465,8 @@ export function TickerPickerModal({
                     className={cn(
                       "flex items-center gap-1 px-2.5 py-1 rounded-full text-[12px] font-mono font-bold backdrop-blur-md border",
                       previewItem.isUp
-                        ? "bg-[#3DDC97]/25 text-[#3DDC97] border-[#3DDC97]/40 shadow-[0_0_12px_rgba(61,220,151,0.3)]"
-                        : "bg-[#FF5C6C]/25 text-[#FF5C6C] border-[#FF5C6C]/40 shadow-[0_0_12px_rgba(255,92,108,0.3)]",
+                        ? "bg-[#00D964]/25 text-[#00D964] border-[#00D964]/40 shadow-[0_0_12px_rgba(0,217,100,0.3)]"
+                        : "bg-[#FF3B30]/25 text-[#FF3B30] border-[#FF3B30]/40 shadow-[0_0_12px_rgba(255,59,48,0.3)]",
                     )}
                   >
                     {previewItem.isUp ? (
@@ -549,9 +549,9 @@ export function TickerPickerModal({
                             Short
                           </span>
                         </div>
-                        <div className="h-1.5 w-full rounded-full bg-[#FF5C6C] overflow-hidden flex">
+                        <div className="h-1.5 w-full rounded-full bg-[#FF3B30] overflow-hidden flex">
                           <div
-                            className="h-full bg-[#3DDC97]"
+                            className="h-full bg-[#00D964]"
                             style={{ width: `${previewItem.longRatio || 50}%` }}
                           />
                         </div>

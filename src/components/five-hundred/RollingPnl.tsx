@@ -35,20 +35,20 @@ export function RollingPnl({ pnl, stake, isLiquidated = false, className = "" }:
   const isPositive = pnl > 0;
   const isNegative = pnl < 0;
 
-  // Flash background and text accents (avoiding banned tailwind text-green/text-emerald/text-red-500 strings)
+  // Flash background and text accents
   const textColor = isLiquidated
-    ? "text-[#FF4343]"
+    ? "text-[#FF3B30]"
     : isPositive
-      ? "text-[#00E599]"
+      ? "text-[#00D964]"
       : isNegative
-        ? "text-[#FF4343]"
-        : "text-white";
+        ? "text-[#FF3B30]"
+        : "text-foreground";
 
   const flashBg =
     flash === "up"
-      ? "bg-[#00E599]/15 shadow-[0_0_20px_rgba(0,229,153,0.25)]"
+      ? "bg-[#00D964]/15 shadow-[0_0_20px_rgba(0,217,100,0.25)]"
       : flash === "down"
-        ? "bg-[#FF4343]/15 shadow-[0_0_20px_rgba(255,67,67,0.25)]"
+        ? "bg-[#FF3B30]/15 shadow-[0_0_20px_rgba(255,59,48,0.25)]"
         : "bg-transparent";
 
   return (
