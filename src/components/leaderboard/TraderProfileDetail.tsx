@@ -182,23 +182,23 @@ export function TraderProfileDetail({ address }: TraderProfileDetailProps) {
   }, [chartPoints]);
 
   return (
-    <div className="min-h-screen w-full bg-white text-[var(--text-primary,#0b0b0c)] flex flex-col font-sans selection:bg-emerald-500/20 selection:text-emerald-900 overflow-y-auto">
+    <div className="min-h-screen w-full bg-[#FAFAFC] text-foreground flex flex-col font-sans selection:bg-[#00D964]/20 selection:text-[#00D964] overflow-y-auto">
       {/* 1. Breadcrumb & Tracked Traders Bar */}
-      <div className="border-b border-[var(--border-subtle,rgba(10,10,12,0.08))] bg-[var(--surface-1,#ffffff)]">
-        <div className="max-w-[1720px] mx-auto px-4 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-3 text-[12px] font-mono text-[var(--text-secondary,#5a5a66)]">
+      <div className="border-b border-black/[0.06] bg-white">
+        <div className="max-w-[1720px] mx-auto px-4 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-3 text-[12px] font-mono text-muted-foreground">
           <div className="flex items-center gap-2">
-            <Link to="/leaderboard" className="hover:text-[var(--text-primary,#0b0b0c)] font-semibold transition-colors">
+            <Link to="/leaderboard" className="hover:text-foreground font-semibold transition-colors">
               Leaderboard
             </Link>
             <span>/</span>
-            <span className="text-[var(--text-primary,#0b0b0c)] font-medium">
+            <span className="text-foreground font-medium">
               {currentTraderInfo ? currentTraderInfo.name : `${activeAddress.slice(0, 6)}...${activeAddress.slice(-4)}`}
             </span>
           </div>
 
           {/* Quick Tracked Traders Catalog Bar */}
           <div className="flex items-center gap-1.5 overflow-x-auto py-1">
-            <span className="text-[11px] uppercase tracking-wider text-[var(--text-tertiary,#747482)] mr-1 hidden sm:inline">Tracked:</span>
+            <span className="text-[11px] uppercase tracking-wider text-muted-foreground mr-1 hidden sm:inline">Tracked:</span>
             {TRACKED_TRADERS.map((trader) => {
               const isSelected = trader.address.toLowerCase() === activeAddress;
               return (
@@ -207,13 +207,13 @@ export function TraderProfileDetail({ address }: TraderProfileDetailProps) {
                   to="/leaderboard/$address"
                   params={{ address: trader.address }}
                   className={cn(
-                    "px-2.5 py-1 rounded-lg text-[11px] font-mono transition-all flex items-center gap-1.5 whitespace-nowrap border",
+                    "px-2.5 py-1 rounded-xl text-[11px] font-mono transition-all flex items-center gap-1.5 whitespace-nowrap border",
                     isSelected
-                      ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border-emerald-500/30 font-bold shadow-xs"
-                      : "bg-[var(--surface-2,#f1f2f5)] text-[var(--text-secondary,#5a5a66)] border-[var(--border-subtle,rgba(10,10,12,0.08))] hover:text-[var(--text-primary,#0b0b0c)] hover:bg-[var(--surface-3,#e6e8ec)]"
+                      ? "bg-white text-[#0A0A0A] border-black/[0.08] font-bold shadow-xs"
+                      : "bg-[#F0F2F5] text-muted-foreground border-transparent hover:text-foreground hover:bg-[#E4E7EC]"
                   )}
                 >
-                  <span className="size-1.5 rounded-full bg-emerald-500" />
+                  <span className="size-1.5 rounded-full bg-[#00D964]" />
                   <span>{trader.name}</span>
                 </Link>
               );
@@ -222,10 +222,10 @@ export function TraderProfileDetail({ address }: TraderProfileDetailProps) {
 
           <button
             onClick={() => loadData(activeAddress)}
-            className="flex items-center gap-1.5 hover:text-[var(--text-primary,#0b0b0c)] transition-colors text-[11px] cursor-pointer"
+            className="flex items-center gap-1.5 hover:text-foreground transition-colors text-[11px] cursor-pointer"
             title="Refresh Live Hyperliquid Data"
           >
-            <RefreshCw className={cn("size-3.5", loading && "animate-spin text-emerald-500")} />
+            <RefreshCw className={cn("size-3.5", loading && "animate-spin text-[#00D964]")} />
             <span>{loading ? "Syncing..." : "Live Feed"}</span>
           </button>
         </div>
@@ -241,7 +241,7 @@ export function TraderProfileDetail({ address }: TraderProfileDetailProps) {
           <div className="lg:col-span-4 xl:col-span-3 flex flex-col gap-4">
             
             {/* 1. Profile Header Card */}
-            <div className="p-5 rounded-[20px] bg-white border border-[var(--border-subtle,rgba(10,10,12,0.08))] shadow-xs flex flex-col gap-4">
+            <div className="p-5 rounded-2xl bg-white border border-black/[0.06] shadow-xs flex flex-col gap-4">
               <div className="flex items-center gap-3">
                 {/* Gradient Avatar Orb */}
                 <div className="size-12 rounded-full bg-gradient-to-tr from-amber-400 via-rose-500 to-indigo-500 flex items-center justify-center shadow-xs shrink-0 font-bold text-white text-[14px]">
@@ -249,7 +249,7 @@ export function TraderProfileDetail({ address }: TraderProfileDetailProps) {
                 </div>
                 <div className="flex flex-col min-w-0">
                   <div className="flex items-center gap-1.5">
-                    <span className="font-sans text-[15px] font-bold text-[var(--text-primary,#0b0b0c)] tracking-tight truncate">
+                    <span className="font-sans text-[15px] font-bold text-foreground tracking-tight truncate">
                       {currentTraderInfo?.name || `${activeAddress.slice(0, 6)}...${activeAddress.slice(-4)}`}
                     </span>
                     {currentTraderInfo?.xUrl && (
@@ -257,7 +257,7 @@ export function TraderProfileDetail({ address }: TraderProfileDetailProps) {
                         href={currentTraderInfo.xUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-[11px] font-mono text-[var(--text-tertiary,#747482)] hover:text-[var(--text-primary,#0b0b0c)] transition-colors"
+                        className="text-[11px] font-mono text-muted-foreground hover:text-foreground transition-colors"
                         title={`View @${currentTraderInfo.handle} on X`}
                       >
                         @{currentTraderInfo.handle}
@@ -265,28 +265,28 @@ export function TraderProfileDetail({ address }: TraderProfileDetailProps) {
                     )}
                   </div>
                   <div className="flex items-center gap-1.5 mt-0.5">
-                    <span className="font-mono text-[12px] text-[var(--text-secondary,#5a5a66)] truncate">
+                    <span className="font-mono text-[12px] text-muted-foreground truncate">
                       {activeAddress.slice(0, 6)}...{activeAddress.slice(-4)}
                     </span>
                     <button
                       onClick={handleCopy}
-                      className="p-1 rounded hover:bg-[var(--surface-2,#f1f2f5)] text-[var(--text-tertiary,#747482)] hover:text-[var(--text-primary,#0b0b0c)] transition-colors cursor-pointer"
+                      className="p-1 rounded hover:bg-[#F0F2F5] text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
                       title="Copy Address"
                     >
-                      {copied ? <Check className="size-3.5 text-emerald-600" /> : <Copy className="size-3.5" />}
+                      {copied ? <Check className="size-3.5 text-[#00D964]" /> : <Copy className="size-3.5" />}
                     </button>
                     <a
                       href={`https://app.hyperliquid.xyz/explorer/address/${activeAddress}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="p-1 rounded hover:bg-[var(--surface-2,#f1f2f5)] text-[var(--text-tertiary,#747482)] hover:text-[var(--text-primary,#0b0b0c)] transition-colors"
+                      className="p-1 rounded hover:bg-[#F0F2F5] text-muted-foreground hover:text-foreground transition-colors"
                       title="View on Hyperliquid Explorer"
                     >
                       <ExternalLink className="size-3.5" />
                     </a>
                   </div>
-                  <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-mono font-medium flex items-center gap-1 mt-0.5">
-                    <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="text-[11px] text-[#00D964] font-mono font-medium flex items-center gap-1 mt-0.5">
+                    <span className="size-1.5 rounded-full bg-[#00D964] animate-pulse" />
                     {currentTraderInfo?.badge || "Verified On-Chain Trader"}
                   </span>
                 </div>
@@ -300,10 +300,10 @@ export function TraderProfileDetail({ address }: TraderProfileDetailProps) {
                     toast.success(isFollowing ? "Unfollowed trader" : "Following trader updates");
                   }}
                   className={cn(
-                    "h-9 rounded-xl font-semibold text-[13px] border transition-all flex items-center justify-center gap-1.5 cursor-pointer",
+                    "h-9 rounded-xl font-semibold text-[13px] border border-black/[0.06] transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-[0.98]",
                     isFollowing
-                      ? "bg-[var(--surface-2,#f1f2f5)] border-[var(--border-default)] text-[var(--text-primary,#0b0b0c)]"
-                      : "bg-[var(--surface-1,#ffffff)] hover:bg-[var(--surface-2,#f1f2f5)] border-[var(--border-subtle,rgba(10,10,12,0.08))] text-[var(--text-primary,#0b0b0c)]"
+                      ? "bg-[#F0F2F5] text-foreground"
+                      : "bg-white hover:bg-[#F0F2F5] text-foreground"
                   )}
                 >
                   <UserCheck className="size-3.5" />
@@ -315,10 +315,10 @@ export function TraderProfileDetail({ address }: TraderProfileDetailProps) {
                     toast.success(isCopying ? "Copytrade canceled" : "Copytrade strategy mirrored!");
                   }}
                   className={cn(
-                    "h-9 rounded-xl font-bold text-[13px] transition-all flex items-center justify-center gap-1.5 shadow-xs cursor-pointer active:scale-95",
+                    "h-9 rounded-xl font-bold text-[13px] transition-all flex items-center justify-center gap-1.5 shadow-xs cursor-pointer active:scale-[0.98]",
                     isCopying
-                      ? "bg-amber-500 hover:bg-amber-400 text-black"
-                      : "bg-emerald-500 hover:bg-emerald-400 text-black"
+                      ? "bg-[#00D964] text-[#0A0A0A]"
+                      : "bg-[#0A0A0A] hover:bg-[#1A1A1A] text-white"
                   )}
                 >
                   <Zap className="size-3.5" />
@@ -328,131 +328,131 @@ export function TraderProfileDetail({ address }: TraderProfileDetailProps) {
             </div>
 
             {/* 2. Claim Profile CTA Banner */}
-            <div className="p-4 rounded-[16px] bg-gradient-to-br from-emerald-500/10 via-transparent to-purple-500/10 border border-emerald-500/20 flex flex-col gap-2">
-              <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-400 text-[12px] font-bold">
-                <Award className="size-4 shrink-0" />
+            <div className="p-4 rounded-2xl bg-[#F0F2F5] border border-black/[0.06] flex flex-col gap-2">
+              <div className="flex items-center gap-2 text-[#0A0A0A] text-[12px] font-bold">
+                <Award className="size-4 shrink-0 text-[#00D964]" />
                 <span>Is this your profile? Claim it</span>
               </div>
-              <p className="text-[11px] text-[var(--text-secondary,#5a5a66)] leading-relaxed">
+              <p className="text-[11px] text-muted-foreground leading-relaxed">
                 Earn a recurring share of godcandle protocol fees whenever traders copy your perps & spot moves.
               </p>
               <button
                 onClick={() => toast.info("Profile claim signature simulated")}
-                className="mt-1 h-7 rounded-lg bg-[var(--surface-1,#ffffff)] hover:bg-[var(--surface-2,#f1f2f5)] text-[var(--text-primary,#0b0b0c)] text-[11px] font-semibold tracking-wide border border-[var(--border-subtle,rgba(10,10,12,0.08))] transition-colors self-start px-3 cursor-pointer shadow-xs"
+                className="mt-1 h-7 rounded-lg bg-white hover:bg-[#FAFAFC] text-[#0A0A0A] text-[11px] font-semibold tracking-wide border border-black/[0.06] transition-all active:scale-[0.98] self-start px-3 cursor-pointer shadow-xs"
               >
                 Claim profile →
               </button>
             </div>
 
             {/* 3. Copytrading Score Card */}
-            <div className="p-4 rounded-[18px] bg-white border border-[var(--border-subtle,rgba(10,10,12,0.08))] shadow-xs flex items-center justify-between">
+            <div className="p-4 rounded-2xl bg-white border border-black/[0.06] shadow-xs flex items-center justify-between">
               <div>
-                <span className="text-[11px] font-mono uppercase tracking-wider text-[var(--text-secondary,#5a5a66)] block">
+                <span className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground block font-semibold">
                   Copytrading Score
                 </span>
                 <div className="flex items-baseline gap-1 mt-1">
-                  <span className="text-2xl font-black text-[var(--text-primary,#0b0b0c)] font-mono">67</span>
-                  <span className="text-[13px] text-[var(--text-secondary,#5a5a66)] font-mono">/ 100</span>
+                  <span className="text-2xl font-black text-foreground font-mono">67</span>
+                  <span className="text-[13px] text-muted-foreground font-mono">/ 100</span>
                 </div>
-                <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">Top 5% Consistency Tier</span>
+                <span className="text-[11px] text-[#00D964] font-medium">Top 5% Consistency Tier</span>
               </div>
-              <div className="h-14 w-3 rounded-full bg-[var(--surface-2,#f1f2f5)] overflow-hidden flex flex-col-reverse p-0.5 border border-[var(--border-subtle,rgba(10,10,12,0.08))]">
+              <div className="h-14 w-3 rounded-full bg-[#F0F2F5] overflow-hidden flex flex-col-reverse p-0.5 border border-black/[0.06]">
                 <div
-                  className="w-full rounded-full bg-gradient-to-t from-emerald-500 via-teal-400 to-indigo-500"
+                  className="w-full rounded-full bg-[#00D964]"
                   style={{ height: "67%" }}
                 />
               </div>
             </div>
 
             {/* 4. Deep Metrics Breakdown Card */}
-            <div className="p-5 rounded-[20px] bg-white border border-[var(--border-subtle,rgba(10,10,12,0.08))] shadow-xs flex flex-col gap-5 text-[12px]">
+            <div className="p-5 rounded-2xl bg-white border border-black/[0.06] shadow-xs flex flex-col gap-5 text-[12px]">
               
               {/* Account Value Section */}
-              <div className="space-y-1.5 pb-3 border-b border-[var(--border-subtle,rgba(10,10,12,0.08))]">
-                <span className="text-[11px] font-mono uppercase tracking-wider text-[var(--text-secondary,#5a5a66)] font-semibold">
+              <div className="space-y-1.5 pb-3 border-b border-black/[0.06]">
+                <span className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground font-semibold">
                   Account Value
                 </span>
-                <div className="text-2xl font-black font-mono text-[var(--text-primary,#0b0b0c)] tracking-tight">
+                <div className="text-2xl font-black font-mono text-foreground tracking-tight">
                   {formatUsd(accountValue)}
                 </div>
               </div>
 
               {/* Account Equity Breakdown */}
-              <div className="space-y-2 pb-3 border-b border-[var(--border-subtle,rgba(10,10,12,0.08))]">
-                <span className="text-[11px] font-mono uppercase tracking-wider text-[var(--text-secondary,#5a5a66)] font-semibold">
+              <div className="space-y-2 pb-3 border-b border-black/[0.06]">
+                <span className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground font-semibold">
                   Account Equity
                 </span>
-                <div className="flex justify-between items-center text-[var(--text-secondary,#5a5a66)]">
+                <div className="flex justify-between items-center text-muted-foreground">
                   <span>Perps</span>
-                  <span className="font-mono text-[var(--text-primary,#0b0b0c)] font-medium">{formatUsd(perpEquity)}</span>
+                  <span className="font-mono text-foreground font-medium">{formatUsd(perpEquity)}</span>
                 </div>
-                <div className="flex justify-between items-center text-[var(--text-secondary,#5a5a66)]">
+                <div className="flex justify-between items-center text-muted-foreground">
                   <span>Spot - pump.fun</span>
-                  <span className="font-mono text-[var(--text-primary,#0b0b0c)] font-medium">{formatUsd(profile?.account.spotValue ?? 142500)}</span>
+                  <span className="font-mono text-foreground font-medium">{formatUsd(profile?.account.spotValue ?? 142500)}</span>
                 </div>
-                <div className="flex justify-between items-center text-[var(--text-secondary,#5a5a66)]">
+                <div className="flex justify-between items-center text-muted-foreground">
                   <span>Staked</span>
-                  <span className="font-mono text-[var(--text-primary,#0b0b0c)] font-medium">$0.00</span>
+                  <span className="font-mono text-foreground font-medium">$0.00</span>
                 </div>
               </div>
 
               {/* Overview Section */}
-              <div className="space-y-2 pb-3 border-b border-[var(--border-subtle,rgba(10,10,12,0.08))]">
-                <span className="text-[11px] font-mono uppercase tracking-wider text-[var(--text-secondary,#5a5a66)] font-semibold">
+              <div className="space-y-2 pb-3 border-b border-black/[0.06]">
+                <span className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground font-semibold">
                   Overview
                 </span>
-                <div className="flex justify-between items-center text-[var(--text-secondary,#5a5a66)]">
+                <div className="flex justify-between items-center text-muted-foreground">
                   <span>Unrealised PnL</span>
-                  <span className={cn("font-mono font-bold", totalUnrealizedPnl >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-[#D92D45]")}>
+                  <span className={cn("font-mono font-bold", totalUnrealizedPnl >= 0 ? "text-[#00D964]" : "text-[#FF3B30]")}>
                     {totalUnrealizedPnl >= 0 ? "+" : ""}{formatUsd(totalUnrealizedPnl)}
                   </span>
                 </div>
-                <div className="flex justify-between items-center text-[var(--text-secondary,#5a5a66)]">
+                <div className="flex justify-between items-center text-muted-foreground">
                   <span>Account leverage</span>
-                  <span className="font-mono text-[var(--text-primary,#0b0b0c)] font-medium">{currentLeverage}×</span>
+                  <span className="font-mono text-foreground font-medium">{currentLeverage}×</span>
                 </div>
-                <div className="flex justify-between items-center text-[var(--text-secondary,#5a5a66)]">
+                <div className="flex justify-between items-center text-muted-foreground">
                   <span>Margin usage</span>
-                  <span className="font-mono text-[var(--text-primary,#0b0b0c)] font-medium">{marginUsagePct.toFixed(2)}%</span>
+                  <span className="font-mono text-foreground font-medium">{marginUsagePct.toFixed(2)}%</span>
                 </div>
-                <div className="flex justify-between items-center text-[var(--text-secondary,#5a5a66)]">
+                <div className="flex justify-between items-center text-muted-foreground">
                   <span>All-time PnL</span>
-                  <span className="font-mono text-emerald-600 dark:text-emerald-400 font-bold">+$9,980,406.49</span>
+                  <span className="font-mono text-[#00D964] font-bold">+$9,980,406.49</span>
                 </div>
-                <div className="flex justify-between items-center text-[var(--text-secondary,#5a5a66)]">
+                <div className="flex justify-between items-center text-muted-foreground">
                   <span>Volume</span>
-                  <span className="font-mono text-[var(--text-primary,#0b0b0c)] font-medium">
+                  <span className="font-mono text-foreground font-medium">
                     {profile?.stats.volume ? formatUsd(profile.stats.volume) : "$147,382,900"}
                   </span>
                 </div>
               </div>
 
               {/* Analysis Badges Section */}
-              <div className="space-y-2 pb-3 border-b border-[var(--border-subtle,rgba(10,10,12,0.08))]">
-                <span className="text-[11px] font-mono uppercase tracking-wider text-[var(--text-secondary,#5a5a66)] font-semibold">
+              <div className="space-y-2 pb-3 border-b border-black/[0.06]">
+                <span className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground font-semibold">
                   Analysis
                 </span>
-                <div className="flex justify-between items-center text-[var(--text-secondary,#5a5a66)]">
+                <div className="flex justify-between items-center text-muted-foreground">
                   <span>Longest win streak</span>
-                  <span className="font-mono text-[var(--text-primary,#0b0b0c)] font-medium">9 trades</span>
+                  <span className="font-mono text-foreground font-medium">9 trades</span>
                 </div>
-                <div className="flex justify-between items-center text-[var(--text-secondary,#5a5a66)]">
+                <div className="flex justify-between items-center text-muted-foreground">
                   <span>Avg trade duration</span>
-                  <span className="font-mono text-[var(--text-primary,#0b0b0c)] font-medium">18h 42m</span>
+                  <span className="font-mono text-foreground font-medium">18h 42m</span>
                 </div>
-                <div className="flex justify-between items-center text-[var(--text-secondary,#5a5a66)]">
+                <div className="flex justify-between items-center text-muted-foreground">
                   <span>Median trade duration</span>
-                  <span className="font-mono text-[var(--text-primary,#0b0b0c)] font-medium">6h 15m</span>
+                  <span className="font-mono text-foreground font-medium">6h 15m</span>
                 </div>
-                <div className="flex justify-between items-center text-[var(--text-secondary,#5a5a66)] pt-1">
+                <div className="flex justify-between items-center text-muted-foreground pt-1">
                   <span>PnL cohort</span>
-                  <span className="px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/25">
+                  <span className="px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-[#E6F9EE] text-[#00D964] border border-[#00D964]/20">
                     EXTREMELY PROFITABLE
                   </span>
                 </div>
-                <div className="flex justify-between items-center text-[var(--text-secondary,#5a5a66)]">
+                <div className="flex justify-between items-center text-muted-foreground">
                   <span>Size cohort</span>
-                  <span className="px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-purple-500/15 text-purple-700 dark:text-purple-400 border border-purple-500/25">
+                  <span className="px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-[#F0F2F5] text-foreground border border-black/[0.06]">
                     APEX
                   </span>
                 </div>
@@ -460,30 +460,30 @@ export function TraderProfileDetail({ address }: TraderProfileDetailProps) {
 
               {/* Performance Math Section */}
               <div className="space-y-2">
-                <span className="text-[11px] font-mono uppercase tracking-wider text-[var(--text-secondary,#5a5a66)] font-semibold">
+                <span className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground font-semibold">
                   Performance
                 </span>
-                <div className="flex justify-between items-center text-[var(--text-secondary,#5a5a66)]">
+                <div className="flex justify-between items-center text-muted-foreground">
                   <span>Drawdown</span>
-                  <span className="font-mono text-[#D92D45] font-medium">
+                  <span className="font-mono text-[#FF3B30] font-medium">
                     -{profile?.stats.maxDrawdown ? profile.stats.maxDrawdown.toFixed(1) : "14.2"}%
                   </span>
                 </div>
-                <div className="flex justify-between items-center text-[var(--text-secondary,#5a5a66)]">
+                <div className="flex justify-between items-center text-muted-foreground">
                   <span>Win rate</span>
-                  <span className="font-mono text-emerald-600 dark:text-emerald-400 font-bold">{winRate.toFixed(1)}%</span>
+                  <span className="font-mono text-[#00D964] font-bold">{winRate.toFixed(1)}%</span>
                 </div>
-                <div className="flex justify-between items-center text-[var(--text-secondary,#5a5a66)]">
+                <div className="flex justify-between items-center text-muted-foreground">
                   <span>Sharpe</span>
-                  <span className="font-mono text-[var(--text-primary,#0b0b0c)] font-medium">2.84</span>
+                  <span className="font-mono text-foreground font-medium">2.84</span>
                 </div>
-                <div className="flex justify-between items-center text-[var(--text-secondary,#5a5a66)]">
+                <div className="flex justify-between items-center text-muted-foreground">
                   <span>Sortino</span>
-                  <span className="font-mono text-[var(--text-primary,#0b0b0c)] font-medium">3.91</span>
+                  <span className="font-mono text-foreground font-medium">3.91</span>
                 </div>
-                <div className="flex justify-between items-center text-[var(--text-secondary,#5a5a66)]">
+                <div className="flex justify-between items-center text-muted-foreground">
                   <span>Profit factor</span>
-                  <span className="font-mono text-emerald-600 dark:text-emerald-400 font-semibold">
+                  <span className="font-mono text-[#00D964] font-semibold">
                     {profile?.stats.profitFactor ? profile.stats.profitFactor.toFixed(2) : "2.41"}
                   </span>
                 </div>
@@ -502,105 +502,105 @@ export function TraderProfileDetail({ address }: TraderProfileDetailProps) {
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
               
               {/* Card 1: Performance */}
-              <div className="p-4 rounded-[18px] bg-white border border-[var(--border-subtle,rgba(10,10,12,0.08))] shadow-xs flex flex-col justify-between">
+              <div className="p-4 rounded-2xl bg-white border border-black/[0.06] shadow-xs flex flex-col justify-between">
                 <div>
                   <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-mono uppercase tracking-wider text-[var(--text-secondary,#5a5a66)]">Performance</span>
-                    <span className="text-[11px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/25 font-bold">
+                    <span className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground font-semibold">Performance</span>
+                    <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-[#E6F9EE] text-[#00D964] border border-[#00D964]/20 font-bold">
                       RANK #132
                     </span>
                   </div>
-                  <div className="text-xl font-black font-mono text-emerald-600 dark:text-emerald-400 mt-2">
+                  <div className="text-xl font-black font-mono text-[#00D964] mt-2">
                     +$7,408,295.11
                   </div>
                 </div>
 
                 <div className="mt-4 pt-2">
-                  {/* Streak timeline blocks (green / red mini-blocks) */}
+                  {/* Streak timeline blocks (mint / crimson mini-blocks) */}
                   <div className="flex items-center gap-1 mb-2">
                     {[1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1].map((won, i) => (
                       <span
                         key={i}
                         className={cn(
                           "h-2.5 flex-1 rounded-xs",
-                          won ? "bg-emerald-500" : "bg-[#D92D45]"
+                          won ? "bg-[#00D964]" : "bg-[#FF3B30]"
                         )}
                         title={won ? "Win" : "Loss"}
                       />
                     ))}
                   </div>
-                  <div className="text-[11px] text-[var(--text-secondary,#5a5a66)] font-mono">
+                  <div className="text-[11px] text-muted-foreground font-mono">
                     {winRate.toFixed(1)}% win rate · {totalTrades} trades
                   </div>
                 </div>
               </div>
 
               {/* Card 2: Leverage */}
-              <div className="p-4 rounded-[18px] bg-white border border-[var(--border-subtle,rgba(10,10,12,0.08))] shadow-xs flex flex-col justify-between">
+              <div className="p-4 rounded-2xl bg-white border border-black/[0.06] shadow-xs flex flex-col justify-between">
                 <div>
                   <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-mono uppercase tracking-wider text-[var(--text-secondary,#5a5a66)]">Leverage</span>
-                    <span className="text-[11px] font-mono text-[var(--text-primary,#0b0b0c)] font-semibold">Target ≤ 5.0×</span>
+                    <span className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground font-semibold">Leverage</span>
+                    <span className="text-[11px] font-mono text-foreground font-semibold">Target ≤ 5.0×</span>
                   </div>
-                  <div className="text-xl font-black font-mono text-[var(--text-primary,#0b0b0c)] mt-2">
+                  <div className="text-xl font-black font-mono text-foreground mt-2">
                     {currentLeverage}×
                   </div>
                 </div>
 
                 <div className="mt-4 pt-2">
-                  <div className="h-2 w-full rounded-full bg-[var(--surface-2,#f1f2f5)] overflow-hidden mb-2">
-                    <div className="h-full bg-indigo-500 rounded-full" style={{ width: "35%" }} />
+                  <div className="h-2 w-full rounded-full bg-[#F0F2F5] overflow-hidden mb-2">
+                    <div className="h-full bg-[#0A0A0A] rounded-full" style={{ width: "35%" }} />
                   </div>
-                  <div className="text-[11px] text-[var(--text-secondary,#5a5a66)] font-mono truncate">
+                  <div className="text-[11px] text-muted-foreground font-mono truncate">
                     $147.3M notional · $51.7M equity
                   </div>
                 </div>
               </div>
 
               {/* Card 3: Margin Usage */}
-              <div className="p-4 rounded-[18px] bg-white border border-[var(--border-subtle,rgba(10,10,12,0.08))] shadow-xs flex flex-col justify-between">
+              <div className="p-4 rounded-2xl bg-white border border-black/[0.06] shadow-xs flex flex-col justify-between">
                 <div>
                   <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-mono uppercase tracking-wider text-[var(--text-secondary,#5a5a66)]">Margin usage</span>
-                    <span className="text-[11px] font-mono text-emerald-600 dark:text-emerald-400 font-semibold">Healthy</span>
+                    <span className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground font-semibold">Margin usage</span>
+                    <span className="text-[11px] font-mono text-[#00D964] font-semibold">Healthy</span>
                   </div>
-                  <div className="text-xl font-black font-mono text-[var(--text-primary,#0b0b0c)] mt-2">
+                  <div className="text-xl font-black font-mono text-foreground mt-2">
                     {marginUsagePct.toFixed(2)}%
                   </div>
                 </div>
 
                 <div className="mt-4 pt-2">
-                  <div className="h-2 w-full rounded-full bg-[var(--surface-2,#f1f2f5)] overflow-hidden mb-2">
+                  <div className="h-2 w-full rounded-full bg-[#F0F2F5] overflow-hidden mb-2">
                     <div
-                      className="h-full bg-emerald-500 rounded-full"
+                      className="h-full bg-[#00D964] rounded-full"
                       style={{ width: `${Math.min(100, Math.max(5, marginUsagePct))}%` }}
                     />
                   </div>
-                  <div className="text-[11px] text-[var(--text-secondary,#5a5a66)] font-mono truncate">
+                  <div className="text-[11px] text-muted-foreground font-mono truncate">
                     $36.6M free · 89.55% from liq
                   </div>
                 </div>
               </div>
 
               {/* Card 4: Direction Bias */}
-              <div className="p-4 rounded-[18px] bg-white border border-[var(--border-subtle,rgba(10,10,12,0.08))] shadow-xs flex flex-col justify-between">
+              <div className="p-4 rounded-2xl bg-white border border-black/[0.06] shadow-xs flex flex-col justify-between">
                 <div>
                   <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-mono uppercase tracking-wider text-[var(--text-secondary,#5a5a66)]">Direction bias</span>
-                    <span className="text-[11px] font-mono text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+                    <span className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground font-semibold">Direction bias</span>
+                    <span className="text-[11px] font-mono text-[#00D964] font-semibold flex items-center gap-1">
                       Bullish ↗
                     </span>
                   </div>
-                  <div className="text-xl font-black font-mono text-emerald-600 dark:text-emerald-400 mt-2">
+                  <div className="text-xl font-black font-mono text-[#00D964] mt-2">
                     {longRatio}% Long
                   </div>
                 </div>
 
                 <div className="mt-4 pt-2">
-                  <div className="h-2 w-full rounded-full bg-[#D92D45]/20 overflow-hidden mb-2 flex">
-                    <div className="h-full bg-emerald-500" style={{ width: `${longRatio}%` }} />
+                  <div className="h-2 w-full rounded-full bg-[#FEECEB] overflow-hidden mb-2 flex">
+                    <div className="h-full bg-[#00D964]" style={{ width: `${longRatio}%` }} />
                   </div>
-                  <div className="text-[11px] text-[var(--text-secondary,#5a5a66)] font-mono truncate">
+                  <div className="text-[11px] text-muted-foreground font-mono truncate">
                     {longRatio}% long · {shortRatio}% short
                   </div>
                 </div>
@@ -609,21 +609,21 @@ export function TraderProfileDetail({ address }: TraderProfileDetailProps) {
             </div>
 
             {/* 2. Interactive Performance Spline Chart Card */}
-            <div className="p-6 rounded-[22px] bg-white border border-[var(--border-subtle,rgba(10,10,12,0.08))] shadow-xs flex flex-col gap-5">
+            <div className="p-6 rounded-3xl bg-white border border-black/[0.06] shadow-xs flex flex-col gap-5">
               
               {/* Chart Filter Headers */}
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[var(--border-subtle,rgba(10,10,12,0.08))] pb-4">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-black/[0.06] pb-4">
                 {/* Period tabs: PERPS, COMBINED, SPOT, CALENDAR */}
-                <div className="flex items-center gap-1 p-1 rounded-xl bg-[var(--surface-2,#f1f2f5)] border border-[var(--border-subtle,rgba(10,10,12,0.08))] text-[12px] font-semibold">
+                <div className="flex items-center gap-1 p-1 rounded-xl bg-[#F0F2F5] border border-black/[0.04] text-[12px] font-semibold">
                   {(["PERPS", "COMBINED", "SPOT", "CALENDAR"] as const).map((tab) => (
                     <button
                       key={tab}
                       onClick={() => setChartPeriodTab(tab)}
                       className={cn(
-                        "px-3 py-1 rounded-lg transition-all cursor-pointer",
+                        "px-3 py-1 rounded-lg transition-all cursor-pointer active:scale-[0.98]",
                         chartPeriodTab === tab
-                          ? "bg-white text-[var(--text-primary,#0b0b0c)] font-bold shadow-xs"
-                          : "text-[var(--text-secondary,#5a5a66)] hover:text-[var(--text-primary,#0b0b0c)]"
+                          ? "bg-white text-[#0A0A0A] font-bold shadow-xs"
+                          : "text-muted-foreground hover:text-foreground"
                       )}
                     >
                       {tab}
@@ -633,16 +633,16 @@ export function TraderProfileDetail({ address }: TraderProfileDetailProps) {
 
                 <div className="flex items-center gap-3">
                   {/* Metric Toggle: PNL, RPNL, UPNL, VALUE */}
-                  <div className="flex items-center gap-1 p-1 rounded-xl bg-[var(--surface-2,#f1f2f5)] border border-[var(--border-subtle,rgba(10,10,12,0.08))] text-[11px] font-semibold">
+                  <div className="flex items-center gap-1 p-1 rounded-xl bg-[#F0F2F5] border border-black/[0.04] text-[11px] font-semibold">
                     {(["PNL", "RPNL", "UPNL", "VALUE"] as const).map((m) => (
                       <button
                         key={m}
                         onClick={() => setChartMetric(m)}
                         className={cn(
-                          "px-2.5 py-0.5 rounded-lg transition-all cursor-pointer",
+                          "px-2.5 py-0.5 rounded-lg transition-all cursor-pointer active:scale-[0.98]",
                           chartMetric === m
-                            ? "bg-white text-[var(--text-primary,#0b0b0c)] font-bold shadow-xs"
-                            : "text-[var(--text-secondary,#5a5a66)] hover:text-[var(--text-primary,#0b0b0c)]"
+                            ? "bg-white text-[#0A0A0A] font-bold shadow-xs"
+                            : "text-muted-foreground hover:text-foreground"
                         )}
                       >
                         {m}
@@ -651,7 +651,7 @@ export function TraderProfileDetail({ address }: TraderProfileDetailProps) {
                   </div>
 
                   {/* Timeframe: 24H, 7D, 30D, ALL */}
-                  <div className="flex items-center gap-1 p-1 rounded-xl bg-[var(--surface-2,#f1f2f5)] border border-[var(--border-subtle,rgba(10,10,12,0.08))] text-[11px] font-semibold">
+                  <div className="flex items-center gap-1 p-1 rounded-xl bg-[#F0F2F5] border border-black/[0.04] text-[11px] font-semibold">
                     {(["24H", "7D", "30D", "ALL"] as const).map((tf) => (
                       <button
                         key={tf}
@@ -659,8 +659,8 @@ export function TraderProfileDetail({ address }: TraderProfileDetailProps) {
                         className={cn(
                           "px-2.5 py-0.5 rounded-lg transition-all cursor-pointer active:scale-[0.98]",
                           timeframe === tf
-                            ? "bg-white text-[var(--text-primary,#0b0b0c)] font-bold shadow-xs"
-                            : "text-[var(--text-secondary,#5a5a66)] hover:text-[var(--text-primary,#0b0b0c)]"
+                            ? "bg-white text-[#0A0A0A] font-bold shadow-xs"
+                            : "text-muted-foreground hover:text-foreground"
                         )}
                       >
                         {tf}
@@ -672,10 +672,10 @@ export function TraderProfileDetail({ address }: TraderProfileDetailProps) {
 
               {/* Big PnL Readout */}
               <div className="flex items-baseline gap-3">
-                <span className="text-3xl sm:text-4xl font-black font-mono tracking-tight text-emerald-600 dark:text-emerald-400">
+                <span className="text-3xl sm:text-4xl font-black font-mono tracking-tight text-[#00D964]">
                   +$9,980,406.49
                 </span>
-                <span className="text-[13px] font-mono text-emerald-600 dark:text-emerald-400 font-semibold">
+                <span className="text-[13px] font-mono text-[#00D964] font-semibold">
                   +19.32% in period
                 </span>
               </div>
@@ -708,12 +708,12 @@ export function TraderProfileDetail({ address }: TraderProfileDetailProps) {
                 >
                   <defs>
                     <linearGradient id="splineGreenGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#10B981" stopOpacity="0.25" />
-                      <stop offset="60%" stopColor="#10B981" stopOpacity="0.08" />
-                      <stop offset="100%" stopColor="#10B981" stopOpacity="0.0" />
+                      <stop offset="0%" stopColor="#00D964" stopOpacity="0.25" />
+                      <stop offset="60%" stopColor="#00D964" stopOpacity="0.08" />
+                      <stop offset="100%" stopColor="#00D964" stopOpacity="0.0" />
                     </linearGradient>
                     <filter id="emeraldGlow" x="-50%" y="-50%" width="200%" height="200%">
-                      <feDropShadow dx="0" dy="0" stdDeviation="4" floodColor="#10B981" floodOpacity="0.5" />
+                      <feDropShadow dx="0" dy="0" stdDeviation="4" floodColor="#00D964" floodOpacity="0.5" />
                     </filter>
                   </defs>
 
@@ -729,7 +729,7 @@ export function TraderProfileDetail({ address }: TraderProfileDetailProps) {
                   <path
                     d={chartPathData.line}
                     fill="none"
-                    stroke="#10B981"
+                    stroke="#00D964"
                     strokeWidth="2.5"
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -743,7 +743,7 @@ export function TraderProfileDetail({ address }: TraderProfileDetailProps) {
                         y1={0}
                         x2={hoveredPoint.x}
                         y2={240}
-                        stroke="#10B981"
+                        stroke="#00D964"
                         strokeOpacity="0.4"
                         strokeDasharray="3 3"
                         strokeWidth="1.5"
@@ -753,7 +753,7 @@ export function TraderProfileDetail({ address }: TraderProfileDetailProps) {
                         cx={hoveredPoint.x}
                         cy={hoveredPoint.y}
                         r="6"
-                        fill="#10B981"
+                        fill="#00D964"
                         stroke="#ffffff"
                         strokeWidth="2.5"
                         filter="url(#emeraldGlow)"
@@ -765,12 +765,12 @@ export function TraderProfileDetail({ address }: TraderProfileDetailProps) {
                 {/* Floating tooltip */}
                 {hoveredPoint && (
                   <div
-                    className="absolute pointer-events-none -top-2 transform -translate-x-1/2 -translate-y-full px-3 py-1.5 rounded-xl bg-white/95 border border-emerald-500/30 backdrop-blur-md shadow-md text-center transition-transform duration-75 text-[var(--text-primary,#0b0b0c)]"
+                    className="absolute pointer-events-none -top-2 transform -translate-x-1/2 -translate-y-full px-3 py-1.5 rounded-xl bg-white/95 border border-[#00D964]/30 backdrop-blur-md shadow-md text-center transition-transform duration-75 text-foreground"
                     style={{
                       left: `${Math.max(8, Math.min(92, (hoveredPoint.x / 1000) * 100))}%`,
                     }}
                   >
-                    <div className="text-[10px] font-mono text-[var(--text-secondary,#5a5a66)]">
+                    <div className="text-[10px] font-mono text-muted-foreground">
                       {new Date(hoveredPoint.timestamp || Date.now()).toLocaleDateString("en-US", {
                         month: "short",
                         day: "numeric",
@@ -778,29 +778,29 @@ export function TraderProfileDetail({ address }: TraderProfileDetailProps) {
                         minute: "2-digit",
                       })}
                     </div>
-                    <div className="text-[13px] font-mono font-bold text-emerald-600 dark:text-emerald-400">
+                    <div className="text-[13px] font-mono font-bold text-[#00D964]">
                       {formatUsd(hoveredPoint.value)}
                     </div>
                   </div>
                 )}
 
                 {/* Timeline X-Axis Labels */}
-                <div className="flex justify-between items-center text-[11px] font-mono text-[var(--text-secondary,#5a5a66)] pt-3 px-1 border-t border-[var(--border-subtle,rgba(10,10,12,0.06))] mt-2">
+                <div className="flex justify-between items-center text-[11px] font-mono text-muted-foreground pt-3 px-1 border-t border-black/[0.06] mt-2">
                   <span>Oct 11</span>
                   <span>Oct 18</span>
                   <span>Oct 25</span>
                   <span>Oct 31</span>
-                  <span className="text-[var(--text-primary,#0b0b0c)] font-semibold">Nov 03 (Live)</span>
+                  <span className="text-foreground font-semibold">Nov 03 (Live)</span>
                 </div>
               </div>
 
             </div>
 
             {/* 3. Positions & Activity Detailed Table Card */}
-            <div className="rounded-[22px] bg-white border border-[var(--border-subtle,rgba(10,10,12,0.08))] shadow-xs overflow-hidden flex flex-col">
+            <div className="rounded-3xl bg-white border border-black/[0.06] shadow-xs overflow-hidden flex flex-col">
               
               {/* Table Tabs */}
-              <div className="flex items-center gap-2 p-3 bg-[var(--surface-2,#f1f2f5)] border-b border-[var(--border-subtle,rgba(10,10,12,0.08))] overflow-x-auto no-scrollbar text-[12px] font-semibold">
+              <div className="flex items-center gap-1.5 p-2.5 bg-[#F0F2F5] border-b border-black/[0.06] overflow-x-auto no-scrollbar text-[12px] font-semibold">
                 {[
                   `POSITIONS (${profile?.positions.length || 7})`,
                   "BALANCES",
@@ -818,10 +818,10 @@ export function TraderProfileDetail({ address }: TraderProfileDetailProps) {
                       key={tab}
                       onClick={() => setTableTab(tab.startsWith("POSITIONS") ? "POSITIONS" : tab as any)}
                       className={cn(
-                        "px-3 py-1.5 rounded-lg whitespace-nowrap transition-colors cursor-pointer",
+                        "px-3 py-1.5 rounded-lg whitespace-nowrap transition-all cursor-pointer active:scale-[0.98]",
                         isActive
-                          ? "bg-white text-[var(--text-primary,#0b0b0c)] shadow-xs border border-[var(--border-subtle,rgba(10,10,12,0.08))]"
-                          : "text-[var(--text-secondary,#5a5a66)] hover:text-[var(--text-primary,#0b0b0c)]"
+                          ? "bg-white text-[#0A0A0A] shadow-xs border border-black/[0.04] font-bold"
+                          : "text-muted-foreground hover:text-foreground"
                       )}
                     >
                       {tab}
