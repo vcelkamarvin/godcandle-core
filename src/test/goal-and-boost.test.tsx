@@ -38,11 +38,13 @@ describe("Goal and Boost Purge & Redirects", () => {
   const goalPath = path.resolve(__dirname, "../routes/goal.tsx");
   const boostPath = path.resolve(__dirname, "../routes/boost.tsx");
   const teamworkPath = path.resolve(__dirname, "../routes/teamwork.tsx");
+  const perpsPath = path.resolve(__dirname, "../routes/perps.tsx");
   const canvasPath = path.resolve(__dirname, "../components/godcandle/ChartCanvas.tsx");
 
   const goalContent = fs.readFileSync(goalPath, "utf-8");
   const boostContent = fs.readFileSync(boostPath, "utf-8");
   const teamworkContent = fs.readFileSync(teamworkPath, "utf-8");
+  const perpsContent = fs.readFileSync(perpsPath, "utf-8");
   const canvasContent = fs.readFileSync(canvasPath, "utf-8");
 
   it("redirects /goal route cleanly to the unified perpetual terminal", () => {
@@ -64,10 +66,16 @@ describe("Goal and Boost Purge & Redirects", () => {
     expect(teamworkContent).toContain('createFileRoute("/teamwork")');
   });
 
+  it("redirects /perps route cleanly to the unified perpetual terminal", () => {
+    expect(perpsContent).toContain('redirect({ to: "/" })');
+    expect(perpsContent).toContain('createFileRoute("/perps")');
+  });
+
   it("does not render unstyled raw range sliders in either studio file", () => {
     expect(goalContent).not.toContain('<input\n                type="range"');
     expect(boostContent).not.toContain('<input\n                type="range"');
     expect(teamworkContent).not.toContain('<input\n                type="range"');
+    expect(perpsContent).not.toContain('<input\n                type="range"');
   });
 
   it("renders forward progression marks in ChartCanvas for kind='curve'", () => {
@@ -131,6 +139,15 @@ describe("ChartCanvas Edge Cases & Rendering", () => {
     const root = createRoot(container);
     await act(async () => {
       root.render(<TeamworkRedirect />);
+    });
+    expect(container.textContent).toBe("");
+  });
+
+  it("PerpsRedirect component mounts cleanly without error", async () => {
+    const { PerpsRedirect } = await import("@/routes/perps");
+    const root = createRoot(container);
+    await act(async () => {
+      root.render(<PerpsRedirect />);
     });
     expect(container.textContent).toBe("");
   });

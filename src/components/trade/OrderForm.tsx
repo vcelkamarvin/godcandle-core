@@ -461,13 +461,13 @@ export function OrderForm({
       <div className="space-y-1.5">
         <div className="flex items-center justify-between text-xs">
           <div className="flex items-center gap-2">
-            <span className="font-semibold uppercase tracking-wider text-muted-foreground text-xs">
+            <span className="font-semibold uppercase tracking-wide text-muted-foreground text-[12px]">
               STAKE
             </span>
             <button
               type="button"
               onClick={() => setInputMode((prev) => (prev === 'margin' ? 'size' : 'margin'))}
-              className="flex items-center gap-1 px-2 py-0.5 rounded bg-secondary text-xs font-mono text-foreground font-semibold hover:bg-secondary/80 cursor-pointer border border-border/60"
+              className="flex items-center gap-1 px-2 py-0.5 rounded bg-secondary text-[11px] font-mono text-foreground font-semibold hover:bg-secondary/80 cursor-pointer border border-border/60"
               title="Toggle input between Margin (USDC) and Size (coin)"
             >
               <ArrowRightLeft className="size-3 text-muted-foreground" />
@@ -475,14 +475,14 @@ export function OrderForm({
             </button>
           </div>
 
-          <span className="font-mono text-xs">
+          <span className="font-mono text-[12px]">
             <span className="text-muted-foreground font-sans">Available </span>
             <strong className="text-foreground tabular-nums">${fmtUsd(availableBalance, 0)}</strong>
           </span>
         </div>
 
         {/* Stake Preset Chips ($10, $25, $50, $100, $500) */}
-        <div className="grid grid-cols-5 gap-1">
+        <div className="grid grid-cols-5 gap-1.5">
           {STAKE_PRESETS.map((preset) => {
             const isSelected = margin === preset && customAmount === '';
             return (
@@ -490,7 +490,7 @@ export function OrderForm({
                 key={preset}
                 type="button"
                 onClick={() => handleSelectStake(preset)}
-                className={`rounded-lg py-1 text-center font-mono text-xs font-semibold transition-all cursor-pointer ${
+                className={`h-7.5 rounded-lg py-1 text-center font-mono text-[12px] font-semibold transition-all cursor-pointer ${
                   isSelected
                     ? 'bg-black text-white shadow-xs'
                     : 'bg-[#F4F4F5] text-foreground hover:bg-[#EAEAEA]'
@@ -504,8 +504,8 @@ export function OrderForm({
 
         {/* Custom Input Box + 25%, 50%, MAX Percentage Chips */}
         <div className="flex items-center gap-1.5 pt-0.5">
-          <div className="flex flex-1 items-center gap-1 rounded-xl border border-black bg-white px-2 py-1 focus-within:ring-1 focus-within:ring-black">
-            <span className="font-mono text-xs text-muted-foreground">
+          <div className="flex flex-1 items-center gap-1 rounded-xl border border-black bg-white px-2.5 py-1 focus-within:ring-1 focus-within:ring-black">
+            <span className="font-mono text-[13px] text-muted-foreground">
               {inputMode === 'margin' ? '$' : asset}
             </span>
             {inputMode === 'margin' ? (
@@ -515,7 +515,7 @@ export function OrderForm({
                 placeholder="Custom amount"
                 value={customAmount}
                 onChange={(e) => handleCustomAmountChange(e.target.value)}
-                className="w-full bg-transparent font-mono text-xs text-foreground placeholder:font-sans placeholder:text-muted-foreground/70 focus:outline-none"
+                className="w-full bg-transparent font-mono text-[13px] sm:text-[14px] text-foreground placeholder:font-sans placeholder:text-muted-foreground/70 focus:outline-none"
               />
             ) : (
               <input
@@ -525,7 +525,7 @@ export function OrderForm({
                 placeholder={`Size in ${asset}`}
                 value={coinSize}
                 onChange={(e) => handleCoinSizeChange(e.target.value)}
-                className="w-full bg-transparent font-mono text-xs text-foreground placeholder:font-sans placeholder:text-muted-foreground/70 focus:outline-none"
+                className="w-full bg-transparent font-mono text-[13px] sm:text-[14px] text-foreground placeholder:font-sans placeholder:text-muted-foreground/70 focus:outline-none"
               />
             )}
           </div>
@@ -534,21 +534,21 @@ export function OrderForm({
             <button
               type="button"
               onClick={() => handlePercentageStake(0.25)}
-              className="rounded-lg bg-[#F4F4F5] px-2.5 py-1 text-xs font-bold font-sans text-foreground transition-colors hover:bg-[#EAEAEA] cursor-pointer"
+              className="h-7.5 rounded-lg bg-[#F4F4F5] px-2.5 py-1 text-[11px] font-bold font-sans text-foreground transition-colors hover:bg-[#EAEAEA] cursor-pointer"
             >
               25%
             </button>
             <button
               type="button"
               onClick={() => handlePercentageStake(0.5)}
-              className="rounded-lg bg-[#F4F4F5] px-2.5 py-1 text-xs font-bold font-sans text-foreground transition-colors hover:bg-[#EAEAEA] cursor-pointer"
+              className="h-7.5 rounded-lg bg-[#F4F4F5] px-2.5 py-1 text-[11px] font-bold font-sans text-foreground transition-colors hover:bg-[#EAEAEA] cursor-pointer"
             >
               50%
             </button>
             <button
               type="button"
               onClick={() => handlePercentageStake(1.0)}
-              className="rounded-lg bg-[#F4F4F5] px-2.5 py-1 text-xs font-bold font-sans text-foreground transition-colors hover:bg-[#EAEAEA] cursor-pointer"
+              className="h-7.5 rounded-lg bg-[#F4F4F5] px-2.5 py-1 text-[11px] font-bold font-sans text-foreground transition-colors hover:bg-[#EAEAEA] cursor-pointer"
             >
               MAX
             </button>
@@ -557,12 +557,12 @@ export function OrderForm({
       </div>
 
       {/* 3. LEVERAGE Selector Card with Ruler & Presets */}
-      <div className="rounded-xl bg-[#F5F5F4] p-1.5 space-y-0.5">
+      <div className="rounded-xl bg-[#F5F5F4] p-2 space-y-1">
         <div className="flex items-center justify-between px-0.5">
-          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          <span className="text-[12px] font-semibold uppercase tracking-wide text-muted-foreground">
             LEVERAGE
           </span>
-          <span className="text-sm font-extrabold tracking-tight text-foreground font-mono">
+          <span className="text-[15px] sm:text-[16px] font-extrabold tracking-tight text-foreground font-mono">
             ×{internalLeverage}
           </span>
         </div>
@@ -715,20 +715,20 @@ export function OrderForm({
       </div>
 
       {/* 6. Always Visible Preview (6 rows max): Notional, Margin, Impact Px, Liq, Fees, Break-even */}
-      <div className="rounded-xl border border-border/80 bg-white p-2 space-y-1 font-mono text-[11px] shadow-2xs">
+      <div className="rounded-xl border border-border/80 bg-white p-2.5 space-y-1.5 font-mono text-[12px] shadow-2xs">
         <div className="flex items-center justify-between">
-          <span className="text-muted-foreground font-sans font-medium">Notional</span>
-          <span className="font-bold text-foreground tabular-nums">${fmtUsd(notional, 2)}</span>
+          <span className="text-muted-foreground font-sans font-medium text-[11px] sm:text-[12px]">Notional</span>
+          <span className="font-bold text-foreground tabular-nums text-[12px] sm:text-[13px]">${fmtUsd(notional, 2)}</span>
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="text-muted-foreground font-sans font-medium">Required Margin</span>
-          <span className="font-bold text-foreground tabular-nums">${fmtUsd(numMargin, 2)}</span>
+          <span className="text-muted-foreground font-sans font-medium text-[11px] sm:text-[12px]">Required Margin</span>
+          <span className="font-bold text-foreground tabular-nums text-[12px] sm:text-[13px]">${fmtUsd(numMargin, 2)}</span>
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="text-muted-foreground font-sans font-medium">Est. Entry / Impact Price</span>
-          <span className="font-bold text-foreground tabular-nums">
+          <span className="text-muted-foreground font-sans font-medium text-[11px] sm:text-[12px]">Est. Entry / Impact Price</span>
+          <span className="font-bold text-foreground tabular-nums text-[12px] sm:text-[13px]">
             ${fmtUsd(impact.impactPrice, 2)}{' '}
             {impact.slippageBps > 0 && (
               <span className="text-[10px] text-muted-foreground font-normal">
@@ -739,27 +739,24 @@ export function OrderForm({
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="text-muted-foreground font-sans text-xs font-medium">Liquidation price</span>
-          <span className="text-[#FF3B30] font-bold tabular-nums">
-            ${fmtUsd(longBustPrice, 2)} · -{bustDistancePct.toFixed(2)}% ({calcLiquidationDistanceAtr(effectivePrice, longBustPrice, effectivePrice * 0.015)}× 1h ATR)
+          <span className="text-muted-foreground font-sans text-[11px] sm:text-[12px] font-medium">Liquidation price</span>
+          <span className="text-[#FF3B30] font-bold tabular-nums text-[12px] sm:text-[13px]" title={`${calcLiquidationDistanceAtr(effectivePrice, longBustPrice, effectivePrice * 0.015)}× 1h ATR`}>
+            ${fmtUsd(longBustPrice, 2)} (-{bustDistancePct.toFixed(2)}%)
           </span>
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="text-muted-foreground font-sans text-xs font-medium">
+          <span className="text-muted-foreground font-sans text-[11px] sm:text-[12px] font-medium">
             Fee ({(feeRate * 100).toFixed(2)}%)
           </span>
-          <span className="text-foreground font-bold tabular-nums">
-            ${fmtUsd(feeAmount, 2)}{' '}
-            <span className="text-[10px] text-muted-foreground font-normal">
-              (Taker ${fmtUsd(takerFeeUsd, 2)} + Builder ${fmtUsd(builderFeeUsd, 2)})
-            </span>
+          <span className="text-foreground font-bold tabular-nums text-[12px] sm:text-[13px]" title={`Taker $${fmtUsd(takerFeeUsd, 2)} + Builder $${fmtUsd(builderFeeUsd, 2)}`}>
+            ${fmtUsd(feeAmount, 2)}
           </span>
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="text-muted-foreground font-sans font-medium">Break-even Price</span>
-          <span className="font-bold text-foreground tabular-nums">
+          <span className="text-muted-foreground font-sans font-medium text-[11px] sm:text-[12px]">Break-even Price</span>
+          <span className="font-bold text-foreground tabular-nums text-[12px] sm:text-[13px]">
             ${fmtUsd(breakEvenPriceLong, 2)}
           </span>
         </div>
@@ -773,24 +770,24 @@ export function OrderForm({
       </div>
 
       {/* 7. Potential Returns (3 Compact Green Cards) */}
-      <div className="grid grid-cols-3 gap-1 py-0.5">
-        <div className="rounded-lg border border-[#B2ECC8]/60 bg-[#E8F8EE] p-1 text-center flex flex-col justify-center items-center">
-          <span className="font-mono text-[10px] font-semibold text-[#16A34A] leading-none">If move +0.1%</span>
-          <span className="font-mono text-xs font-bold text-[#06964A] leading-tight mt-0.5">
+      <div className="grid grid-cols-3 gap-1.5 py-1">
+        <div className="rounded-xl border border-[#B2ECC8]/60 bg-[#E8F8EE] p-1.5 text-center flex flex-col justify-center items-center">
+          <span className="font-mono text-[10.5px] font-semibold text-[#16A34A] leading-none">If move +0.1%</span>
+          <span className="font-mono text-[12px] sm:text-[13px] font-bold text-[#06964A] leading-tight mt-0.5">
             +${fmtUsd(profitAt01, profitAt01 < 10 ? 2 : 0)}
           </span>
         </div>
 
-        <div className="rounded-lg border border-[#B2ECC8]/60 bg-[#E8F8EE] p-1 text-center flex flex-col justify-center items-center">
-          <span className="font-mono text-[10px] font-semibold text-[#16A34A] leading-none">If move +0.5%</span>
-          <span className="font-mono text-xs font-bold text-[#06964A] leading-tight mt-0.5">
+        <div className="rounded-xl border border-[#B2ECC8]/60 bg-[#E8F8EE] p-1.5 text-center flex flex-col justify-center items-center">
+          <span className="font-mono text-[10.5px] font-semibold text-[#16A34A] leading-none">If move +0.5%</span>
+          <span className="font-mono text-[12px] sm:text-[13px] font-bold text-[#06964A] leading-tight mt-0.5">
             +${fmtUsd(profitAt05, profitAt05 < 10 ? 2 : 0)}
           </span>
         </div>
 
-        <div className="rounded-lg border border-[#B2ECC8]/60 bg-[#E8F8EE] p-1 text-center flex flex-col justify-center items-center">
-          <span className="font-mono text-[10px] font-semibold text-[#16A34A] leading-none">If move +1%</span>
-          <span className="font-mono text-xs font-bold text-[#06964A] leading-tight mt-0.5">
+        <div className="rounded-xl border border-[#B2ECC8]/60 bg-[#E8F8EE] p-1.5 text-center flex flex-col justify-center items-center">
+          <span className="font-mono text-[10.5px] font-semibold text-[#16A34A] leading-none">If move +1%</span>
+          <span className="font-mono text-[12px] sm:text-[13px] font-bold text-[#06964A] leading-tight mt-0.5">
             +${fmtUsd(profitAt10, profitAt10 < 10 ? 2 : 0)}
           </span>
         </div>

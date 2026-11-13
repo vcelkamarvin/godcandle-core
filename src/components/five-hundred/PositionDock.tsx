@@ -339,38 +339,38 @@ export function PositionDock({
                       {/* 6-Metric Details Grid */}
                       <div className="grid grid-cols-3 gap-1.5 p-2 rounded-[12px] bg-secondary/50 border border-border/60 text-xs font-mono">
                         <div>
-                          <span className="text-muted-foreground block text-xs font-medium">ENTRY</span>
-                          <span className="text-foreground font-semibold text-xs">
+                          <span className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground block">ENTRY</span>
+                          <span className="text-foreground font-semibold text-[12px] sm:text-[13px]">
                             ${Math.round(pos.entryPrice).toLocaleString("en-US")}
                           </span>
                         </div>
                         <div>
-                          <span className="text-muted-foreground block text-xs font-medium">MARK</span>
-                          <span className="text-foreground font-semibold text-xs">
+                          <span className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground block">MARK</span>
+                          <span className="text-foreground font-semibold text-[12px] sm:text-[13px]">
                             ${Math.round(mark).toLocaleString("en-US")}
                           </span>
                         </div>
                         <div>
-                          <span className="text-muted-foreground block text-xs font-medium">LIQ PRICE</span>
-                          <span className="text-[#D92D45] font-bold text-xs">
+                          <span className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground block">LIQ PRICE</span>
+                          <span className="text-[#D92D45] font-bold text-[12px] sm:text-[13px]">
                             ${Math.round(pos.liqPrice).toLocaleString("en-US")}
                           </span>
                         </div>
                         <div>
-                          <span className="text-muted-foreground block text-xs font-medium">TARGET</span>
-                          <span className="text-[#087F4D] font-semibold text-xs">
+                          <span className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground block">TARGET</span>
+                          <span className="text-[#087F4D] font-semibold text-[12px] sm:text-[13px]">
                             {pos.targetPrice
                               ? `$${Math.round(pos.targetPrice).toLocaleString("en-US")}`
                               : "None"}
                           </span>
                         </div>
                         <div>
-                          <span className="text-muted-foreground block text-xs font-medium">NOTIONAL</span>
-                          <span className="text-foreground font-semibold text-xs">{formatUsd(notional)}</span>
+                          <span className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground block">NOTIONAL</span>
+                          <span className="text-foreground font-semibold text-[12px] sm:text-[13px]">{formatUsd(notional)}</span>
                         </div>
                         <div>
-                          <span className="text-muted-foreground block text-xs font-medium">STAKE</span>
-                          <span className="text-foreground font-semibold text-xs">${pos.stake}</span>
+                          <span className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground block">STAKE</span>
+                          <span className="text-foreground font-semibold text-[12px] sm:text-[13px]">${pos.stake}</span>
                         </div>
                       </div>
 
@@ -465,14 +465,14 @@ export function PositionDock({
           ) : (
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="border-b border-border text-xs text-muted-foreground font-mono">
-                  <th className="pb-2 font-normal">Asset</th>
-                  <th className="pb-2 font-normal">Side</th>
-                  <th className="pb-2 font-normal">Leverage</th>
-                  <th className="pb-2 font-normal">Entry / Exit</th>
-                  <th className="pb-2 font-normal">P&amp;L</th>
-                  <th className="pb-2 font-normal">Duration</th>
-                  <th className="pb-2 font-normal text-right">Card</th>
+                <tr className="border-b border-border text-[11px] uppercase tracking-wider text-muted-foreground font-mono font-semibold">
+                  <th className="pb-2 font-semibold">Asset</th>
+                  <th className="pb-2 font-semibold">Side</th>
+                  <th className="pb-2 font-semibold">Leverage</th>
+                  <th className="pb-2 font-semibold">Entry / Exit</th>
+                  <th className="pb-2 font-semibold">P&amp;L</th>
+                  <th className="pb-2 font-semibold">Duration</th>
+                  <th className="pb-2 font-semibold text-right">Card</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border/60 text-[12px] font-mono">

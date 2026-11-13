@@ -25,7 +25,7 @@ export function WatchlistStrip({
 
   return (
     <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1.5 px-2 bg-white border border-border/70 rounded-xl shadow-2xs select-none text-xs font-mono">
-      <div className="flex items-center gap-1 text-xs uppercase font-bold text-muted-foreground px-1.5 shrink-0">
+      <div className="flex items-center gap-1 text-[11px] uppercase tracking-wider font-semibold text-muted-foreground px-1.5 shrink-0">
         <Star className="size-3.5 text-[#FFD60A] fill-[#FFD60A]" />
         <span>Watchlist</span>
       </div>
@@ -46,20 +46,20 @@ export function WatchlistStrip({
               type="button"
               onClick={() => onSelectMarket(raw)}
               className={cn(
-                "h-7 px-2.5 rounded-lg flex items-center gap-2 transition-all cursor-pointer border tabular-nums text-xs",
+                "h-7.5 px-3 rounded-lg flex items-center gap-2 transition-all cursor-pointer border tabular-nums text-xs",
                 isActive
                   ? "bg-foreground text-background font-bold border-foreground shadow-2xs"
                   : "bg-secondary/60 hover:bg-secondary text-foreground border-border/60 hover:border-border"
               )}
             >
               <MarketLogo symbol={raw as MarketSymbol} size={15} />
-              <span className="font-sans font-bold text-xs">{raw}</span>
-              <span className={cn("text-xs font-medium", isActive ? "text-background/90" : "text-muted-foreground")}>
+              <span className="font-sans font-bold text-[12px]">{raw}</span>
+              <span className={cn("text-[12px] font-mono font-medium", isActive ? "text-background/90" : "text-muted-foreground")}>
                 ${fmtUsd(price, price >= 100 ? 1 : 2)}
               </span>
               <span
                 className={cn(
-                  "text-xs font-bold",
+                  "text-[11px] font-mono font-semibold",
                   isActive
                     ? (isUp ? "text-[#00D964]" : "text-[#FF453A]")
                     : (isUp ? "text-[#06964A]" : "text-[#FF3B30]")

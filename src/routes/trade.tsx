@@ -1,6 +1,8 @@
+import { useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { FiveHundredXPage } from "@/components/trade/TickTradingDesk";
 import { TradeTerminal } from "@/components/trade/TradeTerminal";
+import { useTrading } from "@/components/godcandle/TradingProvider";
 
 export const Route = createFileRoute("/trade")({
   head: () => ({
@@ -25,7 +27,11 @@ export const Route = createFileRoute("/trade")({
 });
 
 function GodcandleTradeDesk() {
-  // Compatibility: t.setMode("paper1000x")
+  const t = useTrading();
+  useEffect(() => {
+    t.setMode("paper1000x");
+  }, [t]);
+
   return (
     <div className="py-1 sm:py-1.5 px-2.5 sm:px-4 md:px-5 min-[1440px]:h-[calc(100vh-66px)] min-[1440px]:overflow-hidden min-[1440px]:flex min-[1440px]:flex-col">
       <div className="hidden" aria-hidden="true">

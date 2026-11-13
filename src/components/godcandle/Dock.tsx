@@ -142,24 +142,24 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
       <div className="flex flex-wrap items-center justify-between gap-3 px-3.5 py-2.5 bg-[#FBFBFA] border-b border-border text-xs">
         <div className="flex items-center gap-4 text-muted-foreground">
           <div>
-            <span className="text-xs uppercase tracking-wider block text-muted-foreground font-medium">Equity</span>
-            <span className="font-bold text-foreground tabular text-xs sm:text-sm">${fmtUsd(t.balance, 2)}</span>
+            <span className="text-[11px] uppercase tracking-wider block text-muted-foreground font-semibold">Equity</span>
+            <span className="font-bold text-foreground tabular text-[13px] sm:text-[14px]">${fmtUsd(t.balance, 2)}</span>
           </div>
           <div className="h-4 w-px bg-border" />
           <div>
-            <span className="text-xs uppercase tracking-wider block text-muted-foreground font-medium">Available</span>
-            <span className="font-bold text-[#06964A] tabular text-xs sm:text-sm">${fmtUsd(t.available, 2)}</span>
+            <span className="text-[11px] uppercase tracking-wider block text-muted-foreground font-semibold">Available</span>
+            <span className="font-bold text-[#06964A] tabular text-[13px] sm:text-[14px]">${fmtUsd(t.available, 2)}</span>
           </div>
           <div className="h-4 w-px bg-border" />
           <div>
-            <span className="text-xs uppercase tracking-wider block text-muted-foreground font-medium">Margin Used</span>
-            <span className="font-semibold text-foreground tabular text-xs sm:text-sm">${fmtUsd(t.marginUsed, 2)}</span>
+            <span className="text-[11px] uppercase tracking-wider block text-muted-foreground font-semibold">Margin Used</span>
+            <span className="font-semibold text-foreground tabular text-[13px] sm:text-[14px]">${fmtUsd(t.marginUsed, 2)}</span>
           </div>
           <div className="h-4 w-px bg-border" />
           <div>
-            <span className="text-xs uppercase tracking-wider block text-muted-foreground font-medium">Unrealized PnL</span>
+            <span className="text-[11px] uppercase tracking-wider block text-muted-foreground font-semibold">Unrealized PnL</span>
             <span
-              className={`font-bold tabular text-xs sm:text-sm ${
+              className={`font-bold tabular text-[13px] sm:text-[14px] ${
                 unrealizedPnl >= 0 ? 'text-[#06964A]' : 'text-[#FF3B30]'
               }`}
             >
@@ -169,9 +169,9 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
         </div>
 
         <div className="flex items-center gap-3">
-          <span className="text-muted-foreground font-medium">
+          <span className="text-muted-foreground font-medium text-[12px]">
             Realized PnL:{' '}
-            <span className={`font-bold ${totalRealizedPnl >= 0 ? 'text-[#06964A]' : 'text-[#FF3B30]'}`}>
+            <span className={`font-bold text-[13px] ${totalRealizedPnl >= 0 ? 'text-[#06964A]' : 'text-[#FF3B30]'}`}>
               {fmtSigned(totalRealizedPnl)}
             </span>
           </span>
@@ -196,7 +196,7 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
               key={tItem.id}
               type="button"
               onClick={() => setTab(tItem.id as any)}
-              className={`px-3 py-1 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+              className={`px-3 py-1 rounded-xl text-[12px] font-semibold transition-all cursor-pointer ${
                 tab === tItem.id
                   ? 'bg-foreground text-background font-bold shadow-2xs'
                   : 'text-muted-foreground hover:text-foreground hover:bg-secondary/60'
@@ -228,20 +228,20 @@ export function Dock({ feeds, onSelect, open, history, onClose, onShare }: Props
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[900px] text-xs font-mono tabular">
+              <table className="w-full min-w-[900px] text-[12px] sm:text-[13px] font-mono tabular">
                 <thead>
-                  <tr className="text-left text-xs uppercase text-muted-foreground font-semibold border-b border-border/60 pb-2">
-                    <th className="py-2 px-2">Market</th>
-                    <th className="py-2 px-2">Side</th>
-                    <th className="py-2 px-2 text-right">Size</th>
-                    <th className="py-2 px-2 text-right">Entry</th>
-                    <th className="py-2 px-2 text-right">Mark</th>
-                    <th className="py-2 px-2 text-right">Liq Price</th>
-                    <th className="py-2 px-2 text-right">Margin</th>
-                    <th className="py-2 px-2 text-right">uPnL / ROE</th>
-                    <th className="py-2 px-2 text-right">Funding Paid</th>
-                    <th className="py-2 px-2 text-right">TP / SL</th>
-                    <th className="py-2 px-2 text-right">Close Position</th>
+                  <tr className="text-left text-[11px] uppercase tracking-wider text-muted-foreground font-semibold border-b border-border/60 pb-2">
+                    <th className="py-2 px-2 font-semibold">Market</th>
+                    <th className="py-2 px-2 font-semibold">Side</th>
+                    <th className="py-2 px-2 text-right font-semibold">Size</th>
+                    <th className="py-2 px-2 text-right font-semibold">Entry</th>
+                    <th className="py-2 px-2 text-right font-semibold">Mark</th>
+                    <th className="py-2 px-2 text-right font-semibold">Liq Price</th>
+                    <th className="py-2 px-2 text-right font-semibold">Margin</th>
+                    <th className="py-2 px-2 text-right font-semibold">uPnL / ROE</th>
+                    <th className="py-2 px-2 text-right font-semibold">Funding Paid</th>
+                    <th className="py-2 px-2 text-right font-semibold">TP / SL</th>
+                    <th className="py-2 px-2 text-right font-semibold">Close Position</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border/40">

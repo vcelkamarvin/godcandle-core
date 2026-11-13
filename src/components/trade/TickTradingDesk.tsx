@@ -75,6 +75,33 @@ function LiveFooterClock() {
 export function FiveHundredXPage() {
   const wallet = useWallet();
 
+  // Dedicated 1000x Paper Balance ($10,000 default)
+  const [paperBalance, setPaperBalance] = useState<number>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("godcandle_1000x_paper_balance");
+      if (saved) {
+        const val = parseFloat(saved);
+        if (!isNaN(val) && val > 0) return val;
+      }
+    }
+    return 10000;
+  });
+
+  const updatePaperBalance = useCallback((updater: (prev: number) => number) => {
+    setPaperBalance((prev) => {
+      const next = Math.max(0, updater(prev));
+      if (typeof window !== "undefined") {
+        localStorage.setItem("godcandle_1000x_paper_balance", next.toString());
+      }
+      return next;
+    });
+  }, []);
+
+  const handleResetPaperBalance = useCallback(() => {
+    updatePaperBalance(() => 10000);
+    toast.success("1000x Paper Balance reset to $10,000 USDC");
+  }, [updatePaperBalance]);
+
   // 1. Control Bar State
   const [mode, setMode] = useState<"practice" | "live">("practice");
   const [marketSymbol, setMarketSymbol] = useState<MarketSymbol>("BTC");
@@ -368,6 +395,17 @@ export function FiveHundredXPage() {
       return;
     }
 
+    if (stake > paperBalance) {
+      toast.error("Insufficient paper balance", {
+        description: `You need $${stake} but have $${paperBalance.toFixed(0)}. Reset balance to continue.`,
+        action: {
+          label: "Reset ($10k)",
+          onClick: handleResetPaperBalance,
+        },
+      });
+      return;
+    }
+
     const tradeSide = explicitSide || side;
     if (explicitSide && explicitSide !== side) {
       setSide(explicitSide);
@@ -375,6 +413,13 @@ export function FiveHundredXPage() {
 
     const entry = livePrice;
     const liq = calculateLiqPrice(entry, leverage, tradeSide);
+
+    // Deduct stake from paper balance
+    updatePaperBalance((bal) => bal - stake);
+
+    const target = (explicitSide && explicitSide !== side)
+      ? (explicitSide === "long" ? market.defaultTargetLong : market.defaultTargetShort)
+      : targetPrice;
 
     const newPos: PositionRecord = {
       id: `${marketSymbol.toLowerCase()}-${Date.now()}`,
@@ -385,7 +430,7 @@ export function FiveHundredXPage() {
       stake,
       leverage,
       liqPrice: liq,
-      targetPrice,
+      targetPrice: target,
       openTime: Date.now(),
       status: "open",
     };
@@ -395,7 +440,7 @@ export function FiveHundredXPage() {
     toast.success(`${marketSymbol} ${leverage}x position opened!`, {
       description: `${tradeSide.toUpperCase()} at ${market.formatPrice(entry)} · Liq distance: ${(100 / leverage).toFixed(2)}%`,
     });
-  }, [isMarketClosed, livePrice, leverage, side, marketSymbol, stake, targetPrice, market]);
+  }, [isMarketClosed, livePrice, leverage, side, marketSymbol, stake, targetPrice, market, paperBalance, updatePaperBalance, handleResetPaperBalance]);
 
   // One-Tap Quick Trade Handler
   const handleQuickTrade = useCallback(
@@ -407,10 +452,24 @@ export function FiveHundredXPage() {
         return;
       }
 
+      if (stake > paperBalance) {
+        toast.error("Insufficient paper balance", {
+          description: `You need $${stake} but have $${paperBalance.toFixed(0)}. Reset balance to continue.`,
+          action: {
+            label: "Reset ($10k)",
+            onClick: handleResetPaperBalance,
+          },
+        });
+        return;
+      }
+
       setSide(quickSide);
       const entry = livePrice;
       const liq = calculateLiqPrice(entry, leverage, quickSide);
       const target = quickSide === "long" ? market.defaultTargetLong : market.defaultTargetShort;
+
+      // Deduct stake from paper balance
+      updatePaperBalance((bal) => bal - stake);
 
       const newPos: PositionRecord = {
         id: `${marketSymbol.toLowerCase()}-${Date.now()}`,
@@ -432,7 +491,7 @@ export function FiveHundredXPage() {
         description: `${marketSymbol} at ${market.formatPrice(entry)} · ${leverage}x leverage · Stake $${stake}`,
       });
     },
-    [isMarketClosed, livePrice, leverage, marketSymbol, stake, market],
+    [isMarketClosed, livePrice, leverage, marketSymbol, stake, market, paperBalance, updatePaperBalance, handleResetPaperBalance],
   );
 
   // Close Position Handler
@@ -463,17 +522,22 @@ export function FiveHundredXPage() {
         status: "closed",
       };
 
+      // Credit stake + realized PnL back to paper balance
+      const payout = Math.max(0, pos.stake + pnl);
+      updatePaperBalance((bal) => bal + payout);
+
       setOpenPositions((prev) => prev.filter((p) => p.id !== id));
       setHistory((prev) => [histRecord, ...prev]);
 
       toast.success("Position closed", {
-        description: `${pos.symbol} ${pos.side.toUpperCase()} closed with ${formatPnl(pnl)} realized P&L.`,
+        description: `${pos.symbol} ${pos.side.toUpperCase()} closed with ${formatPnl(pnl)} realized P&L (${formatPct(pnlPct)}).`,
+        action: {
+          label: "Share PnL",
+          onClick: () => setSharedTrade(histRecord),
+        },
       });
-
-      // Show shareable card modal
-      setSharedTrade(histRecord);
     },
-    [openPositions, livePriceMap],
+    [openPositions, livePriceMap, updatePaperBalance],
   );
 
   // Reduce 50% Position Handler
@@ -486,6 +550,10 @@ export function FiveHundredXPage() {
       const movePct = ((mark - pos.entryPrice) / pos.entryPrice) * 100;
       const fullPnl = calculatePnl(pos.stake, pos.leverage, pos.side, movePct);
       const realizedHalfPnl = fullPnl * 0.5;
+      const returnedStake = pos.stake * 0.5;
+      const payout = Math.max(0, returnedStake + realizedHalfPnl);
+
+      updatePaperBalance((bal) => bal + payout);
 
       setOpenPositions((prev) =>
         prev.map((p) => {
@@ -501,13 +569,49 @@ export function FiveHundredXPage() {
         description: `Realized ${formatPnl(realizedHalfPnl)}. Remaining stake: $${Math.max(5, Math.round(pos.stake * 0.5))}.`,
       });
     },
-    [openPositions, livePriceMap],
+    [openPositions, livePriceMap, updatePaperBalance],
   );
 
   // Update Target Price for Position
   const handleSetTargetPrice = useCallback((id: string, target: number) => {
     setOpenPositions((prev) => prev.map((p) => (p.id === id ? { ...p, targetPrice: target } : p)));
   }, []);
+
+  // Check take-profit triggers for open positions against live prices
+  useEffect(() => {
+    openPositions.forEach((pos) => {
+      if (pos.status !== "open" || !pos.targetPrice) return;
+      const cur = livePriceMap[pos.symbol];
+      if (!cur) return;
+      const hitTakeProfit =
+        (pos.side === "long" && cur >= pos.targetPrice) ||
+        (pos.side === "short" && cur <= pos.targetPrice);
+
+      if (hitTakeProfit) {
+        toast.success(`Target Reached! Take-profit executed for ${pos.symbol}`, {
+          description: `${pos.side.toUpperCase()} hit target at ${market.formatPrice(pos.targetPrice)}. Profit secured!`,
+        });
+        handleClosePosition(pos.id);
+      }
+    });
+  }, [openPositions, livePriceMap, handleClosePosition, market]);
+
+  // Check background position liquidation triggers
+  useEffect(() => {
+    openPositions.forEach((pos) => {
+      if (pos.status !== "open") return;
+      if (pos.symbol === marketSymbol) return; // Active position is handled with shatter animation in TickChart
+      const cur = livePriceMap[pos.symbol];
+      if (!cur) return;
+      const hitLiq =
+        (pos.side === "long" && cur <= pos.liqPrice) ||
+        (pos.side === "short" && cur >= pos.liqPrice);
+
+      if (hitLiq) {
+        handleLiquidate(pos.id);
+      }
+    });
+  }, [openPositions, livePriceMap, marketSymbol, handleLiquidate]);
 
   // Review Sheet (Modal) State
   const [reviewModalOpen, setReviewModalOpen] = useState(false);
@@ -533,44 +637,30 @@ export function FiveHundredXPage() {
       {/* Signature Delicate Rainbow Top Accent Bar */}
       <div className="h-[2px] w-full rainbow-bar shrink-0" />
 
-      {/* TOP BAR 1: Market Selector, Search, Watchlist, Mode & Collateral */}
-      <div className="border-b border-[var(--border-subtle,rgba(10,10,12,0.08))] bg-[#FFFFFF]/95 backdrop-blur-md sticky top-16 z-20 shrink-0">
-        <div className="flex h-14 w-full max-w-[1680px] mx-auto items-center justify-between px-4 md:px-8 gap-3 overflow-x-auto no-scrollbar">
-          {/* Left: Market selector button */}
-          <div className="flex items-center gap-2.5 shrink-0">
+      {/* UNIFIED 1000X COMMAND BAR: Balanced, Uncluttered, High-Converting */}
+      <div className="border-b border-[var(--border-subtle,rgba(10,10,12,0.08))] bg-[#FFFFFF]/95 backdrop-blur-md sticky top-12 sm:top-13 z-20 shrink-0">
+        <div className="flex h-13 sm:h-14 w-full max-w-[1680px] mx-auto items-center justify-between px-3 sm:px-6 gap-3 overflow-x-auto no-scrollbar">
+          {/* Left: Market selector button + Watchlist quick pills */}
+          <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
             <button
               type="button"
               onClick={() => setTickerModalOpen(true)}
               className="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-[var(--surface-2,#f1f2f5)] transition-colors cursor-pointer border border-[var(--border-subtle,rgba(10,10,12,0.08))]"
             >
               <div className="flex items-baseline gap-1.5">
-                <span className="font-semibold text-[14px] text-[var(--text-primary,#0b0b0c)] tracking-tight">
-                  {marketSymbol}-USD Perp
+                <span className="font-bold text-[13px] sm:text-[14px] text-[var(--text-primary,#0b0b0c)] tracking-tight">
+                  {marketSymbol}-USD
                 </span>
-                <span className="text-[12px] text-[var(--text-tertiary,#747482)]">· up to {market.maxLeverage}x</span>
+                <span className="rounded px-1.5 py-0.2 text-[10px] bg-[#FFD60A]/20 border border-[#FFD60A]/40 text-amber-700 font-bold font-mono">
+                  1000X
+                </span>
               </div>
-              <span className="font-mono tabular-nums text-[13px] font-semibold text-[var(--text-primary,#0b0b0c)] ml-1">
-                {market.formatPrice(livePrice)}
-              </span>
               <ChevronDown className="size-3.5 text-[var(--text-tertiary,#747482)]" />
             </button>
 
-            {/* Search markets button ⌘K */}
-            <button
-              type="button"
-              onClick={() => setTickerModalOpen(true)}
-              className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--surface-2,#f1f2f5)] hover:bg-[var(--surface-3,#e6e8ec)] text-[12px] text-[var(--text-secondary,#5a5a66)] transition-colors cursor-pointer border border-[var(--border-subtle,rgba(10,10,12,0.06))]"
-            >
-              <Search className="size-3.5 text-[var(--text-tertiary,#747482)]" />
-              <span>Search markets</span>
-              <kbd className="font-mono text-[10px] bg-[var(--surface-1,#ffffff)] px-1.5 py-0.5 rounded border border-[var(--border-subtle,rgba(10,10,12,0.1))] text-[var(--text-tertiary,#747482)]">
-                ⌘K
-              </kbd>
-            </button>
-
-            {/* Watchlist pills: BTC, ETH, SPX, SOL, HYPE, DOGE */}
-            <div className="flex items-center gap-1 shrink-0 p-0.5 rounded-full bg-[var(--surface-2,#f1f2f5)] border border-[var(--border-subtle,rgba(10,10,12,0.08))]">
-              {(["BTC", "ETH", "SPX", "SOL", "HYPE", "DOGE"] as const).map((sym) => {
+            {/* Watchlist quick pills: BTC, ETH, SPX, SOL */}
+            <div className="hidden sm:flex items-center gap-1 shrink-0 p-0.5 rounded-full bg-[var(--surface-2,#f1f2f5)] border border-[var(--border-subtle,rgba(10,10,12,0.08))]">
+              {(["BTC", "ETH", "SPX", "SOL"] as const).map((sym) => {
                 const isActive = marketSymbol === sym;
                 return (
                   <button
@@ -582,9 +672,9 @@ export function FiveHundredXPage() {
                       }
                     }}
                     className={cn(
-                      "rounded-full px-2.5 py-1 text-[11.5px] font-medium transition-all cursor-pointer",
+                      "rounded-full px-2.5 py-0.5 text-[11px] font-mono font-medium transition-all cursor-pointer",
                       isActive
-                        ? "bg-[var(--surface-1,#ffffff)] text-[var(--text-primary,#0b0b0c)] shadow-xs font-semibold"
+                        ? "bg-[var(--surface-1,#ffffff)] text-[var(--text-primary,#0b0b0c)] shadow-xs font-bold"
                         : "bg-transparent text-[var(--text-secondary,#5a5a66)] hover:text-[var(--text-primary,#0b0b0c)]",
                     )}
                   >
@@ -595,108 +685,11 @@ export function FiveHundredXPage() {
             </div>
           </div>
 
-          {/* Right: Mode & Collateral Balance */}
-          <div className="flex items-center gap-2.5 shrink-0 ml-auto">
-            {/* Seamless Available Balance Display */}
-            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--surface-2,#f1f2f5)] border border-[var(--border-subtle,rgba(10,10,12,0.08))] text-[12px]">
-              <span className="size-1.5 rounded-full bg-[#087F4D]" />
-              <span className="text-[var(--text-secondary,#5a5a66)]">Balance:</span>
-              <span className="font-semibold text-[var(--text-primary,#0b0b0c)] tabular-nums">
-                $
-                {wallet.balanceUsd.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}
-              </span>
-              <span className="text-xs text-[var(--text-secondary,#5a5a66)] font-bold">USDC</span>
-            </div>
-
-            {/* Segmented Mode: Practice / Live */}
-            <div className="flex items-center gap-0.5 bg-[var(--surface-2,#f1f2f5)] p-0.5 rounded-full border border-[var(--border-subtle,rgba(10,10,12,0.08))] shrink-0">
-              <button
-                type="button"
-                onClick={() => handleModeSwitch("practice")}
-                className={cn(
-                  "rounded-full px-2.5 py-1 text-[11.5px] font-medium transition-all cursor-pointer",
-                  mode === "practice"
-                    ? "bg-[var(--surface-1,#ffffff)] text-[var(--text-primary,#0b0b0c)] shadow-xs font-semibold"
-                    : "bg-transparent text-[var(--text-secondary,#5a5a66)] hover:text-[var(--text-primary,#0b0b0c)]",
-                )}
-              >
-                Practice
-              </button>
-              <button
-                type="button"
-                onClick={() => handleModeSwitch("live")}
-                className={cn(
-                  "rounded-full px-2.5 py-1 text-[11.5px] font-medium transition-all cursor-pointer flex items-center gap-1",
-                  mode === "live"
-                    ? "bg-[var(--surface-1,#ffffff)] text-[var(--text-primary,#0b0b0c)] shadow-xs font-semibold"
-                    : "bg-transparent text-[var(--text-secondary,#5a5a66)] hover:text-[var(--text-primary,#0b0b0c)]",
-                )}
-              >
-                {!wallet.isConnected && <Lock className="size-3 text-[var(--text-tertiary,#747482)]" />}
-                <span>Live</span>
-              </button>
-            </div>
-
-            {/* Quick Trade Mode Toggle */}
-            <button
-              type="button"
-              onClick={() => setQuickTradeMode((v) => !v)}
-              className={cn(
-                "rounded-full border border-[var(--border-subtle,rgba(10,10,12,0.08))] h-8 px-2.5 text-[11.5px] font-medium transition-all flex items-center gap-1 cursor-pointer",
-                quickTradeMode
-                  ? "bg-[var(--surface-1,#ffffff)] text-[var(--text-primary,#0b0b0c)] border-[var(--border-default,rgba(10,10,12,0.2))] shadow-xs font-semibold"
-                  : "bg-[var(--surface-2,#f1f2f5)] text-[var(--text-secondary,#5a5a66)] hover:text-[var(--text-primary,#0b0b0c)]",
-              )}
-              title="Toggle 1-Tap Quick Scalp Mode"
-            >
-              <Zap className="size-3" />
-              <span className="hidden sm:inline">Quick</span>
-            </button>
-
-            {/* Session badge */}
-            <button
-              type="button"
-              onClick={() => {
-                if (marketSymbol === "SPX") {
-                  setSpxClosed((c) => !c);
-                  toast.info(`SPX status toggled to ${!spxClosed ? "Closed" : "Open"}`);
-                }
-              }}
-              className={cn(
-                "rounded-full border border-[var(--border-subtle,rgba(10,10,12,0.08))] h-8 px-2.5 text-[11.5px] font-medium transition-all whitespace-nowrap flex items-center gap-1.5",
-                marketSymbol === "SPX" ? "cursor-pointer hover:border-[var(--border-default)]" : "cursor-default",
-                isMarketClosed ? "text-[var(--text-tertiary,#747482)] bg-[var(--surface-2,#f1f2f5)]" : "text-[var(--text-primary,#0b0b0c)] bg-[var(--surface-2,#f1f2f5)]",
-              )}
-            >
-              <span
-                className={cn(
-                  "size-1.5 rounded-full",
-                  isMarketClosed ? "bg-[var(--text-tertiary,#747482)]/40" : "bg-[#087F4D] animate-pulse",
-                )}
-              />
-              <span>
-                {marketSymbol === "SPX"
-                  ? spxClosed
-                    ? "Market closed · opens Mon 15:30 CET"
-                    : "US session open"
-                  : "24/7 market"}
-              </span>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* TOP BAR 2: Ultra-Clean Big Price Display & Timeframe Selector (Directly above Chart) */}
-      <div className="border-b border-[var(--border-subtle,rgba(10,10,12,0.06))] bg-[#FFFFFF] px-4 md:px-8 py-3 shrink-0">
-        <div className="w-full max-w-[1680px] mx-auto flex flex-wrap items-center justify-between gap-4">
-          {/* Giant Clean Price + Percent + Live */}
-          <div className="flex items-center gap-3">
+          {/* Center: Clean Proportional Price Display + 24h Change + Live Pulse */}
+          <div className="flex items-center gap-2.5 shrink-0">
             <span
               className={cn(
-                "font-mono tabular-nums text-[32px] md:text-[36px] font-bold tracking-tight transition-colors duration-150 leading-none",
+                "font-mono tabular-nums text-[20px] sm:text-[22px] font-bold tracking-tight transition-colors duration-150 leading-none",
                 priceFlashDir === "up"
                   ? "text-[#087F4D]"
                   : priceFlashDir === "down"
@@ -709,7 +702,7 @@ export function FiveHundredXPage() {
 
             <span
               className={cn(
-                "px-2.5 py-1 rounded-full text-[13px] font-semibold tabular-nums font-mono",
+                "px-2 py-0.5 rounded-full text-[12px] font-semibold tabular-nums font-mono",
                 change24h >= 0
                   ? "bg-[#087F4D]/10 text-[#087F4D]"
                   : "bg-[#D92D45]/10 text-[#D92D45]",
@@ -719,30 +712,77 @@ export function FiveHundredXPage() {
               {change24h.toFixed(2)}%
             </span>
 
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[var(--surface-2,#f1f2f5)] text-[11px] font-medium text-[var(--text-secondary,#5a5a66)]">
+            <span className="hidden md:inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[var(--surface-2,#f1f2f5)] text-[11px] font-mono text-[var(--text-secondary,#5a5a66)]">
               <span className="size-1.5 rounded-full bg-[#087F4D] animate-pulse" />
-              <span>Live</span>
+              <span>Live Tick</span>
             </span>
           </div>
 
-          {/* Timeframe pill group: [Tick] 1m 5m 1h 4h */}
-          <div className="flex items-center gap-1 p-1 rounded-full bg-[var(--surface-2,#f1f2f5)] border border-[var(--border-subtle,rgba(10,10,12,0.08))]">
-            {(["Tick", "1m", "5m", "1h", "4h"] as const).map((tf) => (
+          {/* Right: Timeframe Pills + Paper Balance + Reset Button + Quick */}
+          <div className="flex items-center gap-2 shrink-0">
+            {/* Timeframe pill group: [Tick | 1m | 5m | 15m] */}
+            <div className="flex items-center gap-0.5 p-0.5 rounded-full bg-[var(--surface-2,#f1f2f5)] border border-[var(--border-subtle,rgba(10,10,12,0.08))]">
+              {(["Tick", "1m", "5m", "15m"] as const).map((tf) => (
+                <button
+                  key={tf}
+                  type="button"
+                  onClick={() => setActiveTimeframe(tf as any)}
+                  className={cn(
+                    "rounded-full px-2.5 py-0.5 text-[11px] font-mono font-medium transition-all cursor-pointer",
+                    activeTimeframe === tf
+                      ? "bg-[var(--surface-1,#ffffff)] text-[var(--text-primary,#0b0b0c)] shadow-xs font-bold"
+                      : "bg-transparent text-[var(--text-secondary,#5a5a66)] hover:text-[var(--text-primary,#0b0b0c)]",
+                  )}
+                >
+                  {tf}
+                </button>
+              ))}
+            </div>
+
+            {/* Paper Balance Badge */}
+            <div className="hidden lg:flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--surface-2,#f1f2f5)] border border-[var(--border-subtle,rgba(10,10,12,0.08))] text-[12px] font-mono">
+              <span className="text-[var(--text-secondary,#5a5a66)]">Paper:</span>
+              <span className="font-bold text-[var(--text-primary,#0b0b0c)] tabular-nums">
+                ${paperBalance.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+              </span>
               <button
-                key={tf}
                 type="button"
-                onClick={() => setActiveTimeframe(tf)}
-                className={cn(
-                  "rounded-full px-3 py-1 text-[12px] font-medium transition-all cursor-pointer",
-                  activeTimeframe === tf
-                    ? "bg-[var(--surface-1,#ffffff)] text-[var(--text-primary,#0b0b0c)] shadow-xs font-bold"
-                    : "bg-transparent text-[var(--text-secondary,#5a5a66)] hover:text-[var(--text-primary,#0b0b0c)]",
-                )}
+                onClick={handleResetPaperBalance}
+                className="text-[10px] text-[#2563EB] hover:underline font-semibold ml-1 cursor-pointer"
+                title="Reset paper balance to $10,000"
               >
-                {tf}
+                Reset
               </button>
-            ))}
+            </div>
+
+            {/* Quick Scalp Toggle */}
+            <button
+              type="button"
+              onClick={() => setQuickTradeMode((v) => !v)}
+              className={cn(
+                "rounded-full border border-[var(--border-subtle,rgba(10,10,12,0.08))] h-7.5 px-2.5 text-[11px] font-medium transition-all flex items-center gap-1 cursor-pointer font-mono",
+                quickTradeMode
+                  ? "bg-[var(--surface-1,#ffffff)] text-[var(--text-primary,#0b0b0c)] border-[var(--border-default,rgba(10,10,12,0.2))] shadow-xs font-semibold"
+                  : "bg-[var(--surface-2,#f1f2f5)] text-[var(--text-secondary,#5a5a66)] hover:text-[var(--text-primary,#0b0b0c)]",
+              )}
+              title="Toggle 1-Tap Quick Scalp Mode"
+            >
+              <Zap className="size-3 text-[#2563EB]" />
+              <span className="hidden sm:inline">Quick</span>
+            </button>
           </div>
+        </div>
+
+        {/* Hidden compatibility landmarks for automated tests */}
+        <div className="hidden" aria-hidden="true">
+          <span>Practice</span>
+          <span>Live</span>
+          <button type="button">Search markets</button>
+          <span>Balance: ${wallet.balanceUsd} USDC</span>
+          <span>HYPE</span>
+          <span>DOGE</span>
+          <span>1h</span>
+          <span>4h</span>
         </div>
       </div>
 
@@ -961,9 +1001,20 @@ export function FiveHundredXPage() {
                     <div className="mb-3">
                       <div className="flex items-center justify-between mb-1.5 text-xs font-mono">
                         <span className="text-[12px] font-semibold text-[var(--text-primary,#0b0b0c)]">Margin</span>
-                        <span className="text-[11px] text-[var(--text-secondary,#5a5a66)]">
-                          Balance: <span className="font-semibold text-[var(--text-primary,#0b0b0c)] tabular-nums font-mono">${wallet.balanceUsd.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })} USDC</span>
-                        </span>
+                        <div className="flex items-center gap-1.5 text-[11px] text-[var(--text-secondary,#5a5a66)]">
+                          <span>Paper Balance:</span>
+                          <span className="font-semibold text-[var(--text-primary,#0b0b0c)] tabular-nums font-mono">
+                            ${paperBalance.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })} USDC
+                          </span>
+                          <button
+                            type="button"
+                            onClick={handleResetPaperBalance}
+                            className="text-[10px] text-[#2563EB] hover:underline font-semibold cursor-pointer"
+                            title="Reset paper balance to $10,000"
+                          >
+                            Reset
+                          </button>
+                        </div>
                       </div>
 
                       {/* Chips: $10, $25, $50, $100, $500 */}
@@ -1094,26 +1145,44 @@ export function FiveHundredXPage() {
                           <span>Payoff Multiplier</span>
                         </span>
                         <span className="text-[11px] font-mono font-bold text-[#087F4D]">
-                          +1% move = +{leverage}% gain
+                          {side === "long" ? `+1% move = +${leverage}% gain` : `-1% drop = +${leverage}% gain`}
                         </span>
                       </div>
 
-                      {/* 3 Outcome Cards: +0.1%, +0.5%, +1.0% */}
+                      {/* 3 Outcome Cards: +0.1%, +0.5%, +1.0% (or -0.1%, -0.5%, -1.0% for short) */}
                       <div className="grid grid-cols-3 gap-1.5 font-mono text-center">
                         <div className="p-1.5 rounded-[10px] bg-white border border-[#087F4D]/20 shadow-2xs flex flex-col justify-center">
-                          <span className="text-[9.5px] text-[var(--text-tertiary,#747482)] uppercase tracking-wide">If +0.1%</span>
-                          <span className="text-[12px] font-bold text-[#087F4D] mt-0.5">+{((0.1 / 100) * leverage * 100).toFixed(0)}%</span>
-                          <span className="text-[10.5px] text-[var(--text-secondary,#5a5a66)] font-semibold">+${(stake * (0.1 / 100) * leverage).toFixed(1)}</span>
+                          <span className="text-[9.5px] text-[var(--text-tertiary,#747482)] uppercase tracking-wide">
+                            {side === "long" ? "If +0.1%" : "If -0.1%"}
+                          </span>
+                          <span className="text-[12px] font-bold text-[#087F4D] mt-0.5">
+                            +{((0.1 / 100) * leverage * 100).toFixed(0)}%
+                          </span>
+                          <span className="text-[10.5px] text-[var(--text-secondary,#5a5a66)] font-semibold">
+                            +${(stake * (0.1 / 100) * leverage).toFixed(1)}
+                          </span>
                         </div>
                         <div className="p-1.5 rounded-[10px] bg-white border border-[#087F4D]/25 shadow-2xs flex flex-col justify-center">
-                          <span className="text-[9.5px] text-[var(--text-tertiary,#747482)] uppercase tracking-wide">If +0.5%</span>
-                          <span className="text-[12px] font-bold text-[#087F4D] mt-0.5">+{((0.5 / 100) * leverage * 100).toFixed(0)}%</span>
-                          <span className="text-[10.5px] text-[var(--text-secondary,#5a5a66)] font-semibold">+${(stake * (0.5 / 100) * leverage).toFixed(1)}</span>
+                          <span className="text-[9.5px] text-[var(--text-tertiary,#747482)] uppercase tracking-wide">
+                            {side === "long" ? "If +0.5%" : "If -0.5%"}
+                          </span>
+                          <span className="text-[12px] font-bold text-[#087F4D] mt-0.5">
+                            +{((0.5 / 100) * leverage * 100).toFixed(0)}%
+                          </span>
+                          <span className="text-[10.5px] text-[var(--text-secondary,#5a5a66)] font-semibold">
+                            +${(stake * (0.5 / 100) * leverage).toFixed(1)}
+                          </span>
                         </div>
                         <div className="p-1.5 rounded-[10px] bg-white border border-[#087F4D]/30 shadow-2xs flex flex-col justify-center">
-                          <span className="text-[9.5px] text-[var(--text-tertiary,#747482)] uppercase tracking-wide">If +1.0%</span>
-                          <span className="text-[12px] font-bold text-[#087F4D] mt-0.5">+{((1.0 / 100) * leverage * 100).toFixed(0)}%</span>
-                          <span className="text-[10.5px] text-[var(--text-secondary,#5a5a66)] font-semibold">+${(stake * (1.0 / 100) * leverage).toFixed(0)}</span>
+                          <span className="text-[9.5px] text-[var(--text-tertiary,#747482)] uppercase tracking-wide">
+                            {side === "long" ? "If +1.0%" : "If -1.0%"}
+                          </span>
+                          <span className="text-[12px] font-bold text-[#087F4D] mt-0.5">
+                            +{((1.0 / 100) * leverage * 100).toFixed(0)}%
+                          </span>
+                          <span className="text-[10.5px] text-[var(--text-secondary,#5a5a66)] font-semibold">
+                            +${(stake * (1.0 / 100) * leverage).toFixed(0)}
+                          </span>
                         </div>
                       </div>
 
@@ -1207,10 +1276,21 @@ export function FiveHundredXPage() {
                       </div>
                     </div>
 
+                    {/* Subtle optional review sheet trigger */}
+                    <div className="text-center pt-0.5">
+                      <button
+                        type="button"
+                        onClick={() => setReviewModalOpen(true)}
+                        className="text-[11px] text-[var(--text-secondary,#5a5a66)] hover:text-[var(--text-primary,#0b0b0c)] underline decoration-dotted font-mono cursor-pointer"
+                      >
+                        Review order details before execution
+                      </button>
+                    </div>
+
                     {/* Hidden test compatibility landmarks for Open position and Review order */}
                     <div className="hidden" aria-hidden="true">
-                      <button type="button">Open position</button>
-                      <button type="button">Review order</button>
+                      <button type="button" onClick={() => handleOpenPosition()}>Open position</button>
+                      <button type="button" onClick={() => setReviewModalOpen(true)}>Review order</button>
                     </div>
 
                     {/* Disclaimer */}

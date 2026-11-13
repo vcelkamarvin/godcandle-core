@@ -293,7 +293,7 @@ export function MarketBookTradesInfo({
       {/* Tab 2: Trades Tape */}
       {activeTab === 'trades' && (
         <div className="flex-1 p-2 flex flex-col min-h-0 overflow-y-auto no-scrollbar">
-          <div className="grid grid-cols-3 text-xs uppercase text-muted-foreground font-semibold pb-1.5 border-b border-border/60">
+          <div className="grid grid-cols-3 text-[11px] uppercase tracking-wider text-muted-foreground font-semibold pb-1.5 border-b border-border/60">
             <span>Price</span>
             <span className="text-right">Size</span>
             <span className="text-right">Time</span>
@@ -303,7 +303,7 @@ export function MarketBookTradesInfo({
             {filteredTrades.map((t, idx) => (
               <div
                 key={`t-${idx}-${t.time}`}
-                className="grid grid-cols-3 py-0.5 px-1 rounded hover:bg-secondary tabular items-center"
+                className="grid grid-cols-3 py-0.5 px-1 rounded hover:bg-secondary tabular items-center text-[12px] sm:text-[13px] font-mono"
               >
                 <span
                   className={cn(
@@ -321,7 +321,7 @@ export function MarketBookTradesInfo({
                 <span className="text-right text-foreground font-semibold">
                   {t.sz.toFixed(szDecimals)}
                 </span>
-                <span className="text-right text-muted-foreground font-medium text-xs">
+                <span className="text-right text-muted-foreground font-medium">
                   {new Date(t.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
                 </span>
               </div>
@@ -335,10 +335,10 @@ export function MarketBookTradesInfo({
         <div className="flex-1 p-3 space-y-3 overflow-y-auto no-scrollbar text-xs">
           <div className="space-y-2 pb-2.5 border-b border-border/60">
             <div className="flex justify-between items-center">
-              <span className="text-xs uppercase font-bold text-muted-foreground">
+              <span className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground">
                 Funding Telemetry
               </span>
-              <span className="text-xs text-muted-foreground font-medium">7d Mini History</span>
+              <span className="text-[11px] text-muted-foreground font-medium">7d Mini History</span>
             </div>
 
             {/* 7-day mini sparkline */}
@@ -356,15 +356,15 @@ export function MarketBookTradesInfo({
               })}
             </div>
 
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center text-[12px] sm:text-[13px] font-mono">
               <span className="text-muted-foreground font-medium">Current 1h Rate</span>
               <span className="font-bold text-[#06964A]">{(fundingRate * 100).toFixed(4)}%</span>
             </div>
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center text-[12px] sm:text-[13px] font-mono">
               <span className="text-muted-foreground font-medium">Predicted Next Rate</span>
               <span className="font-semibold text-foreground">{(fundingRate * 0.95 * 100).toFixed(4)}%</span>
             </div>
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center text-[12px] sm:text-[13px] font-mono">
               <span className="text-muted-foreground font-medium">Est. Cost / Day</span>
               <span className="font-mono font-bold text-foreground">
                 ${fmtUsd(fundingPerDayUsd, 2)}
@@ -373,47 +373,47 @@ export function MarketBookTradesInfo({
           </div>
 
           <div className="space-y-2 pb-2.5 border-b border-border/60">
-            <span className="text-xs uppercase font-bold text-muted-foreground block">
+            <span className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground block">
               Open Interest &amp; Premium
             </span>
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center text-[12px] sm:text-[13px] font-mono">
               <span className="text-muted-foreground font-medium">Open Interest</span>
               <span className="font-bold text-foreground">
                 ${fmtUsd(openInterest, 0)}{' '}
                 <span className="text-xs text-[#06964A] font-semibold">(+4.2% 24h)</span>
               </span>
             </div>
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center text-[12px] sm:text-[13px] font-mono">
               <span className="text-muted-foreground font-medium">Oracle Price</span>
               <span className="font-mono font-bold text-foreground">${fmtUsd(oraclePrice, 2)}</span>
             </div>
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center text-[12px] sm:text-[13px] font-mono">
               <span className="text-muted-foreground font-medium">Mark / Oracle Premium</span>
               <span className="font-mono font-bold text-muted-foreground">{premiumBps} bps</span>
             </div>
           </div>
 
           <div className="space-y-2">
-            <span className="text-xs uppercase font-bold text-muted-foreground block">
+            <span className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground block">
               Contract Specifications
             </span>
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center text-[12px] sm:text-[13px] font-mono">
               <span className="text-muted-foreground font-medium">Max Allowed Leverage</span>
               <span className="font-bold text-foreground">{maxLeverage}×</span>
             </div>
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center text-[12px] sm:text-[13px] font-mono">
               <span className="text-muted-foreground font-medium">Tick Size</span>
               <span className="font-mono font-bold text-foreground">
                 ${currentPrice >= 1000 ? '0.10' : currentPrice >= 10 ? '0.01' : '0.0001'}
               </span>
             </div>
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center text-[12px] sm:text-[13px] font-mono">
               <span className="text-muted-foreground font-medium">Min Lot Size</span>
               <span className="font-mono font-bold text-foreground">
                 {Math.pow(10, -szDecimals).toFixed(szDecimals)} {rawCoin}
               </span>
             </div>
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center text-[12px] sm:text-[13px] font-mono">
               <span className="text-muted-foreground font-medium">Settlement Asset</span>
               <span className="font-bold text-[#06964A]">USDC (Hyperliquid L1)</span>
             </div>

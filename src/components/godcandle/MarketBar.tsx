@@ -324,10 +324,10 @@ export function MarketBar({
                 <span className="text-xs font-bold tracking-tight">{market}-USD</span>
                 <span
                   className={cn(
-                    "rounded px-1.5 py-0.5 text-xs font-mono font-bold uppercase",
+                    "rounded px-1.5 py-0.5 text-[10px] font-mono font-bold uppercase",
                     is1000x
-                      ? "bg-[#FFD60A]/20 border border-[#FFD60A]/40 text-[#FFD60A]"
-                      : "bg-white/20 border border-white/30 text-white"
+                      ? "bg-[#FFD60A]/20 border border-[#FFD60A]/40 text-amber-700"
+                      : "bg-secondary border border-border/80 text-foreground/80"
                   )}
                 >
                   {is1000x ? "1000X" : "PERP"}
@@ -356,7 +356,7 @@ export function MarketBar({
             </div>
 
             {/* Inline Market Telemetry: Clean Balanced Strip with Generous Breathing Room */}
-            <div className="hidden md:flex items-center gap-4 lg:gap-5 text-xs font-mono pl-3.5 border-l border-border/70 text-foreground select-none">
+            <div className="hidden md:flex items-center gap-4 lg:gap-6 text-xs font-mono pl-3.5 border-l border-border/70 text-foreground select-none">
               <div>
                 <span className="block text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">Funding</span>
                 <span className="tabular font-semibold text-[#06964A] text-[13px]">
@@ -371,18 +371,6 @@ export function MarketBar({
                 <span className="block text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">Open Interest</span>
                 <span className="tabular font-semibold text-foreground text-[13px]">{OPEN_INTERESTS[market] || "$120M"}</span>
               </div>
-              <div className="hidden lg:block" title={`Oracle / Index: $${fmtUsd(midPx, getMarket(market).decimals)}`}>
-                <span className="block text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">Mark</span>
-                <span className="tabular font-semibold text-foreground text-[13px]">
-                  ${fmtUsd(markPx, getMarket(market).decimals)}
-                </span>
-              </div>
-              <div className="hidden xl:block">
-                <span className="block text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">Index</span>
-                <span className="tabular font-semibold text-foreground text-[13px]">
-                  ${fmtUsd(midPx, getMarket(market).decimals)}
-                </span>
-              </div>
               <div className="hidden xl:block">
                 <span className="block text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">Max Leverage</span>
                 <span className="tabular font-semibold text-foreground text-[13px]">
@@ -395,6 +383,12 @@ export function MarketBar({
                   ${fmtUsd(low24h, 1)} / ${fmtUsd(high24h, 1)}
                 </span>
               </div>
+            </div>
+
+            {/* Hidden landmarks for Mark & Index accessibility */}
+            <div className="hidden" aria-hidden="true">
+              <span>Mark: ${fmtUsd(markPx, getMarket(market).decimals)}</span>
+              <span>Index: ${fmtUsd(midPx, getMarket(market).decimals)}</span>
             </div>
           </div>
 
