@@ -712,7 +712,7 @@ export function TraderProfileDetail({ address }: TraderProfileDetailProps) {
                       <stop offset="60%" stopColor="#00D964" stopOpacity="0.08" />
                       <stop offset="100%" stopColor="#00D964" stopOpacity="0.0" />
                     </linearGradient>
-                    <filter id="emeraldGlow" x="-50%" y="-50%" width="200%" height="200%">
+                    <filter id="mintGlow" x="-50%" y="-50%" width="200%" height="200%">
                       <feDropShadow dx="0" dy="0" stdDeviation="4" floodColor="#00D964" floodOpacity="0.5" />
                     </filter>
                   </defs>
@@ -756,7 +756,7 @@ export function TraderProfileDetail({ address }: TraderProfileDetailProps) {
                         fill="#00D964"
                         stroke="#ffffff"
                         strokeWidth="2.5"
-                        filter="url(#emeraldGlow)"
+                        filter="url(#mintGlow)"
                       />
                     </>
                   )}
@@ -834,7 +834,7 @@ export function TraderProfileDetail({ address }: TraderProfileDetailProps) {
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse text-[12px]">
                   <thead>
-                    <tr className="border-b border-[var(--border-subtle,rgba(10,10,12,0.08))] text-[11px] font-mono uppercase text-[var(--text-secondary,#5a5a66)] bg-[var(--surface-1,#ffffff)]">
+                    <tr className="border-b border-black/[0.06] text-[11px] font-mono uppercase text-muted-foreground bg-white">
                       <th className="py-3 px-4 font-semibold">Asset</th>
                       <th className="py-3 px-4 font-semibold text-right">Size</th>
                       <th className="py-3 px-4 font-semibold text-right">Value</th>
@@ -844,7 +844,7 @@ export function TraderProfileDetail({ address }: TraderProfileDetailProps) {
                       <th className="py-3 px-4 font-semibold text-right">Liquidation</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[var(--border-subtle,rgba(10,10,12,0.06))] font-mono">
+                  <tbody className="divide-y divide-black/[0.04] font-mono">
                     {/* Render Real Positions if available, or fallback to exact image mock */}
                     {profile && profile.positions.length > 0 ? (
                       profile.positions.map((pos) => {
@@ -852,48 +852,48 @@ export function TraderProfileDetail({ address }: TraderProfileDetailProps) {
                         const isProfit = pos.unrealizedPnl >= 0;
                         const pnlPct = pos.entryPrice > 0 ? (pos.unrealizedPnl / (pos.positionValue / pos.leverage)) * 100 : 0;
                         return (
-                          <tr key={pos.coin} className="hover:bg-[var(--surface-2,#f1f2f5)]/50 transition-colors">
+                          <tr key={pos.coin} className="hover:bg-[#FAFAFC] transition-colors">
                             {/* Asset with token orb avatar */}
-                            <td className="py-3.5 px-4 font-sans font-medium text-[var(--text-primary,#0b0b0c)] flex items-center gap-2.5">
+                            <td className="py-3.5 px-4 font-sans font-medium text-foreground flex items-center gap-2.5">
                               <div className="size-6 rounded-full bg-gradient-to-tr from-amber-400 via-orange-500 to-rose-500 flex items-center justify-center text-[10px] font-bold text-black shrink-0">
                                 {pos.coin.slice(0, 3)}
                               </div>
                               <span className="font-bold">{pos.coin}</span>
                               <span className={cn(
                                 "text-[10px] font-mono px-1.5 py-0.5 rounded font-semibold",
-                                isLong ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400" : "bg-rose-500/15 text-rose-700 dark:text-rose-400"
+                                isLong ? "bg-[#E6F9EE] text-[#00D964]" : "bg-[#FEECEB] text-[#FF3B30]"
                               )}>
                                 {pos.leverage}×
                               </span>
                             </td>
 
                             {/* Size */}
-                            <td className="py-3.5 px-4 text-right text-[var(--text-secondary,#5a5a66)]">
+                            <td className="py-3.5 px-4 text-right text-muted-foreground">
                               {pos.size.toLocaleString(undefined, { maximumFractionDigits: 4 })}
                             </td>
 
                             {/* Value */}
-                            <td className="py-3.5 px-4 text-right text-[var(--text-primary,#0b0b0c)] font-medium">
+                            <td className="py-3.5 px-4 text-right text-foreground font-medium">
                               {formatUsd(pos.positionValue)}
                             </td>
 
                             {/* Entry */}
-                            <td className="py-3.5 px-4 text-right text-[var(--text-secondary,#5a5a66)]">
+                            <td className="py-3.5 px-4 text-right text-muted-foreground">
                               ${pos.entryPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 })}
                             </td>
 
                             {/* Mark */}
-                            <td className="py-3.5 px-4 text-right text-[var(--text-primary,#0b0b0c)] font-medium">
+                            <td className="py-3.5 px-4 text-right text-foreground font-medium">
                               ${(pos.markPrice || pos.entryPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 })}
                             </td>
 
                             {/* PnL */}
-                            <td className={cn("py-3.5 px-4 text-right font-bold", isProfit ? "text-emerald-600 dark:text-emerald-400" : "text-[#D92D45]")}>
+                            <td className={cn("py-3.5 px-4 text-right font-bold", isProfit ? "text-[#00D964]" : "text-[#FF3B30]")}>
                               {isProfit ? "+" : ""}{formatUsd(pos.unrealizedPnl)} ({isProfit ? "+" : ""}{pnlPct.toFixed(2)}%)
                             </td>
 
                             {/* Liquidation */}
-                            <td className="py-3.5 px-4 text-right text-[#D92D45] font-medium">
+                            <td className="py-3.5 px-4 text-right text-[#FF3B30] font-medium">
                               {pos.liquidationPrice ? `$${pos.liquidationPrice.toLocaleString(undefined, { minimumFractionDigits: 2 })}` : "N/A"}
                             </td>
                           </tr>
@@ -910,27 +910,27 @@ export function TraderProfileDetail({ address }: TraderProfileDetailProps) {
                         { coin: "kPEPE", lev: 10, side: "LONG", sz: "85,000,000", val: 765000, entry: 0.0084, mark: 0.0090, pnl: 51000, pnlPct: 66.6, liq: 0.0068 },
                         { coin: "WIF", lev: 5, side: "LONG", sz: "280,000", val: 672000, entry: 2.20, mark: 2.40, pnl: 56000, pnlPct: 41.6, liq: 1.74 },
                       ].map((pos) => (
-                        <tr key={pos.coin} className="hover:bg-[var(--surface-2,#f1f2f5)]/50 transition-colors">
-                          <td className="py-3.5 px-4 font-sans font-medium text-[var(--text-primary,#0b0b0c)] flex items-center gap-2.5">
+                        <tr key={pos.coin} className="hover:bg-[#FAFAFC] transition-colors">
+                          <td className="py-3.5 px-4 font-sans font-medium text-foreground flex items-center gap-2.5">
                             <div className="size-6 rounded-full bg-gradient-to-tr from-amber-400 via-orange-500 to-rose-500 flex items-center justify-center text-[10px] font-bold text-black shrink-0">
                               {pos.coin.slice(0, 3)}
                             </div>
                             <span className="font-bold">{pos.coin}</span>
                             <span className={cn(
                               "text-[10px] font-mono px-1.5 py-0.5 rounded font-semibold",
-                              pos.side === "LONG" ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400" : "bg-rose-500/15 text-rose-700 dark:text-rose-400"
+                              pos.side === "LONG" ? "bg-[#E6F9EE] text-[#00D964]" : "bg-[#FEECEB] text-[#FF3B30]"
                             )}>
                               {pos.lev}×
                             </span>
                           </td>
-                          <td className="py-3.5 px-4 text-right text-[var(--text-secondary,#5a5a66)]">{pos.sz}</td>
-                          <td className="py-3.5 px-4 text-right text-[var(--text-primary,#0b0b0c)] font-medium">{formatUsd(pos.val)}</td>
-                          <td className="py-3.5 px-4 text-right text-[var(--text-secondary,#5a5a66)]">${pos.entry.toLocaleString()}</td>
-                          <td className="py-3.5 px-4 text-right text-[var(--text-primary,#0b0b0c)] font-medium">${pos.mark.toLocaleString()}</td>
-                          <td className="py-3.5 px-4 text-right font-bold text-emerald-600 dark:text-emerald-400">
+                          <td className="py-3.5 px-4 text-right text-muted-foreground">{pos.sz}</td>
+                          <td className="py-3.5 px-4 text-right text-foreground font-medium">{formatUsd(pos.val)}</td>
+                          <td className="py-3.5 px-4 text-right text-muted-foreground">${pos.entry.toLocaleString()}</td>
+                          <td className="py-3.5 px-4 text-right text-foreground font-medium">${pos.mark.toLocaleString()}</td>
+                          <td className="py-3.5 px-4 text-right font-bold text-[#00D964]">
                             +{formatUsd(pos.pnl)} (+{pos.pnlPct}%)
                           </td>
-                          <td className="py-3.5 px-4 text-right text-[#D92D45] font-medium">${pos.liq.toLocaleString()}</td>
+                          <td className="py-3.5 px-4 text-right text-[#FF3B30] font-medium">${pos.liq.toLocaleString()}</td>
                         </tr>
                       ))
                     )}
@@ -939,7 +939,7 @@ export function TraderProfileDetail({ address }: TraderProfileDetailProps) {
               </div>
 
               {/* Table Footer Disclaimer */}
-              <div className="p-4 border-t border-[var(--border-subtle,rgba(10,10,12,0.08))] bg-[var(--surface-2,#f1f2f5)] flex flex-col sm:flex-row items-center justify-between text-[11px] text-[var(--text-secondary,#5a5a66)] gap-2">
+              <div className="p-4 border-t border-black/[0.06] bg-[#FAFAFC] flex flex-col sm:flex-row items-center justify-between text-[11px] text-muted-foreground gap-2">
                 <span>
                   All metrics synced in real-time from Hyperliquid L1 clearinghouse & state consensus.
                 </span>

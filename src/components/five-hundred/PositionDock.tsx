@@ -176,7 +176,7 @@ export function PositionDock({
           <span
             className={cn(
               "text-[14px] font-mono font-bold tabular-nums",
-              stats.totalPnl >= 0 ? "text-[#00E599]" : "text-[#FF4343]",
+              stats.totalPnl >= 0 ? "text-[#00D964]" : "text-[#FF3B30]",
             )}
           >
             {formatPnl(stats.totalPnl)}
@@ -492,8 +492,8 @@ export function PositionDock({
                           className={cn(
                             "px-1.5 py-0.2 rounded-full text-xs font-bold uppercase",
                             row.side === "long"
-                              ? "bg-[#087F4D]/10 text-[#087F4D]"
-                              : "bg-[#D92D45]/10 text-[#D92D45]",
+                              ? "bg-[#E6F9EE] text-[#00D964]"
+                              : "bg-[#FEECEB] text-[#FF3B30]",
                           )}
                         >
                           {row.side}
@@ -505,7 +505,7 @@ export function PositionDock({
                         {formatAssetPrice(row.symbol, row.exitPrice)}
                       </td>
                       <td
-                        className={cn("font-bold", isProfit ? "text-[#087F4D]" : "text-[#D92D45]")}
+                        className={cn("font-bold", isProfit ? "text-[#00D964]" : "text-[#FF3B30]")}
                       >
                         {formatPnl(row.pnl)} ({formatPct(row.pnlPct)})
                       </td>
@@ -554,14 +554,14 @@ export function PositionDock({
 
             <div className="p-2.5 rounded-[16px] bg-secondary/50 border border-border/60">
               <span className="text-xs font-mono text-muted-foreground block mb-0.5">BEST TRADE</span>
-              <span className="text-[20px] font-bold font-mono text-[#087F4D] tracking-tight">
+              <span className="text-[20px] font-bold font-mono text-[#00D964] tracking-tight">
                 {formatPnl(stats.bestTrade)}
               </span>
             </div>
 
             <div className="p-2.5 rounded-[16px] bg-secondary/50 border border-border/60">
               <span className="text-xs font-mono text-muted-foreground block mb-0.5">WORST TRADE</span>
-              <span className="text-[20px] font-bold font-mono text-[#D92D45] tracking-tight">
+              <span className="text-[20px] font-bold font-mono text-[#FF3B30] tracking-tight">
                 {formatPnl(stats.worstTrade)}
               </span>
             </div>
@@ -576,7 +576,7 @@ export function PositionDock({
               <span
                 className={cn(
                   "text-[13px] font-mono font-bold",
-                  stats.totalPnl >= 0 ? "text-[#087F4D]" : "text-[#D92D45]",
+                  stats.totalPnl >= 0 ? "text-[#00D964]" : "text-[#FF3B30]",
                 )}
               >
                 Net: {formatPnl(stats.totalPnl)}
@@ -631,7 +631,7 @@ export function PositionDock({
                       <path
                         d={pathD}
                         fill="none"
-                        stroke={isNetProfit ? "#087F4D" : "#D92D45"}
+                        stroke={isNetProfit ? "#00D964" : "#FF3B30"}
                         strokeWidth="2.5"
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -643,7 +643,7 @@ export function PositionDock({
                           cx={c.x}
                           cy={c.y}
                           r="3"
-                          fill={isNetProfit ? "#087F4D" : "#D92D45"}
+                          fill={isNetProfit ? "#00D964" : "#FF3B30"}
                         />
                       ))}
                     </svg>

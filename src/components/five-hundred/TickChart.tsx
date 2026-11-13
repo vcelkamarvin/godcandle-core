@@ -621,7 +621,7 @@ export function TickChart({
 
         // 8.3 Red Dashed Liquidation Line
         ctx.setLineDash([4, 4]);
-        ctx.strokeStyle = "#D92D45";
+        ctx.strokeStyle = "#FF3B30";
         ctx.lineWidth = 1.5;
         ctx.beginPath();
         ctx.moveTo(0, liqY);
@@ -630,8 +630,8 @@ export function TickChart({
 
         // Liquidation tag pill
         ctx.setLineDash([]);
-        ctx.fillStyle = "#FFF5F5";
-        ctx.strokeStyle = "rgba(217, 45, 69, 0.45)";
+        ctx.fillStyle = "#FEECEB";
+        ctx.strokeStyle = "rgba(255, 59, 48, 0.45)";
         ctx.lineWidth = 1;
         ctx.beginPath();
         ctx.roundRect(8, liqY - 10, 136, 20, 10);
@@ -639,7 +639,7 @@ export function TickChart({
         ctx.stroke();
 
         const liqPct = (100 / activePosition.leverage).toFixed(2);
-        ctx.fillStyle = "#D92D45";
+        ctx.fillStyle = "#FF3B30";
         ctx.font = "bold 11px 'Inter', monospace";
         ctx.textAlign = "left";
         ctx.textBaseline = "middle";
@@ -649,7 +649,7 @@ export function TickChart({
         if (targetPrice) {
           const tgtY = priceToY(targetPrice);
           ctx.setLineDash([3, 3]);
-          ctx.strokeStyle = "#087F4D";
+          ctx.strokeStyle = "#00D964";
           ctx.lineWidth = 1.25;
           ctx.beginPath();
           ctx.moveTo(0, tgtY);
@@ -658,15 +658,15 @@ export function TickChart({
 
           // Target tag pill
           ctx.setLineDash([]);
-          ctx.fillStyle = "#F0FDF4";
-          ctx.strokeStyle = "rgba(8, 127, 77, 0.4)";
+          ctx.fillStyle = "#E6F9EE";
+          ctx.strokeStyle = "rgba(0, 217, 100, 0.4)";
           ctx.lineWidth = 1;
           ctx.beginPath();
           ctx.roundRect(8, tgtY - 10, 122, 20, 10);
           ctx.fill();
           ctx.stroke();
 
-          ctx.fillStyle = "#087F4D";
+          ctx.fillStyle = "#00D964";
           ctx.font = "bold 11px 'Inter', monospace";
           ctx.textAlign = "left";
           ctx.textBaseline = "middle";
@@ -827,13 +827,13 @@ export function TickChart({
 
       if (state.flashIntensity > 0) {
         if (state.flashDir === "up") {
-          tagBg = `rgba(8, 127, 77, ${0.12 + state.flashIntensity * 0.25})`;
-          tagBorder = `rgba(8, 127, 77, ${0.4 + state.flashIntensity * 0.5})`;
-          tagTextColor = "#087F4D";
+          tagBg = `rgba(0, 217, 100, ${0.12 + state.flashIntensity * 0.25})`;
+          tagBorder = `rgba(0, 217, 100, ${0.4 + state.flashIntensity * 0.5})`;
+          tagTextColor = "#00D964";
         } else {
-          tagBg = `rgba(217, 45, 69, ${0.12 + state.flashIntensity * 0.25})`;
-          tagBorder = `rgba(217, 45, 69, ${0.4 + state.flashIntensity * 0.5})`;
-          tagTextColor = "#D92D45";
+          tagBg = `rgba(255, 59, 48, ${0.12 + state.flashIntensity * 0.25})`;
+          tagBorder = `rgba(255, 59, 48, ${0.4 + state.flashIntensity * 0.5})`;
+          tagTextColor = "#FF3B30";
         }
       }
 

@@ -802,14 +802,14 @@ export function FiveHundredXPage() {
                   const isProfit = currentPnl >= 0;
 
                   return (
-                    <div className="absolute top-3 right-3 z-30 flex items-center gap-3 bg-white/95 backdrop-blur-md px-3.5 py-2 rounded-2xl border border-border shadow-lg font-mono animate-in fade-in zoom-in-95 duration-200">
+                    <div className="absolute top-3 right-3 z-30 flex items-center gap-3 bg-white/95 backdrop-blur-md px-3.5 py-2 rounded-2xl border border-black/[0.06] shadow-lg font-mono animate-in fade-in zoom-in-95 duration-200">
                       <div className="flex items-center gap-2">
                         <span
                           className={cn(
                             "px-2 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider",
                             activeChartPosition.side === "long"
-                              ? "bg-[#087F4D]/15 text-[#087F4D] border border-[#087F4D]/30"
-                              : "bg-[#D92D45]/15 text-[#D92D45] border border-[#D92D45]/30"
+                              ? "bg-[#E6F9EE] text-[#00D964] border border-[#00D964]/30"
+                              : "bg-[#FEECEB] text-[#FF3B30] border border-[#FF3B30]/30"
                           )}
                         >
                           {activeChartPosition.side === "long" ? "Long" : "Short"} · {activeChartPosition.leverage}×
@@ -820,7 +820,7 @@ export function FiveHundredXPage() {
                             <span
                               className={cn(
                                 "text-[15px] font-bold tabular-nums leading-none",
-                                isProfit ? "text-[#087F4D]" : "text-[#D92D45]"
+                                isProfit ? "text-[#00D964]" : "text-[#FF3B30]"
                               )}
                             >
                               {formatPnl(currentPnl)}
@@ -828,7 +828,7 @@ export function FiveHundredXPage() {
                             <span
                               className={cn(
                                 "text-[11px] font-semibold tabular-nums",
-                                isProfit ? "text-[#087F4D]" : "text-[#D92D45]"
+                                isProfit ? "text-[#00D964]" : "text-[#FF3B30]"
                               )}
                             >
                               ({formatPct(pnlPct)})
@@ -843,7 +843,7 @@ export function FiveHundredXPage() {
                       <button
                         type="button"
                         onClick={() => handleClosePosition(activeChartPosition.id)}
-                        className="px-3 py-1 rounded-xl bg-[#D92D45]/10 hover:bg-[#D92D45]/20 text-[#D92D45] border border-[#D92D45]/30 text-[11px] font-bold cursor-pointer transition-all active:scale-95 shadow-2xs"
+                        className="px-3 py-1 rounded-xl bg-[#FF3B30]/10 hover:bg-[#FF3B30]/20 text-[#FF3B30] border border-[#FF3B30]/30 text-[11px] font-bold cursor-pointer transition-all active:scale-[0.98] shadow-2xs"
                         title="1-Click Market Close"
                       >
                         Close
@@ -923,10 +923,10 @@ export function FiveHundredXPage() {
                         type="button"
                         disabled={isMarketClosed}
                         onClick={() => handleQuickTrade("long")}
-                        className="h-7 px-2.5 rounded-full bg-[var(--surface-1,#ffffff)] hover:bg-[var(--surface-3,#e6e8ec)] border border-[var(--border-default)] text-[var(--text-primary,#0b0b0c)] font-semibold text-xs flex items-center gap-1 transition-all cursor-pointer active:scale-95 shadow-xs"
+                        className="h-7 px-2.5 rounded-full bg-white hover:bg-[#F0F2F5] border border-black/[0.06] text-foreground font-semibold text-xs flex items-center gap-1 transition-all cursor-pointer active:scale-[0.98] shadow-xs"
                       >
-                        <span className="size-1.5 rounded-full bg-[#087F4D]" />
-                        <ArrowUpRight className="size-3 text-[#087F4D]" />
+                        <span className="size-1.5 rounded-full bg-[#00D964]" />
+                        <ArrowUpRight className="size-3 text-[#00D964]" />
                         <span>Quick Long</span>
                       </button>
 
@@ -934,10 +934,10 @@ export function FiveHundredXPage() {
                         type="button"
                         disabled={isMarketClosed}
                         onClick={() => handleQuickTrade("short")}
-                        className="h-7 px-2.5 rounded-full bg-[var(--surface-1,#ffffff)] hover:bg-[var(--surface-3,#e6e8ec)] border border-[var(--border-default)] text-[var(--text-primary,#0b0b0c)] font-semibold text-xs flex items-center gap-1 transition-all cursor-pointer active:scale-95 shadow-xs"
+                        className="h-7 px-2.5 rounded-full bg-white hover:bg-[#F0F2F5] border border-black/[0.06] text-foreground font-semibold text-xs flex items-center gap-1 transition-all cursor-pointer active:scale-[0.98] shadow-xs"
                       >
-                        <span className="size-1.5 rounded-full bg-[#D92D45]" />
-                        <ArrowDownRight className="size-3 text-[#D92D45]" />
+                        <span className="size-1.5 rounded-full bg-[#FF3B30]" />
+                        <ArrowDownRight className="size-3 text-[#FF3B30]" />
                         <span>Quick Short</span>
                       </button>
                     </div>
@@ -948,26 +948,26 @@ export function FiveHundredXPage() {
                 <div className="flex-1 flex flex-col justify-between gap-2 min-h-0 pt-0.5">
                   <div>
                     {/* 1. Long / Short Segmented Toggle */}
-                    <div className="p-1 rounded-[14px] bg-[var(--surface-2,#f1f2f5)] border border-[var(--border-subtle,rgba(10,10,12,0.06))] grid grid-cols-2 gap-1 mb-3">
+                    <div className="p-1 rounded-2xl bg-[#F0F2F5] border border-black/[0.04] grid grid-cols-2 gap-1 mb-3">
                       <button
                         type="button"
                         onClick={() => setSide("long")}
                         className={cn(
-                          "h-[34px] rounded-[10px] text-[12.5px] font-medium transition-all duration-150 cursor-pointer flex items-center justify-center gap-1.5 select-none",
+                          "h-[34px] rounded-xl text-[12.5px] font-medium transition-all duration-150 cursor-pointer flex items-center justify-center gap-1.5 select-none active:scale-[0.98]",
                           side === "long"
-                            ? "bg-[var(--surface-1,#ffffff)] text-[var(--text-primary,#0b0b0c)] border border-[var(--border-subtle,rgba(10,10,12,0.1))] shadow-xs font-semibold"
-                            : "text-[var(--text-secondary,#5a5a66)] hover:text-[var(--text-primary,#0b0b0c)] border border-transparent",
+                            ? "bg-white text-[#0A0A0A] border border-black/[0.04] shadow-xs font-semibold"
+                            : "text-muted-foreground hover:text-foreground border border-transparent",
                         )}
                       >
                         <span
                           className={cn(
                             "size-1.5 rounded-full transition-colors",
                             side === "long"
-                              ? "bg-[#087F4D] shadow-[0_0_6px_#087F4D]"
-                              : "bg-[var(--text-tertiary,#747482)]/30",
+                              ? "bg-[#00D964] shadow-[0_0_6px_#00D964]"
+                              : "bg-muted-foreground/30",
                           )}
                         />
-                        <TrendingUp className="size-3.5 text-[#087F4D]" />
+                        <TrendingUp className="size-3.5 text-[#00D964]" />
                         <span>Long</span>
                       </button>
 
@@ -975,21 +975,21 @@ export function FiveHundredXPage() {
                         type="button"
                         onClick={() => setSide("short")}
                         className={cn(
-                          "h-[34px] rounded-[10px] text-[12.5px] font-medium transition-all duration-150 cursor-pointer flex items-center justify-center gap-1.5 select-none",
+                          "h-[34px] rounded-xl text-[12.5px] font-medium transition-all duration-150 cursor-pointer flex items-center justify-center gap-1.5 select-none active:scale-[0.98]",
                           side === "short"
-                            ? "bg-[var(--surface-1,#ffffff)] text-[var(--text-primary,#0b0b0c)] border border-[var(--border-subtle,rgba(10,10,12,0.1))] shadow-xs font-semibold"
-                            : "text-[var(--text-secondary,#5a5a66)] hover:text-[var(--text-primary,#0b0b0c)] border border-transparent",
+                            ? "bg-white text-[#0A0A0A] border border-black/[0.04] shadow-xs font-semibold"
+                            : "text-muted-foreground hover:text-foreground border border-transparent",
                         )}
                       >
                         <span
                           className={cn(
                             "size-1.5 rounded-full transition-colors",
                             side === "short"
-                              ? "bg-[#D92D45] shadow-[0_0_6px_#D92D45]"
-                              : "bg-[var(--text-tertiary,#747482)]/30",
+                              ? "bg-[#FF3B30] shadow-[0_0_6px_#FF3B30]"
+                              : "bg-muted-foreground/30",
                           )}
                         />
-                        <TrendingDown className="size-3.5 text-[#D92D45]" />
+                        <TrendingDown className="size-3.5 text-[#FF3B30]" />
                         <span>Short</span>
                       </button>
                     </div>
@@ -997,10 +997,10 @@ export function FiveHundredXPage() {
                     {/* 2. Margin with Balance + Quick Margin Chips */}
                     <div className="mb-3">
                       <div className="flex items-center justify-between mb-1.5 text-xs font-mono">
-                        <span className="text-[12px] font-semibold text-[var(--text-primary,#0b0b0c)]">Margin</span>
-                        <div className="flex items-center gap-1.5 text-[11px] text-[var(--text-secondary,#5a5a66)]">
+                        <span className="text-[12px] font-semibold text-foreground">Margin</span>
+                        <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
                           <span>Paper Balance:</span>
-                          <span className="font-semibold text-[var(--text-primary,#0b0b0c)] tabular-nums font-mono">
+                          <span className="font-semibold text-foreground tabular-nums font-mono">
                             ${paperBalance.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })} USDC
                           </span>
                           <button
@@ -1137,63 +1137,63 @@ export function FiveHundredXPage() {
                     {/* High-Converting 1000x Payoff & Leverage Outcome Matrix */}
                     <div className="rounded-[16px] bg-[var(--surface-2,#f1f2f5)] border border-[var(--border-subtle,rgba(10,10,12,0.08))] p-2.5 sm:p-3 space-y-2 select-none shadow-2xs">
                       <div className="flex items-center justify-between">
-                        <span className="text-[11px] font-mono uppercase tracking-wider text-[var(--text-secondary,#5a5a66)] font-semibold flex items-center gap-1.5">
+                        <span className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground font-semibold flex items-center gap-1.5">
                           <Zap className="size-3 text-[#2563EB]" />
                           <span>Payoff Multiplier</span>
                         </span>
-                        <span className="text-[11px] font-mono font-bold text-[#087F4D]">
+                        <span className="text-[11px] font-mono font-bold text-[#00D964]">
                           {side === "long" ? `+1% move = +${leverage}% gain` : `-1% drop = +${leverage}% gain`}
                         </span>
                       </div>
 
                       {/* 3 Outcome Cards: +0.1%, +0.5%, +1.0% (or -0.1%, -0.5%, -1.0% for short) */}
                       <div className="grid grid-cols-3 gap-1.5 font-mono text-center">
-                        <div className="p-1.5 rounded-[10px] bg-white border border-[#087F4D]/20 shadow-2xs flex flex-col justify-center">
-                          <span className="text-[9.5px] text-[var(--text-tertiary,#747482)] uppercase tracking-wide">
+                        <div className="p-1.5 rounded-xl bg-white border border-[#00D964]/20 shadow-2xs flex flex-col justify-center">
+                          <span className="text-[9.5px] text-muted-foreground uppercase tracking-wide">
                             {side === "long" ? "If +0.1%" : "If -0.1%"}
                           </span>
-                          <span className="text-[12px] font-bold text-[#087F4D] mt-0.5">
+                          <span className="text-[12px] font-bold text-[#00D964] mt-0.5">
                             +{((0.1 / 100) * leverage * 100).toFixed(0)}%
                           </span>
-                          <span className="text-[10.5px] text-[var(--text-secondary,#5a5a66)] font-semibold">
+                          <span className="text-[10.5px] text-muted-foreground font-semibold">
                             +${(stake * (0.1 / 100) * leverage).toFixed(1)}
                           </span>
                         </div>
-                        <div className="p-1.5 rounded-[10px] bg-white border border-[#087F4D]/25 shadow-2xs flex flex-col justify-center">
-                          <span className="text-[9.5px] text-[var(--text-tertiary,#747482)] uppercase tracking-wide">
+                        <div className="p-1.5 rounded-xl bg-white border border-[#00D964]/25 shadow-2xs flex flex-col justify-center">
+                          <span className="text-[9.5px] text-muted-foreground uppercase tracking-wide">
                             {side === "long" ? "If +0.5%" : "If -0.5%"}
                           </span>
-                          <span className="text-[12px] font-bold text-[#087F4D] mt-0.5">
+                          <span className="text-[12px] font-bold text-[#00D964] mt-0.5">
                             +{((0.5 / 100) * leverage * 100).toFixed(0)}%
                           </span>
-                          <span className="text-[10.5px] text-[var(--text-secondary,#5a5a66)] font-semibold">
+                          <span className="text-[10.5px] text-muted-foreground font-semibold">
                             +${(stake * (0.5 / 100) * leverage).toFixed(1)}
                           </span>
                         </div>
-                        <div className="p-1.5 rounded-[10px] bg-white border border-[#087F4D]/30 shadow-2xs flex flex-col justify-center">
-                          <span className="text-[9.5px] text-[var(--text-tertiary,#747482)] uppercase tracking-wide">
+                        <div className="p-1.5 rounded-xl bg-white border border-[#00D964]/30 shadow-2xs flex flex-col justify-center">
+                          <span className="text-[9.5px] text-muted-foreground uppercase tracking-wide">
                             {side === "long" ? "If +1.0%" : "If -1.0%"}
                           </span>
-                          <span className="text-[12px] font-bold text-[#087F4D] mt-0.5">
+                          <span className="text-[12px] font-bold text-[#00D964] mt-0.5">
                             +{((1.0 / 100) * leverage * 100).toFixed(0)}%
                           </span>
-                          <span className="text-[10.5px] text-[var(--text-secondary,#5a5a66)] font-semibold">
+                          <span className="text-[10.5px] text-muted-foreground font-semibold">
                             +${(stake * (1.0 / 100) * leverage).toFixed(0)}
                           </span>
                         </div>
                       </div>
 
                       {/* Liquidation Boundary & Position Power Feedback */}
-                      <div className="pt-1.5 border-t border-[var(--border-subtle,rgba(10,10,12,0.06))] space-y-1 text-[10.5px] font-mono">
+                      <div className="pt-1.5 border-t border-black/[0.06] space-y-1 text-[10.5px] font-mono">
                         <div className="flex items-center justify-between">
-                          <span className="text-[var(--text-secondary,#5a5a66)]">Position power:</span>
-                          <span className="font-semibold text-[var(--text-primary,#0b0b0c)] tabular-nums">
+                          <span className="text-muted-foreground">Position power:</span>
+                          <span className="font-semibold text-foreground tabular-nums">
                             ${stake} controls {formatUsd(notional)}
                           </span>
                         </div>
                         <div className="flex items-center justify-between">
-                          <span className="text-[var(--text-secondary,#5a5a66)]">Liquidation buffer:</span>
-                          <span className="font-bold text-[#D92D45] tabular-nums">
+                          <span className="text-muted-foreground">Liquidation buffer:</span>
+                          <span className="font-bold text-[#FF3B30] tabular-nums">
                             ±{liqDistancePct.toFixed(3)}% ({market.formatPrice(liqPrice)})
                           </span>
                         </div>
@@ -1215,12 +1215,12 @@ export function FiveHundredXPage() {
                         disabled={isMarketClosed}
                         onClick={() => handleOpenPosition("long")}
                         className={cn(
-                          "group relative h-[48px] rounded-full text-[13px] font-bold overflow-hidden flex flex-col items-center justify-center transition-all active:scale-98 cursor-pointer",
+                          "group relative h-[48px] rounded-full text-[13px] font-bold overflow-hidden flex flex-col items-center justify-center transition-all active:scale-[0.98] cursor-pointer",
                           isMarketClosed
-                            ? "bg-[var(--surface-3,#e6e8ec)] text-[var(--text-tertiary,#747482)] cursor-not-allowed opacity-60 shadow-none"
+                            ? "bg-[#E4E7EC] text-muted-foreground cursor-not-allowed opacity-60 shadow-none"
                             : side === "long"
-                              ? "bg-[#087F4D] hover:bg-[#076B41] text-white shadow-[0_4px_16px_rgba(8,127,77,0.35)] ring-2 ring-[#087F4D] ring-offset-2"
-                              : "bg-[#087F4D]/10 hover:bg-[#087F4D]/20 text-[#087F4D] border border-[#087F4D]/30 shadow-none",
+                              ? "bg-[#00D964] hover:bg-[#05C168] text-[#0A0A0A] shadow-[0_4px_16px_rgba(0,217,100,0.35)] ring-2 ring-[#00D964] ring-offset-2"
+                              : "bg-[#E6F9EE] hover:bg-[#D5F5E3] text-[#00D964] border border-[#00D964]/30 shadow-none",
                         )}
                         title={`Execute 1-Click Long ${marketSymbol} with $${stake} stake`}
                       >
@@ -1231,7 +1231,7 @@ export function FiveHundredXPage() {
                         <span
                           className={cn(
                             "text-[10px] font-normal font-mono mt-0.5",
-                            side === "long" ? "text-white/90" : "text-[#087F4D]/80",
+                            side === "long" ? "text-[#0A0A0A]/90 font-medium" : "text-[#00D964]/90",
                           )}
                         >
                           +1% move = +${(stake * leverage * 0.01).toFixed(0)}
@@ -1243,12 +1243,12 @@ export function FiveHundredXPage() {
                         disabled={isMarketClosed}
                         onClick={() => handleOpenPosition("short")}
                         className={cn(
-                          "group relative h-[48px] rounded-full text-[13px] font-bold overflow-hidden flex flex-col items-center justify-center transition-all active:scale-98 cursor-pointer",
+                          "group relative h-[48px] rounded-full text-[13px] font-bold overflow-hidden flex flex-col items-center justify-center transition-all active:scale-[0.98] cursor-pointer",
                           isMarketClosed
-                            ? "bg-[var(--surface-3,#e6e8ec)] text-[var(--text-tertiary,#747482)] cursor-not-allowed opacity-60 shadow-none"
+                            ? "bg-[#E4E7EC] text-muted-foreground cursor-not-allowed opacity-60 shadow-none"
                             : side === "short"
-                              ? "bg-[#D92D45] hover:bg-[#B91C33] text-white shadow-[0_4px_16px_rgba(217,45,69,0.35)] ring-2 ring-[#D92D45] ring-offset-2"
-                              : "bg-[#D92D45]/10 hover:bg-[#D92D45]/20 text-[#D92D45] border border-[#D92D45]/30 shadow-none",
+                              ? "bg-[#FF3B30] hover:bg-[#E02E24] text-white shadow-[0_4px_16px_rgba(255,59,48,0.35)] ring-2 ring-[#FF3B30] ring-offset-2"
+                              : "bg-[#FEECEB] hover:bg-[#FDD9D7] text-[#FF3B30] border border-[#FF3B30]/30 shadow-none",
                         )}
                         title={`Execute 1-Click Short ${marketSymbol} with $${stake} stake`}
                       >
@@ -1259,7 +1259,7 @@ export function FiveHundredXPage() {
                         <span
                           className={cn(
                             "text-[10px] font-normal font-mono mt-0.5",
-                            side === "short" ? "text-white/90" : "text-[#D92D45]/80",
+                            side === "short" ? "text-white/90 font-medium" : "text-[#FF3B30]/90",
                           )}
                         >
                           -1% move = +${(stake * leverage * 0.01).toFixed(0)}
@@ -1268,22 +1268,22 @@ export function FiveHundredXPage() {
                     </div>
 
                     {/* Order metrics */}
-                    <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-[11px] font-mono text-[var(--text-secondary,#5a5a66)] pt-1 px-1">
+                    <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-[11px] font-mono text-muted-foreground pt-1 px-1">
                       <div className="flex justify-between items-center">
                         <span>Stake:</span>
-                        <span className="text-[var(--text-primary,#0b0b0c)] font-medium tabular-nums">${stake}</span>
+                        <span className="text-foreground font-medium tabular-nums">${stake}</span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span>Notional:</span>
-                        <span className="text-[var(--text-primary,#0b0b0c)] font-medium tabular-nums">{formatUsd(notional)}</span>
+                        <span className="text-foreground font-medium tabular-nums">{formatUsd(notional)}</span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span>Liq price:</span>
-                        <span className="text-[#D92D45] font-medium tabular-nums">{market.formatPrice(liqPrice)}</span>
+                        <span className="text-[#FF3B30] font-medium tabular-nums">{market.formatPrice(liqPrice)}</span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span>Fee/spread:</span>
-                        <span className="text-[var(--text-primary,#0b0b0c)] font-medium tabular-nums">0.04%</span>
+                        <span className="text-foreground font-medium tabular-nums">0.04%</span>
                       </div>
                     </div>
 
@@ -1292,7 +1292,7 @@ export function FiveHundredXPage() {
                       <button
                         type="button"
                         onClick={() => setReviewModalOpen(true)}
-                        className="text-[11px] text-[var(--text-secondary,#5a5a66)] hover:text-[var(--text-primary,#0b0b0c)] underline decoration-dotted font-mono cursor-pointer"
+                        className="text-[11px] text-muted-foreground hover:text-foreground underline decoration-dotted font-mono cursor-pointer"
                       >
                         Review order details before execution
                       </button>
@@ -1374,7 +1374,7 @@ export function FiveHundredXPage() {
                 <span
                   className={cn(
                     "font-bold capitalize font-mono",
-                    side === "long" ? "text-[#087F4D]" : "text-[#D92D45]",
+                    side === "long" ? "text-[#00D964]" : "text-[#FF3B30]",
                   )}
                 >
                   {side}
@@ -1394,7 +1394,7 @@ export function FiveHundredXPage() {
               </div>
               <div className="flex items-center justify-between py-2">
                 <span className="text-muted-foreground font-sans">Liquidates at</span>
-                <span className="font-bold tabular-nums text-[#D92D45]">
+                <span className="font-bold tabular-nums text-[#FF3B30]">
                   {market.symbol} {market.formatPrice(liqPrice)} · ±{liqDistancePct.toFixed(2)}%
                 </span>
               </div>
@@ -1428,11 +1428,11 @@ export function FiveHundredXPage() {
                   handleOpenPosition();
                 }}
                 className={cn(
-                  "w-full h-[46px] rounded-full text-[14px] font-bold transition-all flex items-center justify-center shadow-xs",
+                  "w-full h-[46px] rounded-full text-[14px] font-bold transition-all flex items-center justify-center shadow-xs active:scale-[0.98]",
                   confirmedRiskCheck
                     ? side === "long"
-                      ? "bg-[#087F4D] hover:bg-[#076B41] text-white cursor-pointer shadow-[0_2px_12px_rgba(8,127,77,0.25)]"
-                      : "bg-[#D92D45] hover:bg-[#B91C33] text-white cursor-pointer shadow-[0_2px_12px_rgba(217,45,69,0.25)]"
+                      ? "bg-[#00D964] hover:bg-[#05C168] text-[#0A0A0A] cursor-pointer shadow-[0_2px_12px_rgba(0,217,100,0.25)]"
+                      : "bg-[#FF3B30] hover:bg-[#E02E24] text-white cursor-pointer shadow-[0_2px_12px_rgba(255,59,48,0.25)]"
                     : "bg-secondary text-muted-foreground cursor-not-allowed opacity-50",
                 )}
               >
